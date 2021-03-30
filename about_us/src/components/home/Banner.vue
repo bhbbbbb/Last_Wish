@@ -16,19 +16,19 @@
           offset-md="5"
         >
           <h1 class="display-3 font-weight-light">
-            The Art Of Travel
+            Banner
           </h1>
 
           <div class="subheading text-uppercase pl-2 mb-4">
-            Finding Beauty, One flight at a time
+            TODO : pic and content
           </div>
 
-          <v-btn
+          <!-- <v-btn
             color="primary"
             depressed
           >
             Subscribe
-          </v-btn>
+          </v-btn> -->
         </v-col>
       </v-row>
     </v-img>

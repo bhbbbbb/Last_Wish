@@ -10,10 +10,10 @@
         :key="article.title"
         :size="layout[i]"
         :value="article"
-      />
+      ></feed-card>
     </v-row>
 
-    <v-row align="center">
+    <!-- <v-row align="center">
       <v-col cols="3">
         <base-btn
           v-if="page !== 1"
@@ -47,7 +47,7 @@
           <v-icon>mdi-chevron-right</v-icon>
         </base-btn>
       </v-col>
-    </v-row>
+    </v-row> -->
   </v-container>
 </template>
 

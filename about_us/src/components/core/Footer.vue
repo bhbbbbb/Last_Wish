@@ -4,10 +4,13 @@
     dark
     height="auto"
   >
-    <v-container class="mx-auto">
+    <v-container class="mx-auto"> 
+      
       <v-row>
+        
         <v-col cols="9">
-          <base-btn
+          <b>TODO : FOOTER CONTENT</b>
+          <!-- <base-btn
             v-for="(item, i) in items"
             :key="i"
             :href="item.href"
@@ -17,7 +20,7 @@
             target="_blank"
           >
             <v-icon v-text="item.icon" />
-          </base-btn>
+          </base-btn> -->
         </v-col>
 
         <v-spacer />

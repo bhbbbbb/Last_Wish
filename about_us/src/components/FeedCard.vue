@@ -4,7 +4,7 @@
     :md="size === 2 ? 6 : size === 3 ? 4 : undefined"
   >
     <base-card
-      :height="value.prominent ? 450 : 350"
+      :height="value.prominent ? 450 : 450"
       color="grey lighten-1"
       dark
       href="#!"

@@ -6,9 +6,9 @@
 
     <about />
 
-    <subscribe />
+    <!-- <subscribe /> -->
 
-    <social />
+    <!-- <social /> -->
   </div>
 </template>
 

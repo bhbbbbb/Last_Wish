@@ -31,7 +31,7 @@
           {{ link.text }}
         </v-btn>
 
-        <v-spacer />
+        <!-- <v-spacer />
 
         <v-text-field
           append-icon="mdi-magnify"
@@ -39,7 +39,7 @@
           hide-details
           solo-inverted
           style="max-width: 300px;"
-        />
+        /> -->
       </v-row>
     </v-container>
   </v-app-bar>
