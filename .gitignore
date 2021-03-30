@@ -1,0 +1,16 @@
+.DS_Store
+
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
+*zip
+.now
+
+about_us_bbb
+blog-free-v1.0.0
