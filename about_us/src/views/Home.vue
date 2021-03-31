@@ -4,9 +4,9 @@
       <banner />
     </articles>
 
-    <about />
+    <!-- <about /> -->
 
-    <!-- <subscribe /> -->
+    <subscribe />
 
     <!-- <social /> -->
   </div>

@@ -25,5 +25,8 @@ yarn run test
 yarn run lint
 ```
 
+note : Unable to lint with unknown reason
+
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).

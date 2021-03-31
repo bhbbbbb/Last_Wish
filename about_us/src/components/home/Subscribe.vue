@@ -14,10 +14,10 @@
             md="5"
           >
             <base-subheading class="mb-3">
-              Subscribe
+              About Us
             </base-subheading>
 
-            <p>
+            <!-- <p>
               Enter your email address to subscribe to this blog
               and receive notifications of new posts by email.
             </p>
@@ -42,7 +42,7 @@
               >
                 Subscribe
               </v-btn>
-            </v-row>
+            </v-row> -->
           </v-col>
 
           <v-col

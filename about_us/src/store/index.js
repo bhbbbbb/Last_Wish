@@ -41,10 +41,13 @@ export default new Vuex.Store({
     links: (state, getters) => {
       return state.items.concat(getters.categories)
     },
+    // back: state => state.articles[0],
+    
   },
   mutations: {
     setDrawer: (state, payload) => (state.drawer = payload),
     toggleDrawer: state => (state.drawer = !state.drawer),
+    // flipback: (state, idx) => (state.articles[idx] = state.articles[0]),
   },
   actions: {
 
