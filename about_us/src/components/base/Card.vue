@@ -1,6 +1,6 @@
 <template>
   <v-card
-    elevation-10
+    flat
     tile
     v-bind="$attrs"
     v-on="$listeners"
