@@ -1,57 +1,19 @@
-<template>
-  <v-container>
-    <v-row>
-      <v-col cols="12">
-        <slot />
-      </v-col>
-      
-      <feed-card
-        v-for="(article, i) in paginatedArticles"
-        :key="article.title"
-        :size="layout[i]"
-        :value="article"
-        :imgSrc="require(`@/assets/articles/${article.hero}`)"
-        
-      ></feed-card>
-      
-    </v-row>
-
-    <!-- <v-row align="center">
-      <v-col cols="3">
-        <base-btn
-          v-if="page !== 1"
-          class="ml-0"
-          square
-          title="Previous page"
-          @click="page--"
-        >
-          <v-icon>mdi-chevron-left</v-icon>
-        </base-btn>
-      </v-col>
-
-      <v-col
-        class="text-center subheading"
-        cols="6"
-      >
-        PAGE {{ page }} OF {{ pages }}
-      </v-col>
-
-      <v-col
-        class="text-right"
-        cols="3"
-      >
-        <base-btn
-          v-if="pages > 1 && page < pages"
-          class="mr-0"
-          square
-          title="Next page"
-          @click="page++"
-        >
-          <v-icon>mdi-chevron-right</v-icon>
-        </base-btn>
-      </v-col>
-    </v-row> -->
-  </v-container>
+<template lang="pug">
+v-container
+  v-row
+    v-col.pa-1(cols="12")
+      slot/
+    feed-card(v-for="(memo, idx) in memos" :key="idx" :value="memo")
+    
+  //- v-row(align="center")
+  //-   v-col(cols="3")
+  //-     base-btn.ml-0(v-if="page !== 1" square="" title="Previous page" @click="page--")
+  //-       v-icon mdi-chevron-left
+  //-   v-col.text-center.subheading(cols="6")
+  //-     | PAGE {{ page }} OF {{ pages }}
+  //-   v-col.text-right(cols="3")
+  //-     base-btn.mr-0(v-if="pages > 1 && page < pages" square="" title="Next page" @click="page++")
+  //-       v-icon mdi-chevron-right
 </template>
 
 <script>
@@ -76,17 +38,17 @@
     }),
 
     computed: {
-      ...mapState(['articles']),
+      ...mapState(['articles', 'memos']),
       pages () {
         return Math.ceil(this.articles.length / 11)
       },
-      paginatedArticles () {
-        // const start = (this.page - 1) * 11
-        // const stop = this.page * 11
+      // paginatedArticles () {
+      //   // const start = (this.page - 1) * 11
+      //   // const stop = this.page * 11
 
-        // return this.articles.slice(start, stop)
-        return this.loc_articles.slice(1);
-      },
+      //   // return this.articles.slice(start, stop)
+      //   return this.loc_articles.slice(1);
+      // },
     },
 
     watch: {

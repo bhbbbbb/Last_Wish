@@ -7,7 +7,7 @@
       width="100%"
     >
       <v-row
-        class="fill-height pa-3"
+        class="fill-height"
         align="center"
       >
         <v-col

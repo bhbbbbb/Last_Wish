@@ -1,7 +1,9 @@
 <template>
   <v-card
-    elevation-10
+    flat
     tile
+    color="rgba(0, 0, 0, 0)"
+    width="240"
     v-bind="$attrs"
     v-on="$listeners"
   >
@@ -11,6 +13,6 @@
 
 <script>
   export default {
-    name: 'BaseCard',
+    name: 'Memo',
   }
 </script>
