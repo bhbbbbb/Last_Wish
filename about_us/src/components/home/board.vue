@@ -34,7 +34,8 @@ v-container
                         absolute,
                         :dark="false",
                     )
-                        personal-page(@back="overlay=!overlay")/
+                        personal-page(@back="overlay=!overlay", name="Sample", position="Designer", 
+                        skill="a trash", :photo="selected_img")/
 </template>
 
 <script>
