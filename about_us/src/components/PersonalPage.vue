@@ -31,7 +31,7 @@ base-card.pa-0.transparent(@click.native="$emit('back')" height="779" width="153
               v-row
                 v-col(cols="auto")
                   h3.f-16 Skills :
-                v-col.ma-0.pa-1(v-for="icon in info.skill_icons" cols="auto")
+                v-col.ma-0.pa-1(v-for="icon in info.skill_icons" :key="icon" cols="auto")
                   v-img(:src="get_icon(icon)" height="40" width="40" contain)
 
               br/
