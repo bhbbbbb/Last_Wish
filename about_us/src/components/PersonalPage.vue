@@ -1,50 +1,101 @@
-<template>
-<base-card class="grey lighten-5" @click="$emit('back')" height="687" width="1533">
-  <v-container class="grey lighten-5">
-    <v-row class="ma-0">
-      <v-col cols="6" md="4">
-        <v-card class="pa-2" outlined="" tile="" height="50vh">
-          <h2>Photo</h2>
-          <base-card>
-            <v-img :src="photo"></v-img>
-          </base-card>
-        </v-card>
-      </v-col>
-      <v-col cols="12" sm="6" md="8">
-        <v-card class="pa-2" shaped="" outlined="" tile="" height="50vh">Dream</v-card>
-      </v-col>
-    </v-row>
-    <v-row class="ma-0">
-      <v-col cols="6" md="4">
-        <v-row class="ma-0 mb-3">
-          <v-col class="pa-0" cols="12">
-            <v-card class="pa-2" outlined="" tile="">Name</v-card>
-          </v-col>
-        </v-row>
-        <v-row class="ma-0">
-          <v-col class="pa-0" cols="12">
-            <v-card class="pa-2" outlined="" tile="">職位</v-card>
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-col cols="12" sm="6" md="8">
-        <v-card class="pa-2" outlined="" tile="" height="10vh">skills</v-card>
-      </v-col>
-    </v-row>
-  </v-container>
-</base-card>
+<template lang="pug">
+base-card.pa-0.transparent(@click.native="$emit('back')" height="779" width="1533")
+  v-container.ma-0.pa-0
+    v-row.ma-0(justify="center")
+      v-img(:src="bg" width="1533" height="779" contain)
+        v-row(align="center" style="height: 700px")
+          v-col(cols="5")/
+          v-col.pl-9.pt-12(cols="5" align-self="center")
+              v-row.pl-2
+                v-col.pa-0(cols="auto")
+                  h2.f-35 {{ info.name_zh }}
+                  h4.f-16 {{ info.name_en }}
+                v-spacer
+                v-col(align-self="center" cols="auto")
+                  v-row(align="center" justify="end")
+                    v-col.pa-0(cols="auto")
+                      span.f-12 國立成功大學
+                      br/
+                      span.f-12 {{ info.department }}
+                    
+                    v-col.pa-2(cols="2")
+                      v-img(:src="get_icon('side_bar')")
+              
+              v-row.pl-2.pt-5
+                h3.f-18 {{ info.position }}
+                
+              v-row.pl-2.pt-5
+                p.f-12 {{ info.body }}
+                br/
+              
+              v-row
+                v-col(cols="auto")
+                  h3.f-16 Skills :
+                v-col.ma-0.pa-1(v-for="icon in info.skill_icons" cols="auto")
+                  v-img(:src="get_icon(icon)" height="40" width="40" contain)
+
+              br/
+              span.f-14(v-for="skill in info.skills" :key="skill") {{skill}}
+                br/
+              //- v-col(offset="5" cols="auto" align-self="center")
+
+
+    
 </template>
 
 <script>
 export default {
     name: "PersonalPage",
-    props: ['name', 'skill', 'position', 'photo'],
+    props: ['my_id'],
+    data: ()=>({
+      info_us: require('@/data/about_me.json'),
+    }),
     methods: {
-        Test() {
-            $emit("back")
-        }
+      get_icon(icon_name) {
+        // console.log("try get" + icon_name);
+        return require('@/assets/about_us/icon/' + icon_name + '.png');
+      }
+    },
+    computed: {
+      info() {
+        // console.log(this.info_us[this.my_id - 1]);
+        return this.info_us[this.my_id - 1];
+      },
+      bg() {
+        return require(`@/assets/about_us/bg${this.my_id}.png`);
+      }
     }
 }
 </script>
 
-<style> </style>
+<style scoped lang="sass">
+.f-14
+  font-size: 14pt
+
+.f-18
+  font-size: 18pt
+
+.f-12
+  font-size: 12pt
+
+.f-16
+  font-size: 16pt
+
+.f-35
+  font-size: 35pt
+
+h2, h3, p, span, h4
+  color: #7d7d7d
+
+h2
+  letter-spacing: 10pt
+
+h3, h4
+  letter-spacing: 4pt
+
+h4
+  font-weight: normal
+
+p
+  line-height: 23pt
+</style>

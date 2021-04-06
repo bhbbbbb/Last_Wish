@@ -51,6 +51,9 @@ export default new Vuex.Store({
     // flipback: (state, idx) => (state.articles[idx] = state.articles[0]),
   },
   actions: {
-
+    get_icon(icon_name) {
+      console.log("try get" + icon_name);
+      return require('@/assets/about_us/icon/' + icon_name + '.png');
+    }
   },
 })
