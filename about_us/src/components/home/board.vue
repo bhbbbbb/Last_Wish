@@ -1,26 +1,25 @@
 <template lang="pug">
-v-container
-    
-    v-toolbar.pt4(flat style="height: 100px")
-        v-row(align="center")
+
+v-container(style="max-width:100vw")
+    v-toolbar.pt4(flat style="max-height:10vh")
+        v-row(align="center" style="max-width:100vw")
         
             v-col(cols="3")
-                v-row(style="height=100%" align="center")
+                v-row(style="height=100%" align="center" )
                     v-col(cols="auto")
-                        v-img(:src="get_icon('side_bar')" width="10")
-                    v-col(cols="10")
+                        v-img(:src="get_icon('side_bar')" max-width="0.5vw")
+                    v-col(cols="10" maxheigh="10vh" )
                         span.bar-left 遺願清單
                         br/
                         span.bar-left The bucket list
 
             v-spacer
-            v-col(cols="auto")
+            v-col(cols="auto" maxheigh="10vh")
                 h1 About Us
-
             v-spacer
             v-col(cols="3" )
                 v-row(justify="end" align="center")
-                    v-col(cols="4" align="center")
+                    v-col(cols="4" align="center" max-height="10vh" min-width="10em")
                         p.pt-7  
                             span 國立成功大學
                             br/
@@ -30,16 +29,16 @@ v-container
                             br/
                             span University
                             br/
-                            span(style="color: rgba(0, 0, 0, 0)") f
+                            span(style="color: rgba(0, 0, 0, 0)") 
                             v-divider
                 
 
-    v-row(justify="center")
-        v-img(:src="board_bg" width="90vh")
+    v-row(justify="center" max-width="100vw" max-height="90vh")
+        v-img(:src="board_bg" max-height="100vh" max-width="100vw")
 
             v-hover(v-for="idx in 7" :key="idx" v-slot="{hover}")
                 v-img.abs(:class="`card-${idx}`" @click="Expand(idx)"
-                    :src="board_card(idx)", max-height="1000" max-width="1000" contain
+                    :src="board_card(idx)",min-width="10vw" max-width="12vw" contain
                     :style="hover ? 'zoom: 102%' : 'zoom:100%'")
 
             v-overlay.overflow-y-auto.overflow(
@@ -50,7 +49,7 @@ v-container
                 :dark="false",
                 v-scroll.self
             )
-                personal-page(@back="overlay=!overlay", :my_id="expand_for",)/
+                personal-page(@back="overlay=!overlay", :my_id="expand_for",)
 </template>
 
 <script>
@@ -123,31 +122,31 @@ h1
     position: absolute
 
 .card-1
-    left: 300px
-    top: 30px
+    left: 20vw
+    top: 10vh
 
 .card-2
-    left: 350px
-    bottom: 200px
+    left: 20vw
+    bottom: 20vh
 
 .card-3
-    left: 670px
-    top: 130px
+    left: 35vw
+    top: 18vh
 
 .card-4
-    right: 670px
-    top: 100px
+    right: 40vw
+    top: 16vh
 
 .card-5
-    right: 590px
-    bottom: 180px
+    right: 29vw
+    bottom: 18vh
 
 .card-6
-    right: 390px
-    top: 30px
+    right: 18vw
+    top: 5vh
 
 .card-7
-    right: 250px
-    bottom: 230px
+    right: 13vw
+    bottom: 15vh
 
 </style>
