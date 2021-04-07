@@ -1,7 +1,7 @@
 <template lang="pug">
-base-card.pa-0.transparent(@click.native="$emit('back')" height="779" width="1533")
-  v-container.ma-0.pa-0
-    v-row.ma-0(justify="center")
+base-card.transparent(@click.native="$emit('back')")
+  v-container.ma-0.pa-0()
+    v-row.ma-0(justify="center" align="end")
       v-img(:src="bg" width="1533" height="779" contain)
         v-row(align="center" style="height: 700px")
           v-col(cols="5")/
@@ -98,4 +98,6 @@ h4
 
 p
   line-height: 23pt
+
+
 </style>

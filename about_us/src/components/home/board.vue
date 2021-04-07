@@ -1,5 +1,6 @@
 <template lang="pug">
 v-container
+    
     v-toolbar.pt4(flat style="height: 100px")
         v-row(align="center")
         
@@ -34,20 +35,22 @@ v-container
                 
 
     v-row(justify="center")
-        v-img(:src="board_bg" width="1533")
+        v-img(:src="board_bg" width="90vh")
 
             v-hover(v-for="idx in 7" :key="idx" v-slot="{hover}")
                 v-img.abs(:class="`card-${idx}`" @click="Expand(idx)"
                     :src="board_card(idx)", max-height="1000" max-width="1000" contain
                     :style="hover ? 'zoom: 102%' : 'zoom:100%'")
 
-            v-overlay(
+            v-overlay.overflow-y-auto.overflow(
+                ref="ovr",
                 :value="overlay",
                 opacity="0",
                 absolute,
                 :dark="false",
+                v-scroll.self
             )
-                personal-page(@back="overlay=!overlay", :my_id="expand_for")/
+                personal-page(@back="overlay=!overlay", :my_id="expand_for",)/
 </template>
 
 <script>
@@ -65,11 +68,11 @@ export default {
         expand_for: 1,
         selected_img: require("@/assets/articles/moroccandays.jpg"),
         board_bg: require("@/assets/about_us/about_us_outer/about_us_outer_bg.jpg"),
-        
+        // is_created: false,
+        overlay_height: 0,
     }),
     computed: {
         ...mapState(["memos"]),
-        
 
     },
     methods: {
@@ -84,6 +87,9 @@ export default {
         get_icon(icon_name) {
         return require('@/assets/about_us/icon/' + icon_name + '.png');
       }
+    },
+    mounted() {
+        // console.log(this.$refs.ovr.clientHeight)
     }
 };
 </script>

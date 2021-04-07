@@ -1,12 +1,12 @@
 <template>
   <v-app>
-    <core-app-bar />
+    <!-- <core-app-bar /> -->
 
-    <core-drawer />
+    <!-- <core-drawer /> -->
 
     <core-view />
 
-    <core-footer />
+    <!-- <core-footer /> -->
 
     <!-- <core-cta /> -->
   </v-app>

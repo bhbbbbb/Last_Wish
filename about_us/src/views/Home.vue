@@ -7,7 +7,7 @@
 
     <!-- <about /> -->
 
-    <subscribe />
+    <!-- <subscribe /> -->
 
     <!-- <social /> -->
   </div>
