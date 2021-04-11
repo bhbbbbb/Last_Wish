@@ -1,10 +1,6 @@
 <template>
   <v-app>
-    
-
     <board />
-
-    
   </v-app>
 </template>
 

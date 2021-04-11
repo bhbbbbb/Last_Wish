@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import BaseBtn from '@/components/base/Btn'
+import BaseCard from '@/components/base/Card'
 
 
 Vue.component(BaseCard.name, BaseCard)
