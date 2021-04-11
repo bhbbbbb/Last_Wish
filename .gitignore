@@ -12,6 +12,10 @@
 *zip
 .now
 
-about_us_bbb
+
 blog-free-v1.0.0
 example
+vue-flip-card
+
+# ignore assets to imporve efficency
+about_us_old/src/assets

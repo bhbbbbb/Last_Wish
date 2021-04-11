@@ -1,24 +1,32 @@
-# about_us
+# theme-blog
 
 ## Project setup
 ```
-npm install
+yarn install
 ```
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+yarn run serve
 ```
 
 ### Compiles and minifies for production
 ```
-npm run build
+yarn run build
+```
+
+### Run your tests
+```
+yarn run test
 ```
 
 ### Lints and fixes files
 ```
-npm run lint
+yarn run lint
 ```
+
+note : Unable to lint with unknown reason
+
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
