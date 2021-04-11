@@ -19,8 +19,8 @@ v-container(style="max-width:100vw")
             v-spacer
             v-col(cols="3" )
                 v-row(justify="end" align="center")
-                    v-col(cols="4" align="center" max-height="10vh" min-width="10em")
-                        p.pt-7  
+                    v-col(cols="12" align="center" max-height="10vh" min-width="10em")
+                        p.pt-4(sytle="min-width: 10em")
                             span 國立成功大學
                             br/
                             span National
@@ -29,31 +29,31 @@ v-container(style="max-width:100vw")
                             br/
                             span University
                             br/
-                            span(style="color: rgba(0, 0, 0, 0)") 
+                            span(style="color: rgba(0, 0, 0, 0)") f 
+                            //- the f is add for additional line
                             v-divider
                 
 
     v-row(justify="center" max-width="100vw" max-height="90vh")
-        v-img(:src="board_bg" max-height="100vh" max-width="100vw")
+        v-img#bg_img(:src="board_bg" max-height="100vh" max-width="100vw",
+            )
 
             v-hover(v-for="idx in 7" :key="idx" v-slot="{hover}")
                 v-img.abs(:class="`card-${idx}`" @click="Expand(idx)"
                     :src="board_card(idx)",min-width="10vw" max-width="12vw" contain
                     :style="hover ? 'zoom: 102%' : 'zoom:100%'")
 
-            v-overlay.overflow-y-auto.overflow(
-                ref="ovr",
+            v-overlay(
                 :value="overlay",
                 opacity="0",
                 absolute,
                 :dark="false",
-                v-scroll.self
             )
-                personal-page(@back="overlay=!overlay", :my_id="expand_for",)
+                personal-page(@back="overlay=!overlay", :my_id="expand_for", :height="overlay_height")
 </template>
 
 <script>
-
+import $ from 'jquery'
 export default {
     name: "board",
     components: {
@@ -66,7 +66,6 @@ export default {
         overlay_height: 0,
     }),
     computed: {
-       
 
     },
     methods: {
@@ -74,16 +73,18 @@ export default {
         Expand(idx) {
             this.overlay = !this.overlay;
             this.expand_for = idx;
+            this.overlay_height = $('#bg_img').height() + 100;
         },
         board_card(idx) {
             return require(`@/assets/about_us/about_us_outer/card${idx}.png`);
         },
         get_icon(icon_name) {
         return require('@/assets/about_us/icon/' + icon_name + '.png');
-      }
+      },
+        
     },
     mounted() {
-        // console.log(this.$refs.ovr.clientHeight)
+        this.overlay_height = $('#bg_img').height() + 100;
     }
 };
 </script>

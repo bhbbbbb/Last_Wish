@@ -1,11 +1,16 @@
 <template lang="pug">
-base-card.transparent(@click.native="$emit('back')")
+base-card.transparent(@click.native="$emit('back')" :height="height")
   v-container.ma-0.pa-0()
     v-row.ma-0(justify="center" align="end")
-      v-img(:src="bg" width="1533" height="779" contain)
-        v-row(align="center" style="height: 700px")
+      v-img(:src="bg" max-width="1533" :height="height" contain)
+        v-row(align="center" :style="`height: ${height}px`")
           v-col(cols="5")/
-          v-col.pl-9.pt-12(cols="5" align-self="center")
+          v-col.pl-9.overflow-y-auto(
+            cols="5"
+            align-self="center"
+            :height="height"
+            v-scroll.self
+          )
               v-row.pl-2
                 v-col.pa-0(cols="auto")
                   h2.f-35 {{ info.name_zh }}
@@ -46,7 +51,16 @@ base-card.transparent(@click.native="$emit('back')")
 <script>
 export default {
     name: "PersonalPage",
-    props: ['my_id'],
+    props: {
+      my_id: {
+        type: Number,
+        require: true,
+      },
+      height: {
+        type: Number,
+        require: true,
+      }
+    },
     data: ()=>({
       info_us: require('@/data/about_me.json'),
     }),
@@ -59,6 +73,7 @@ export default {
     computed: {
       info() {
         // console.log(this.info_us[this.my_id - 1]);
+        // console.log(this.info_us);
         return this.info_us[this.my_id - 1];
       },
       bg() {
@@ -70,19 +85,19 @@ export default {
 
 <style scoped lang="sass">
 .f-14
-  font-size: 14pt
+  font-size: 1.13em
 
 .f-18
-  font-size: 18pt
+  font-size: 	1.5em
 
 .f-12
-  font-size: 12pt
+  font-size: 	1em
 
 .f-16
-  font-size: 16pt
+  font-size: 	1.25em
 
 .f-35
-  font-size: 35pt
+  font-size: 	2.88em
 
 h2, h3, p, span, h4
   color: #7d7d7d
