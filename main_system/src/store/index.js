@@ -10,6 +10,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     articles : [],
+    is_login: false,
   },
   mutations: {
     updateData(state, payload) {
