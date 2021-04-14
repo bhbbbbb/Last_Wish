@@ -30,7 +30,7 @@ base-card.transparent(@click.native="$emit('back')" :height="height")
                 h3.f-18 {{ info.position }}
                 
               v-row.pl-2.pt-5
-                p.f-12 {{ info.body }}
+                p.f-12(style="white-space: pre-wrap") {{ info.body }}
                 br/
               
               v-row
