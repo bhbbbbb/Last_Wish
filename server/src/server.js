@@ -32,8 +32,11 @@ app.use(bodyParser.json())
 // app.use(express.static(__dirname + "/data"));
 
 const articlePATH = __dirname + "/data/articles.json";
+const user_listPATH = __dirname + "/data/user_list.json";
+const accountsPATH = __dirname + "/data/accounts.json";
 var articles = require(articlePATH);
-
+var user_list = require(user_listPATH);
+var accounts_info = require(accountsPATH);
 
 app.post('/articles/insert', (req, res) => {
   articles.push(req.body);
@@ -50,3 +53,30 @@ app.get('/articles', (req, res) => {
   res.send(JSON.stringify(articles));
 });
 
+// 200 = OK
+// 405 = Method Not Allow
+app.post('/user/try_login', (req, res) => {
+  let response = {
+    state: undefined,
+    username: "",
+    err_msg: "",
+  };
+  if (!(req.body.username in user_list)) {
+    response.state = 405;
+    response.err_msg = "user not found";
+    res.send(JSON.stringify(response));
+    return;
+  }
+  let user_id = Number(user_list[req.body.username]);
+  if (accounts_info[user_id].password != req.body.password) {
+    response.state = 405;
+    response.err_msg = "password not matched";
+    res.send(JSON.stringify(response));
+    return;
+  }
+
+  response.state = 20;
+  response.username = req.body.username;
+  res.send(JSON.stringify(response));
+  return;
+});

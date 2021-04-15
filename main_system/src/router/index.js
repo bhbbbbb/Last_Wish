@@ -7,7 +7,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    redirect: '/home'
+    redirect: '/home',
   },
   {
     path: '/home',
@@ -27,19 +27,33 @@ const routes = [
       }]
   },
   {
-    path: '/user/:username',
+    path: '/:username',
     name: 'User',
     component: () => import('@/views/User'),
     beforeEnter: (to, from, next) => {
-      console.log(to, from);
+      console.log(from);
+      if (store.state.is_login) {
+        next();
+        return true;
+      }
+      // console.log(store.state.is_login, to.params.username, store.state.username)
       if (!store.state.is_login || to.params.username != store.state.username) {
         alert("u have not log in");
-        // next('/home');
+        next('/home');
         return false;
       }
-      next();
+      // alert("login success");
+      next('/home');
       return true;
-    }
+    },
+    
+    children: [
+      {
+        path: 'articles',
+        name: 'UserArticle',
+        component: () => import('@/views/Home/ArticleContainer')
+      },
+    ]
   }
 ]
 

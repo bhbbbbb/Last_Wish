@@ -8,5 +8,13 @@ const articleRequest = axios.create({
     // headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 })
 
+const userRequest = axios.create({
+    baseURL: baseURL + "/user",
+    headers: { 'Content-Type': 'application/json' },
+})
+
+
 export const apiGetArticles = () => articleRequest.get('/articles');
 export const apiUploadArticle = (data) => articleRequest.post('/articles/insert', data);
+
+export const apiTryLogin = (data) => userRequest.post('/try_login', data);
