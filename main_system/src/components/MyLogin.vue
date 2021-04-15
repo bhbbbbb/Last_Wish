@@ -20,7 +20,7 @@ v-card.pa-0(rounded="lg" min-height="268" flat)
             v-btn(width="90%" @click="navigate") Register   
       v-col(cols="12")
         .text-center
-          v-btn(width="90%" @click="Visitor()") Log In as Visitor
+          v-btn(width="90%" @click="Dev()") Dev log in
 </template>
 
 <script>
@@ -36,6 +36,7 @@ export default {
   methods: {
     //tryLogin
     ...mapActions(['tryLogin']),
+    
     Try_Login() {
       if (! (this.user.username && this.user.password)) {
         // username or pswd is blank
@@ -43,15 +44,11 @@ export default {
         return;
       }
       this.tryLogin(this.user);
-      // console.log(this.$store);
-      // this.test();
-      // this.$store.dispatch('tryLogin', this.user);
+      
     },
-    Visitor() {
-      this.tryLogin({
-        username: "visitor",
-        password: "",
-      })
+    Dev() {
+      this.$store.commit('loginSuccess', "dev");
+      this.$router.push({name: "UserArticle", params: {username: "dev"}});
     }
   }
 }

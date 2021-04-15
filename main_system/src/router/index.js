@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '@/views/Home.vue'
 import store from '@/store/index'
 Vue.use(VueRouter)
 
@@ -12,13 +11,16 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: Home,
+    components: {
+      Main: () => import('@/views/Home/Home.vue'),
+      AppBar: () => import('@/views/Home/app_bar.vue')
+    },
     redirect: '/home/articles',
     children: [
       {
         path: 'articles',
         name: 'ArticleContainer',
-        component: () => import('@/views/Home/ArticleContainer')
+        component: () => import('@/views/ArticleContainer')
       },
       {
         path: 'register',
@@ -26,10 +28,15 @@ const routes = [
         component: () => import('@/views/Home/Register')
       }]
   },
+
+
   {
     path: '/:username',
     name: 'User',
-    component: () => import('@/views/User'),
+    components: {
+      Main: () => import('@/views/User/User'),
+      AppBar: () => import('@/views/User/app_bar.vue'),
+    },
     beforeEnter: (to, from, next) => {
       console.log(from);
       if (store.state.is_login) {
@@ -39,11 +46,11 @@ const routes = [
       // console.log(store.state.is_login, to.params.username, store.state.username)
       if (!store.state.is_login || to.params.username != store.state.username) {
         alert("u have not log in");
-        next('/home');
+        next('/vistor');
         return false;
       }
       // alert("login success");
-      next('/home');
+      next('/vistor');
       return true;
     },
     
@@ -51,7 +58,7 @@ const routes = [
       {
         path: 'articles',
         name: 'UserArticle',
-        component: () => import('@/views/Home/ArticleContainer')
+        component: () => import('@/views/ArticleContainer')
       },
     ]
   }

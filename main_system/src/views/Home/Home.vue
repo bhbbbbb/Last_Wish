@@ -20,7 +20,6 @@ export default {
     components: {
         MyLogin: () => import('@/components/MyLogin'),
         NewPost: () => import('@/components/NewPost'),
-        // CoreAppBar: () => import('@/components/core/app_bar.vue'),
     }
 }
 </script>

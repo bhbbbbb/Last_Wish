@@ -53,12 +53,11 @@ app.get('/articles', (req, res) => {
   res.send(JSON.stringify(articles));
 });
 
-// 200 = OK
+// 20 = OK
 // 405 = Method Not Allow
 app.post('/user/try_login', (req, res) => {
   let response = {
     state: undefined,
-    username: "",
     err_msg: "",
   };
   if (!(req.body.username in user_list)) {
@@ -76,7 +75,6 @@ app.post('/user/try_login', (req, res) => {
   }
 
   response.state = 20;
-  response.username = req.body.username;
   res.send(JSON.stringify(response));
   return;
 });

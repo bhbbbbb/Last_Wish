@@ -1,11 +1,20 @@
 <template lang="pug">
 v-sheet(min-height="70vh" rounded="lg")
-    h2 A Register Page
+  h2 {{ Title }}
 </template>
 
 <script>
 export default {
     name: 'Register',
+    data: () => ({
+        Title: "this is a register page"
+    }),
     
 }
 </script>
+
+
+<style scoped lang="">
+
+
+</style>

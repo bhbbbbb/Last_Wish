@@ -43,7 +43,6 @@ export default {
           console.log(err)
         });
 
-        // console.log(this.articles);
       }
     },
 }

@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <core-app-bar />
-    <router-view />
+    <router-view name="AppBar"/>
+    <router-view name="Main"/>
   </v-app>
 </template>
 
@@ -11,7 +11,6 @@ export default {
   name: 'App',
 
   components: {
-    CoreAppBar: () => import ('@/components/core/app_bar.vue'),
   },
 
   data: () => ({

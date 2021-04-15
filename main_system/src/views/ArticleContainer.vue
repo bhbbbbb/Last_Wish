@@ -13,14 +13,13 @@ v-sheet(min-height="70vh" rounded="lg")
 
 <script>
 // @ is an alias to /src
-import ArticleCard from '@/components/ArticleCard.vue'
 import {mapState} from 'vuex'
 export default {
     name: 'ArticleContainer',
     
     components: {
-      ArticleCard,
-      NewPost: () => import('@/components/NewPost')
+      ArticleCard: () => import('@/components/ArticleCard.vue'),
+      NewPost: () => import('@/components/NewPost'),
     },
 
     computed: {
