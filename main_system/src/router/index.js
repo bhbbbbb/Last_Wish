@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
-
+import store from '@/store/index'
 Vue.use(VueRouter)
 
 const routes = [
@@ -27,9 +27,19 @@ const routes = [
       }]
   },
   {
-    path: '/user',
+    path: '/user/:username',
     name: 'User',
-    component: () => import('@/views/User')
+    component: () => import('@/views/User'),
+    beforeEnter: (to, from, next) => {
+      console.log(to, from);
+      if (!store.state.is_login || to.params.username != store.state.username) {
+        alert("u have not log in");
+        // next('/home');
+        return false;
+      }
+      next();
+      return true;
+    }
   }
 ]
 

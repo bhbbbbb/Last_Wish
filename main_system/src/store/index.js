@@ -10,6 +10,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     articles : [],
+    username: "",
     is_login: false,
   },
   mutations: {

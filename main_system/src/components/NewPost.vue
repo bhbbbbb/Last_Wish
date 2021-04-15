@@ -37,6 +37,7 @@ export default {
           return;
         }
         apiUploadArticle(this.new_article).then(res => {
+          // TODO : insert new post locally
           this.$store.commit('updateData', res.data);
         }).catch(err => {
           console.log(err)
