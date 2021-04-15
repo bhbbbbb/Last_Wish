@@ -4,22 +4,19 @@ import store from '@/store/index'
 Vue.use(VueRouter)
 
 const routes = [
+  
   {
     path: '/',
-    redirect: '/home',
-  },
-  {
-    path: '/home',
     name: 'Home',
     components: {
       Main: () => import('@/views/Home/Home.vue'),
       AppBar: () => import('@/views/Home/app_bar.vue')
     },
-    redirect: '/home/articles',
+    redirect: {name: 'Articles'},
     children: [
       {
         path: 'articles',
-        name: 'ArticleContainer',
+        name: 'Articles',
         component: () => import('@/views/ArticleContainer')
       },
       {
@@ -43,14 +40,14 @@ const routes = [
         next();
         return true;
       }
-      // console.log(store.state.is_login, to.params.username, store.state.username)
+
       if (!store.state.is_login || to.params.username != store.state.username) {
-        alert("u have not log in");
-        next('/vistor');
+        // alert("u have not log in");
+        next({name: 'Articles'});
         return false;
       }
-      // alert("login success");
-      next('/vistor');
+
+      next({name: 'Articles'});
       return true;
     },
     

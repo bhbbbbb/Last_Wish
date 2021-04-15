@@ -9,7 +9,10 @@ export default {
     data: () => ({
         Title: "this is a register page"
     }),
-    
+    methods: {
+        
+    }
+
 }
 </script>
 
