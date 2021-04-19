@@ -2,8 +2,20 @@
 v-card.pa-0(rounded="lg" min-height="268" flat)
   v-card-text
     h2 Log In
-    v-text-field(placeholder="username" v-model="user.username")
-    v-text-field(placeholder="password" v-model="user.password")
+    br/
+    v-text-field(
+      v-model="user.username"
+      label="username"
+      outlined
+      :rules="[rules.empty, rules.regex]"
+    )
+    v-text-field(
+      label="password"
+      v-model="user.password"
+      type="password"
+      outlined
+      :rules="[rules.empty, rules.regex]"
+    )
 
   v-card-actions.px-4(style="")
     v-row(align="center" style="width: 100%")
@@ -31,6 +43,13 @@ export default {
     user: {
       username: "",
       password: "",
+    },
+    rules: {
+      regex: value => {
+        const pattern = /^[\w|\d]*$/; // allow only word and digit
+        return pattern.test(value) || 'contain character except word and digit'
+      },
+      empty: value => Boolean(value) || "required"
     }
   }),
   methods: {
