@@ -10,9 +10,11 @@ v-card.pa-0(rounded="lg" min-height="268" flat)
       :rules="[rules.empty, rules.regex]"
     )
     v-text-field(
+      :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+      :type="show ? 'text' : 'password'"
+      @click:append="show = !show"
       label="password"
       v-model="user.password"
-      type="password"
       outlined
       :rules="[rules.empty, rules.regex]"
     )
@@ -25,7 +27,7 @@ v-card.pa-0(rounded="lg" min-height="268" flat)
       v-col(cols="12")
         .text-center
           router-link(
-            to="/home/register"
+            to="/register"
             custom
             v-slot="{ navigate }"
           )
@@ -46,11 +48,12 @@ export default {
     },
     rules: {
       regex: value => {
-        const pattern = /^[\w|\d]*$/; // allow only word and digit
+        const pattern = /^[^\W_]+$/; // allow only word and digit
         return pattern.test(value) || 'contain character except word and digit'
       },
       empty: value => Boolean(value) || "required"
-    }
+    },
+    show: false,
   }),
   methods: {
     //tryLogin
@@ -65,6 +68,7 @@ export default {
       this.tryLogin(this.user);
       
     },
+    
     Dev() {
       this.$store.commit('loginSuccess', "dev");
       this.$router.push({name: "UserArticle", params: {username: "dev"}});
