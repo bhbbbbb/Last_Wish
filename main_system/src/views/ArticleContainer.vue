@@ -1,6 +1,9 @@
 <template lang="pug">
 v-sheet(min-height="70vh" rounded="lg")
-  NewPost(v-if="is_login")/         
+  NewPost(v-if="true")/
+  NewRecord/
+  v-col(cols="12")
+    RecordCard/
   v-col(
     cols="12"
     v-for="(article, idx) in articles",
@@ -19,7 +22,9 @@ export default {
     
     components: {
       ArticleCard: () => import('@/components/ArticleCard.vue'),
+      RecordCard: () => import('@/components/RecordCard'),
       NewPost: () => import('@/components/NewPost'),
+      NewRecord: () => import('@/components/NewRecord'),
     },
 
     computed: {
