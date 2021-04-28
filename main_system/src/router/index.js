@@ -10,7 +10,7 @@ const routes = [
     name: 'Home',
     components: {
       Main: () => import('@/views/Home/Home.vue'),
-      AppBar: () => import('@/views/Home/app_bar.vue')
+      AppBar: () => import('@/views/User/app_bar.vue')
     },
     redirect: {name: 'Articles'},
     children: [
