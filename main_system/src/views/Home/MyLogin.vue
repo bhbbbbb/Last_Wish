@@ -27,7 +27,7 @@ v-card.pa-0(rounded="lg" min-height="268" flat)
       v-col(cols="12")
         .text-center
           router-link(
-            to="/register"
+            :to="{name: 'Register'}"
             custom
             v-slot="{ navigate }"
           )

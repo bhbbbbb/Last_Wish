@@ -34,7 +34,7 @@ const routes = [
       {
         path: 'login',
         name: 'Login',
-        component: () => import('@/components/MyLogin'),
+        component: () => import('@/views/Home/MyLogin'),
       }
     ]
   },
@@ -46,7 +46,7 @@ const routes = [
     props: {
       Main: false,
       AppBar: {
-        links: store.state.user_links
+        links: store.state.user_links,
       }
     },
     components: {
@@ -54,14 +54,12 @@ const routes = [
       AppBar: () => import('@/views/app_bar.vue'),
     },
     beforeEnter: (to, from, next) => {
-      // console.log(from);
       if (store.state.is_login) {
         next();
         return true;
       }
 
       if (!store.state.is_login || to.params.username != store.state.username) {
-        // alert("u have not log in");
         next({name: 'Articles'});
         return false;
       }
@@ -76,6 +74,11 @@ const routes = [
         name: 'UserArticle',
         component: () => import('@/views/ArticleContainer')
       },
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('@/views/User/Profile')
+      }
     ]
   }
 ]

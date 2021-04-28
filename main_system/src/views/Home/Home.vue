@@ -20,7 +20,6 @@ v-main.grey.lighten-3
 export default {
     name: "Home",
     components: {
-        MyLogin: () => import('@/components/MyLogin'),
         // NewPost: () => import('@/components/NewPost'),
         // NewRecord: () => import('@/components/NewRecord'),
     }

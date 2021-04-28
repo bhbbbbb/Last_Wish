@@ -1,20 +1,17 @@
 export const global_links = [
     {
-        id: 0,
         text: 'Articles',
         to: {
             name: 'Articles',
         },
     },
     {
-        id: 1,
         text: 'Log in',
         to: {
             name: 'Login',
         },
     },
     {
-        id: 2,
         text: 'Register',
         to: {
             name: 'Register',
@@ -24,15 +21,21 @@ export const global_links = [
 export const user_links = [
     {
         text: '世界文章',
-        to: '',
+        to: {
+            name: 'UserArticle',
+        },
     },
     {
         text: '我的追蹤',
-        to: '',
+        to: {
+            name: 'Register'
+        },
     },
     {
         text: '個人頁',
-        to: '',
+        to: {
+            name: 'Profile'
+        },
     },
 ];
 

@@ -1,7 +1,6 @@
 <template lang="pug">
-v-sheet(min-height="70vh" rounded="lg")
-  v-col(v-if="is_login && !$vuetify.breakpoint.mobile" cols="12")
-    NewPost/
+v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
+
   v-col(
     cols="12"
     v-for="(article, idx) in articles",
@@ -10,8 +9,15 @@ v-sheet(min-height="70vh" rounded="lg")
     ArticleCard(
       :content="article"
     )
-  v-col.fixed-bottom(v-if="is_login && $vuetify.breakpoint.mobile" cols="12")
+
+  v-col(
+    v-if="is_login"
+    cols="12"
+    order-sm="first"
+    :class="$vuetify.breakpoint.mobile ? 'fixed-bottom' : ''"
+  )
     NewPost/
+
       
 </template>
 

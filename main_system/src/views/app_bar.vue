@@ -35,9 +35,8 @@ v-app-bar(app flat)
         mandatory
       )
         v-list-item(
-          v-for="(link, idx) in links" :key="link.to.name"
-          @click.stop="GoRoute(link)"
-          :disabled="idx === selected"
+          v-for="link in links" :key="link.to.name"
+          :to="link.to"
         )
           v-list-item-title  {{ link.text }}
 
@@ -51,33 +50,23 @@ export default {
       NavDrawer: () => import('@/views/User/nav_drawer.vue'),
     },
     props: {
-      // login: {
-      //   required: true,
-      //   type: Boolean
-      // },
       links: {
         required: true,
         type: Array
-      }
+      },
     },
     data: () => ({
         drawer: false,
         selected: 0,
     }),
     methods: {
-        GoRoute(link) {
-          this.$router.push(link.to);
-        }
+        
     }, 
-
     computed: {
       mobile() {
         return this.$vuetify.breakpoint.mobile;
       },
     },
-
-    mounted() {
-
-    }
+ 
 }
 </script>
