@@ -3,8 +3,10 @@ import Vuex from 'vuex'
 import { apiGetArticles, apiTryLogin } from './api';
 // import { apiGetArticles } from './api.js'
 import router from '@/router/index';
+import {global_links, user_links} from './links.js'
 
 Vue.use(Vuex)
+
 
 
 export default new Vuex.Store({
@@ -12,6 +14,9 @@ export default new Vuex.Store({
     articles : [],
     username: "",
     is_login: false,
+    global_links,
+    user_links,
+
   },
   mutations: {
     updateData(state, payload) {
@@ -20,7 +25,8 @@ export default new Vuex.Store({
     loginSuccess(state, payload) {
       state.is_login = true;
       state.username = payload;
-    }
+    },
+
   },
   actions: {
     async getData(context)  {
@@ -52,3 +58,4 @@ export default new Vuex.Store({
   modules: {
   }
 })
+

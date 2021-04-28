@@ -1,13 +1,12 @@
 <template lang="pug">
 v-app-bar(app flat)
-
   //- Desktop
   v-tabs.ml-n9(
     v-if="!mobile"
     centered="" color="grey darken-1"
   )
-    v-tab(v-for="link in links" :key="link")
-      | {{ link }}
+    v-tab(v-for="(link, idx) in links" :key="idx" :to="link.to")
+      | {{ link.text }}
   
 
   //- Desktop
@@ -31,51 +30,54 @@ v-app-bar(app flat)
     hide-overlay
   )
     v-list(nav)
-      v-list-item(
-        v-for="(link, idx) in links" :key="idx"
-        @click.stop=""
+      v-list-item-group(
+        v-model="selected"
+        mandatory
       )
-        v-list-item-title  {{ link.text }}
+        v-list-item(
+          v-for="(link, idx) in links" :key="link.to.name"
+          @click.stop="GoRoute(link)"
+          :disabled="idx === selected"
+        )
+          v-list-item-title  {{ link.text }}
+
 </template>
 
 <script>
+
 export default {
     name: 'CoreAppBar',
     components: {
       NavDrawer: () => import('@/views/User/nav_drawer.vue'),
     },
+    props: {
+      // login: {
+      //   required: true,
+      //   type: Boolean
+      // },
+      links: {
+        required: true,
+        type: Array
+      }
+    },
     data: () => ({
-        links: [
-          {
-            text: '世界文章',
-            href: '',
-          },
-          {
-            text: '我的追蹤',
-            href: '',
-          },
-          {
-            text: '個人頁',
-            href: '',
-          },
-        ],
         drawer: false,
-
+        selected: 0,
     }),
     methods: {
-        Test() {
-            console.log(this.$vuetify.breakpoint.xs)
-            console.log(this.$vuetify.breakpoint.smOnly)
-            console.log(this.$vuetify.breakpoint.mobileBreakpoint)
-            console.log("width", this.$vuetify.breakpoint.width)
-            console.log("moblie", this.$vuetify.breakpoint.mobile)
+        GoRoute(link) {
+          this.$router.push(link.to);
         }
     }, 
 
     computed: {
       mobile() {
         return this.$vuetify.breakpoint.mobile;
-      }
+      },
     },
+
+    mounted() {
+
+    }
 }
 </script>
