@@ -1,45 +1,52 @@
-<template>
-  <v-app-bar
-      app
-      color="white"
-      flat
-    >
-      <v-avatar
-        :color="$vuetify.breakpoint.smAndDown ? 'grey darken-1' : 'transparent'"
-        size="32"
-      ></v-avatar>
+<template lang="pug">
+v-app-bar(app="" color="white" flat="")
+  //- v-avatar(
+  //-   :color="$vuetify.breakpoint.mobile ? 'grey darken-1' : 'transparent'" 
+  //-   size="32"
+  //- )
+  v-app-bar-nav-icon(
+    @click="Test()"
+  )
 
-      <v-tabs
-        centered
-        class="ml-n9"
-        color="grey darken-1"
-      >
-        <v-tab
-          v-for="link in links"
-          :key="link"
-        >
-          {{ link }}
-        </v-tab>
-      </v-tabs>
+  v-tabs.ml-n9(
+    v-if="! $vuetify.breakpoint.moblie"
+    centered="" color="grey darken-1"
+  )
+    v-tab(v-for="link in links" :key="link")
+      | {{ link }}
+  v-avatar(
+    v-if="! $vuetify.breakpoint.moblie"
+    color="grey darken-1 shrink" size="32"
+  )
 
-      <v-avatar
-        class="hidden-sm-and-down"
-        color="grey darken-1 shrink"
-        size="32"
-      ></v-avatar>
-    </v-app-bar>
+  v-navigation-drawer(
+    :value="drawer",
+    nav
+  )
+    v-list-item
+      v-list-item-title  shit
 </template>
 
 <script>
-  export default {
+export default {
     name: 'CoreAppBar',
     data: () => ({
-      links: [
-        'Dashboard',
-        'Messages',
-        'Profile',
-        'Updates',
-      ],
+        links: [
+            'Dashboard',
+            'Messages',
+            'Profile',
+            'Updates',
+        ],
+        drawer: false,
     }),
-  }
+    methods: {
+        Test() {
+            console.log(this.$vuetify.breakpoint.xs)
+            console.log(this.$vuetify.breakpoint.smOnly)
+            console.log(this.$vuetify.breakpoint.mobileBreakpoint)
+            console.log(this.$vuetify.breakpoint.width)
+            console.log(this.$vuetify.breakpoint.mobile)
+        }
+    }
+}
 </script>
