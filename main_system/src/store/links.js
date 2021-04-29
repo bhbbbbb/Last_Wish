@@ -4,18 +4,21 @@ export const global_links = [
         to: {
             name: 'Articles',
         },
+        icon: 'mdi-earth',
     },
     {
         text: 'Log in',
         to: {
             name: 'Login',
         },
+        icon: 'mdi-login'
     },
     {
         text: 'Register',
         to: {
             name: 'Register',
         },
+        icon: 'mdi-account-plus'
     },
 ];
 export const user_links = [
@@ -24,18 +27,21 @@ export const user_links = [
         to: {
             name: 'UserArticle',
         },
+        icon: 'mdi-earth',
     },
     {
         text: '我的追蹤',
         to: {
             name: 'Register'
         },
+        icon: 'mdi-account-multiple'
     },
     {
         text: '個人頁',
         to: {
             name: 'Profile'
         },
+        icon: 'mdi-account'
     },
 ];
 

@@ -38,6 +38,8 @@ v-app-bar(app flat)
           v-for="link in links" :key="link.to.name"
           :to="link.to"
         )
+          v-list-item-avatar
+            v-icon {{link.icon ? link.icon : 'mdi-close'}}
           v-list-item-title  {{ link.text }}
 
 </template>
