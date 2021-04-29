@@ -39,7 +39,7 @@ export default new Vuex.Store({
 
     tryLogin(context, payload) {
       apiTryLogin(payload).then(res => {
-        if (res.data.state === 20) {
+        if (res.state === 20) {
           context.commit('loginSuccess', payload.username);
           // console.log(res.data); //
           router.push({name: "UserArticle", params: {username: payload.username}});

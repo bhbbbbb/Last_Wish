@@ -1,6 +1,3 @@
-const axios = require('axios');
-
-
 /**
  * The function to get url for LINE login api. Caller should generate and keep 
  * a random string "state" and "nonce" which will later be used in server api to
@@ -26,11 +23,8 @@ let get_line_login_url = function(body) {
   url += `&redirect_uri=${body.redirect_uri}`;
   url += `&state=${body.state}`;
   url += `&nonce=${body.nonce}`;
-  url += `&switch_amr=false`;
-  url += `&initial_amr_display=lineqr`;
   return url;
 }
-
 
 
 module.exports = {
