@@ -1,9 +1,6 @@
 <template lang="pug">
-v-sheet(min-height="70vh" rounded="lg")
-  NewPost(v-if="true")/
-  NewRecord/
-  v-col(cols="12")
-    RecordCard/
+v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
+
   v-col(
     cols="12"
     v-for="(article, idx) in articles",
@@ -12,6 +9,16 @@ v-sheet(min-height="70vh" rounded="lg")
     ArticleCard(
       :content="article"
     )
+
+  v-col(
+    v-if="is_login"
+    cols="12"
+    order-sm="first"
+    :class="$vuetify.breakpoint.mobile ? 'fixed-bottom' : ''"
+  )
+    NewPost/
+
+      
 </template>
 
 <script>
@@ -37,3 +44,9 @@ export default {
     }
 }
 </script>
+
+<style lang="sass" scoped>
+.fixed-bottom
+  position: sticky
+  bottom: 0
+</style>
