@@ -1,3 +1,6 @@
+const axios = require('axios');
+
+
 /**
  * The function to get url for LINE login api. Caller should generate and keep 
  * a random string "state" and "nonce" which will later be used in server api to
@@ -12,7 +15,9 @@
  *
  * @returns {String} Url to access LINE login api.
  */
- let get_line_login_url = function(body) {
+
+
+let get_line_login_url = function(body) {
   let url = "https://access.line.me/oauth2/v2.1/authorize?";
   url += "response_type=code";
   url += "&client_id=1655882165";    // id of my current LINE channel
@@ -21,5 +26,13 @@
   url += `&redirect_uri=${body.redirect_uri}`;
   url += `&state=${body.state}`;
   url += `&nonce=${body.nonce}`;
+  url += `&switch_amr=false`;
+  url += `&initial_amr_display=lineqr`;
   return url;
+}
+
+
+
+module.exports = {
+  get_line_login_url
 }

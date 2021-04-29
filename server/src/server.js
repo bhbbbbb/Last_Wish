@@ -2,6 +2,7 @@ const express = require('express')
 var fs = require("fs");
 // create an express, aka web server, instance
 
+
 const app = express()
 var cors = require("cors");
 const port = 2222;
@@ -10,6 +11,9 @@ const port = 2222;
 //   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
 //   allowedHeaders: ["Content-Type", "Authorization"],
 // };
+
+const baseURL = 'http://localhost:2222';
+
 
 // app.use(cors(corsOptions));
 app.use(cors());
@@ -78,3 +82,21 @@ app.post('/user/try_login', (req, res) => {
   res.send(JSON.stringify(response));
   return;
 });
+
+
+const line = require('./line_login_request.js');
+app.post('/user/line_login_req', (req, res) => {
+  console.log(req.body);
+  let req_body = {
+    redirect_uri: 'http://luffy.ee.ncku.edu.tw:6459/test_callback',
+    state: 'test',
+    nonce: 'fuck'
+  }
+  res.send(line.get_line_login_url(req_body));
+})
+
+
+app.post('/user/login_state', (req, res) => {
+
+});
+

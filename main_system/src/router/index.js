@@ -54,6 +54,7 @@ const routes = [
       AppBar: () => import('@/views/app_bar.vue'),
     },
     beforeEnter: (to, from, next) => {
+      
       if (store.state.is_login) {
         next();
         return true;

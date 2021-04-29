@@ -35,10 +35,16 @@ v-card.pa-0(rounded="lg" min-height="268" flat)
       v-col(cols="12")
         .text-center
           v-btn(width="90%" @click="Dev()") Dev log in
+
+      v-col(cols="12")
+        .text-center
+          v-btn(width="90%" @click="Line()") LINE log in
+
 </template>
 
 <script>
 import { mapActions } from 'vuex';
+import { apiLineLogin } from '@/store/api.js'
 export default {
   name: "MyLogin",
   data: () => ({
@@ -72,6 +78,15 @@ export default {
     Dev() {
       this.$store.commit('loginSuccess', "dev");
       this.$router.push({name: "UserArticle", params: {username: "dev"}});
+    },
+
+    Line() {
+      apiLineLogin({username: 'haha'}).then(res => {
+        console.log(res);
+        window.open(res.data);
+      }).catch(err => {
+        console.log(err);
+      })
     }
   }
 }
