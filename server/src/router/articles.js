@@ -1,11 +1,11 @@
 const articlePATH = __dirname + "/../data/articles.json";
 var express = require('express');
-var router = express.Router();
+var global = express.Router();
 var fs = require("fs");
 var articles = require(articlePATH);
 
 
-router.post('/insert', (req, res) => {
+global.post('/insert', (req, res) => {
     articles.push(req.body);
     let str = JSON.stringify(articles);
     res.send(str)
@@ -16,8 +16,8 @@ router.post('/insert', (req, res) => {
 
 
 
-router.get('/', (req, res) => {
+global.get('/', (req, res) => {
     res.json(articles);
 });
 
-module.exports = router;
+module.exports = global;

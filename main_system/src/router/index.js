@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '@/store/index'
+import { isLogin } from '@/router/log'
 Vue.use(VueRouter)
 
 const routes = [
@@ -20,6 +21,14 @@ const routes = [
         
     },
     redirect: {name: 'Articles'},
+    beforeEnter(to, from, next) {
+      isLogin(to).then(res => {
+        if(res) next({name: 'UserArticle', params: {username: store.state.username}});
+        else next();
+      }).catch(() => {
+        next(false);
+      })
+    },
     children: [
       {
         path: 'articles',
@@ -53,22 +62,16 @@ const routes = [
       Main: () => import('@/views/User/User'),
       AppBar: () => import('@/views/app_bar.vue'),
     },
+
     beforeEnter: (to, from, next) => {
-      
-      if (store.state.is_login) {
-        next();
-        return true;
-      }
-
-      if (!store.state.is_login || to.params.username != store.state.username) {
-        next({name: 'Articles'});
-        return false;
-      }
-
-      next({name: 'Articles'});
-      return true;
+      isLogin(to).then(res => {
+        if (res) next();
+        else next({name: 'Articles'});
+      }).catch(() => {
+        next(false);
+      })
     },
-    
+    redirect: {name: 'UserArticle'},
     children: [
       {
         path: 'articles',

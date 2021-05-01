@@ -1,5 +1,5 @@
 var express = require('express');
-var router = express.Router();
+var user = express.Router();
 
 const accountsPATH = __dirname + "/../data/accounts.json";
 const user_listPATH = __dirname + "/../data/user_list.json";
@@ -7,9 +7,24 @@ var user_list = require(user_listPATH);
 var accounts_info = require(accountsPATH);
 
 
-// 20 = OK
+// Set sessoin's config (https://www.npmjs.com/package/express-session)
+var session = require('express-session')
+var sess = session({
+    name: 'threesmall',
+    secret: 'u6m04fu/ 20 ',
+    resave: false,
+    saveUninitialized: false,//
+    cookie: {
+        secure: false, // set true for https
+        maxAge: 86400000, // 1 day
+    }
+})
+
+
+
+// 200 = OK
 // 405 = Method Not Allow
-router.post('/try_login', (req, res) => {
+user.post('/try_login', sess, (req, res) => {
     let response = {
         err_msg: "",
     };
@@ -24,14 +39,27 @@ router.post('/try_login', (req, res) => {
         res.status(405).json(response);
         return;
     }
-
-    res.status(20).json(response);
+    
+    req.session.username = req.body.username;
+    res.sendStatus(200);
     return;
 });
 
+user.get('/who', sess, (req, res) => {
+    console.log(req.session);
+    let u = req.session.username;
+    if (u) res.send(u);
+    else res.sendStatus(403);
+});
+
+user.get('/logout', sess, (req, res) => {
+    console.log(req.session, '\ntry logout');
+    req.session.destroy();
+    res.sendStatus(200);
+})
 
 const line = require('../lib/line_login_request.js');
-router.post('/line_login_req', (req, res) => {
+user.post('/line_login_req', (req, res) => {
     console.log(req.body);
     let req_body = {
         redirect_uri: 'http://luffy.ee.ncku.edu.tw:6459/test_callback',
@@ -42,8 +70,8 @@ router.post('/line_login_req', (req, res) => {
 })
 
 
-router.post('/user/login_state', (req, res) => {
+user.post('/login_state', (req, res) => {
 
 });
 
-module.exports = router;
+module.exports = user;

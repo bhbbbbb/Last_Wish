@@ -13,7 +13,9 @@ v-app-bar(app flat)
   v-avatar(
     v-if="!mobile"
     color="grey darken-1 shrink" size="32"
+    @click.stop="logout"
   )
+    v-icon mdi-logout
 
 
   //- mobile
@@ -62,7 +64,9 @@ export default {
         selected: 0,
     }),
     methods: {
-        
+        logout() {
+          this.$store.dispatch('logout');
+        }
     }, 
     computed: {
       mobile() {

@@ -1,6 +1,8 @@
 import axios from 'axios';
-// const baseURL = 'http://luffy.ee.ncku.edu.tw:2222';
-const baseURL = 'http://localhost:2222';
+const proURL = 'http://luffy.ee.ncku.edu.tw:2222';
+const devURL = 'http://localhost:2222';
+
+let baseURL = process.env.NODE_ENV === 'development' ? devURL : proURL;
 
 const articleRequest = axios.create({
     baseURL: baseURL,
@@ -10,6 +12,7 @@ const articleRequest = axios.create({
 
 const userRequest = axios.create({
     baseURL: baseURL + "/user",
+    withCredentials: true,
     headers: { 'Content-Type': 'application/json' },
 })
 
@@ -18,5 +21,8 @@ export const apiGetArticles = () => articleRequest.get('/articles');
 export const apiUploadArticle = (data) => articleRequest.post('/articles/insert', data);
 
 export const apiTryLogin = (data) => userRequest.post('/try_login', data);
+export const apiWho = () => userRequest.get('/who');
+export const apiLogout = () => userRequest.get('/logout'); // clear the session on server
+
 
 export const apiLineLogin = (data) => userRequest.post('/line_login_req', data);

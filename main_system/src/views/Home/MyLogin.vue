@@ -17,6 +17,7 @@ v-card.pa-0(rounded="lg" min-height="268" flat)
       v-model="user.password"
       outlined
       :rules="[rules.empty, rules.regex]"
+      @keydown.enter="Try_Login()"
     )
 
   v-card-actions.px-4(style="")
@@ -76,8 +77,10 @@ export default {
     },
     
     Dev() {
-      this.$store.commit('loginSuccess', "dev");
-      this.$router.push({name: "UserArticle", params: {username: "dev"}});
+      this.tryLogin({
+        username: 'Dev',
+        password: '',
+      })
     },
 
     Line() {
