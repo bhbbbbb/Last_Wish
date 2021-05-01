@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import store from '@/store/index'
+// import store from '@/store/index'
 import { isLogin } from '@/router/log'
 Vue.use(VueRouter)
 
@@ -9,22 +9,14 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    props: {
-      Main: false,
-      AppBar: {
-        links: store.state.global_links
-      }
-    },
-    components: {
-      Main: () => import('@/views/Home/Home.vue'),
-      AppBar: () => import('@/views/app_bar.vue')
-        
-    },
+    component: () => import('@/views/Home/Home'),
     redirect: {name: 'Articles'},
     beforeEnter(to, from, next) {
-      isLogin(to).then(res => {
-        if(res) next({name: 'UserArticle', params: {username: store.state.username}});
-        else next();
+      isLogin(to).then(() => {
+        // if(res) next({name: 'UserArticle', params: {username: store.state.username}});
+        // else next();
+
+        next();
       }).catch(() => {
         next(false);
       })
@@ -44,47 +36,36 @@ const routes = [
         path: 'login',
         name: 'Login',
         component: () => import('@/views/Home/MyLogin'),
-      }
-    ]
-  },
-
-
-  {
-    path: '/:username',
-    name: 'User',
-    props: {
-      Main: false,
-      AppBar: {
-        links: store.state.user_links,
-      }
-    },
-    components: {
-      Main: () => import('@/views/User/User'),
-      AppBar: () => import('@/views/app_bar.vue'),
-    },
-
-    beforeEnter: (to, from, next) => {
-      isLogin(to).then(res => {
-        if (res) next();
-        else next({name: 'Articles'});
-      }).catch(() => {
-        next(false);
-      })
-    },
-    redirect: {name: 'UserArticle'},
-    children: [
-      {
-        path: 'articles',
-        name: 'UserArticle',
-        component: () => import('@/views/ArticleContainer')
       },
       {
-        path: 'profile',
+        path: 'article/:id',
+        name: 'Article',
+        component: () => import('@/views/Article'),
+        props: (route) => {
+          
+          return {id: Number(route.params.id)};
+        }
+      },
+      {
+        path: ':username',
+        name: 'User',
+        beforeEnter: (to, from, next) => {
+          isLogin(to).then(res => {
+            if (res) next();
+            else next({name: 'Articles'});
+          }).catch(() => {
+            next(false);
+          })
+        },
+        redirect: {name: 'Articles'},
+      },
+      {
+        path: ':username/profile',
         name: 'Profile',
         component: () => import('@/views/User/Profile')
       }
     ]
-  }
+  },
 ]
 
 const router = new VueRouter({

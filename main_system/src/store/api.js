@@ -24,5 +24,11 @@ export const apiTryLogin = (data) => userRequest.post('/try_login', data);
 export const apiWho = () => userRequest.get('/who');
 export const apiLogout = () => userRequest.get('/logout'); // clear the session on server
 
+/**
+ * 
+ * @param {Number} id 
+ * @returns {Object} id and username
+ */
+export const apiGetPublicInfo = (id) => userRequest.get('get_public_info', {params: {id: id}});
 
 export const apiLineLogin = (data) => userRequest.post('/line_login_req', data);

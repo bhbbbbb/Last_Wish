@@ -15,7 +15,7 @@ Vue.use(VueCookies);
 
 // $cookies.config(expireTimes[,path[, domain[, secure[, sameSite]]])
 // secure is set to false for http, (true for https)
-Vue.$cookies.config('3h', '/', '', false)
+Vue.$cookies.config('1d', '/', '', false)
 
 
 new Vue({
