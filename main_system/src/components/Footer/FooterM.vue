@@ -7,7 +7,6 @@ v-bottom-navigation(
   v-btn(
     v-for="link in links"
     :key="link.to.name"
-    exact
     :to="is_login ? {name: link.to.name, params: {username: username}} : link.to"
   )
     span {{ link.text }}

@@ -1,18 +1,15 @@
 <template lang="pug">
-v-card.ma-3.pa-3.grey.lighten-3(
+v-card.ma-0.pa-0.transparent.d-flex.align-center(
   v-if="author"
-  min-height="10vh"
-  rounded="lg"
-  v-on="$listeners"
+  flat
+  min-height="48"
 )
-  h3
-    router-link(
-      :to="{name: 'User', params: {username: author.username}}"
-    )
-      | {{ author.username }}
-    
-    p {{ context.body }}
-    span date : {{ context.date }}
+  v-avatar(size="32")
+    v-icon(large) mdi-account
+  .px-1
+  span {{ author.username }}
+  .px-2
+  span {{ context.body }}
 </template>
 
 <script>

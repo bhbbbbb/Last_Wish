@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { apiGetArticles, apiLogout, apiTryLogin } from './api';
+import { apiGetArticles, apiGetPublicInfo, apiLogout, apiTryLogin } from './api';
 // import { apiGetArticles } from './api.js'
 import router from '@/router/index';
 import { global_links, user_links } from './links.js'
@@ -25,7 +25,8 @@ export default new Vuex.Store({
       state.username = payload;
       state.links = user_links;
       state.links.forEach(link => {
-        link.to.params.username = payload;
+        if (link.to.params)
+          link.to.params.username = payload;
       });
     },
     logout(state) {
@@ -54,6 +55,13 @@ export default new Vuex.Store({
         await context.dispatch('getData');
         return context.state.articles[id];
       }
+    },
+    async getUser(context, id) {
+      return await apiGetPublicInfo(id).then(res => {
+        return res.data;
+      }).catch(err => {
+        console.log(err);
+      });
     },
 
     tryLogin(context, payload) {

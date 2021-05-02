@@ -1,10 +1,21 @@
 <template lang="pug">
-v-app-bar(app flat )
+v-app-bar.d-flex.justify-center.align-end.grey.lighten-1(app prominent flat)
+  v-container.fill-height(
+    style="width:100vw"
+  )
+    v-row(no-gutters)
+      v-col.align-self-center(cols="2")
+        v-avatar(@click.stop="Back")
+          v-icon(x-large) mdi-chevron-left
+      v-col.d-flex.justify-center(cols="8")
+        v-app-bar-title
+          .text-center()
+            h3 願望清單
+            span.subtitle wish list
 
   //- v-app-bar-nav-icon(
   //-   @click.stop="drawer = !drawer"
   //- )
-  v-app-bar-title.mx-auto() Last Wish
   
   //- v-navigation-drawer(
   //-   app
@@ -45,9 +56,8 @@ export default {
         selected: 0,
     }),
     methods: {
-        logout() {
-          this.$store.dispatch('logout');
-          if (this.$route.path !== '/articles') this.$router.push('/articles');
+        Back() {
+          this.$router.go(-1);
         }
     }, 
     computed: {
@@ -58,3 +68,15 @@ export default {
  
 }
 </script>
+<style scoped>
+.subtitle {
+  font-size: 1.2rem;
+  font-weight: lighter;
+  font-family: 'Times New Roman', Times, serif;
+  color: white;
+  letter-spacing: 0.2rem;
+}
+.title {
+  font-size: 3rem;
+}
+</style>

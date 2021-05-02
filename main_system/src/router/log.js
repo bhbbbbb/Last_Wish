@@ -6,8 +6,8 @@ import { apiWho } from '@/store/api'
  * @param { Object } to
  * @returns { Boolean }
  */
-export const isLogin = async (to) => {
-    if (store.state.is_login && to.params.username === store.state.username) {
+export const isLogin = async () => {
+    if (store.state.is_login) {
       return true;
     }
 

@@ -26,9 +26,7 @@ export const user_links = [
         text: '世界文章',
         to: {
             name: 'Articles',
-            params: {
-                username: '',
-            }
+            
         },
         icon: 'mdi-earth',
     },
@@ -42,7 +40,7 @@ export const user_links = [
     {
         text: '個人頁',
         to: {
-            name: 'Profile',
+            name: 'User',
             params: {
                 username: '',
             }

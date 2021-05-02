@@ -1,8 +1,6 @@
 <template lang="pug">
 v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
-
   v-col(
-    v-if="articles"
     cols="12"
     v-for="(article, idx) in articles",
     :key="idx"
@@ -18,7 +16,6 @@ v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
     order-sm="first"
     :class="$vuetify.breakpoint.mobile ? 'fixed-bottom' : ''"
   )
-    NewPost/
 
       
 </template>
@@ -26,13 +23,11 @@ v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
 <script>
 import {mapState} from 'vuex'
 export default {
-    name: 'ArticleContainer',
+    name: 'UserArticles',
     
     components: {
       ArticleCard: () => import('@/components/article/ArticleCard.vue'),
       RecordCard: () => import('@/components/RecordCard'),
-      NewPost: () => import('@/components/NewPost'),
-      NewRecord: () => import('@/components/NewRecord'),
     },
 
     computed: {
@@ -41,7 +36,7 @@ export default {
 
     methods: {
       ToInnerArticle(article_id) {
-        this.$router.push({name: 'Article', params: {id: article_id}});
+        this.$router.push({name: 'UserArticle', params: {id: article_id, username: this.$store.state.username}});
       }
     },
     created() {

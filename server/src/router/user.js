@@ -17,6 +17,7 @@ var sess = session({
     cookie: {
         secure: false, // set true for https
         maxAge: 86400000, // 1 day
+        // sameSite: 'none',
     }
 })
 
@@ -113,7 +114,7 @@ const GET_PUBLIC_INFO = [
 user.get('/get_public_info', (req, res) => {
     let id = Number(req.query.id);
 
-    if (id >= user_list.length) {
+    if (id >= accounts_info.length) {
         res.sendstatus(400).json(GET_PUBLIC_INFO[USER_NOT_FOUND].body);
     }
     
