@@ -1,8 +1,23 @@
 <template>
   <form @submit.prevent="sendFile" enctype="multipart/form-data">
     <div class="field">
-      <label for="file" class="label">Upload File</label>
-      <input type="file" ref="file" @change="selectFile" />
+      <div class="file is-boxed is-primary">
+        <label class="file-label">
+          <input
+            type="file"
+            ref="file"
+            @change="selectFile"
+            class="file-input"
+          />
+
+          <span class="file-cta">
+            <span class="file-icon">
+              <i class="fas fa-upload"></i>
+            </span>
+            <span class="file-label"> Choose a file... </span>
+          </span>
+        </label>
+      </div>
     </div>
 
     <div class="field">
