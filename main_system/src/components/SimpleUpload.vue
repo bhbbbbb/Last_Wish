@@ -16,6 +16,8 @@
             </span>
             <span class="file-label"> Choose a file... </span>
           </span>
+
+          <span v-if="file" class="file-name">{{ file.name }}</span>
         </label>
       </div>
     </div>
