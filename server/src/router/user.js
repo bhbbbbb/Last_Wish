@@ -23,6 +23,8 @@ var sess = session({
     }
 })
 
+let lineLoginStates = {};
+
 // 200 = OK
 // 405 = Method Not Allow
 user.post('/try_login', sess, (req, res) => {
@@ -66,14 +68,8 @@ user.post('/register', sess, (req, res) => {
        "password": trimmedPassword
     };
     accounts_info.push(new_account_info);
-    let user_list_data = JSON.stringify(user_list, null, 4);
-    let accounts_info_data = JSON.stringify(accounts_info, null, 4);
-    fs.writeFile(user_listPATH, user_list_data, (err) => {
-        if (err) console.log(err);
-    });
-    fs.writeFile(accountsPATH, accounts_info_data, (err) => {
-        if (err) console.log(err);
-    });
+    synchronizeUserList();
+    synchronizeAccountsInfo();
     res.sendStatus(200);
     return;
 });
@@ -94,17 +90,35 @@ user.get('/logout', sess, (req, res) => {
 const line = require('../lib/line_login_request.js');
 user.post('/line_login_req', (req, res) => {
     console.log(req.body);
+    let newState = genNonce(5);
+    let newNonce = genNonce(6);
     let req_body = {
-        redirect_uri: 'http://luffy.ee.ncku.edu.tw:6459/test_callback',
-        state: 'test',
-        nonce: 'fuck'
+        redirect_uri: 'http://localhost:2222/user/resolve_line_login',
+        state: newState,
+        nonce: newNonce
     }
+    let stateInfo = {
+        nonce: newNonce,
+        succeed: false
+    }
+    lineLoginStates[newState] = stateInfo;
     res.send(line.get_line_login_url(req_body));
 })
 
 user.post('/login_state', sess, (req, res) => {
 
 });
+
+
+user.post('/line_login_state', sess, (req, res) => {
+    // check if the given state of a line login has finished
+    // if finished, switch the session?
+    if (!(req.body.state in lineLoginStates)) {
+        // pose an error
+    }
+    // pop the state from the list
+    // and login the user?
+})
 
 user.post('/is_valid_username', sess, (req, res) => {
     let response = {
@@ -114,8 +128,87 @@ user.post('/is_valid_username', sess, (req, res) => {
     res.send(response);
 });
     
-function getUserByName(username) {
-    return accounts_info[Number(user_list[username])];
+user.get('/resolve_line_login', (req, res) => {
+    console.log(`code = ${req.query.code}`);
+    console.log(`state = ${req.query.state}`);
+    
+    // security check
+    if (!(req.query.state in lineLoginStates)) {
+        // the request is not from a trusted domain
+        // i.e., not recorded by the server
+        return;
+    }
+    let options = {
+        uri: "https://api.line.me/oauth2/v2.1/token",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        form: {
+            "grant_type": "authorization_code",
+            "code": req.query.code,
+            "redirect_uri": "http://localhost:2222/user/resolve_line_login",
+            "client_id": "1655882165",
+            "client_secret": "1d00fc1036dc3bddeed14772501d8d52"
+        },
+        method: "POST",
+    };
+    var idToken;
+    request(options, (err, res) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        idToken = JSON.parse(res.body).id_token;
+        let info = jwt_decode(idToken);
+        if (info.nonce != lineLoginStates[req.query.state].nonce) {
+            // abort the procedure due to the high risk of being replay attacked
+            return;
+        }
+        if (info.name in user_list) {
+            // TODO: do the login for the old user
+            console.log("old user");
+            return;
+        }
+        console.log(info);
+        user_list[info.name] = newUserId;
+        let newUserId = String(Object.keys(user_list).length);
+        let new_account_info = {
+           "id": newUserId,
+           "username": info.name,
+           "password": info.sub
+        };
+        accounts_info.push(new_account_info);
+        synchronizeUserList();
+        synchronizeAccountsInfo();
+        lineLoginStates[state] = true;
+        console.log("succeed");
+    })
+    res.send("<script>window.close();</script>");
+});
+    
+function synchronizeUserList() {
+    let user_list_data = JSON.stringify(user_list, null, 4);
+    fs.writeFile(user_listPATH, user_list_data, (err) => {
+        if (err) console.log(err);
+    });
+}    
+
+function synchronizeAccountsInfo() {
+    let accounts_info_data = JSON.stringify(accounts_info, null, 4);
+    fs.writeFile(accountsPATH, accounts_info_data, (err) => {
+        if (err) console.log(err);
+    });
+}
+
+function genNonce(length) {
+    let result           = [];
+    let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result.push(
+          characters.charAt(Math.floor(Math.random() * charactersLength)));
+   }
+   return result.join('');
 }
 
 module.exports = user;
