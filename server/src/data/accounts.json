@@ -2,16 +2,21 @@
     {
         "id": "0",
         "username": "Dev",
-        "password": ""
+        "password": "",
+        "followers": [
+            "1"
+        ],
+        "followees": [],
+        "followedPosts": []
     },
     {
         "id": "1",
         "username": "Smark",
-        "password": "123"
-    },
-    {
-        "id": "2",
-        "username": "yuyu",
-        "password": "ishandsome"
+        "password": "123",
+        "followers": [],
+        "followees": [
+            "0"
+        ],
+        "followedPosts": []
     }
 ]
