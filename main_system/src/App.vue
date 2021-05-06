@@ -18,12 +18,11 @@
 </template>
 
 <script>
-import SimpleUpload from "./components/SimpleUpload.vue";
 
 export default {
   name: "App",
   components: {
-    SimpleUpload,
+    SimpleUpload:()=> import('@/components/SimpleUpload')
     // AppBarD: () => import('@/components/AppBar/AppBarD'),
     // AppBarM: () => import('@/components/AppBar/AppBarM'),
     // FooterM: () => import('@/components/FooterM')
