@@ -72,7 +72,7 @@ user.post('/try_login', sess, (req, res) => {
 user.get('/who', sess, (req, res) => {
     let u = req.session.username;
     if (u) res.send(u);
-    else res.sendStatus(403);
+    else res.sendStatus(401);
 });
 
 
