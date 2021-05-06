@@ -25,21 +25,25 @@ export const user_links = [
     {
         text: '世界文章',
         to: {
-            name: 'UserArticle',
+            name: 'Articles',
+            
         },
         icon: 'mdi-earth',
     },
-    {
-        text: '我的追蹤',
-        to: {
-            name: 'Register'
-        },
-        icon: 'mdi-account-multiple'
-    },
+    // {
+    //     text: '我的追蹤',
+    //     to: {
+    //         name: 'Register'
+    //     },
+    //     icon: 'mdi-account-multiple'
+    // },
     {
         text: '個人頁',
         to: {
-            name: 'Profile'
+            name: 'User',
+            params: {
+                username: '',
+            }
         },
         icon: 'mdi-account'
     },

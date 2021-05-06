@@ -1,9 +1,10 @@
 <template lang="pug">
-v-card.ma-3.pa-3(min-height="10vh" rounded="lg")
+v-card.ma-3.pa-3(
+  min-height="10vh"
+  rounded="lg"
+  v-on="$listeners"
+)
     h2 {{ content.title }}
-    br 
-    
-    p.pre {{ content.body }}
 
 </template>
 
