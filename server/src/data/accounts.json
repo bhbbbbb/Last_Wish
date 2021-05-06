@@ -18,5 +18,13 @@
             "0"
         ],
         "followedPosts": []
+    },
+    {
+        "id": "2",
+        "username": "蕭又瑜",
+        "password": "Ub3f2a424913f02e099df97bcd74c45df",
+        "followers": [],
+        "followees": [],
+        "followedPosts": []
     }
 ]

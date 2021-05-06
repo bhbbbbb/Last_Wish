@@ -61,7 +61,6 @@ user.post('/register', sess, (req, res) => {
         return;
     }
     let newUserId = String(Object.keys(user_list).length);
-    user_list[trimmedUsername] = newUserId;
     let new_account_info = {
         "id": newUserId,
         "username": trimmedUsername,
@@ -70,6 +69,7 @@ user.post('/register', sess, (req, res) => {
         "followees": [],
         "followedPosts": []
     };
+    user_list[trimmedUsername] = newUserId;
     accounts_info.push(new_account_info);
     synchronizeUserList();
     synchronizeAccountsInfo();
@@ -85,12 +85,19 @@ user.get('/who', sess, (req, res) => {
 });
 
 user.post('/follow', sess, (req, res) => {
+    let response = {
+        err_msg: "",
+    };
     let follower = accounts_info.find(account => account['username'] == req.body.username)
     let followee = accounts_info.find(account => account['username'] == req.body.target)
     if (!(follower)) {
+        response.err_msg = "user not found";
+        res.status(401).json(response);
         return;
     }
     if (!(followee)) {
+        response.err_msg = "target not found";
+        res.status(401).json(response);
         return;
     }
     // dirty code, fix later
@@ -99,7 +106,8 @@ user.post('/follow', sess, (req, res) => {
     if (req.body.follow_unfollow == "true") {
         // follow
         if (followeeList.find(id => id == followee.id)) {
-            console.log("already followed");
+            response.err_msg = "target already followed";
+            res.status(405).json(response);
             return;
         }
         followeeList.push(followee.id);
@@ -107,15 +115,17 @@ user.post('/follow', sess, (req, res) => {
     } else {
         // unfollow
         if (!followeeList.find(id => id == followee.id)) {
-            console.log("already unfollowed");
-            return
+            response.err_msg = "target already unfollowed";
+            res.status(405).json(response);
+            return;
         }
         followeeList.splice(followeeList.indexOf(followee.id), 1);
         followerList.splice(followerList.indexOf(follower.id), 1);
     }
     console.log(followeeList);
     synchronizeAccountsInfo();
-    res.send("here");
+    res.sendStatus(200);
+    return;
 });
 
 user.get('/logout', sess, (req, res) => {
@@ -204,10 +214,9 @@ user.get('/resolve_line_login', (req, res) => {
         if (info.name in user_list) {
             // TODO: do the login for the old user
             console.log("old user");
-            return;
+            res.send("<script>window.close();</script>");
         }
         console.log(info);
-        user_list[info.name] = newUserId;
         let newUserId = String(Object.keys(user_list).length);
         let new_account_info = {
            "id": newUserId,
@@ -217,10 +226,11 @@ user.get('/resolve_line_login', (req, res) => {
             "followees": [],
             "followedPosts": []
         };
+        user_list[info.name] = newUserId;
         accounts_info.push(new_account_info);
         synchronizeUserList();
         synchronizeAccountsInfo();
-        lineLoginStates[state] = true;
+        lineLoginStates.state = true;
         console.log("succeed");
     })
     res.send("<script>window.close();</script>");
