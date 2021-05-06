@@ -8,7 +8,28 @@ const accountsPATH = __dirname + "/../data/accounts.json";
 const user_listPATH = __dirname + "/../data/user_list.json";
 var user_list = require(user_listPATH);
 var accounts_info = require(accountsPATH);
+var account_info_template = {
+    "id": "",
+    "username": "",
+    "password": "",
+    "followers": [],
+    "followees": [],
+    "followedPosts": []
+};
 
+var templateMaker = function(object) {
+    return function(context) {
+        var replacer = function(key, val) {
+            if (typeof val === 'function') {
+                return context[val()]
+            }
+            return val;
+        }
+        return JSON.parse(JSON.stringifiy(account_info_template, replacer));
+    }
+}
+    
+let newAccountInfo = templateMaker(account_info_template);
 
 // Set sessoin's config (https://www.npmjs.com/package/express-session)
 var session = require('express-session')
@@ -61,16 +82,13 @@ user.post('/register', sess, (req, res) => {
         return;
     }
     let newUserId = String(Object.keys(user_list).length);
-    let new_account_info = {
+    let userData = {
         "id": newUserId,
         "username": trimmedUsername,
         "password": trimmedPassword,
-        "followers": [],
-        "followees": [],
-        "followedPosts": []
     };
     user_list[trimmedUsername] = newUserId;
-    accounts_info.push(new_account_info);
+    accounts_info.push(newAccountInfo(userData));
     synchronizeUserList();
     synchronizeAccountsInfo();
     res.sendStatus(200);
@@ -214,14 +232,14 @@ user.get('/resolve_line_login', (req, res) => {
         if (info.name in user_list) {
             // TODO: do the login for the old user
             console.log("old user");
-            res.send("<script>window.close();</script>");
+            return;
         }
         console.log(info);
         let newUserId = String(Object.keys(user_list).length);
         let new_account_info = {
-           "id": newUserId,
-           "username": info.name,
-           "password": info.sub,
+            "id": newUserId,
+            "username": info.name,
+            "password": info.sub,
             "followers": [],
             "followees": [],
             "followedPosts": []
@@ -232,10 +250,10 @@ user.get('/resolve_line_login', (req, res) => {
         synchronizeAccountsInfo();
         lineLoginStates.state = true;
         console.log("succeed");
-    })
+    });
     res.send("<script>window.close();</script>");
 });
-    
+
 function synchronizeUserList() {
     let user_list_data = JSON.stringify(user_list, null, 4);
     fs.writeFile(user_listPATH, user_list_data, (err) => {
