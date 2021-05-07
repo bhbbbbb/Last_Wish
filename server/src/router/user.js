@@ -8,13 +8,17 @@ const accountsPATH = __dirname + "/../data/accounts.json";
 const user_listPATH = __dirname + "/../data/user_list.json";
 var user_list = require(user_listPATH);
 var accounts_info = require(accountsPATH);
+let lineLoginStates = {};
+
+// template for account info
 var account_info_template = {
-    "id": "",
-    "username": "",
-    "password": "",
+    "id": function() {return 'id'},
+    "username": function() {return 'username'},
+    "password": function() {return 'password'},
     "followers": [],
     "followees": [],
-    "followedPosts": []
+    "followedPosts": [],
+    "selfPosts": []
 };
 
 var templateMaker = function(object) {
@@ -25,10 +29,11 @@ var templateMaker = function(object) {
             }
             return val;
         }
-        return JSON.parse(JSON.stringifiy(account_info_template, replacer));
+        return JSON.parse(JSON.stringify(account_info_template, replacer));
     }
 }
-    
+
+// this is a function to create a account info by the template
 let newAccountInfo = templateMaker(account_info_template);
 
 // Set sessoin's config (https://www.npmjs.com/package/express-session)
@@ -193,7 +198,7 @@ user.get('/get_public_info', (req, res) => {
     
     let body = {
         id: id,
-        username: accounts_info[id].username,
+        username: accounts_info[String(id)].username,
         // TODO check the condition that username may be undefined
         // e.g. account is deleted
     }
@@ -291,16 +296,13 @@ user.get('/resolve_line_login', (req, res) => {
         }
         console.log(info);
         let newUserId = String(Object.keys(user_list).length);
-        let new_account_info = {
+        let userData = {
             "id": newUserId,
             "username": info.name,
-            "password": info.sub,
-            "followers": [],
-            "followees": [],
-            "followedPosts": []
-        };
+            "password": info.sub
+        }
         user_list[info.name] = newUserId;
-        accounts_info.push(new_account_info);
+        accounts_info.push(newAccountInfo(userData));
         synchronizeUserList();
         synchronizeAccountsInfo();
         lineLoginStates.state = true;

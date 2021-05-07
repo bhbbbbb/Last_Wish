@@ -7,7 +7,8 @@
             "1"
         ],
         "followees": [],
-        "followedPosts": []
+        "followedPosts": [],
+        "selfPosts": []
     },
     {
         "id": "1",
@@ -17,7 +18,8 @@
         "followees": [
             "0"
         ],
-        "followedPosts": []
+        "followedPosts": [],
+        "selfPosts": []
     },
     {
         "id": "2",
@@ -25,6 +27,7 @@
         "password": "Ub3f2a424913f02e099df97bcd74c45df",
         "followers": [],
         "followees": [],
-        "followedPosts": []
+        "followedPosts": [],
+        "selfPosts": []
     }
 ]
