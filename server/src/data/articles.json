@@ -6,7 +6,8 @@
         "title": "蔡孟宗",
         "date": "4/16 Jan",
         "wishes": [
-            "wish 1", "wish 2"
+            "wish 1",
+            "wish 2"
         ],
         "comments": [
             {
@@ -30,7 +31,8 @@
         "title": "我想要環遊世界",
         "date": "4/16 Jan",
         "wishes": [
-            "wish 1", "wish 2"
+            "wish 1",
+            "wish 2"
         ],
         "comments": [
             {
@@ -48,19 +50,17 @@
         ]
     },
     {
+        "title": "d",
+        "body": "h",
         "id": "2",
-        "title": "測試",
-        "body": "哈哈\n哈哈",
-        "wishes": [
-            "wish 1", "wish 2"
-        ]
+        "from": "0",
+        "date": "May 8, Sun"
     },
     {
-        "id:": "3",
-        "title": "1324",
-        "body": "1234",
-        "wishes": [
-            "wish 1", "wish 2"
-        ]
+        "title": "f",
+        "body": "b",
+        "id": "3",
+        "from": "-1",
+        "date": "May 8, Sun"
     }
 ]

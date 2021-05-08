@@ -2,11 +2,45 @@
     {
         "id": "0",
         "username": "Dev",
-        "password": ""
+        "password": "",
+        "followers": [
+            "1"
+        ],
+        "followees": [],
+        "followedPosts": [],
+        "selfPosts": [
+            "0"
+        ]
     },
     {
         "id": "1",
         "username": "Smark",
-        "password": "123"
+        "password": "123",
+        "followers": [],
+        "followees": [
+            "0"
+        ],
+        "followedPosts": [],
+        "selfPosts": [
+            "1"
+        ]
+    },
+    {
+        "id": "2",
+        "username": "蕭又瑜",
+        "password": "Ub3f2a424913f02e099df97bcd74c45df",
+        "followers": [],
+        "followees": [],
+        "followedPosts": [],
+        "selfPosts": []
+    },
+    {
+        "id": "-1",
+        "username": "Unknown",
+        "password": "",
+        "followers": [],
+        "followees": [],
+        "followedPosts": [],
+        "selfPosts": []
     }
 ]
