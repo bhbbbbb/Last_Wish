@@ -1,7 +1,10 @@
 <template lang="pug">
-v-app-bar.d-flex.justify-center.align-end.grey.lighten-1(app prominent flat)
+v-app-bar.d-flex.justify-center.align-end.grey.lighten-1(app prominent flat
+height="100"
+background='#9ba2aa'
+)
   v-container.fill-height(
-    style="width:100vw"
+    style="height:100px;width:100vw;background:#9ba2aa"
   )
     v-row(no-gutters)
       v-col.align-self-center(cols="2")
@@ -10,10 +13,11 @@ v-app-bar.d-flex.justify-center.align-end.grey.lighten-1(app prominent flat)
       v-col.d-flex.justify-center(cols="8")
         v-app-bar-title
           .text-center()
-            h3 願望清單
+            h3.subtitle 願望清單
             span.subtitle wish list
 
   //- v-app-bar-nav-icon(
+//- 
   //-   @click.stop="drawer = !drawer"
   //- )
   
@@ -75,9 +79,16 @@ export default {
   font-weight: lighter;
   font-family: 'Times New Roman', Times, serif;
   color: white;
-  letter-spacing: 0.2rem;
+  letter-spacing: 0.2rem; 
+  height: 30px;
 }
 .title {
   font-size: 3rem;
+}
+h3.subtitle{
+  font-size: 1.6rem;
+}
+.v-toolbar__content{
+  background-color: #9ba2aa;
 }
 </style>
