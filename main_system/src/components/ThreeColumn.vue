@@ -1,7 +1,5 @@
 <template>
-  <v-app id="inspire">
-    
-  </v-app>
+  <v-app id="inspire" />
 </template>
 
 <script>

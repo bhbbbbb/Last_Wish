@@ -55,15 +55,16 @@ export default {
         drawer: false,
         selected: 0,
     }),
+    computed: {
+      ...mapState(['links']),
+      
+    },
     methods: {
         Back() {
           this.$router.go(-1);
         }
     }, 
-    computed: {
-      ...mapState(['links']),
-      
-    },
+
     
  
 }

@@ -33,15 +33,15 @@ export default {
     computed: {
       ...mapState(['articles', 'is_login']),
     },
+    created() {
+      // without running 'getData' the articles would be blank
+      this.$store.dispatch('getData');
+    },
 
     methods: {
       ToInnerArticle(article_id) {
         this.$router.push({name: 'UserArticle', params: {id: article_id, username: this.$store.state.username}});
       }
-    },
-    created() {
-      // without running 'getData' the articles would be blank
-      this.$store.dispatch('getData');
     },
 }
 </script>

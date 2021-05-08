@@ -89,6 +89,15 @@ export default {
     //   return this.articles[this.id];
     // }
   },
+  created() {
+    this.$store.dispatch('getArticle', this.id).then((res) => {
+      this.context = res;
+      this.$store.dispatch('getUser', this.context.from).then(res => {
+        this.author = res;
+      })
+    });
+  },
+
   methods: {
     Copy() {
       let ele = document.getElementById("url");
@@ -107,14 +116,6 @@ export default {
         this.overlay2 = false;
       }, 1000);
     },
-  },
-  created() {
-    this.$store.dispatch("getArticle", this.id).then((res) => {
-      this.context = res;
-      this.$store.dispatch("getUser", this.context.from).then((res) => {
-        this.author = res;
-      });
-    });
   },
 };
 </script>

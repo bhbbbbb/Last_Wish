@@ -29,9 +29,6 @@ export default {
     data: () => ({
         selected: 0,
     }),
-    methods: {
-
-    }, 
     computed: {
       ...mapState(['links', 'is_login', 'username']),
       
