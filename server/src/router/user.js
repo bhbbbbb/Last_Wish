@@ -3,33 +3,27 @@ var user = express.Router();
 var fs = require("fs");
 const request = require('request');
 const jwt_decode = require('jwt-decode');
+const template = require('../lib/template_maker.js');
 
 const accountsPATH = __dirname + "/../data/accounts.json";
 const user_listPATH = __dirname + "/../data/user_list.json";
 var user_list = require(user_listPATH);
 var accounts_info = require(accountsPATH);
+let lineLoginStates = {};
+
+// template for account info
 var account_info_template = {
-    "id": "",
-    "username": "",
-    "password": "",
+    "id": function() { return 'id'; },
+    "username": function() { return 'username'; },
+    "password": function() { return 'password'; },
     "followers": [],
     "followees": [],
-    "followedPosts": []
+    "followedPosts": [],
+    "selfPosts": []
 };
 
-var templateMaker = function(object) {
-    return function(context) {
-        var replacer = function(key, val) {
-            if (typeof val === 'function') {
-                return context[val()]
-            }
-            return val;
-        }
-        return JSON.parse(JSON.stringifiy(account_info_template, replacer));
-    }
-}
-    
-let newAccountInfo = templateMaker(account_info_template);
+// this is a function to create a account info by the template
+let newAccountInfo = template.templateMaker(account_info_template);
 
 // Set sessoin's config (https://www.npmjs.com/package/express-session)
 var session = require('express-session')
@@ -45,7 +39,7 @@ var sess = session({
     }
 })
 
-
+const SUCCEED = 0;
 const USER_NOT_FOUND = 1;
 const PASSWORD_INCORRECT = 2;
 const TRY_LOGIN = [
@@ -70,30 +64,43 @@ const TRY_LOGIN = [
 user.post('/try_login', sess, (req, res) => {
 
     if (!(req.body.username in user_list)) {
-        res.status(401).json(TRY_LOGIN[USER_NOT_FOUND].body);
+        let response = TRY_LOGIN[USER_NOT_FOUND];
+        res.status(response.status).json(response.body);
         return;
     }
     let user_id = Number(user_list[req.body.username]);
     if (accounts_info[user_id].password != req.body.password) {
-        res.status(401).json(TRY_LOGIN[PASSWORD_INCORRECT].body);
+        let response = TRY_LOGIN[USER_NOT_FOUND];
+        res.status(response.status).json(response.body);
         return;
     }
     
+    let response = TRY_LOGIN[SUCCEED]
     req.session.username = req.body.username;
-    res.sendStatus(200);
+    res.sendStatus(response.status);
     return;
 });
 
+const DUPLICATED_USER = 1;
+const REGISTER = [
+    {
+        status: 200
+    },
+    {
+        status: 401,
+        body: {
+            err_code: DUPLICATED_USER,
+            err_msg: "duplicated user"
+        }
+    }
+];
 user.post('/register', sess, (req, res) => {
-    let response = {
-        err_msg: "",
-    };
     let trimmedUsername = req.body.username.trim();
     let trimmedPassword = req.body.password.trim();
     console.log(trimmedUsername);
     if (trimmedUsername in user_list) {
-        response.err_msg = "duplicated user";
-        res.status(405).json(response);
+        response = REGISTER[DUPLICATED_USER];
+        res.status(response.status).json(response.body);
         return;
     }
     let newUserId = String(Object.keys(user_list).length);
@@ -102,11 +109,12 @@ user.post('/register', sess, (req, res) => {
         "username": trimmedUsername,
         "password": trimmedPassword,
     };
+    let response = REGISTER[SUCCEED];
     user_list[trimmedUsername] = newUserId;
     accounts_info.push(newAccountInfo(userData));
     synchronizeUserList();
     synchronizeAccountsInfo();
-    res.sendStatus(200);
+    res.sendStatus(response.status);
     return;
 });
 
@@ -185,24 +193,35 @@ const GET_PUBLIC_INFO = [
 ];
 // retrieve public info of a username by its user's ID
 user.get('/get_public_info', (req, res) => {
-    let id = Number(req.query.id);
+    let account = accounts_info.find(account => account.id == req.query.id); 
+    // let id = Number(req.query.id);
+    // console.log(typeof(req.query.id));
 
-    if (id >= accounts_info.length) {
-        res.status(400).json(GET_PUBLIC_INFO[USER_NOT_FOUND].body);
+    // // id out of bound
+    // if (id >= accounts_info.length) {
+    //     let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
+    //     res.sendstatus(response.status).json(response.body);
+    // }
+    if (account) {
+        // let response = GET_PUBLIC_INFO[SUCCEED];
+        let body = {
+            'id': account.id,
+            'username': account.username,
+            // TODO check the condition that username may be undefined
+            // e.g. account is deleted
+            // user's photo
+        }
+        // res.sendStatus(response.status).json(body);
+        res.send(body);
+        return;
+    } else {
+        let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
+        // it seems that with get method one can not send status and body
+        // together, only post methond can do that
+        // res.sendStatus(response.status).json(response.body);
+        res.sendStatus(response.status);
+        return;
     }
-    let tmp = ''
-    if(isNaN(id))
-        tmp = 'anonymous';
-    else
-        tmp =accounts_info[id].username;
-    let body = {
-        id: id,
-        username: tmp,
-        // TODO check the condition that username may be undefined
-        // e.g. account is deleted
-    }
-
-    res.status(200).json(body);
 });
 
 
@@ -227,7 +246,7 @@ user.post('/line_login_req', (req, res) => {
         succeed: false
     }
     lineLoginStates[newState] = stateInfo;
-    res.send(line.get_line_login_url(req_body));
+    res.send(line.getLineLoginUrl(req_body));
 })
 
 user.post('/login_state', sess, (req, res) => {
@@ -296,16 +315,13 @@ user.get('/resolve_line_login', (req, res) => {
         }
         console.log(info);
         let newUserId = String(Object.keys(user_list).length);
-        let new_account_info = {
+        let userData = {
             "id": newUserId,
             "username": info.name,
-            "password": info.sub,
-            "followers": [],
-            "followees": [],
-            "followedPosts": []
-        };
+            "password": info.sub
+        }
         user_list[info.name] = newUserId;
-        accounts_info.push(new_account_info);
+        accounts_info.push(newAccountInfo(userData));
         synchronizeUserList();
         synchronizeAccountsInfo();
         lineLoginStates.state = true;

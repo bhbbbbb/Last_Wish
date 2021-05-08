@@ -3,7 +3,7 @@ const app = express()
 var cors = require("cors");
 const port = 2222;
 const corsOptions = {
-  origin: ["http://localhost:8080", "http://127.0.0.1:8080", "http://192.168.0.3:8080"],
+  origin: ["http://localhost:8080", "http://127.0.0.1:8080", "http://192.168.0.3:8080", "http://192.168.1.102:8080"],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true

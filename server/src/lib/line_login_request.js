@@ -13,8 +13,7 @@
  * @returns {String} Url to access LINE login api.
  */
 
-
-let get_line_login_url = function(body) {
+let getLineLoginUrl = function(body) {
   let url = "https://access.line.me/oauth2/v2.1/authorize?";
   url += "response_type=code";
   url += "&client_id=1655882165";    // id of my current LINE channel
@@ -26,7 +25,6 @@ let get_line_login_url = function(body) {
   return url;
 }
 
-
 module.exports = {
-  get_line_login_url
+  getLineLoginUrl
 }
