@@ -188,12 +188,16 @@ user.get('/get_public_info', (req, res) => {
     let id = Number(req.query.id);
 
     if (id >= accounts_info.length) {
-        res.sendstatus(400).json(GET_PUBLIC_INFO[USER_NOT_FOUND].body);
+        res.status(400).json(GET_PUBLIC_INFO[USER_NOT_FOUND].body);
     }
-    
+    let tmp = ''
+    if(isNaN(id))
+        tmp = 'anonymous';
+    else
+        tmp =accounts_info[id].username;
     let body = {
         id: id,
-        username: accounts_info[id].username,
+        username: tmp,
         // TODO check the condition that username may be undefined
         // e.g. account is deleted
     }
@@ -208,6 +212,7 @@ user.get('/get_public_info', (req, res) => {
 
 
 const line = require('../lib/line_login_request.js');
+const e = require('express');
 user.post('/line_login_req', (req, res) => {
     console.log(req.body);
     let newState = genNonce(5);
