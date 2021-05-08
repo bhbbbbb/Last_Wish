@@ -9,7 +9,7 @@ var articles = require(articlePATH);
 
 var d = new Date();
 var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-var days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 var today = month[d.getMonth()] + ' ' + String(d.getDate()) + ', ' + days[d.getDay()];
 
 var article_template = {
