@@ -33,5 +33,14 @@
         "followees": [],
         "followedPosts": [],
         "selfPosts": []
+    },
+    {
+        "id": "-1",
+        "username": "Unknown",
+        "password": "",
+        "followers": [],
+        "followees": [],
+        "followedPosts": [],
+        "selfPosts": []
     }
 ]
