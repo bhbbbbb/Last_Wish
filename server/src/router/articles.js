@@ -69,6 +69,7 @@ global.get('/user_post',(req,res)=>{
             UserPost.push(articles[i]);
     //console.log(UserPost);
     res.json(UserPost);
+    //TODO: Deal with some exception 
 }
 )
 
@@ -99,10 +100,7 @@ global.get('/followed_post',(req,res)=>{
         for(var k in articles)
             if(articles[k].id==F_Post[j])
                 Total_Post.push(articles[k]);
-    console.log(F_User,F_User[0],F_User[1]);
-    console.log(F_Post);
-    console.log(Total_Post);
-    
+    //TODO: Deal with some exception 
     res.json(Total_Post);
 }
 )
