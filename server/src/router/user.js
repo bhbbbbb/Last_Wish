@@ -13,26 +13,14 @@ let lineLoginStates = {};
 
 // template for account info
 var account_info_template = {
-    "id": function() {return 'id'},
-    "username": function() {return 'username'},
-    "password": function() {return 'password'},
+    "id": function() { return 'id'; },
+    "username": function() { return 'username'; },
+    "password": function() { return 'password'; },
     "followers": [],
     "followees": [],
     "followedPosts": [],
     "selfPosts": []
 };
-
-// var templateMaker = function(object) {
-//     return function(context) {
-//         var replacer = function(key, val) {
-//             if (typeof val === 'function') {
-//                 return context[val()]
-//             }
-//             return val;
-//         }
-//         return JSON.parse(JSON.stringify(account_info_template, replacer));
-//     }
-// }
 
 // this is a function to create a account info by the template
 let newAccountInfo = template.templateMaker(account_info_template);
@@ -205,20 +193,35 @@ const GET_PUBLIC_INFO = [
 ];
 // retrieve public info of a username by its user's ID
 user.get('/get_public_info', (req, res) => {
-    let id = Number(req.query.id);
+    let account = accounts_info.find(account => account.id == req.query.id); 
+    // let id = Number(req.query.id);
+    // console.log(typeof(req.query.id));
 
-    if (id >= accounts_info.length) {
-        res.sendstatus(400).json(GET_PUBLIC_INFO[USER_NOT_FOUND].body);
+    // // id out of bound
+    // if (id >= accounts_info.length) {
+    //     let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
+    //     res.sendstatus(response.status).json(response.body);
+    // }
+    if (account) {
+        // let response = GET_PUBLIC_INFO[SUCCEED];
+        let body = {
+            'id': account.id,
+            'username': account.username,
+            // TODO check the condition that username may be undefined
+            // e.g. account is deleted
+            // user's photo
+        }
+        // res.sendStatus(response.status).json(body);
+        res.send(body);
+        return;
+    } else {
+        let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
+        // it seems that with get method one can not send status and body
+        // together, only post methond can do that
+        // res.sendStatus(response.status).json(response.body);
+        res.sendStatus(response.status);
+        return;
     }
-    
-    let body = {
-        'id': id,
-        'username': accounts_info[String(id)].username,
-        // TODO check the condition that username may be undefined
-        // e.g. account is deleted
-    }
-
-    res.status(200).json(body);
 });
 
 

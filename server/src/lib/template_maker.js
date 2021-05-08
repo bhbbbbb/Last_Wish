@@ -6,7 +6,7 @@ var templateMaker = function(object) {
             }
             return val;
         }
-        return JSON.parse(JSON.stringify(account_info_template, replacer));
+        return JSON.parse(JSON.stringify(object, replacer));
     }
 }
 
