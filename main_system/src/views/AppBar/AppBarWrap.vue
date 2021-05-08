@@ -7,8 +7,8 @@ component(:is="which")
 export default {
   name: 'AppBarWrap',
   components: {
-    AppBarD: () => import('@/components/AppBar/AppBarD'),
-    AppBarM: () => import('@/components/AppBar/AppBarM'),
+    AppBarD: () => import('@/views/AppBar/AppBarD'),
+    AppBarM: () => import('@/views/AppBar/AppBarM'),
     AppBarProfileM: () => import('@/views/Profile/AppBarProfileM')
   },
   props: {

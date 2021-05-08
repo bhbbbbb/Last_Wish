@@ -7,7 +7,7 @@ component(v-if='$vuetify.breakpoint.mobile' :is="componentId")
 export default {
     name: 'FooterWrap',
     components: {
-        FooterM : () => import('@/components/Footer/FooterM')
+        FooterM : () => import('@/views/Footer/FooterM')
     },
     data: () => ({
         componentId: 'FooterM'

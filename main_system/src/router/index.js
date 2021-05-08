@@ -11,9 +11,9 @@ const routes = [
     path: '/',
     name: 'Home',
     components: {
-      AppBar: () => import('@/components/AppBar/AppBarWrap'),
+      AppBar: () => import('@/views/AppBar/AppBarWrap'),
       Main: () => import('@/views/Home/Home'),
-      Footer: () => import('@/components/Footer/FooterWrap')
+      Footer: () => import('@/views/Footer/FooterWrap')
     },
     // props: {
     //   AppBar: false,
@@ -62,7 +62,7 @@ const routes = [
     components: {
       AppBar: () => import('@/views/Profile/AppBarProfileM'),
       Main: () => import('@/views/Home/Home'),
-      Footer: () => import('@/components/Footer/FooterWrap')
+      Footer: () => import('@/views/Footer/FooterWrap')
     },
     // beforeEnter: (to, from, next) => {
     //   isLogin().then(res => {
