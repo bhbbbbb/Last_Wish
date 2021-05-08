@@ -231,7 +231,7 @@ user.get('/get_public_info', (req, res) => {
 
 
 const line = require('../lib/line_login_request.js');
-const { default: Foo } = require('./Foo.js');
+// const { default: Foo } = require('./Foo.js');
 user.post('/line_login_req', (req, res) => {
     console.log(req.body);
     let newState = genNonce(5);

@@ -9,11 +9,11 @@
     <AppBarD v-else/>
     <router-view style="'padding-top:10vh'"/>
     <FooterM v-if="this.$vuetify.breakpoint.mobile"/> -->
-    <div class="section">
+    <!-- <div class="section">
       <div class="container">
         <simple-upload />
-      </div>
-    </div>
+      </div> 
+    </div>-->
   </v-app>
 </template>
 
