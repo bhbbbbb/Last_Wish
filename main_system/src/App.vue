@@ -18,11 +18,10 @@
 </template>
 
 <script>
-
 export default {
   name: "App",
   components: {
-    SimpleUpload:()=> import('@/components/SimpleUpload')
+    //SimpleUpload:()=> import('@/components/SimpleUpload')
     // AppBarD: () => import('@/components/AppBar/AppBarD'),
     // AppBarM: () => import('@/components/AppBar/AppBarM'),
     // FooterM: () => import('@/components/FooterM')
