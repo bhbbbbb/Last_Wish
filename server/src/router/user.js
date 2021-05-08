@@ -231,7 +231,7 @@ user.get('/get_public_info', (req, res) => {
 
 
 const line = require('../lib/line_login_request.js');
-const e = require('express');
+const { default: Foo } = require('./Foo.js');
 user.post('/line_login_req', (req, res) => {
     console.log(req.body);
     let newState = genNonce(5);
@@ -269,6 +269,7 @@ user.post('/is_valid_username', sess, (req, res) => {
         isValid: false
     }
     response.isValid = !(req.body.username in user_list);
+    console.log(foo.getBar);
     res.send(response);
 });
     
@@ -353,6 +354,24 @@ function genNonce(length) {
           characters.charAt(Math.floor(Math.random() * charactersLength)));
    }
    return result.join('');
+}
+
+function getUserId(username) {
+    let id = user_list[username];
+    if (id) {
+        return id;
+    } else {
+        return null;
+    }
+}
+
+function getUsername(id) {
+    let account = accounts_info.find(account => account.id == id);
+    if (account) {
+        return account.id;
+    } else {
+        return null;
+    }
 }
 
 module.exports = user;

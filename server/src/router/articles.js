@@ -1,6 +1,7 @@
 const articlePATH = __dirname + "/../data/articles.json";
 var express = require('express');
 var global = express.Router();
+var user = require('./user.js');
 var fs = require("fs");
 const { stringify } = require('querystring');
 const template = require('../lib/template_maker.js');
@@ -48,6 +49,10 @@ global.post('/insert', (req, res) => {
 
 global.post('/count', (req, res) => {
     res.send(articles.length);
+});
+
+global.get('/id', (req, res) => {
+    res.send(user.getUserId(req.query.id));
 });
 
 global.get('/', (req, res) => {
