@@ -3,6 +3,7 @@ var user = express.Router();
 var fs = require("fs");
 const request = require('request');
 const jwt_decode = require('jwt-decode');
+const template = require('../lib/template_maker.js');
 
 const accountsPATH = __dirname + "/../data/accounts.json";
 const user_listPATH = __dirname + "/../data/user_list.json";
@@ -21,20 +22,20 @@ var account_info_template = {
     "selfPosts": []
 };
 
-var templateMaker = function(object) {
-    return function(context) {
-        var replacer = function(key, val) {
-            if (typeof val === 'function') {
-                return context[val()]
-            }
-            return val;
-        }
-        return JSON.parse(JSON.stringify(account_info_template, replacer));
-    }
-}
+// var templateMaker = function(object) {
+//     return function(context) {
+//         var replacer = function(key, val) {
+//             if (typeof val === 'function') {
+//                 return context[val()]
+//             }
+//             return val;
+//         }
+//         return JSON.parse(JSON.stringify(account_info_template, replacer));
+//     }
+// }
 
 // this is a function to create a account info by the template
-let newAccountInfo = templateMaker(account_info_template);
+let newAccountInfo = template.templateMaker(account_info_template);
 
 // Set sessoin's config (https://www.npmjs.com/package/express-session)
 var session = require('express-session')
@@ -50,7 +51,7 @@ var sess = session({
     }
 })
 
-
+const SUCCEED = 0;
 const USER_NOT_FOUND = 1;
 const PASSWORD_INCORRECT = 2;
 const TRY_LOGIN = [
@@ -75,30 +76,43 @@ const TRY_LOGIN = [
 user.post('/try_login', sess, (req, res) => {
 
     if (!(req.body.username in user_list)) {
-        res.status(401).json(TRY_LOGIN[USER_NOT_FOUND].body);
+        let response = TRY_LOGIN[USER_NOT_FOUND];
+        res.status(response.status).json(response.body);
         return;
     }
     let user_id = Number(user_list[req.body.username]);
     if (accounts_info[user_id].password != req.body.password) {
-        res.status(401).json(TRY_LOGIN[PASSWORD_INCORRECT].body);
+        let response = TRY_LOGIN[USER_NOT_FOUND];
+        res.status(response.status).json(response.body);
         return;
     }
     
+    let response = TRY_LOGIN[SUCCEED]
     req.session.username = req.body.username;
-    res.sendStatus(200);
+    res.sendStatus(response.status);
     return;
 });
 
+const DUPLICATED_USER = 1;
+const REGISTER = [
+    {
+        status: 200
+    },
+    {
+        status: 401,
+        body: {
+            err_code: DUPLICATED_USER,
+            err_msg: "duplicated user"
+        }
+    }
+];
 user.post('/register', sess, (req, res) => {
-    let response = {
-        err_msg: "",
-    };
     let trimmedUsername = req.body.username.trim();
     let trimmedPassword = req.body.password.trim();
     console.log(trimmedUsername);
     if (trimmedUsername in user_list) {
-        response.err_msg = "duplicated user";
-        res.status(405).json(response);
+        response = REGISTER[DUPLICATED_USER];
+        res.status(response.status).json(response.body);
         return;
     }
     let newUserId = String(Object.keys(user_list).length);
@@ -107,11 +121,12 @@ user.post('/register', sess, (req, res) => {
         "username": trimmedUsername,
         "password": trimmedPassword,
     };
+    let response = REGISTER[SUCCEED];
     user_list[trimmedUsername] = newUserId;
     accounts_info.push(newAccountInfo(userData));
     synchronizeUserList();
     synchronizeAccountsInfo();
-    res.sendStatus(200);
+    res.sendStatus(response.status);
     return;
 });
 
@@ -197,8 +212,8 @@ user.get('/get_public_info', (req, res) => {
     }
     
     let body = {
-        id: id,
-        username: accounts_info[String(id)].username,
+        'id': id,
+        'username': accounts_info[String(id)].username,
         // TODO check the condition that username may be undefined
         // e.g. account is deleted
     }
@@ -227,7 +242,7 @@ user.post('/line_login_req', (req, res) => {
         succeed: false
     }
     lineLoginStates[newState] = stateInfo;
-    res.send(line.get_line_login_url(req_body));
+    res.send(line.getLineLoginUrl(req_body));
 })
 
 user.post('/login_state', sess, (req, res) => {

@@ -8,7 +8,9 @@
         ],
         "followees": [],
         "followedPosts": [],
-        "selfPosts": []
+        "selfPosts": [
+            "0"
+        ]
     },
     {
         "id": "1",
@@ -19,7 +21,9 @@
             "0"
         ],
         "followedPosts": [],
-        "selfPosts": []
+        "selfPosts": [
+            "1"
+        ]
     },
     {
         "id": "2",
