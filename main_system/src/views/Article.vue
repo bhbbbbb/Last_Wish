@@ -14,6 +14,7 @@ v-card.ma-3.pa-1(min-height="80vh" rounded="lg" v-if="author" :color="color")
 
         )
           v-list-item(@click="Copy") 複製連結
+          v-list-item(@click="Clone") 加到我的清單
           
     v-row(no-gutters)
       v-col.d-flex.flex-column.flex-shrink-1.align-center.ma-0(cols="4")
@@ -47,6 +48,12 @@ v-card.ma-3.pa-1(min-height="80vh" rounded="lg" v-if="author" :color="color")
     opacity="0"
   )                              
     v-alert.mt-10(:value="overlay" type="success" transition="slide-x-transition") Copied
+  v-overlay.align-start(
+    :value="overlay2"
+    absolute
+    opacity="0"
+  )                              
+    v-alert.mt-10(:value="overlay2" type="success" transition="slide-x-transition") Cloned  
   input#url(style="position: absolute; opacity: 0;")
   
       
@@ -57,22 +64,23 @@ v-card.ma-3.pa-1(min-height="80vh" rounded="lg" v-if="author" :color="color")
 export default {
   name: "Article",
   components: {
-    CommentCard: () => import('@/components/article/CommentCard'),
+    CommentCard: () => import("@/components/article/CommentCard"),
   },
   props: {
     id: {
       type: [Number],
-      required: true
+      required: true,
     },
     color: {
       type: String,
-      default: '#F5F4F0'
-    }
+      default: "#F5F4F0",
+    },
   },
   data: () => ({
     context: undefined,
     author: undefined,
     overlay: false,
+    overlay2: false,
   }),
   computed: {
     // ...mapState(['articles']),
@@ -83,26 +91,32 @@ export default {
   },
   methods: {
     Copy() {
-      let ele = document.getElementById('url');
+      let ele = document.getElementById("url");
       ele.value = window.location.href;
       ele.select();
-      document.execCommand('copy');
+      document.execCommand("copy");
       this.overlay = true;
       setTimeout(() => {
-        this.overlay = false
+        this.overlay = false;
       }, 1000);
-    }
+    },
+    Clone() {
+      //console.log(this.articles[this.id]);
+      this.overlay2 = true;
+      setTimeout(() => {
+        this.overlay2 = false;
+      }, 1000);
+    },
   },
   created() {
-    this.$store.dispatch('getArticle', this.id).then((res) => {
+    this.$store.dispatch("getArticle", this.id).then((res) => {
       this.context = res;
-      this.$store.dispatch('getUser', this.context.from).then(res => {
+      this.$store.dispatch("getUser", this.context.from).then((res) => {
         this.author = res;
-      })
+      });
     });
-  }
-
-}
+  },
+};
 </script>
 
 <style>
