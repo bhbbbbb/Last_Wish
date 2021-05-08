@@ -20,6 +20,8 @@ const userRequest = axios.create({
 
 export const apiGetArticles = () => articleRequest.get('/articles');
 export const apiUploadArticle = (data) => articleRequest.post('/articles/insert', data);
+export const apiUserPosts = () => articleRequest.get('/articles/user_post');
+
 
 export const apiTryLogin = (data) => userRequest.post('/try_login', data);
 export const apiWho = () => userRequest.get('/who');

@@ -59,6 +59,18 @@ global.get('/', (req, res) => {
     res.json(articles);
 });
 
+global.get('/user_post',(req,res)=>{
+    var User_id = String(-1);   //Here can be replaced with api returns current user's id
+    var UserPost = [];
+    for(var i = 0;i<articles.length;i++)
+        if(articles[i].from === User_id)
+            UserPost.push(articles[i]);
+    //console.log(UserPost);
+    res.json(UserPost);
+}
+)
+
+
 global.post('/post', (req, res) => {
     let newArticleId = articles.length + 1;
     let articleData = {
