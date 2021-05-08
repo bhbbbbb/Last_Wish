@@ -2,8 +2,14 @@ const articlePATH = __dirname + "/../data/articles.json";
 var express = require('express');
 var global = express.Router();
 var fs = require("fs");
+const { stringify } = require('querystring');
 const template = require('../lib/template_maker.js');
 var articles = require(articlePATH);
+
+var d = new Date();
+var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+var today = month[d.getMonth()] + ' ' + String(d.getDate()) + ', ' + days[d.getDay()];
 
 var article_template = {
     "id": function() { return 'id'; },
@@ -27,8 +33,11 @@ let newComment = template.templateMaker(comment_template);
 
 
 global.post('/insert', (req, res) => {
-    let newArticleId = articles.length + 1;
+    let newArticleId = articles.length;
     req.body["id"] = String(newArticleId);
+    req.body["from"] = String(-1);
+    req.body["date"] = today;
+
     articles.push(req.body);
     let str = JSON.stringify(articles, null, 4);
     res.send(str)
