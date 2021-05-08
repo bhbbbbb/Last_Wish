@@ -1,10 +1,13 @@
 <template lang="pug">
-v-app-bar.d-flex.justify-center.align-end.grey.lighten-1(app prominent flat
-height="100"
-background='#9ba2aa'
+v-app-bar.d-flex.justify-center.align-end(
+  app 
+  prominent 
+  flat
+  height="100"
+  color='#9ba2aa'
 )
-  v-container.fill-height(
-    style="height:100px;width:100vw;background:#9ba2aa"
+  v-container.ma-0.fill-height(
+    style="width:100vw;"
   )
     v-row(no-gutters)
       v-col.align-self-center(cols="2")
@@ -87,8 +90,5 @@ export default {
 }
 h3.subtitle{
   font-size: 1.6rem;
-}
-.v-toolbar__content{
-  background-color: #9ba2aa;
 }
 </style>
