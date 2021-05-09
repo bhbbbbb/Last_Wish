@@ -6,7 +6,9 @@
         "followers": [
             "1"
         ],
-        "followees": [],
+        "followees": [
+            "1","-1"
+        ],
         "followedPosts": [],
         "selfPosts": [
             "0"

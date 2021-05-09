@@ -1,29 +1,10 @@
 var express = require('express');
 var user = express.Router();
-var fs = require("fs");
 const request = require('request');
 const jwt_decode = require('jwt-decode');
-const template = require('../lib/template_maker.js');
-
-const accountsPATH = __dirname + "/../data/accounts.json";
-const user_listPATH = __dirname + "/../data/user_list.json";
-var user_list = require(user_listPATH);
-var accounts_info = require(accountsPATH);
 let lineLoginStates = {};
-
-// template for account info
-var account_info_template = {
-    "id": function() { return 'id'; },
-    "username": function() { return 'username'; },
-    "password": function() { return 'password'; },
-    "followers": [],
-    "followees": [],
-    "followedPosts": [],
-    "selfPosts": []
-};
-
-// this is a function to create a account info by the template
-let newAccountInfo = template.templateMaker(account_info_template);
+var AccountManager = require('../lib/account_manager.js');
+var accountManager = new AccountManager();
 
 // Set sessoin's config (https://www.npmjs.com/package/express-session)
 var session = require('express-session')
@@ -62,20 +43,21 @@ const TRY_LOGIN = [
     }
 ];
 user.post('/try_login', sess, (req, res) => {
-
-    if (!(req.body.username in user_list)) {
-        let response = TRY_LOGIN[USER_NOT_FOUND];
-        res.status(response.status).json(response.body);
-        return;
-    }
-    let user_id = Number(user_list[req.body.username]);
-    if (accounts_info[user_id].password != req.body.password) {
-        let response = TRY_LOGIN[USER_NOT_FOUND];
+    var response;
+    try {
+        if (!accountManager.checkPassword(req.body.username, req.body.password)) {
+            response = TRY_LOGIN[PASSWORD_INCORRECT];
+            res.status(response.status).json(response.body);
+            return;
+        }
+    } catch (error) {
+        console.log(error);
+        response = TRY_LOGIN[USER_NOT_FOUND];
         res.status(response.status).json(response.body);
         return;
     }
     
-    let response = TRY_LOGIN[SUCCEED]
+    response = TRY_LOGIN[SUCCEED]
     req.session.username = req.body.username;
     res.sendStatus(response.status);
     return;
@@ -95,25 +77,18 @@ const REGISTER = [
     }
 ];
 user.post('/register', sess, (req, res) => {
+    var response;
     let trimmedUsername = req.body.username.trim();
     let trimmedPassword = req.body.password.trim();
     console.log(trimmedUsername);
-    if (trimmedUsername in user_list) {
+    try {
+        accountManager.addUser(trimmedUsername, trimmedPassword);
+    } catch (error) {
         response = REGISTER[DUPLICATED_USER];
         res.status(response.status).json(response.body);
         return;
     }
-    let newUserId = String(Object.keys(user_list).length);
-    let userData = {
-        "id": newUserId,
-        "username": trimmedUsername,
-        "password": trimmedPassword,
-    };
-    let response = REGISTER[SUCCEED];
-    user_list[trimmedUsername] = newUserId;
-    accounts_info.push(newAccountInfo(userData));
-    synchronizeUserList();
-    synchronizeAccountsInfo();
+    response = REGISTER[SUCCEED];
     res.sendStatus(response.status);
     return;
 });
@@ -124,47 +99,34 @@ user.get('/who', sess, (req, res) => {
     else res.sendStatus(401);
 });
 
+const BAD_REQUEST = 1;
+const FOLLOW = [
+    {
+        status: 200
+    },
+    {
+        status: 400,  // bad request
+        body: {
+            err_code: BAD_REQUEST,
+            err_msg: "bad request"
+        }
+    }
+]
 user.post('/follow', sess, (req, res) => {
-    let response = {
-        err_msg: "",
-    };
-    let follower = accounts_info.find(account => account['username'] == req.body.username)
-    let followee = accounts_info.find(account => account['username'] == req.body.target)
-    if (!(follower)) {
-        response.err_msg = "user not found";
-        res.status(401).json(response);
+    var response;
+    try {
+        accountManager.setFollowRelation(
+                req.body.username, req.body.target, req.body.follow_unfollow == "true");
+        
+    } catch (error) {
+        console.log(`error is ${error}`);
+        response = FOLLOW[BAD_REQUEST];
+        response.body.err_msg = error;
+        res.status(response.status).json(response.body);
         return;
     }
-    if (!(followee)) {
-        response.err_msg = "target not found";
-        res.status(401).json(response);
-        return;
-    }
-    // dirty code, fix later
-    followeeList = follower.followees;
-    followerList = followee.followers;
-    if (req.body.follow_unfollow == "true") {
-        // follow
-        if (followeeList.find(id => id == followee.id)) {
-            response.err_msg = "target already followed";
-            res.status(405).json(response);
-            return;
-        }
-        followeeList.push(followee.id);
-        followerList.push(follower.id);
-    } else {
-        // unfollow
-        if (!followeeList.find(id => id == followee.id)) {
-            response.err_msg = "target already unfollowed";
-            res.status(405).json(response);
-            return;
-        }
-        followeeList.splice(followeeList.indexOf(followee.id), 1);
-        followerList.splice(followerList.indexOf(follower.id), 1);
-    }
-    console.log(followeeList);
-    synchronizeAccountsInfo();
-    res.sendStatus(200);
+    response = FOLLOW[SUCCEED];
+    res.sendStatus(response.status);
     return;
 });
 
@@ -172,12 +134,6 @@ user.get('/logout', sess, (req, res) => {
     req.session.destroy();
     res.sendStatus(200);
 })
-
-
-
-
-
-
 
 const GET_PUBLIC_INFO = [
     {
@@ -193,28 +149,10 @@ const GET_PUBLIC_INFO = [
 ];
 // retrieve public info of a username by its user's ID
 user.get('/get_public_info', (req, res) => {
-    let account = accounts_info.find(account => account.id == req.query.id); 
-    // let id = Number(req.query.id);
-    // console.log(typeof(req.query.id));
-
-    // // id out of bound
-    // if (id >= accounts_info.length) {
-    //     let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
-    //     res.sendstatus(response.status).json(response.body);
-    // }
-    if (account) {
-        // let response = GET_PUBLIC_INFO[SUCCEED];
-        let body = {
-            'id': account.id,
-            'username': account.username,
-            // TODO check the condition that username may be undefined
-            // e.g. account is deleted
-            // user's photo
-        }
-        // res.sendStatus(response.status).json(body);
-        res.send(body);
-        return;
-    } else {
+    try {
+        let userInfo = accountManager.getUserInfo(req.query.id);
+        res.send(userInfo);
+    } catch (error) {
         let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
         // it seems that with get method one can not send status and body
         // together, only post methond can do that
@@ -224,14 +162,7 @@ user.get('/get_public_info', (req, res) => {
     }
 });
 
-
-
-
-
-
-
 const line = require('../lib/line_login_request.js');
-// const { default: Foo } = require('./Foo.js');
 user.post('/line_login_req', (req, res) => {
     console.log(req.body);
     let newState = genNonce(5);
@@ -264,12 +195,11 @@ user.post('/line_login_state', sess, (req, res) => {
     // and login the user?
 })
 
-user.post('/is_valid_username', sess, (req, res) => {
+user.get('/is_valid_username', sess, (req, res) => {
     let response = {
         isValid: false
     }
-    response.isValid = !(req.body.username in user_list);
-    console.log(foo.getBar);
+    response.isValid = !accountManager.hasUser(req.query.username);
     res.send(response);
 });
     
@@ -297,53 +227,28 @@ user.get('/resolve_line_login', (req, res) => {
         },
         method: "POST",
     };
-    var idToken;
     request(options, (err, res) => {
         if (err) {
             console.log(err);
             return;
         }
-        idToken = JSON.parse(res.body).id_token;
+        let idToken = JSON.parse(res.body).id_token;
         let info = jwt_decode(idToken);
+        console.log(info);
         if (info.nonce != lineLoginStates[req.query.state].nonce) {
             // abort the procedure due to the high risk of being replay attacked
             return;
         }
-        if (info.name in user_list) {
+        if (accountManager.hasUser(info.name)) {
             // TODO: do the login for the old user
             console.log("old user");
             return;
         }
-        console.log(info);
-        let newUserId = String(Object.keys(user_list).length);
-        let userData = {
-            "id": newUserId,
-            "username": info.name,
-            "password": info.sub
-        }
-        user_list[info.name] = newUserId;
-        accounts_info.push(newAccountInfo(userData));
-        synchronizeUserList();
-        synchronizeAccountsInfo();
+        accountManager.addUser(info.name, info.sub);
         lineLoginStates.state = true;
-        console.log("succeed");
     });
     res.send("<script>window.close();</script>");
 });
-
-function synchronizeUserList() {
-    let user_list_data = JSON.stringify(user_list, null, 4);
-    fs.writeFile(user_listPATH, user_list_data, (err) => {
-        if (err) console.log(err);
-    });
-}    
-
-function synchronizeAccountsInfo() {
-    let accounts_info_data = JSON.stringify(accounts_info, null, 4);
-    fs.writeFile(accountsPATH, accounts_info_data, (err) => {
-        if (err) console.log(err);
-    });
-}
 
 function genNonce(length) {
     let result           = [];
@@ -354,24 +259,6 @@ function genNonce(length) {
           characters.charAt(Math.floor(Math.random() * charactersLength)));
    }
    return result.join('');
-}
-
-function getUserId(username) {
-    let id = user_list[username];
-    if (id) {
-        return id;
-    } else {
-        return null;
-    }
-}
-
-function getUsername(id) {
-    let account = accounts_info.find(account => account.id == id);
-    if (account) {
-        return account.id;
-    } else {
-        return null;
-    }
 }
 
 module.exports = user;
