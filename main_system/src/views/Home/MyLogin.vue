@@ -44,53 +44,56 @@ v-card.pa-0(rounded="lg" min-height="268" flat)
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import { apiLineLogin } from '@/store/api.js'
+import {mapActions} from 'vuex';
+import {apiLineLogin} from '@/store/api.js';
 export default {
-  name: "MyLogin",
+  name: 'MyLogin',
   data: () => ({
     user: {
-      username: "",
-      password: "",
+      username: '',
+      password: '',
+      id: '-1',
     },
     rules: {
-      regex: value => {
+      regex: (value) => {
         const pattern = /^[^\W_]+$/; // allow only word and digit
-        return pattern.test(value) || 'contain character except word and digit'
+        return pattern.test(value) || 'contain character except word and digit';
       },
-      empty: value => Boolean(value) || "required"
+      empty: (value) => Boolean(value) || 'required',
     },
     show: false,
   }),
   methods: {
     //tryLogin
     ...mapActions(['tryLogin']),
-    
+
     Try_Login() {
-      if (! (this.user.username && this.user.password)) {
+      if (!(this.user.username && this.user.password)) {
         // username or pswd is blank
         // todo show error
         return;
       }
       this.tryLogin(this.user);
-      
     },
-    
+
     Dev() {
       this.tryLogin({
         username: 'Dev',
         password: '',
-      })
+        id: '0',
+      });
     },
 
     Line() {
-      apiLineLogin({username: 'haha'}).then(res => {
-        console.log(res);
-        window.open(res.data);
-      }).catch(err => {
-        console.log(err);
-      })
-    }
-  }
-}
+      apiLineLogin({username: 'haha'})
+        .then((res) => {
+          console.log(res);
+          window.open(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  },
+};
 </script>
