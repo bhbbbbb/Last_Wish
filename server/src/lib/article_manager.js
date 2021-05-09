@@ -8,13 +8,7 @@ module.exports = function() {
     this.articlePATH = __dirname + "/../data/articles.json";
     this.articles = require(this.articlePATH);
 
-    // the method has not finished
-    // it should return the id of the new post
-    // account manager can retrive the id from the method
-    // and add it to its author
-
     /**
-     * 
      * @param {Object} author the account info of the author
      * @param {Object} article = {body, title, wishes}
      * @returns {String} the new article id
@@ -35,37 +29,53 @@ module.exports = function() {
     }
 
     /**
-     * 
+     * Overloading method to post a article anonymously
      * @param {Object} article = {body, title, wishes}
      * @returns {String} the new article id
      */
     this.addArticle = function(article) {
-        let newPostId = String(this.articles.length);
-        let newPostData = {
-            "id": newPostId,
+        let newArticleId = String(this.articles.length);
+        let newArticleData = {
+            "id": newArticleId,
             "from": "-1",
             "body": article.body,
             "title": article.title,
             "date": today,
             "wishes": article.wishes
         };
-        this.articles.push(newArticle(newPostData));
+        this.articles.push(newArticle(newArticleData));
         synchronize(this.articles, this.articlePATH)
-        return newPostId;
+        return newArticleId;
     }
 
+    /**
+     * @returns the json object containing all articles
+     */
     this.getAllArticles = function() {
         return this.articles;
     }
 
-    this.addCommentToArticle = function(id, comment) {
-
+    /**
+     * @param {Object} author 
+     * @param {String} articleId 
+     * @param {String} commentStr 
+     * @throws "no such article" exception
+     */
+    this.addCommentToArticle = function(author, articleId, commentStr) {
+        let id = Number(articleId);
+        if (id > this.articles.length) {
+            throw "no such article";
+        }
+        let article = articles[id];
+        let newCommentId = String(article.comments.length);
+        let newCommentData = {
+            "id": newCommentId,
+            "date": today,
+            "body": commentStr,
+            "from": author.id
+        }
+        article.comments.push(newComment(newCommentData));
     }
-
-    //TODO:
-    // addCommentToPost
-    // ...
-
 }
 
 function newArticle(newArticleData) {

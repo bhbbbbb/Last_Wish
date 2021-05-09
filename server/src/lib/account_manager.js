@@ -10,8 +10,6 @@ module.exports = function() {
     this.accounts_info = require(this.accountsPATH);
     this.user_listPATH = __dirname + "/../data/user_list.json";
     this.user_list = require(this.user_listPATH);
-    // this.articlePATH = __dirname + "/../data/articles.json";
-    // this.articles = require(this.articlePATH);
 
     /**
      * @param {String} username 
@@ -32,7 +30,8 @@ module.exports = function() {
         if (!this.hasUser(username)) {
             throw "user not found";
         }
-        let account = this.accounts_info.find(account => account.username == username);
+        // let account = this.accounts_info.find(account => account.username == username);
+        let account = this.accounts_info[Number(this.user_list[username])];
         return account.password == password;
     }
 
@@ -72,6 +71,18 @@ module.exports = function() {
             "username": account.username
         };
         return userInfo;
+    }
+
+    /**
+     * @param {String} username 
+     * @returns id of given username
+     * @throws "user not found" exception
+     */
+    this.getIdbyUsername = function(username) {
+        if (!this.hasUser(username)) {
+            throw "user not found";
+        }
+        return this.user_list[username];
     }
 
     /**
@@ -137,7 +148,19 @@ module.exports = function() {
 
     }
 
-    // addCommentByAuthor
+    /**
+     * @param {String} username 
+     * @param {String} articleId 
+     * @param {String} commentStr 
+     * @throws "user not found" exception
+     */
+    this.addCommentByAuthor = function(username, articleId, commentStr) {
+        if (!this.hasUser(username)) {
+            throw "user not found";
+        }
+        let author = this.accounts_info.find(account => account['username'] == username)
+        this.articleManager.addCommentToArticle(author, articleId, commentStr);
+    }
 };
 
 function newAccountInfo(newUserData) {
