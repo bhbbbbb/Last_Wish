@@ -3,7 +3,7 @@ const accountsPATH = __dirname + "/../data/accounts.json";
 var express = require('express');
 var global = express.Router();
 // const { stringify } = require('querystring');
-// var articles = require(articlePATH);
+var articles = require(articlePATH);
 // var accounts = require(accountsPATH);
 // The line above can be replaced with
 var AccountManager = require('../lib/account_manager.js');
