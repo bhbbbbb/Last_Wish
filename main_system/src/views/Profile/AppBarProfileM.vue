@@ -16,7 +16,7 @@ v-app-bar.d-flex.align-center.flex-wrap(
       v-col(cols="3")
         v-avatar.grey.lighten-3(size="64")
       v-col.d-flex.flex-column.align-start(cols="7")
-        span(style="font-size:2rem") 姓名
+        span(style="font-size:2rem") {{this.$store.state.username}}
         span(style="font-size:1rem") 簡單自介
       v-col(cols="2")
   template(v-slot:extension)
@@ -27,9 +27,7 @@ v-app-bar.d-flex.align-center.flex-wrap(
 </template>
 
 <script>
-import {
-  mapState
-} from 'vuex'
+import {mapState} from 'vuex';
 export default {
   name: 'AppBarProfileM',
   components: {},
@@ -45,15 +43,16 @@ export default {
   }),
   computed: {
     ...mapState(['links']),
-
+  },
+  created() {
+    //Myname = this.$store.username;
   },
   methods: {
     Back() {
       this.$router.go(-1);
-    }
+    },
   },
-
-}
+};
 </script>
 
 <style scoped>
