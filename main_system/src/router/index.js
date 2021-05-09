@@ -50,10 +50,18 @@ const routes = [
         name: 'Article',
         component: () => import('@/views/Article'),
         props: (route) => {
-          
           return {id: Number(route.params.id)};
         }
       },
+      {
+        path: 'newpost',
+        name: 'NewPost',
+        component: () => import('@/views/NewPost'),
+        beforeEnter(to, from, next) {
+          if (store.state.is_login) next();
+          else next('/articles');
+        }
+      }
     ]
   },
   {
@@ -81,7 +89,8 @@ const routes = [
         // TODO : redirect un login visiter to public profile page
         beforeEnter(to, from, next) {
           // console.log(to, from);
-          next();
+          if (store.state.is_login) next();
+          else next('/articles');
         }
       },
       {
