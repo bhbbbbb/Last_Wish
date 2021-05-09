@@ -9,6 +9,14 @@ module.exports = function() {
     this.articles = require(this.articlePATH);
 
     /**
+     * @param {String} id 
+     * @returns if there is an article with such id
+     */
+    this.hasArticle = function(id) {
+        return Number(id) <= this.articles.length;
+    }
+
+    /**
      * @param {Object} author the account info of the author
      * @param {Object} article = {body, title, wishes}
      * @returns {String} the new article id
@@ -62,11 +70,10 @@ module.exports = function() {
      * @throws "no such article" exception
      */
     this.addCommentToArticle = function(author, articleId, commentStr) {
-        let id = Number(articleId);
-        if (id > this.articles.length) {
+        if (!this.hasArticle(articleId)) {
             throw "no such article";
         }
-        let article = articles[id];
+        let article = articles[Number(articleId)];
         let newCommentId = String(article.comments.length);
         let newCommentData = {
             "id": newCommentId,
