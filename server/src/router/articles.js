@@ -2,15 +2,14 @@ const articlePATH = __dirname + "/../data/articles.json";
 const accountsPATH = __dirname + "/../data/accounts.json";
 var express = require('express');
 var global = express.Router();
-var user = require('./user.js');
-var fs = require("fs");
-const { stringify } = require('querystring');
-const template = require('../lib/template_maker.js');
-var articles = require(articlePATH);
-var accounts = require(accountsPATH);
+// const { stringify } = require('querystring');
+// var articles = require(articlePATH);
+// var accounts = require(accountsPATH);
 // The line above can be replaced with
-// var AccountManager = require('../lib/account_manager.js');
-// var accountManager = new AccountManager();
+var AccountManager = require('../lib/account_manager.js');
+var accountManager = new AccountManager();
+var ArticleManager = require('../lib/article_manager.js');
+var articleManager = new ArticleManager();
 // to handle issues that is to do with user
 // also I wrote a new class to handle articles: article_manager
 // it would be more elegant to utilize the class 
@@ -21,19 +20,23 @@ var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','
 var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 var today = month[d.getMonth()] + ' ' + String(d.getDate()) + ', ' + days[d.getDay()];
 
+// add a post anonymously
 global.post('/insert', (req, res) => {
     // here may simply call addPostsToAuthor method of account_manager
-    let newArticleId = articles.length;
-    req.body["id"] = String(newArticleId);
-    req.body["from"] = String(-1);
-    req.body["date"] = today;
+    // let newArticleId = articles.length;
+    // req.body["id"] = String(newArticleId);
+    // req.body["from"] = String(-1);
+    // req.body["date"] = today;
 
-    articles.push(req.body);
-    let str = JSON.stringify(articles, null, 4);
-    res.send(str)
-    fs.writeFile(articlePATH, str, (err) => {
-        if (err) console.log(err);
-    });
+    // articles.push(req.body);
+    // let str = JSON.stringify(articles, null, 4);
+    // res.send(str)
+    // fs.writeFile(articlePATH, str, (err) => {
+    //     if (err) console.log(err);
+    // });
+    articleManager.addArticle(req.body);
+    res.sendStatus(200);
+    return;
 });
 
 global.post('/count', (req, res) => {
@@ -41,7 +44,7 @@ global.post('/count', (req, res) => {
 });
 
 global.get('/', (req, res) => {
-    res.json(articles);
+    res.json(articleManager.getAllArticles());
 });
 
 global.get('/user_post',(req,res)=>{
@@ -56,7 +59,6 @@ global.get('/user_post',(req,res)=>{
     //TODO: Deal with some exception 
 }
 )
-
 
 global.get('/followed_post',(req,res)=>{
     var User_id = String(0);   //Here can be replaced with api returns current user's id
@@ -89,21 +91,34 @@ global.get('/followed_post',(req,res)=>{
 }
 )
 
-
-
-
+const SUCCEED = 0;
+const USER_NOT_FOUND = 1;
+const POST = [
+    {
+        status: 200
+    },
+    {
+        status: 400,  // bad request
+        body: {
+            err_code: USER_NOT_FOUND,
+            err_msg: "user not found"
+        }
+    }
+]
+// a user post a post
 global.post('/post', (req, res) => {
-    let newArticleId = articles.length + 1;
-    let articleData = {
-        "id": newArticleId,
-        "from": shit,
-        "body": req.body.article.body,
-        "title": req.body.article.title,
-        "date": function() { return 'date'; },
-
-
-    };
-
+    var response;
+    try {
+        accountManager.addPostsToAuthor(
+                req.body.username, req.body.article);
+    } catch (error) {
+        response = POST[USER_NOT_FOUND];
+        res.status(response.status).json(response.body);
+        return;
+    }
+    response = POST[SUCCEED];
+    res.status(response.status).json(response.body);
+    return;
 });
 
 module.exports = global;
