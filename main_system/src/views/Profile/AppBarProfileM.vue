@@ -24,46 +24,48 @@ v-app-bar.d-flex.align-center.flex-wrap(
       v-tab.tab.white(active-class="") 我的願望
       v-tab.tab.lighten-3(style="background-color: #CED3CD") ff
 
-
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import {
+  mapState
+} from 'vuex'
 export default {
-    name: 'AppBarProfileM',
-    components: {
-    },
-    props: {
-      // links: {
-      //   required: true,
-      //   type: Array
-      // },
-    },
-    data: () => ({
-        drawer: false,
-        selected: 0,
-    }),
-    methods: {
-        Back() {
-          this.$router.go(-1);
-        }
-    }, 
-    computed: {
-      ...mapState(['links']),
-      
-    },
-    
- 
+  name: 'AppBarProfileM',
+  components: {},
+  props: {
+    // links: {
+    //   required: true,
+    //   type: Array
+    // },
+  },
+  data: () => ({
+    drawer: false,
+    selected: 0,
+  }),
+  computed: {
+    ...mapState(['links']),
+
+  },
+  methods: {
+    Back() {
+      this.$router.go(-1);
+    }
+  },
+
 }
 </script>
+
 <style scoped>
 .tab {
   border-radius: 15% 15% 0 0;
 }
+
 .v-tab:before {
   background-color: transparent;
   /* opacity: 0; */
 }
+
 .v-application .primary--text {
   color: grey;
 }

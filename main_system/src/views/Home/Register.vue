@@ -49,11 +49,11 @@ export default {
             confirm_match: ()=> null,
         }
     }),
-    methods: {
-
-    },
     created() {
       this.rules.confirm_match = value => value === this.user.password || "password not matched";
+    },
+    methods: {
+
     }
 
 }

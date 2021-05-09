@@ -1,7 +1,13 @@
 <template lang="pug">
-v-app-bar.d-flex.justify-center.align-end.grey.lighten-1(app prominent flat)
-  v-container.fill-height(
-    style="width:100vw"
+v-app-bar.d-flex.justify-center.align-end(
+  app 
+  prominent 
+  flat
+  height="100"
+  color='#9ba2aa'
+)
+  v-container.ma-0.fill-height(
+    style="width:100vw;"
   )
     v-row(no-gutters)
       v-col.align-self-center(cols="2")
@@ -10,10 +16,11 @@ v-app-bar.d-flex.justify-center.align-end.grey.lighten-1(app prominent flat)
       v-col.d-flex.justify-center(cols="8")
         v-app-bar-title
           .text-center()
-            h3 願望清單
+            h3.subtitle 願望清單
             span.subtitle wish list
 
   //- v-app-bar-nav-icon(
+//- 
   //-   @click.stop="drawer = !drawer"
   //- )
   
@@ -55,15 +62,16 @@ export default {
         drawer: false,
         selected: 0,
     }),
+    computed: {
+      ...mapState(['links']),
+      
+    },
     methods: {
         Back() {
           this.$router.go(-1);
         }
     }, 
-    computed: {
-      ...mapState(['links']),
-      
-    },
+
     
  
 }
@@ -74,9 +82,13 @@ export default {
   font-weight: lighter;
   font-family: 'Times New Roman', Times, serif;
   color: white;
-  letter-spacing: 0.2rem;
+  letter-spacing: 0.2rem; 
+  height: 30px;
 }
 .title {
   font-size: 3rem;
+}
+h3.subtitle{
+  font-size: 1.6rem;
 }
 </style>

@@ -38,15 +38,15 @@ export default {
     computed: {
       ...mapState(['articles', 'is_login']),
     },
+    created() {
+      // without running 'getData' the articles would be blank
+      this.$store.dispatch('getData');
+    },
 
     methods: {
       ToInnerArticle(article_id) {
         this.$router.push({name: 'Article', params: {id: article_id}});
       }
-    },
-    created() {
-      // without running 'getData' the articles would be blank
-      this.$store.dispatch('getData');
     },
 }
 </script>

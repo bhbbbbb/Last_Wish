@@ -100,6 +100,15 @@ export default {
     //   return this.articles[this.id];
     // }
   },
+  created() {
+    this.$store.dispatch('getArticle', this.id).then((res) => {
+      this.context = res;
+      this.$store.dispatch('getUser', this.context.from).then((res) => {
+        this.author = res;
+      });
+    });
+  },
+
   methods: {
     Copy() {
       let ele = document.getElementById('url');
@@ -121,15 +130,6 @@ export default {
     SubmitNewComment() {
       console.log(Article_id);
     },
-  },
-  created() {
-    this.$store.dispatch('getArticle', this.id).then((res) => {
-      Article_id = this.id;
-      this.context = res;
-      this.$store.dispatch('getUser', this.context.from).then((res) => {
-        this.author = res;
-      });
-    });
   },
 };
 </script>
