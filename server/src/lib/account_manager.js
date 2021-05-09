@@ -108,9 +108,35 @@ module.exports = function() {
         synchronize(this.accounts_info, this.accountsPATH);
     }
 
-    // TODO: add these methods
-    // addPostsToAuthor
-    // getPostsFromUser
+    /**
+     * 
+     * @param {String} username 
+     * @param {Object} post: {String} title, {String} body and {Array} wishes
+     * @throws "user not found" exception
+     */
+    // not finished yet QQ may use article manager later
+    this.addPostsToAuthor = function(username, post) {
+        if (!this.hasUser(username)) {
+            throw "user not found";
+        }
+        let author = this.accounts_info.find(account => account['username'] == username)
+        let newPostId = articles.length;
+        let newPostData = {
+            "id": newPostId,
+            "from": author.id,
+            "body": post.body,
+            "title": post.title,
+            "date": today,
+            "wishes": post.wishes
+        };
+        this.articles.push(newArticle(newPostData));
+        author.selfPosts.push(newPostId);
+    }
+
+    // getPostsByUser: this method should return the id array of 
+    // all related posts of a user
+
+    // addCommentByAuthor
 };
 
 function newAccountInfo(newUserData) {
