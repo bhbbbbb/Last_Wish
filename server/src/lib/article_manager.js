@@ -74,7 +74,6 @@ module.exports = function() {
             throw "no such article";
         }
         let article = this.articles[Number(articleId)];
-        console.log(article,'WWW');
         let newCommentId = String(article.comments.length);
         let newCommentData = {
             "id": newCommentId,

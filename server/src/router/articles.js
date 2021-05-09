@@ -40,12 +40,9 @@ global.post('/insert', (req, res) => {
 });
 
 global.post('/addcomment',(req,res)=>{
-    console.log('Hello',req.body,req.body.author,req.body.article_id,req.body.comment);
     
     //console.log(req.body.author,req.body.article_id,req.body.comment,'QQ');
     articleManager.addCommentToArticle(req.body.author,req.body.article_id,req.body.comment);
-    //let newCommentId = TargetArticle.comments.length;
-    //req.body["id"] = String(newCommentId);
     res.send('cool');
 }
 );
