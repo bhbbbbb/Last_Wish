@@ -104,8 +104,8 @@ module.exports = function() {
         if (username == target) {
             throw "username cannot be target";
         }
-        let follower = this.accounts_info.find(account => account['username'] == username)
-        let followee = this.accounts_info.find(account => account['username'] == target)
+        let follower = this.accounts_info.find(account => account['username'] == username);
+        let followee = this.accounts_info.find(account => account['username'] == target);
         if (isFollow) {
             if (follower.followees.includes(followee.id)) {
                 throw "target already followed"
@@ -123,6 +123,50 @@ module.exports = function() {
     }
 
     /**
+     * To make an user to follow the given post
+     * 
+     * @param {String} username 
+     * @param {String} articleId 
+     * @throw "user not found", "no such article" or "article already followed" exception
+     */
+    this.addFollowedPostsToUser = function(username, articleId) {
+        if (!this.hasUser(username)) {
+            throw "user not found";
+        }
+        if (!this.articleManager.hasArticle(articleId)) {
+            throw "no such article";
+        }
+        let follower = this.accounts_info.find(account => account['username'] == username);
+        if (follower.followedPosts.include(articleId)) {
+            throw "article already followed";
+        }
+        follower.followedPosts.push(articleId);
+        synchronize(this.accounts_info, this.accountsPATH);
+    }
+
+    /**
+     * To make an user to unfollow the given post
+     * 
+     * @param {String} username 
+     * @param {String} articleId 
+     * @throw "user not found", "no such article" or "article already unfollowed" exception
+     */
+    this.removeFollowedPostsFromUser = function(username, articleId) {
+        if (!this.hasUser(username)) {
+            throw "user not found";
+        }
+        if (!this.articleManager.hasArticle(articleId)) {
+            throw "no such article";
+        }
+        let follower = this.accounts_info.find(account => account['username'] == username);
+        if (!follower.followedPosts.include(articleId)) {
+            throw "article already unfollowed";
+        }
+        follower.followedPosts.splice(follower.followedPosts.indexOf(articleId), 1);
+        synchronize(this.accounts_info, this.accountsPATH);
+    }
+
+    /**
      * @param {String} username 
      * @param {Object} article: {String} title, {String} body and {Array} wishes
      * @throws "user not found" exception
@@ -136,8 +180,11 @@ module.exports = function() {
         synchronize(this.accounts_info, this.accountsPATH);
     }
 
-    // getPostsByUser: this method should return the id array of 
-    // all related posts of a user
+    /**
+     * @param {String} username 
+     * @returns all posts relative with given user
+     * @throws "user not found" exception
+     */
     this.getPostsByUser = function(username) {
         if (!this.hasUser(username)) {
             throw "user not found";
@@ -145,7 +192,14 @@ module.exports = function() {
         let account = this.accounts_info.find(account => account.username == username);
         let posts = [];
         posts.concat(posts, account.followedPosts);
-
+        for (followee in account.followees) {
+            for (postOfFollowees in followee.selfPosts) {
+                if (!posts.includes(postOfFollowees.id)) {
+                    posts.push(postOfFollowees.id);
+                }
+            }
+        }
+        return posts;
     }
 
     /**
