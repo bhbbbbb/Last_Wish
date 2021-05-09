@@ -36,6 +36,22 @@ global.post('/insert', (req, res) => {
     });
 });
 
+global.post('/addcomment',(req,res)=>{
+    var postId = String(1);
+    var TargetArticle;
+    for(i in articles)
+        if(articles[i].id == postId){
+            TargetArticle = articles[i];
+            break;
+        }
+    let newCommentId = TargetArticle.comments.length;
+    //req.body["id"] = String(newCommentId);
+    console.log(req);
+}
+);
+
+
+
 global.post('/count', (req, res) => {
     res.send(articles.length);
 });

@@ -56,15 +56,26 @@ v-card.ma-3.pa-1(min-height="80vh" rounded="lg" v-if="author" :color="color")
     v-alert.mt-10(:value="overlay2" type="success" transition="slide-x-transition") Cloned  
   input#url(style="position: absolute; opacity: 0;")
   
+
+
+  v-text-field.ma-0.pa-1(
+    placeholder="comment here"
+    v-model="comment"
+  )
+  v-card-actions.justify-center
+    v-btn(@click="SubmitNewComment()") submit
       
 </template>
 
 <script>
 // import { mapState } from 'vuex'
+//import {apiUploadComment} from '@/store/api';
+
+var Article_id = '';
 export default {
-  name: "Article",
+  name: 'Article',
   components: {
-    CommentCard: () => import("@/components/article/CommentCard"),
+    CommentCard: () => import('@/components/article/CommentCard'),
   },
   props: {
     id: {
@@ -73,7 +84,7 @@ export default {
     },
     color: {
       type: String,
-      default: "#F5F4F0",
+      default: '#F5F4F0',
     },
   },
   data: () => ({
@@ -91,10 +102,10 @@ export default {
   },
   methods: {
     Copy() {
-      let ele = document.getElementById("url");
+      let ele = document.getElementById('url');
       ele.value = window.location.href;
       ele.select();
-      document.execCommand("copy");
+      document.execCommand('copy');
       this.overlay = true;
       setTimeout(() => {
         this.overlay = false;
@@ -107,11 +118,15 @@ export default {
         this.overlay2 = false;
       }, 1000);
     },
+    SubmitNewComment() {
+      console.log(Article_id);
+    },
   },
   created() {
-    this.$store.dispatch("getArticle", this.id).then((res) => {
+    this.$store.dispatch('getArticle', this.id).then((res) => {
+      Article_id = this.id;
       this.context = res;
-      this.$store.dispatch("getUser", this.context.from).then((res) => {
+      this.$store.dispatch('getUser', this.context.from).then((res) => {
         this.author = res;
       });
     });
