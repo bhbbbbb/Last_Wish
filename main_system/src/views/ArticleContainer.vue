@@ -12,13 +12,13 @@ v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
       @click.stop="ToInnerArticle(article.id)"
     )
 
-  v-col(
-    v-if="is_login"
-    cols="12"
-    order-sm="first"
-    :class="$vuetify.breakpoint.mobile ? 'fixed-bottom' : ''"
-  )
-    NewPost/
+  //- v-col(
+  //-   v-if="is_login"
+  //-   cols="12"
+  //-   order-sm="first"
+  //-   :class="$vuetify.breakpoint.mobile ? 'fixed-bottom' : ''"
+  //- )
+  //-   NewPost/
 
       
 </template>
@@ -31,7 +31,7 @@ export default {
     components: {
       ArticleCard: () => import('@/components/article/ArticleCard.vue'),
       RecordCard: () => import('@/components/RecordCard'),
-      NewPost: () => import('@/components/NewPost'),
+      // NewPost: () => import('@/components/NewPost'),
       NewRecord: () => import('@/components/NewRecord'),
     },
 

@@ -38,6 +38,14 @@ export const user_links = [
     //     icon: 'mdi-account-multiple'
     // },
     {
+        text: '發新貼文',
+        to: {
+            name: 'NewPost',
+            
+        },
+        icon: 'mdi-note-plus-outline',
+    },
+    {
         text: '個人頁',
         to: {
             name: 'User',
