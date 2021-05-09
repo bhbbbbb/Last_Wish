@@ -1,14 +1,17 @@
 // this class is to manage all users
 // or simply manage the data stored in json files
 const fs = require("fs");
+var ArticleManager = require('./article_manager.js');
 
 module.exports = function() {
+    this.articleManager = new ArticleManager();
+
     this.accountsPATH = __dirname + "/../data/accounts.json";
     this.accounts_info = require(this.accountsPATH);
     this.user_listPATH = __dirname + "/../data/user_list.json";
     this.user_list = require(this.user_listPATH);
-    this.articlePATH = __dirname + "/../data/articles.json";
-    this.articles = require(this.articlePATH);
+    // this.articlePATH = __dirname + "/../data/articles.json";
+    // this.articles = require(this.articlePATH);
 
     /**
      * @param {String} username 
@@ -109,32 +112,30 @@ module.exports = function() {
     }
 
     /**
-     * 
      * @param {String} username 
-     * @param {Object} post: {String} title, {String} body and {Array} wishes
+     * @param {Object} article: {String} title, {String} body and {Array} wishes
      * @throws "user not found" exception
      */
-    // not finished yet QQ may use article manager later
-    this.addPostsToAuthor = function(username, post) {
+    this.addPostsToAuthor = function(username, article) {
         if (!this.hasUser(username)) {
             throw "user not found";
         }
         let author = this.accounts_info.find(account => account['username'] == username)
-        let newPostId = articles.length;
-        let newPostData = {
-            "id": newPostId,
-            "from": author.id,
-            "body": post.body,
-            "title": post.title,
-            "date": today,
-            "wishes": post.wishes
-        };
-        this.articles.push(newArticle(newPostData));
-        author.selfPosts.push(newPostId);
+        author.selfPosts.push(this.articleManager.addArticle(author, article));
+        synchronize(this.accounts_info, this.accountsPATH);
     }
 
     // getPostsByUser: this method should return the id array of 
     // all related posts of a user
+    this.getPostsByUser = function(username) {
+        if (!this.hasUser(username)) {
+            throw "user not found";
+        }
+        let account = this.accounts_info.find(account => account.username == username);
+        let posts = [];
+        posts.concat(posts, account.followedPosts);
+
+    }
 
     // addCommentByAuthor
 };

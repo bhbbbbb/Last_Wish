@@ -7,7 +7,8 @@
             "1"
         ],
         "followees": [
-            "1","-1"
+            "1",
+            "-1"
         ],
         "followedPosts": [],
         "selfPosts": [
@@ -34,7 +35,9 @@
         "followers": [],
         "followees": [],
         "followedPosts": [],
-        "selfPosts": []
+        "selfPosts": [
+            "6"
+        ]
     },
     {
         "id": "-1",
