@@ -69,9 +69,10 @@ v-card.ma-3.pa-1(min-height="80vh" rounded="lg" v-if="author" :color="color")
 
 <script>
 // import { mapState } from 'vuex'
-//import {apiUploadComment} from '@/store/api';
+import {apiUploadComment} from '@/store/api';
 
-var Article_id = '';
+//var Article_id = '';
+
 export default {
   name: 'Article',
   components: {
@@ -103,6 +104,7 @@ export default {
   created() {
     this.$store.dispatch('getArticle', this.id).then((res) => {
       this.context = res;
+      //Article_id = this.id;
       this.$store.dispatch('getUser', this.context.from).then((res) => {
         this.author = res;
       });
@@ -128,7 +130,16 @@ export default {
       }, 1000);
     },
     SubmitNewComment() {
-      console.log(Article_id);
+      apiUploadComment({
+        author: {
+          name: this.$store.state.username,
+          id: this.$store.state.user_id,
+        },
+        article_id: String(this.id),
+        comment: this.comment,
+      });
+
+      console.log(this.$store.state.username, String(this.id), this.comment);
     },
   },
 };

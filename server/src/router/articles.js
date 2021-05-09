@@ -40,16 +40,13 @@ global.post('/insert', (req, res) => {
 });
 
 global.post('/addcomment',(req,res)=>{
-    var postId = String(1);
-    var TargetArticle;
-    for(i in articles)
-        if(articles[i].id == postId){
-            TargetArticle = articles[i];
-            break;
-        }
-    let newCommentId = TargetArticle.comments.length;
+    console.log('Hello',req.body,req.body.author,req.body.article_id,req.body.comment);
+    
+    //console.log(req.body.author,req.body.article_id,req.body.comment,'QQ');
+    articleManager.addCommentToArticle(req.body.author,req.body.article_id,req.body.comment);
+    //let newCommentId = TargetArticle.comments.length;
     //req.body["id"] = String(newCommentId);
-    console.log(req);
+    res.send('cool');
 }
 );
 

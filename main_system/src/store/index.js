@@ -12,9 +12,10 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     articles: '',
-    username: "",
+    username: '',
     is_login: false,
     links: global_links,
+    user_id:'-1',
   },
   mutations: {
     updateData(state, payload) {
@@ -22,7 +23,8 @@ export default new Vuex.Store({
     },
     login(state, payload) {
       state.is_login = true;
-      state.username = payload;
+      state.username = payload.username;
+      state.user_id = (payload.id!=undefined)?payload.id:'-1';
       state.links = user_links;
       state.links.forEach(link => {
         if (link.to.params)
@@ -67,9 +69,9 @@ export default new Vuex.Store({
     tryLogin(context, payload) {
       apiTryLogin(payload).then(() => {
 
-        context.commit('login', payload.username);
+        context.commit('login', payload);
 
-        Vue.$cookies.set('login', payload.username);
+        Vue.$cookies.set('login', payload);
 
         // router.push({ name: "UserArticle", params: { username: payload.username } });
         router.push({ name: "Articles", params: { links: context.state.user_links } });
