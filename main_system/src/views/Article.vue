@@ -60,7 +60,7 @@ v-card.ma-3.pa-1(min-height="80vh" rounded="lg" v-if="author" :color="color")
 
   v-text-field.ma-0.pa-1(
     placeholder="comment here"
-    v-model="comment"
+    v-model="Newcomments"
   )
   v-card-actions.justify-center
     v-btn(@click="SubmitNewComment()") submit
@@ -97,6 +97,7 @@ export default {
     author: undefined,
     overlay: false,
     overlay2: false,
+    Newcomments: '',
   }),
   computed: {
     // ...mapState(['articles']),
@@ -140,10 +141,14 @@ export default {
           id: this.$store.state.user_id,
         },
         article_id: String(this.id),
-        comment: this.comment,
+        comment: this.Newcomments,
       });
 
-      console.log(this.$store.state.username, String(this.id), this.comment);
+      console.log(
+        this.$store.state.username,
+        String(this.id),
+        this.Newcomments
+      );
     },
   },
 };
