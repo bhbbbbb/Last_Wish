@@ -37,7 +37,7 @@ export default {
         }
         apiUploadArticle(this.new_article).then(res => {
           // TODO : insert new post locally
-          this.$store.commit('updateData', res.data);
+          this.$store.commit('updateGlobalArticles', res.data);
         }).catch(err => {
           console.log(err)
         });

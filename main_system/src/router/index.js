@@ -26,6 +26,21 @@ const routes = [
         path: 'articles',
         name: 'Articles',
         component: () => import('@/views/ArticleContainer'),
+        beforeEnter(to, from, next) {
+          // TODO : may need to update global_articles
+          if (store.state.global_articles) next();
+          else {
+            store.dispatch('getGlobalArticles').then(() => {
+              // console.log(store.state.global_articles);
+              next();
+            }).catch(() => {
+              next(false);
+            })
+          }
+        },
+        props: () => ({
+          articles: store.state.global_articles
+        }),
       },
       {
         path: 'register',
@@ -49,8 +64,24 @@ const routes = [
         path: 'article/:id',
         name: 'Article',
         component: () => import('@/views/Article'),
+        beforeEnter(to, from, next) {
+          if (!store.state.global_articles) {
+            store.dispatch('getGlobalArticles').then(() => {
+              next();
+            }).catch(() => {
+              next(false);
+            })
+          }
+          else next();
+        },
         props: (route) => {
-          return {id: Number(route.params.id)};
+          let context = route.params.context ? 
+            route.params.context : 
+            store.state.global_articles[route.params.id];
+          return {
+            id: Number(route.params.id),
+            context: context
+          }
         }
       },
       {
@@ -85,13 +116,25 @@ const routes = [
       {
         path: 'articles',
         name: 'UserArticles',
-        component: () => import('@/views/Profile/UserArticles'),
+        component: () => import('@/views/ArticleContainer'),
         // TODO : redirect un login visiter to public profile page
         beforeEnter(to, from, next) {
-          // console.log(to, from);
-          if (store.state.is_login) next();
+          if (store.state.is_login) {
+            if (store.state.user_articles) next();
+            else {
+              store.dispatch('getUserArticles').then(() => {
+                next();
+              }).catch(() => {
+                next(false);
+              })
+            }
+          }
           else next('/articles');
-        }
+        },
+        props: () => ({
+          articles: store.state.user_articles,
+          toUser: true
+        })
       },
       {
         path: 'article/:id',
@@ -99,11 +142,28 @@ const routes = [
         component: () => import('@/views/Article'),
         beforeEnter(to, from, next) {
           isLogin().then(res => {
-            if (res) next();
+            if (res) {
+              if (!store.state.global_articles) {
+                store.dispatch('getGlobalArticles').then(() => {
+                  next();
+                }).catch(() => {
+                  next(false);
+                })
+              }
+              else next();
+            }
             else next({name: 'Article', params: {id: to.params.id}});
           })
         },
-        props: (route) => ({id: Number(route.params.id)})
+        props: (route) => {
+          let context = route.params.context ? 
+            route.params.context : 
+            store.state.global_articles[route.params.id];
+          return {
+            id: Number(route.params.id),
+            context: context
+          }
+        }
       }
     ]
   },

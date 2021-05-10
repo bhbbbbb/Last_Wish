@@ -29,8 +29,8 @@ export default {
 
     },
     created() {
-      // without running 'getData' the articles would be blank
-      this.$store.dispatch('getData');
+      // without running 'getGlobalArticles' the articles would be blank
+      this.$store.dispatch('getGlobalArticles');
     },
 
     methods: {

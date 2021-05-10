@@ -15,7 +15,7 @@ v-card.ma-3.pa-1(min-height="80vh" rounded="lg" v-if="author" :color="color")
         )
           v-list-item(@click="Copy") 複製連結
           v-list-item(@click="Clone") 加到我的清單
-          
+
     v-row(no-gutters)
       v-col.d-flex.flex-column.flex-shrink-1.align-center.ma-0(cols="4")
         v-avatar.grey.lighten-1(size="64")
@@ -80,7 +80,11 @@ export default {
   },
   props: {
     id: {
-      type: [Number],
+      type: Number,
+      required: true,
+    },
+    context: {
+      type: Object,
       required: true,
     },
     color: {
@@ -89,7 +93,7 @@ export default {
     },
   },
   data: () => ({
-    context: undefined,
+    // context: undefined,
     author: undefined,
     overlay: false,
     overlay2: false,

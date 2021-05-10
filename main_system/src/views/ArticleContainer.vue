@@ -9,7 +9,7 @@ v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
   )
     ArticleCard(
       :content="article"
-      @click.stop="ToInnerArticle(article.id)"
+      @click.stop="ToInnerArticle(article.id, idx)"
     )
 
   //- v-col(
@@ -20,39 +20,55 @@ v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
   //- )
   //-   NewPost/
 
-      
 </template>
 
 <script>
-import {mapState} from 'vuex'
+// import {mapState} from 'vuex'
 export default {
-    name: 'ArticleContainer',
-    
-    components: {
-      ArticleCard: () => import('@/components/article/ArticleCard.vue'),
-      RecordCard: () => import('@/components/RecordCard'),
-      // NewPost: () => import('@/components/NewPost'),
-      NewRecord: () => import('@/components/NewRecord'),
-    },
+  name: 'ArticleContainer',
 
-    computed: {
-      ...mapState(['articles', 'is_login']),
+  components: {
+    ArticleCard: () => import('@/components/article/ArticleCard.vue'),
+    // RecordCard: () => import('@/components/RecordCard'),
+    // NewPost: () => import('@/components/NewPost'),
+    // NewRecord: () => import('@/components/NewRecord'),
+  },
+  props: {
+    articles: {
+      required: true,
+      type: Array,
     },
-    created() {
-      // without running 'getData' the articles would be blank
-      this.$store.dispatch('getData');
-    },
+    toUser : {
+      required: false,
+      type: Boolean,
+      default: false,
+    }
+  },
+  computed: {
+    // ...mapState(['articles', 'is_login']),
+  },
+  created() {
+    // without running 'getGlobalArticles' the articles would be blank
+    // this.$store.dispatch('getGlobalArticles');
+  },
 
-    methods: {
-      ToInnerArticle(article_id) {
-        this.$router.push({name: 'Article', params: {id: article_id}});
-      }
-    },
+  methods: {
+    ToInnerArticle(article_id, idx) {
+      let to_name = this.toUser ? 'UserArticle' : 'Article';
+      this.$router.push({
+        name: to_name,
+        params: {
+          id: article_id,
+          context: this.articles[idx],
+        }
+      });
+    }
+  },
 }
 </script>
 
 <style lang="sass" scoped>
 .fixed-bottom
-  position: sticky
+  position: sticky 
   bottom: 0
 </style>
