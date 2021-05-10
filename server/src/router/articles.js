@@ -68,15 +68,16 @@ const USER_POST = [
     }
 ]
 global.post('/user_post', (req, res) => {
-    // // here may simply call getPostsByUser method of account_manager
-    // var User_id = String(-1);   //Here can be replaced with api returns current user's id
-    // var UserPost = [];
-    // for(var i = 0;i<articles.length;i++)
-    //     if(articles[i].from === User_id)
-    //         UserPost.push(articles[i]);
-    // //console.log(UserPost);
-    // res.json(UserPost);
-    // //TODO: Deal with some exception 
+     // here may simply call getPostsByUser method of account_manager
+     var User_id =  accountManager.getIdbyUsername(req.body.username);  //Here can be replaced with api returns current user's id
+     var UserPost = [];
+     for(var i = 0;i<articles.length;i++)
+         if(articles[i].from === User_id)
+             UserPost.push(articles[i]);
+     //console.log(UserPost);
+     res.json(UserPost);
+     //TODO: Deal with some exception 
+    /*
     var response;
     let posts = [];
     try {
@@ -89,7 +90,9 @@ global.post('/user_post', (req, res) => {
         return;
     }
     response = USER_POST[SUCCEED];
+    console.log(req.body,'QAQ');
     res.status(response.status).json(posts);
+    */
     return;
 });
 
