@@ -182,24 +182,40 @@ module.exports = function() {
 
     /**
      * @param {String} username 
-     * @returns all posts relative with given user
+     * @returns all posts of user's followee or user following posts
      * @throws "user not found" exception
      */
-    this.getPostsByUser = function(username) {
+    this.getFollowedPostsByUser = function(username) {
         if (!this.hasUser(username)) {
             throw "user not found";
         }
         let account = this.accounts_info.find(account => account.username == username);
         let posts = [];
-        posts.concat(posts, account.followedPosts);
-        for (followee in account.followees) {
+        posts.push.apply(posts, account.followedPosts);
+        for (followeeId in account.followees) {
+            let followee = this.accounts_info[Number(followeeId)];
             for (postOfFollowees in followee.selfPosts) {
-                if (!posts.includes(postOfFollowees.id)) {
-                    posts.push(postOfFollowees.id);
+                console.log(postOfFollowees);
+                if (!posts.includes(postOfFollowees)) {
+                    posts.push(postOfFollowees);
                 }
             }
         }
         return posts;
+    }
+    
+    /**
+     * 
+     * @param {String} username 
+     * @returns the user's post
+     * @throws "user not found" exception
+     */
+    this.getPostsByAuthor = function(username) {
+        if (!this.hasUser(username)) {
+            throw "user not found";
+        }
+        let author = this.accounts_info.find(account => account.username == username);
+        return author.selfPosts;
     }
 
     /**

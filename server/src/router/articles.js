@@ -39,17 +39,14 @@ global.post('/insert', (req, res) => {
     return;
 });
 
-global.post('/addcomment',(req,res)=>{
+global.post('/addcomment', (req, res) => {
     
     //console.log(req.body.author,req.body.article_id,req.body.comment,'QQ');
     articleManager.addCommentToArticle(req.body.author,req.body.article_id,req.body.comment);
     res.send('cool');
-}
-);
+});
 
-
-
-global.post('/count', (req, res) => {
+global.get('/count', (req, res) => {
     res.send(articles.length);
 });
 
@@ -57,52 +54,104 @@ global.get('/', (req, res) => {
     res.json(articleManager.getAllArticles());
 });
 
-global.get('/user_post',(req,res)=>{
-    // here may simply call getPostsByUser method of account_manager
-    var User_id = String(-1);   //Here can be replaced with api returns current user's id
-    var UserPost = [];
-    for(var i = 0;i<articles.length;i++)
-        if(articles[i].from === User_id)
-            UserPost.push(articles[i]);
-    //console.log(UserPost);
-    res.json(UserPost);
-    //TODO: Deal with some exception 
-}
-)
-
-global.get('/followed_post',(req,res)=>{
-    var User_id = String(0);   //Here can be replaced with api returns current user's id
-    var F_User = [];
-    var F_Post = [];
-    var Total_Post = [];
-    for(var i = 0;i<articles.length;i++)
-        if(accounts[i].id === User_id){
-            F_User=accounts[i].followees;
-            F_Post=accounts[i].followedPosts;
-            //console.log(F_User,F_Post,F_User[1]);
-            break;
+const BAD_REQUEST = 1;
+const USER_POST = [
+    {
+        status: 200
+    },
+    {
+        status: 400,  // bad request
+        body: {
+            err_code: BAD_REQUEST,
+            err_msg: ""
         }
-    
-    if(F_User.length)
-    for(var i = 0;i<F_User.length;i++)
-        for(var k in articles){
-            if(articles[k].from==F_User[i])
-                Total_Post.push(articles[k]);
-            console.log(articles[k].from,F_User[i]);
-            }
+    }
+]
+global.get('/user_post', (req, res) => {
+    // // here may simply call getPostsByUser method of account_manager
+    // var User_id = String(-1);   //Here can be replaced with api returns current user's id
+    // var UserPost = [];
+    // for(var i = 0;i<articles.length;i++)
+    //     if(articles[i].from === User_id)
+    //         UserPost.push(articles[i]);
+    // //console.log(UserPost);
+    // res.json(UserPost);
+    // //TODO: Deal with some exception 
+    var response;
+    let posts = [];
+    try {
+        accountManager.getPostsByAuthor(req.query.username).forEach(articleId => {
+            posts.push(articleManager.getArticleById(articleId));
+        });
+    } catch (error) {
+        response = USER_POST[BAD_REQUEST];
+        res.status(response.status).json(response.body);
+        return;
+    }
+    response = USER_POST[SUCCEED];
+    res.status(response.status).json(posts);
+    return;
+});
 
-    if(F_Post.length)
-    for(var j in F_Post)
-        for(var k in articles)
-            if(articles[k].id==F_Post[j])
-                Total_Post.push(articles[k]);
-    //TODO: Deal with some exception 
-    res.json(Total_Post);
-}
-)
+const USER_NOT_FOUND = 1;
+const FOLLOWED_POST = [
+    {
+        status: 200
+    },
+    {
+        status: 400,  // bad request
+        body: {
+            err_code: BAD_REQUEST,
+            err_msg: ""
+        }
+    }
+]
+global.get('/followed_post', (req, res) => {
+    // var User_id = String(0);   //Here can be replaced with api returns current user's id
+    // var F_User = [];
+    // var F_Post = [];
+    // var Total_Post = [];
+    // for(var i = 0;i<articles.length;i++)
+    //     if(accounts[i].id === User_id){
+    //         F_User=accounts[i].followees;
+    //         F_Post=accounts[i].followedPosts;
+    //         //console.log(F_User,F_Post,F_User[1]);
+    //         break;
+    //     }
+    
+    // if(F_User.length)
+    // for(var i = 0;i<F_User.length;i++)
+    //     for(var k in articles){
+    //         if(articles[k].from==F_User[i])
+    //             Total_Post.push(articles[k]);
+    //         console.log(articles[k].from,F_User[i]);
+    //         }
+
+    // if(F_Post.length)
+    // for(var j in F_Post)
+    //     for(var k in articles)
+    //         if(articles[k].id==F_Post[j])
+    //             Total_Post.push(articles[k]);
+    // //TODO: Deal with some exception 
+    // res.json(Total_Post);
+    var response;
+    let posts = [];
+    try {
+        accountManager.getFollowedPostsByUser(req.query.username).forEach(articleId => {
+            posts.push(articleManager.getArticleById(articleId));
+        });
+    } catch (error) {
+        response = FOLLOWED_POST[USER_NOT_FOUND];
+        response.body.err_msg = error;
+        res.status(response.status).json(response.body);
+        return;
+    }
+    response = FOLLOWED_POST[SUCCEED];
+    res.status(response.status).json(posts);
+    return;
+});
 
 const SUCCEED = 0;
-const USER_NOT_FOUND = 1;
 const POST = [
     {
         status: 200

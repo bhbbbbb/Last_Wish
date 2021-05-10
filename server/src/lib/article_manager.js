@@ -9,11 +9,11 @@ module.exports = function() {
     this.articles = require(this.articlePATH);
 
     /**
-     * @param {String} id 
+     * @param {String} articleId 
      * @returns if there is an article with such id
      */
-    this.hasArticle = function(id) {
-        return Number(id) <= this.articles.length;
+    this.hasArticle = function(articleId) {
+        return Number(articleId) <= this.articles.length;
     }
 
     /**
@@ -61,6 +61,20 @@ module.exports = function() {
      */
     this.getAllArticles = function() {
         return this.articles;
+    }
+    
+    /**
+     * 
+     * @param {String} articleId 
+     * @returns the article with given article id
+     * @trhows "no such article" exception
+     */
+    this.getArticleById = function(articleId) {
+        if (!this.hasArticle(articleId)) {
+            throw "no such article";
+        }
+        console.log(articleId);
+        return this.articles.find(article => article.id == articleId);
     }
 
     /**

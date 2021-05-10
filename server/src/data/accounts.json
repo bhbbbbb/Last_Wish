@@ -23,7 +23,9 @@
         "followees": [
             "0"
         ],
-        "followedPosts": [],
+        "followedPosts": [
+            "6"
+        ],
         "selfPosts": [
             "1"
         ]
