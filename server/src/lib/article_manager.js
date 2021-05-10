@@ -32,7 +32,7 @@ module.exports = function() {
             "wishes": article.wishes
         };
         this.articles.push(newArticle(newPostData));
-        synchronize(this.articles, this.articlePATH)
+        synchronize(this.articles, this.articlePATH);k
         return newPostId;
     }
 
@@ -95,6 +95,7 @@ module.exports = function() {
             "from": author.id
         }
         article.comments.push(newComment(newCommentData));
+        synchronize(this.articles, this.articlePATH);
     }
 }
 
