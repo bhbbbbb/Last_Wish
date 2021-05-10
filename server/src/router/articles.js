@@ -35,7 +35,7 @@ global.post('/insert', (req, res) => {
     //     if (err) console.log(err);
     // });
     articleManager.addArticle(req.body);
-    res.sendStatus(200);
+    res.status(200).json(articleManager.getAllArticles());
     return;
 });
 
