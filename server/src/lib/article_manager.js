@@ -73,7 +73,6 @@ module.exports = function() {
         if (!this.hasArticle(articleId)) {
             throw "no such article";
         }
-        console.log(articleId);
         return this.articles.find(article => article.id == articleId);
     }
 

@@ -7,12 +7,11 @@
             "1"
         ],
         "followees": [
-            "1",
-            "-1"
+            "1"
         ],
         "followedPosts": [],
         "selfPosts": [
-            "0"
+            "0", "2", "4"
         ]
     },
     {
@@ -38,7 +37,7 @@
         "followees": [],
         "followedPosts": [],
         "selfPosts": [
-            "6"
+            "5", "6"
         ]
     },
     {
