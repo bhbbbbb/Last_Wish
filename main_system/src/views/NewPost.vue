@@ -17,7 +17,7 @@ v-card.ma-3.pa-3(min-height="10vh" rounded="lg" elevation="5")
 
 <script>
 import {mapState} from 'vuex';
-import {apiUploadArticle} from '@/store/api';
+import {apiUploadArticle, apiUserPosts} from '@/store/api';
 export default {
   name: 'NewPost',
   data: () => ({
@@ -41,6 +41,14 @@ export default {
         .then((res) => {
           // TODO : insert new post locally
           this.$store.commit('updateGlobalArticles', res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      apiUserPosts({username: this.$store.state.username})
+        .then((res) => {
+          this.$store.commit('updateUserArticles', res.data);
         })
         .catch((err) => {
           console.log(err);
