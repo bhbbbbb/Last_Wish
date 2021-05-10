@@ -24,7 +24,7 @@ export const apiUploadComment = (data) =>articleRequest.post('/articles/addcomme
 export const apiUserPosts = () => articleRequest.get('/articles/user_post');
 export const apiUserFollowedPosts = () => articleRequest.get('/articles/followed_post');
 
-
+export const apiGetUserId = (data) => userRequest.post('/get_id_by_name',data);
 export const apiTryLogin = (data) => userRequest.post('/try_login', data);
 export const apiWho = () => userRequest.get('/who');
 export const apiLogout = () => userRequest.get('/logout'); // clear the session on server

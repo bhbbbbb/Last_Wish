@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { apiGetArticles, apiGetPublicInfo, apiLogout, apiTryLogin, apiUserPosts } from './api';
+import { apiGetArticles, apiGetPublicInfo, apiLogout, apiTryLogin, apiUserPosts, apiGetUserId } from './api';
 // import { apiGetArticles } from './api.js'
 import router from '@/router/index';
 import { global_links, user_links } from './links.js'
@@ -28,7 +28,6 @@ export default new Vuex.Store({
     login(state, payload) {
       state.is_login = true;
       state.username = payload;
-      state.user_id = (payload.id!=undefined)?payload.id:'-1';
       state.links = user_links;
       state.links.forEach(link => {
         if (link.to.params)
@@ -39,6 +38,9 @@ export default new Vuex.Store({
       state.is_login = false;
       state.username = '';
       state.links = global_links;
+    },
+    setid(state,payload){
+      state.user_id = payload;
     }
 
   },
@@ -80,11 +82,18 @@ export default new Vuex.Store({
 
     tryLogin(context, payload) {
       apiTryLogin(payload).then(() => {
+        //var tmp = [];
 
         context.commit('login', payload.username);
 
         Vue.$cookies.set('login', payload.username);
-
+        console.log(payload.username);
+        //var str = payload.username;
+        apiGetUserId({name: payload.username})
+        .then(res=>{
+          //console.log(String(res.data),'QWQ');
+          context.commit('setid',String(res.data));
+        });
         // router.push({ name: "UserArticle", params: { username: payload.username } });
         router.push({ name: "Articles", params: { links: context.state.user_links } });
         return;
