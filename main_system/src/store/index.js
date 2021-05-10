@@ -43,7 +43,7 @@ export default new Vuex.Store({
   },
   actions: {
     async getData(context) {
-      if (context.state.articles) return;
+      //if (context.state.articles) return;
       
       await apiGetArticles().then(res => {
         context.commit('updateData', res.data);
