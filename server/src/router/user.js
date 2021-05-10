@@ -251,6 +251,11 @@ user.get('/resolve_line_login', (req, res) => {
     res.send("<script>window.close();</script>");
 });
 
+user.post('/get_id_by_name',(req,res)=>{
+    res.send(accountManager.getIdbyUsername(req.body.name));
+
+})
+
 function genNonce(length) {
     let result           = [];
     let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

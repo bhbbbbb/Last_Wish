@@ -80,7 +80,7 @@ module.exports = function() {
      */
     this.getIdbyUsername = function(username) {
         if (!this.hasUser(username)) {
-            return -1;
+            return "-1";
             throw "user not found";
         }
         return this.user_list[username];
