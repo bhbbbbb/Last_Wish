@@ -45,7 +45,7 @@ module.exports = function() {
         let newArticleId = String(this.articles.length);
         let newArticleData = {
             "id": newArticleId,
-            "from": "-1",
+            "from": article.from,
             "body": article.body,
             "title": article.title,
             "date": today,

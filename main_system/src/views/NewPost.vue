@@ -17,32 +17,35 @@ v-card.ma-3.pa-3(min-height="10vh" rounded="lg" elevation="5")
 
 <script>
 import {mapState} from 'vuex';
-import {apiUploadArticle} from '@/store/api'
+import {apiUploadArticle} from '@/store/api';
 export default {
-    name: "NewPost",
-    data: () => ({
-      new_article: {
-        title: "",
-        body: "",
-      }
-    }),
-    computed: {
-      ...mapState(['articles']),
+  name: 'NewPost',
+  data: () => ({
+    new_article: {
+      title: '',
+      body: '',
+      from: '',
     },
-    methods: {
-      SubmitNewArticle() {
-        if (!this.new_article.title || !this.new_article.body) {
-          // todo : error
-          return;
-        }
-        apiUploadArticle(this.new_article).then(res => {
+  }),
+  computed: {
+    ...mapState(['articles']),
+  },
+  methods: {
+    SubmitNewArticle() {
+      this.new_article.from = this.$store.state.user_id;
+      if (!this.new_article.title || !this.new_article.body) {
+        // todo : error
+        return;
+      }
+      apiUploadArticle(this.new_article)
+        .then((res) => {
           // TODO : insert new post locally
           this.$store.commit('updateGlobalArticles', res.data);
-        }).catch(err => {
-          console.log(err)
+        })
+        .catch((err) => {
+          console.log(err);
         });
-
-      }
     },
-}
+  },
+};
 </script>
