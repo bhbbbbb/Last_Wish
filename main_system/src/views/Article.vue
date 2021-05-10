@@ -183,7 +183,13 @@ export default {
         article_id: String(this.id),
         comment: this.Newcomments,
       });
-
+      console.log(this.context);
+      this.context.comments.push({
+        body: this.Newcomments,
+        date: 'Today',
+        from: this.$store.state.user_id,
+        id: String(this.context.comments.length),
+      });
       console.log(
         this.$store.state.username,
         String(this.id),
