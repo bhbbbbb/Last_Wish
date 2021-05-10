@@ -73,7 +73,7 @@ export default new Vuex.Store({
 
     async getUserArticles(context) {
       if (context.state.user_articles) return;
-      await apiUserPosts().then(res => {
+      await apiUserPosts({username:context.state.username}).then(res => {
         context.commit('updateUserArticles', res.data);
       }).catch(err => {
         console.log(err);

@@ -21,7 +21,7 @@ const userRequest = axios.create({
 export const apiGetArticles = () => articleRequest.get('/');
 export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
 export const apiUploadComment = (data) =>articleRequest.post('/addcomment',data);
-export const apiUserPosts = () => articleRequest.get('/user_post');
+export const apiUserPosts = (data) => articleRequest.post('/user_post',data);
 export const apiUserFollowedPosts = () => articleRequest.get('/followed_post');
 
 
