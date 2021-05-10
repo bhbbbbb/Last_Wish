@@ -6,24 +6,26 @@ const devURL = 'http://localhost:2222';
 let baseURL = process.env.NODE_ENV === 'development' ? devURL : proURL;
 
 const articleRequest = axios.create({
-    baseURL: baseURL,
+    baseURL: baseURL + '/articles',
     headers: { 'Content-Type': 'application/json' },
     // headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 })
 
 const userRequest = axios.create({
-    baseURL: baseURL + "/user",
+    baseURL: baseURL + '/user',
     withCredentials: true,
     headers: { 'Content-Type': 'application/json' },
 })
 
+/********************** Call article.js **********************/
+export const apiGetArticles = () => articleRequest.get('/');
+export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
+export const apiUploadComment = (data) =>articleRequest.post('/addcomment',data);
+export const apiUserPosts = () => articleRequest.get('/user_post');
+export const apiUserFollowedPosts = () => articleRequest.get('/followed_post');
 
-export const apiGetArticles = () => articleRequest.get('/articles');
-export const apiUploadArticle = (data) => articleRequest.post('/articles/insert', data);
-export const apiUploadComment = (data) =>articleRequest.post('/articles/addcomment',data);
-export const apiUserPosts = () => articleRequest.get('/articles/user_post');
-export const apiUserFollowedPosts = () => articleRequest.get('/articles/followed_post');
 
+/********************** Call account.js **********************/
 export const apiGetUserId = (data) => userRequest.post('/get_id_by_name',data);
 export const apiTryLogin = (data) => userRequest.post('/try_login', data);
 export const apiWho = () => userRequest.get('/who');
