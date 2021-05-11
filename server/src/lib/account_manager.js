@@ -76,11 +76,10 @@ module.exports = function() {
     /**
      * @param {String} username 
      * @returns id of given username
-     * // @throws "user not found" exception
      */
     this.getIdbyUsername = function(username) {
         if (!this.hasUser(username)) {
-            return "-1";
+            return "0";
             // throw "user not found";
         }
         return this.user_list[username];
