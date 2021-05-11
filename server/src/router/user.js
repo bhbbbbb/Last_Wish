@@ -70,14 +70,14 @@ const REGISTER = [
         status: 200
     },
     {
-        status: 401,
+        status: 201,
         body: {
             err_code: DUPLICATED_USER,
             err_msg: "duplicated user"
         }
     }
 ];
-user.post('/register', sess, (req, res) => {
+user.post('/register', (req, res) => {
     var response;
     let trimmedUsername = req.body.username.trim();
     let trimmedPassword = req.body.password.trim();
