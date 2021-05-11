@@ -73,7 +73,10 @@ export default {
         // todo show error
         return;
       }
-      this.tryLogin(this.user);
+      this.tryLogin({
+        username: this.user.username,
+        password: this.user.password,
+      });
     },
 
     Dev() {
