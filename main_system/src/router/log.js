@@ -15,7 +15,7 @@ export const isLogin = async () => {
       let cookies_login = Vue.$cookies.get('login');
       if (cookies_login) {
         try {
-          let who = await apiWho().then(res => res.data)
+          let who = await apiWho({username:cookies_login}).then(res => res.data)
           if (cookies_login === who) {
             store.commit('login', who);
             return true
