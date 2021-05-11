@@ -1,52 +1,42 @@
 [
     {
         "id": "0",
-        "username": "Dev",
-        "password": "",
-        "followers": [
-            "1"
-        ],
-        "followees": [
-            "1"
-        ],
-        "followedPosts": [],
-        "selfPosts": [
-            "0", "2", "4"
-        ]
-    },
-    {
-        "id": "1",
-        "username": "Smark",
-        "password": "123",
-        "followers": [],
-        "followees": [
-            "0"
-        ],
-        "followedPosts": [
-            "6"
-        ],
-        "selfPosts": [
-            "1"
-        ]
-    },
-    {
-        "id": "2",
-        "username": "蕭又瑜",
-        "password": "Ub3f2a424913f02e099df97bcd74c45df",
-        "followers": [],
-        "followees": [],
-        "followedPosts": [],
-        "selfPosts": [
-            "5", "6"
-        ]
-    },
-    {
-        "id": "-1",
         "username": "Unknown",
         "password": "",
         "followers": [],
         "followees": [],
         "followedPosts": [],
+        "selfPosts": [
+            "0"
+        ]
+    },
+    {
+        "id": "1",
+        "username": "Dev",
+        "password": "",
+        "followers": [],
+        "followees": [],
+        "followedPosts": [],
         "selfPosts": []
+    },
+    {
+        "id": "2",
+        "username": "Smark",
+        "password": "123",
+        "followers": [],
+        "followees": [],
+        "followedPosts": [],
+        "selfPosts": []
+    },
+    {
+        "id": "3",
+        "username": "yuyu",
+        "password": "isengineer",
+        "followers": [],
+        "followees": [],
+        "followedPosts": [],
+        "selfPosts": [
+            "1"
+        ]
     }
 ]

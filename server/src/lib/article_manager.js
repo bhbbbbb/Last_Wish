@@ -32,28 +32,8 @@ module.exports = function() {
             "wishes": article.wishes
         };
         this.articles.push(newArticle(newPostData));
-        synchronize(this.articles, this.articlePATH);k
+        synchronize(this.articles, this.articlePATH);
         return newPostId;
-    }
-
-    /**
-     * Overloading method to post a article anonymously
-     * @param {Object} article = {body, title, wishes}
-     * @returns {String} the new article id
-     */
-    this.addArticle = function(article) {
-        let newArticleId = String(this.articles.length);
-        let newArticleData = {
-            "id": newArticleId,
-            "from": article.from,
-            "body": article.body,
-            "title": article.title,
-            "date": today,
-            "wishes": article.wishes
-        };
-        this.articles.push(newArticle(newArticleData));
-        synchronize(this.articles, this.articlePATH)
-        return newArticleId;
     }
 
     /**

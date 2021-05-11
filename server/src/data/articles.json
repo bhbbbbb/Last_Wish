@@ -26,85 +26,14 @@
     },
     {
         "id": "1",
-        "from": "1",
-        "body": "1324123512354234",
-        "title": "我想要環遊世界",
-        "date": "4/16 Jan",
+        "from": "3",
+        "body": "Good Night",
+        "title": "Yuyu want to say:",
+        "date": "May/12 Wed",
         "wishes": [
-            "wish 1",
-            "wish 2"
+            "w1",
+            "w2"
         ],
-        "comments": [
-            {
-                "id": "0",
-                "date": "4/16 Jan",
-                "body": "this is a comment",
-                "from": "1"
-            },
-            {
-                "id": "1",
-                "date": "4/16 Jan",
-                "body": "this is a comment",
-                "from": "0"
-            }
-        ]
-    },
-    {
-        "title": "d",
-        "body": "h",
-        "id": "2",
-        "from": "0",
-        "date": "May 8, Sun"
-    },
-    {
-        "title": "f",
-        "body": "b",
-        "id": "3",
-        "from": "-1",
-        "date": "May 8, Sun"
-    },
-    {
-        "id": "4",
-        "from": "0",
-        "body": "There",
-        "title": "Hello",
-        "date": "May 9, Sun",
-        "wishes": [
-            "wish1",
-            "wish2"
-        ],
-        "comments": []
-    },
-    {
-        "id": "5",
-        "from": "2",
-        "body": "There",
-        "title": "Hello",
-        "date": "May 9, Sun",
-        "wishes": [
-            "wish1",
-            "wish2"
-        ],
-        "comments": []
-    },
-    {
-        "id": "6",
-        "from": "2",
-        "body": "There",
-        "title": "Hello",
-        "date": "May 9, Sun",
-        "wishes": [
-            "wish1",
-            "wish2"
-        ],
-        "comments": []
-    },
-    {
-        "id": "7",
-        "from": "-1",
-        "body": "am I",
-        "title": "Who",
-        "date": "May/9 Sun",
         "comments": []
     }
 ]

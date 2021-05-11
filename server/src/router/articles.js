@@ -3,7 +3,7 @@ const accountsPATH = __dirname + "/../data/accounts.json";
 var express = require('express');
 var global = express.Router();
 // const { stringify } = require('querystring');
-var articles = require(articlePATH);
+// var articles = require(articlePATH);
 // var accounts = require(accountsPATH);
 // The line above can be replaced with
 var AccountManager = require('../lib/account_manager.js');
@@ -15,27 +15,39 @@ var articleManager = new ArticleManager();
 // it would be more elegant to utilize the class 
 // but maybe update later today
 
-var d = new Date();
-var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-var today = month[d.getMonth()] + ' ' + String(d.getDate()) + ', ' + days[d.getDay()];
+// var d = new Date();
+// var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+// var today = month[d.getMonth()] + ' ' + String(d.getDate()) + ', ' + days[d.getDay()];
 
 // add a post anonymously
+const SUCCEED = 0;
+const USER_NOT_FOUND = 1;
+const INSERT = [
+    {
+        status: 200
+    },
+    {
+        status: 400,  // bad request
+        body: {
+            err_code: USER_NOT_FOUND,
+            err_msg: "user not found"
+        }
+    }
+]
 global.post('/insert', (req, res) => {
-    // here may simply call addPostsToAuthor method of account_manager
-    // let newArticleId = articles.length;
-    // req.body["id"] = String(newArticleId);
-    // req.body["from"] = String(-1);
-    // req.body["date"] = today;
-
-    // articles.push(req.body);
-    // let str = JSON.stringify(articles, null, 4);
-    // res.send(str)
-    // fs.writeFile(articlePATH, str, (err) => {
-    //     if (err) console.log(err);
-    // });
-    articleManager.addArticle(req.body);
-    res.status(200).json(articleManager.getAllArticles());
+    var response;
+    try {
+        accountManager.addPostsToAuthor(
+                req.body.username, req.body.article);
+    } catch (error) {
+        console.log(error);
+        response = INSERT[USER_NOT_FOUND];
+        res.status(response.status).json(response.body);
+        return;
+    }
+    response = INSERT[SUCCEED];
+    res.status(response.status).json(response.body);
     return;
 });
 
@@ -44,10 +56,6 @@ global.post('/addcomment', (req, res) => {
     //console.log(req.body.author,req.body.article_id,req.body.comment,'QQ');
     articleManager.addCommentToArticle(req.body.author,req.body.article_id,req.body.comment);
     res.send('cool');
-});
-
-global.get('/count', (req, res) => {
-    res.send(articles.length);
 });
 
 global.get('/', (req, res) => {
@@ -69,14 +77,13 @@ const USER_POST = [
 ]
 global.post('/user_post', (req, res) => {
     // here may simply call getPostsByUser method of account_manager
-    var User_id = accountManager.getIdbyUsername(req.body.username);   //Here can be replaced with api returns current user's id
-    var UserPost = [];
-    for(var i = 0;i<articles.length;i++)
-        if(articles[i].from === User_id)
-            UserPost.push(articles[i]);
-    //console.log(UserPost);
-    res.json(UserPost);
-    /*
+    // var User_id = accountManager.getIdbyUsername(req.body.username);   //Here can be replaced with api returns current user's id
+    // var UserPost = [];
+    // for(var i = 0;i<articles.length;i++)
+    //     if(articles[i].from === User_id)
+    //         UserPost.push(articles[i]);
+    // //console.log(UserPost);
+    // res.json(UserPost);
     // //TODO: Deal with some exception 
     var response;
     let posts = [];
@@ -92,11 +99,9 @@ global.post('/user_post', (req, res) => {
     response = USER_POST[SUCCEED];
     console.log(posts);
     res.status(response.status).json(posts);
-    */
     return;
 });
 
-const USER_NOT_FOUND = 1;
 const FOLLOWED_POST = [
     {
         status: 200
@@ -151,35 +156,6 @@ global.get('/followed_post', (req, res) => {
     }
     response = FOLLOWED_POST[SUCCEED];
     res.status(response.status).json(posts);
-    return;
-});
-
-const SUCCEED = 0;
-const POST = [
-    {
-        status: 200
-    },
-    {
-        status: 400,  // bad request
-        body: {
-            err_code: USER_NOT_FOUND,
-            err_msg: "user not found"
-        }
-    }
-]
-// a user post a post
-global.post('/post', (req, res) => {
-    var response;
-    try {
-        accountManager.addPostsToAuthor(
-                req.body.username, req.body.article);
-    } catch (error) {
-        response = POST[USER_NOT_FOUND];
-        res.status(response.status).json(response.body);
-        return;
-    }
-    response = POST[SUCCEED];
-    res.status(response.status).json(response.body);
     return;
 });
 
