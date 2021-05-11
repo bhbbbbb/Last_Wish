@@ -42,28 +42,12 @@ v-card.ma-3.pa-1(min-height="80vh" rounded="lg" v-if="author" :color="color")
           :key="comment.id"
           :context="comment"
         )
-  v-overlay.align-start(
-    :value="overlay"
+    v-overlay.align-start(
+    :value="show_info"
     absolute
     opacity="0"
   )                              
-    v-alert.mt-10(:value="overlay" type="success" transition="slide-x-transition") Copied
-
-  v-overlay.align-start(
-    :value="overlay2"
-    absolute
-    opacity="0"
-  )                              
-    v-alert.mt-10(:value="overlay2" type="success" transition="slide-x-transition") Cloned  
-  input#url(style="position: absolute; opacity: 0;")
-  
-  v-overlay.align-start(
-    :value="overlay3"
-    absolute
-    opacity="0"
-  )                              
-    v-alert.mt-10(:value="overlay3" type="error" transition="slide-x-transition") Failed
-  input#url(style="position: absolute; opacity: 0;")
+    v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{reg_info}}
 
   v-text-field.ma-0.pa-1(
     placeholder="comment here"
@@ -71,7 +55,7 @@ v-card.ma-3.pa-1(min-height="80vh" rounded="lg" v-if="author" :color="color")
   )
   v-card-actions.justify-center
     v-btn(@click="SubmitNewComment()") submit
-      
+  input#url(style="position: absolute; opacity: 0;")
 </template>
 
 <script>
@@ -102,9 +86,9 @@ export default {
   data: () => ({
     // context: undefined,
     author: undefined,
-    overlay: false,
-    overlay2: false,
-    overlay3: false,
+    show_info: false,
+    info_type: 'success',
+    reg_info: '',
     Newcomments: '',
   }),
   computed: {
@@ -130,10 +114,7 @@ export default {
       ele.value = window.location.href;
       ele.select();
       document.execCommand('copy');
-      this.overlay = true;
-      setTimeout(() => {
-        this.overlay = false;
-      }, 1000);
+      this.Show_info('Copied', 'success');
     },
     Clone() {
       console.log(this.context);
@@ -143,10 +124,7 @@ export default {
         this.$store.state.user_id == this.author.id
         // TODO : Checkout if user have cloned this wishes before
       ) {
-        this.overlay3 = true;
-        setTimeout(() => {
-          this.overlay3 = false;
-        }, 1000);
+        this.Show_info('Failed', 'error');
       } else {
         var new_article = this.context;
         new_article.from = this.$store.state.user_id;
@@ -168,10 +146,7 @@ export default {
             console.log(err);
           });
 
-        this.overlay2 = true;
-        setTimeout(() => {
-          this.overlay2 = false;
-        }, 1000);
+        this.Show_info('Cloned', 'success');
       }
     },
     SubmitNewComment() {
@@ -190,11 +165,21 @@ export default {
         from: this.$store.state.user_id,
         id: String(this.context.comments.length),
       });
-      console.log(
-        this.$store.state.username,
-        String(this.id),
-        this.Newcomments
-      );
+    },
+    Show_info(Info, infoType) {
+      /**
+       *There are 4 types of infoType in default:
+       *success
+       *info
+       *warning
+       *error
+       */
+      this.reg_info = Info;
+      this.info_type = infoType;
+      this.show_info = true;
+      setTimeout(() => {
+        this.show_info = false;
+      }, 1000);
     },
   },
 };
