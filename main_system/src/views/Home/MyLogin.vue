@@ -52,7 +52,7 @@ export default {
     user: {
       username: '',
       password: '',
-      id: '-1',
+      id: '0',
     },
     rules: {
       regex: (value) => {
@@ -83,7 +83,7 @@ export default {
       this.tryLogin({
         username: 'Dev',
         password: '',
-        id: '0',
+        id: '1',
       });
     },
 

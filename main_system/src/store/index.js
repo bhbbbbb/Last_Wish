@@ -91,7 +91,7 @@ export default new Vuex.Store({
         //var str = payload.username;
         apiGetUserId({name: payload.username})
         .then(res=>{
-          //console.log(String(res.data),'QWQ');
+          console.log(String(res.data),'QWQ');
           context.commit('setid',String(res.data));
         });
         // router.push({ name: "UserArticle", params: { username: payload.username } });

@@ -37,7 +37,10 @@ export default {
         // todo : error
         return;
       }
-      apiUploadArticle(this.new_article)
+      apiUploadArticle({
+        username: this.$store.state.username,
+        article: this.new_article,
+      })
         .then((res) => {
           // TODO : insert new post locally
           this.$store.commit('updateGlobalArticles', res.data);

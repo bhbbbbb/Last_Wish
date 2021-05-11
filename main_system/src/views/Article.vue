@@ -120,7 +120,7 @@ export default {
       console.log(this.context);
       //console.log(this.articles[this.id]);
       if (
-        this.$store.state.user_id == '-1' ||
+        this.$store.state.user_id == '0' ||
         this.$store.state.user_id == this.author.id
         // TODO : Checkout if user have cloned this wishes before
       ) {
@@ -130,7 +130,10 @@ export default {
         new_article.from = this.$store.state.user_id;
         //new_article.push({title: 'QQ'});
         //Post this article but from is set to user's id
-        apiUploadArticle(new_article)
+        apiUploadArticle({
+          username: this.$store.state.username,
+          article: new_article,
+        })
           .then((res) => {
             this.$store.commit('updateGlobalArticles', res.data);
           })
