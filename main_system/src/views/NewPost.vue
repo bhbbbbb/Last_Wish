@@ -19,6 +19,7 @@ v-card.ma-3.pa-3(min-height="10vh" rounded="lg" elevation="5")
     v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
   v-card-actions.justify-center
     v-btn(@click="SubmitNewArticle()") submit
+  v-checkbox(v-model='checkbox' label='匿名')
 </template>
 
 <script>
@@ -35,20 +36,22 @@ export default {
     show_info: false,
     info_type: 'success',
     infos: '',
+    checkbox: false,
   }),
   computed: {
     ...mapState(['articles']),
   },
   methods: {
     SubmitNewArticle() {
-      this.new_article.from = this.$store.state.user_id;
+      if (this.checkbox) this.new_article.from = '0';
+      else this.new_article.from = this.$store.state.user_id;
       if (!this.new_article.title || !this.new_article.body) {
         // todo : error
         this.Show_info('Blank data!', 'error');
         return;
       }
       apiUploadArticle({
-        username: this.$store.state.username,
+        username: this.checkbox ? 'Unknown' : this.$store.state.username,
         article: this.new_article,
       })
         .then((res) => {
