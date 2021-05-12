@@ -43,11 +43,11 @@ v-card.ma-3.pa-1(min-height="80vh" rounded="lg" v-if="author" :color="color")
           :context="comment"
         )
     v-overlay.align-start(
-    :value="show_info"
-    absolute
-    opacity="0"
-  )                              
-    v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
+      :value="show_info"
+      absolute
+      opacity="0"
+    )                              
+      v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
 
   v-text-field.ma-0.pa-1(
     placeholder="comment here"
@@ -117,7 +117,7 @@ export default {
       this.Show_info('Copied', 'success');
     },
     Clone() {
-      console.log(this.context);
+      // console.log(this.context);
       //console.log(this.articles[this.id]);
       if (
         this.$store.state.user_id == '0' ||
@@ -161,7 +161,7 @@ export default {
         article_id: String(this.id),
         comment: this.Newcomments,
       });
-      console.log(this.context);
+      // console.log(this.context);
       this.context.comments.push({
         body: this.Newcomments,
         date: 'Today',

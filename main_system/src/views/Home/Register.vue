@@ -1,35 +1,35 @@
 <template lang="pug">
 v-card(min-height="70vh" rounded="lg" flat)
-    v-card-title.justify-center {{ Title }}
-    v-card-text.justify-center
-      h2 your user name
-      v-text-field(
-          v-model="user.username"
-          label=""
-          :rules="[rules.empty, rules.regex]"
-      )
-      br/
-      h2 your password
-      v-text-field(
-          v-model.lazy="user.password"
-          label=""
-          type="password"
-          :rules="[rules.empty, rules.regex]"
-      )
-      br/
-      h2 confirm your password
-      v-text-field(
-          v-model.lazy="user.password_confirm"
-          label=""
-          type="password"
-          :rules="[rules.empty, rules.regex, rules.confirm_match]"
-      )
-      
-      v-card-actions.justify-center
-        v-btn(@click="UplooadRegiser()") confirm
-      
+  v-card-title.justify-center {{ Title }}
+  v-card-text.justify-center
+    h2 your user name
+    v-text-field(
+      v-model="user.username"
+      label=""
+      :rules="[rules.empty, rules.regex]"
+    )
+    br/
+    h2 your password
+    v-text-field(
+      v-model.lazy="user.password"
+      label=""
+      type="password"
+      :rules="[rules.empty, rules.regex]"
+    )
+    br/
+    h2 confirm your password
+    v-text-field(
+      v-model.lazy="user.password_confirm"
+      label=""
+      type="password"
+      :rules="[rules.empty, rules.regex, rules.confirm_match]"
+    )
 
-    v-overlay.align-start(
+    v-card-actions.justify-center
+      v-btn(@click="UplooadRegiser()") confirm
+
+
+  v-overlay.align-start(
     :value="show_info"
     absolute
     opacity="0"

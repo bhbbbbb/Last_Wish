@@ -16,7 +16,7 @@ export default new Vuex.Store({
     username: "",
     is_login: false,
     links: global_links,
-    user_id:'-1',
+    user_id:'0',
   },
   mutations: {
     updateGlobalArticles(state, payload) {
