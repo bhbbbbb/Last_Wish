@@ -164,6 +164,7 @@ export default {
         from: this.$store.state.user_id,
         id: String(this.context.comments.length),
       });
+      this.Newcomments='';
     },
     Show_info(Info, infoType) {
       /**
