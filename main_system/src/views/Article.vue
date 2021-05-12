@@ -97,7 +97,7 @@ export default {
       this.context = res;
       this.new_article.title = res.title;
       this.new_article.body = res.body;
-      this.new_article.wishes = res.wishes;
+      this.new_article.wishes = (res.wishes == undefined)? '':res.wishes;
       this.new_article.wishes = String(this.new_article.wishes).replace(/,/g,'\n');
       //Article_id = this.id;
       this.$store.dispatch('getUser', this.context.from).then((res) => {
@@ -129,7 +129,7 @@ export default {
           this.$store.dispatch('getArticle', this.id).then((resp) => {
           this.new_article.title = resp.title;
           this.new_article.body = resp.body;
-          this.new_article.wishes = resp.wishes;
+          this.new_article.wishes =(res.wishes == undefined)? '':res.wishes;
           this.new_article.wishes = String(this.new_article.wishes).replace(/,/g,'\n');
           this.NP = false;
           });
