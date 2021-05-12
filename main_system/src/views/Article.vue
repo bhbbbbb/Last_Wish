@@ -47,7 +47,7 @@ v-card.ma-3.pa-1(min-height="80vh" rounded="lg" v-if="author" :color="color")
     absolute
     opacity="0"
   )                              
-    v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{reg_info}}
+    v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
 
   v-text-field.ma-0.pa-1(
     placeholder="comment here"
@@ -88,7 +88,7 @@ export default {
     author: undefined,
     show_info: false,
     info_type: 'success',
-    reg_info: '',
+    infos: '',
     Newcomments: '',
   }),
   computed: {
@@ -177,7 +177,7 @@ export default {
        *warning
        *error
        */
-      this.reg_info = Info;
+      this.infos = Info;
       this.info_type = infoType;
       this.show_info = true;
       setTimeout(() => {

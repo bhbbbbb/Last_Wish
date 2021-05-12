@@ -34,7 +34,7 @@ v-card(min-height="70vh" rounded="lg" flat)
     absolute
     opacity="0"
   )                              
-    v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{reg_info}}
+    v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
 
 
 
@@ -48,7 +48,7 @@ export default {
   data: () => ({
     Title: 'this is a register page',
     show_info: false,
-    reg_info: '',
+    infos: '',
     info_type: 'success',
     user: {
       username: '',
@@ -93,7 +93,7 @@ export default {
        *warning
        *error
        */
-      this.reg_info = Info;
+      this.infos = Info;
       this.info_type = infoType;
       this.show_info = true;
       setTimeout(() => {
