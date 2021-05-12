@@ -14,7 +14,7 @@ v-card.ma-3.pa-1(v-else="" min-height="80vh" rounded="lg" :color="color")
             v-icon mdi-dots-horizontal
         v-list
           v-list-item(@click="Copy") 複製連結
-          v-list-item(@click="NPT") 加到我的清單
+          v-list-item(@click="NPT") 願望拷貝
     v-row(no-gutters="no-gutters")
       v-col.d-flex.flex-column.flex-shrink-1.align-center.ma-0(cols="4")
         v-avatar.grey.lighten-1(size="64")
