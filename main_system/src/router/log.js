@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import store from '@/store/index'
-import { apiWho } from '@/store/api'
+import { apiWho,apiGetUserId } from '@/store/api'
+//import Vuex from 'vuex'
+
 /*********
  * check whether the user is login when there is some access to user router
  * @param { Object } to
@@ -15,6 +17,11 @@ export const isLogin = async () => {
       let cookies_login = Vue.$cookies.get('login');
       if (cookies_login) {
         try {
+          apiGetUserId({name: cookies_login})
+        .then(res=>{
+          //console.log(String(res.data),'QWQ');
+          store.commit('setid',String(res.data));
+        });
           let who = await apiWho({username:cookies_login}).then(res => res.data)
           if (cookies_login === who) {
             store.commit('login', who);
