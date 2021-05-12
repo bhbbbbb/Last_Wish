@@ -7,6 +7,13 @@ v-card.ma-3.pa-3(min-height="10vh" rounded="lg" elevation="5")
   v-textarea.ma-0.pa-0(
     solo
     auto-grow
+    hint="Write some wishes"
+    placeholder="wishes here"
+    v-model="new_article.wishes"
+  )
+  v-textarea.ma-0.pa-0(
+    solo
+    auto-grow
     hint="Tell me about your wish"
     placeholder="body here"
     v-model="new_article.body"
@@ -32,6 +39,7 @@ export default {
       title: '',
       body: '',
       from: '',
+      wishes:'',
     },
     show_info: false,
     info_type: 'success',
@@ -43,6 +51,7 @@ export default {
   },
   methods: {
     SubmitNewArticle() {
+      this.new_article.wishes = this.new_article.wishes.split('\n');
       if (this.checkbox) this.new_article.from = '0';
       else this.new_article.from = this.$store.state.user_id;
       if (!this.new_article.title || !this.new_article.body) {
