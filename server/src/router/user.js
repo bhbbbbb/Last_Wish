@@ -42,7 +42,7 @@ const TRY_LOGIN = [
         }
     }
 ];
-user.post('/try_login', (req, res) => {
+user.post('/try_login', sess, (req, res) => {
     var response;
     try {
         if (!accountManager.checkPassword(req.body.username, req.body.password)) {
@@ -58,6 +58,8 @@ user.post('/try_login', (req, res) => {
     }
     
     response = TRY_LOGIN[SUCCEED]
+    req.session.username = req.body.username;
+    req.session.id = accountManager.getIdbyUsername(req.body.username);
     res.sendStatus(response.status);
     return;
 });

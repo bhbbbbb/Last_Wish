@@ -16,7 +16,7 @@ module.exports = function() {
      * @returns if the user is in the list
      */
     this.hasUser = function(username) {
-        console.log(`check for ${username}`);
+        // console.log(`check for ${username}`);
         return username in this.user_list;
     }
 
