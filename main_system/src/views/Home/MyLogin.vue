@@ -1,46 +1,28 @@
 <template lang="pug">
-v-card.pa-0(rounded="lg" min-height="268" flat)
+v-card.pa-0(rounded="lg" min-height="268" flat="flat")
   v-card-text
     h2 Log In
-    br/
-    v-text-field(
-      v-model="user.username"
-      label="username"
-      outlined
-      :rules="[rules.empty, rules.regex]"
-    )
-    v-text-field(
-      :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-      :type="show ? 'text' : 'password'"
-      @click:append="show = !show"
-      label="password"
-      v-model="user.password"
-      outlined
-      :rules="[rules.empty, rules.regex]"
-      @keydown.enter="Try_Login()"
-    )
-
-  v-card-actions.px-4(style="")
+    br
+    v-text-field(v-model="user.username" label="username" outlined="outlined" :rules="[rules.empty, rules.regex]")
+    v-text-field(:append-icon="show ? 'mdi-eye' : 'mdi-eye-off'" :type="show ? 'text' : 'password'" @click:append="show = !show" label="password" v-model="user.password" outlined="outlined" :rules="[rules.empty, rules.regex]" @keydown.enter="Try_Login()")
+  v-card-actions.px-4
     v-row(align="center" style="width: 100%")
       v-col(cols="12")
         .text-center
           v-btn(width="90%" @click="Try_Login()") Submit
       v-col(cols="12")
         .text-center
-          router-link(
-            :to="{name: 'Register'}"
-            custom
-            v-slot="{ navigate }"
-          )
+          router-link(:to="{name: 'Register'}" custom="custom" v-slot="{ navigate }")
             v-btn(width="90%" @click="navigate") Register   
       v-col(cols="12")
         .text-center
           v-btn(width="90%" @click="Dev()") Dev log in
-
       v-col(cols="12")
         .text-center
-          v-btn(width="90%" @click="Line()") LINE log in
-
+          v-btn(width="90%" @click="Line()")
+            | LINE log in
+  v-overlay.align-start(:value="show_info" absolute="absolute" opacity="0")                              
+  v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
 </template>
 
 <script>
@@ -62,21 +44,29 @@ export default {
       empty: (value) => Boolean(value) || 'required',
     },
     show: false,
+    show_info: false,
+    info_type: 'success',
+    infos: '',
   }),
   methods: {
     //tryLogin
     ...mapActions(['tryLogin']),
 
     Try_Login() {
+      var status =
+        this.rules.regex(this.user.username) == true;
+      console.log(status);
       if (!(this.user.username && this.user.password)) {
         // username or pswd is blank
-        // todo show error
+        this.Show_info('Empty data','error');
         return;
-      }
+      }else if(!status)
+          this.Show_info('Invalid data','error');
+      else
       this.tryLogin({
         username: this.user.username,
         password: this.user.password,
-      });
+      })
     },
 
     Dev() {
@@ -94,8 +84,24 @@ export default {
           window.open(res.data);
         })
         .catch((err) => {
+          this.Show_info('Something went wrong','error');
           console.log(err);
         });
+    },
+    Show_info(Info, infoType) {
+      /**
+       *There are 4 types of infoType in default:
+       *success
+       *info
+       *warning
+       *error
+       */
+      this.infos = Info;
+      this.info_type = infoType;
+      this.show_info = true;
+      setTimeout(() => {
+        this.show_info = false;
+      }, 1000);
     },
   },
 };
