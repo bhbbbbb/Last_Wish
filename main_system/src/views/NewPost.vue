@@ -69,6 +69,7 @@ export default {
           this.Show_info('Posted', 'success');
           this.new_article.title = '';
           this.new_article.body = '';
+          this.new_article.wishes = '';
         })
         .catch((err) => {
           this.Show_info('Something went wrong', 'error');
