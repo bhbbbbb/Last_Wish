@@ -58,6 +58,8 @@ export default {
           // TODO : insert new post locally
           this.$store.commit('updateGlobalArticles', res.data);
           this.Show_info('Posted', 'success');
+          this.new_article.title = '';
+          this.new_article.body = '';
         })
         .catch((err) => {
           this.Show_info('Something went wrong', 'error');
