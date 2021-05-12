@@ -33,7 +33,7 @@ v-card.ma-3.pa-1(v-else="" min-height="80vh" rounded="lg" :color="color")
         br
         p.pre {{ context.body }}
         br
-        commentcard(v-for="comment in context.comments" :key="comment.id" :context="comment")
+        CommentCard(v-for="comment in context.comments" :key="comment.id" :context="comment")
     v-overlay.align-start(:value="show_info" absolute="absolute" opacity="0")
       v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
   v-text-field.ma-0.pa-1(placeholder="comment here" v-model="Newcomments")
@@ -69,7 +69,10 @@ export default {
   },
   data: () => ({
     // context: undefined,
-    author: undefined,
+    author: {
+      id:'',
+      username:'',
+    },
     show_info: false,
     info_type: 'success',
     infos: '',
@@ -99,6 +102,7 @@ export default {
       //Article_id = this.id;
       this.$store.dispatch('getUser', this.context.from).then((res) => {
         this.author = res;
+        console.log(this.author.username);
       });
     });
   },
