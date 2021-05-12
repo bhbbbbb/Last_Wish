@@ -30,8 +30,8 @@ module.exports = function() {
         if (!this.hasUser(username)) {
             throw "user not found";
         }
-        // let account = this.accounts_info.find(account => account.username == username);
-        let account = this.accounts_info[Number(this.user_list[username])];
+        let account = this.accounts_info.find(account => account.username == username);
+        // let account = this.accounts_info[Number(this.user_list[username])];
         return account.password == password;
     }
 
