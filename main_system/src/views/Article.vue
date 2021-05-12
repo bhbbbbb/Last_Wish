@@ -98,7 +98,7 @@ export default {
       this.new_article.title = res.title;
       this.new_article.body = res.body;
       this.new_article.wishes = res.wishes;
-      this.new_article.wishes = String(this.new_article.wishes).replace(',','\n');
+      this.new_article.wishes = String(this.new_article.wishes).replace(/,/g,'\n');
       //Article_id = this.id;
       this.$store.dispatch('getUser', this.context.from).then((res) => {
         this.author = res;
@@ -126,8 +126,11 @@ export default {
         })
           .then((res) => {
           this.$store.commit('updateGlobalArticles', res.data);
-          this.$store.dispatch('getArticle', this.id).then((res) => {
-          this.context = res;
+          this.$store.dispatch('getArticle', this.id).then((resp) => {
+          this.new_article.title = resp.title;
+          this.new_article.body = resp.body;
+          this.new_article.wishes = resp.wishes;
+          this.new_article.wishes = String(this.new_article.wishes).replace(/,/g,'\n');
           this.NP = false;
           });
             //Update user_post state
