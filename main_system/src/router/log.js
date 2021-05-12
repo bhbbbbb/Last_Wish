@@ -22,7 +22,7 @@ export const isLogin = async () => {
           //console.log(String(res.data),'QWQ');
           store.commit('setid',String(res.data));
         });
-          let who = await apiWho({username:cookies_login}).then(res => res.data)
+          let who = await apiWho().then(res => res.data);
           if (cookies_login === who) {
             store.commit('login', who);
             return true

@@ -3,7 +3,7 @@ const app = express()
 var cors = require("cors");
 const port = 2222;
 const corsOptions = {
-  origin: ["http://localhost:8080"],
+  origin: ["http://localhost:8080", "http://luffy.ee.ncku.edu.tw:5000"],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
@@ -23,7 +23,7 @@ var articles = require('./router/articles');
 app.use('/articles', articles);
 app.use('/user', user);
 
-
+// process.env.NODE_ENV = 'production';
 
 app.listen(port,() => {
   console.log(`listening on port: ${port}, at ` + __dirname);

@@ -92,8 +92,8 @@ user.post('/register', (req, res) => {
     return;
 });
 
-user.post('/who', (req, res) => {
-    let u = req.body.username;
+user.get('/who', sess, (req, res) => {
+    let u = req.session.username;
     if (u) res.send(u);
     else res.sendStatus(401);
 });
