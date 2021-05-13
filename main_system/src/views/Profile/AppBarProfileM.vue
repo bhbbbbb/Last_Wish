@@ -23,7 +23,6 @@ v-app-bar.d-flex.align-center.flex-wrap(
     v-tabs(hide-slider)
       v-tab.tab.white(active-class="") 我的願望
       v-tab.tab.lighten-3(style="background-color: #CED3CD") ff
-    SimpleUpload()
 </template>
 
 <script>
@@ -31,7 +30,7 @@ import {mapState} from 'vuex';
 export default {
   name: 'AppBarProfileM',
     components: {
-    SimpleUpload:()=> import('@/components/SimpleUpload')
+    //SimpleUpload:()=> import('@/components/SimpleUpload')
   },
   props: {
     // links: {
