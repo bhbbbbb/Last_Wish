@@ -2,6 +2,35 @@ const articlePATH = __dirname + "/../data/articles.json";
 const accountsPATH = __dirname + "/../data/accounts.json";
 var express = require('express');
 var global = express.Router();
+//File upload part
+var multer = require('multer');
+var storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, './data/uploads');
+    },
+    filename: function (req, file, callback) {
+        console.log(file);
+        callback(null, file.originalname);          //The file.originalname can be change to any string you want.
+                                                    //While if you want to change to other name, you need to append Filename Extension, too.
+    }
+});
+
+
+global.post('/uploadFile', async (req, res) => {
+    upload(req, res, function (err) {
+        if (err) {
+            console.log(err)
+        } else {
+            var FileName = req.file.filename;
+            res.status(200).send(FileName);
+        }
+    })
+});
+
+//File upload part
+
+
+const upload = multer({ storage: storage }).single('file'); 
 // const { stringify } = require('querystring');
 // var articles = require(articlePATH);
 // var accounts = require(accountsPATH);
@@ -159,10 +188,8 @@ global.get('/followed_post', (req, res) => {
     return;
 });
 
-global.post('/uploadFile',(req,res)=>{
-    //res.body.file.SaveAs();
-    console.log(req);
-    res.send('cool');
-})
+
+
+
 
 module.exports = global;
