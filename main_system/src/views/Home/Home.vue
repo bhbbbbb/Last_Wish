@@ -17,7 +17,7 @@ v-container()
 
 <script>
 export default {
-    name: "Home",
+    name: 'Home',
     components: {
         // NewPost: () => import('@/components/NewPost'),
         // NewRecord: () => import('@/components/NewRecord'),

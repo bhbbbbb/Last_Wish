@@ -29,10 +29,10 @@ v-card.ma-3.pa-3(min-height="10vh", rounded="lg", elevation="5")
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { apiUploadArticle, apiUserPosts } from "@/store/api";
+import { mapState } from 'vuex';
+import { apiUploadArticle, apiUserPosts } from '@/store/api';
 export default {
-  name: "ClonePostCard",
+  name: 'ClonePostCard',
   props: {
     newArticle: {
       type: Object,
@@ -45,7 +45,7 @@ export default {
     infos: '',
   }),
   computed: {
-    ...mapState(["articles"]),
+    ...mapState(['articles']),
   },
   created(){
     this.newArticle.wishes = this.newArticle.wishes.replace(/,/g,'\n');
@@ -53,34 +53,34 @@ export default {
   ,
   methods: {
     SubmitNewArticle() {
-      this.newArticle.wishes = this.newArticle.wishes.split("\n");
-      if (this.checkbox) this.newArticle.from = "0";
+      this.newArticle.wishes = this.newArticle.wishes.split('\n');
+      if (this.checkbox) this.newArticle.from = '0';
       else this.newArticle.from = this.$store.state.user_id;
       if (!this.newArticle.title || !this.newArticle.body) {
         // todo : error
-        this.Show_info("Blank data!", "error");
+        this.Show_info('Blank data!', 'error');
         return;
       }
       apiUploadArticle({
-        username: this.checkbox ? "Unknown" : this.$store.state.username,
+        username: this.checkbox ? 'Unknown' : this.$store.state.username,
         article: this.newArticle,
       })
         .then((res) => {
           // TODO : insert new post locally
-          this.$store.commit("updateGlobalArticles", res.data);
-          this.Show_info("Posted", "success");
-          this.newArticle.title = "";
-          this.newArticle.body = "";
-          this.newArticle.wishes = "";
+          this.$store.commit('updateGlobalArticles', res.data);
+          this.Show_info('Posted', 'success');
+          this.newArticle.title = '';
+          this.newArticle.body = '';
+          this.newArticle.wishes = '';
         })
         .catch((err) => {
-          this.Show_info("Something went wrong", "error");
+          this.Show_info('Something went wrong', 'error');
           console.log(err);
         });
 
       apiUserPosts({ username: this.$store.state.username })
         .then((res) => {
-          this.$store.commit("updateUserArticles", res.data);
+          this.$store.commit('updateUserArticles', res.data);
         })
         .catch((err) => {
           console.log(err);

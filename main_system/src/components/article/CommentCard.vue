@@ -17,7 +17,7 @@ import {
   apiGetPublicInfo
 } from '@/store/api'
 export default {
-  name: "CommentCard",
+  name: 'CommentCard',
 
   /*
   comment = {

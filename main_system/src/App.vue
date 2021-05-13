@@ -19,7 +19,7 @@
 
 <script>
 export default {
-  name: "App",
+  name: 'App',
   components: {
     //SimpleUpload:()=> import('@/components/SimpleUpload')
     // AppBarD: () => import('@/components/AppBar/AppBarD'),

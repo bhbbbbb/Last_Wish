@@ -10,7 +10,7 @@ v-card.ma-3.pa-3(
 
 <script>
   export default {
-    name: "ArticleCard",
+    name: 'ArticleCard',
     props: {
       // title: {
       //   type: String,

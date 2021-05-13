@@ -55,15 +55,15 @@ v-card.ma-3.pa-1(v-else="", min-height="80vh", rounded="lg", :color="color")
 
 <script>
 // import { mapState } from 'vuex'
-import { apiUploadComment } from "@/store/api";
+import { apiUploadComment } from '@/store/api';
 
 //var Article_id = '';
 
 export default {
-  name: "Article",
+  name: 'Article',
   components: {
-    CommentCard: () => import("@/components/article/CommentCard"),
-    ClonePostCard: () => import("@/views/ClonePostCard"),
+    CommentCard: () => import('@/components/article/CommentCard'),
+    ClonePostCard: () => import('@/views/ClonePostCard'),
   },
   props: {
     id: {
@@ -76,24 +76,24 @@ export default {
     },
     color: {
       type: String,
-      default: "#F5F4F0",
+      default: '#F5F4F0',
     },
   },
   data: () => ({
     // context: undefined,
     author: {
-      id: "",
-      username: "",
+      id: '',
+      username: '',
     },
     show_info: false,
-    info_type: "success",
-    infos: "",
-    Newcomments: "",
+    info_type: 'success',
+    infos: '',
+    Newcomments: '',
     new_article: {
-      title: "",
-      body: "",
-      from: "",
-      wishes: "",
+      title: '',
+      body: '',
+      from: '',
+      wishes: '',
     },
     ThePost:[],
     NP: false,
@@ -106,12 +106,12 @@ export default {
     // }
   },
   created() {
-    this.$store.dispatch("getArticle", this.id).then((res) => {
+    this.$store.dispatch('getArticle', this.id).then((res) => {
       this.context = res;
       this.ThePost = JSON.parse(JSON.stringify(res));
       this.ThePost.wishes = String(this.ThePost.wishes).replace(/,/g,'\n');
       //Article_id = this.id;
-      this.$store.dispatch("getUser", this.context.from).then((res) => {
+      this.$store.dispatch('getUser', this.context.from).then((res) => {
         this.author = res;
         console.log(this.author.username);
       });
@@ -120,11 +120,11 @@ export default {
 
   methods: {
     Copy() {
-      let ele = document.getElementById("url");
+      let ele = document.getElementById('url');
       ele.value = window.location.href;
       ele.select();
-      document.execCommand("copy");
-      this.Show_info("Copied", "success");
+      document.execCommand('copy');
+      this.Show_info('Copied', 'success');
     },
     Clone() {
       //new_article.push({title: 'QQ'});
@@ -142,11 +142,11 @@ export default {
       // console.log(this.context);
       this.context.comments.push({
         body: this.Newcomments,
-        date: "Today",
+        date: 'Today',
         from: this.$store.state.user_id,
         id: String(this.context.comments.length),
       });
-      this.Newcomments = "";
+      this.Newcomments = '';
     },
     Show_info(Info, infoType) {
       /**

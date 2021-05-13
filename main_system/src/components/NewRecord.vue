@@ -7,7 +7,7 @@ v-card.ma-3.pa-3(min-height="10vh" rounded="lg")
 
 <script>
 export default {
-    name: "NewRecord",
+    name: 'NewRecord',
     data: () => ({
 
     }),

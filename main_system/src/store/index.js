@@ -13,7 +13,7 @@ export default new Vuex.Store({
   state: {
     global_articles: '',
     user_articles: '',
-    username: "",
+    username: '',
     is_login: false,
     links: global_links,
     user_id:'0',
@@ -95,7 +95,7 @@ export default new Vuex.Store({
           context.commit('setid',String(res.data));
         });
         // router.push({ name: "UserArticle", params: { username: payload.username } });
-        router.push({ name: "Articles", params: { links: context.state.user_links } });
+        router.push({ name: 'Articles', params: { links: context.state.user_links } });
         return;
 
       })

@@ -39,12 +39,12 @@
 
 
 <script>
-import axios from "axios";
+import axios from 'axios';
 export default {
-  name: "SimpleUpload",
+  name: 'SimpleUpload',
   data() {
     return {
-      file: "",
+      file: '',
     };
   },
 
@@ -55,10 +55,10 @@ export default {
 
     async sendFile() {
       const formData = new FormData();
-      formData.append("file", this.file);
+      formData.append('file', this.file);
       //axios.post("/api", formData);
       try {
-        await axios.post("/upload", formData);
+        await axios.post('/upload', formData);
       } catch (err) {
         console.log(err);
       }
