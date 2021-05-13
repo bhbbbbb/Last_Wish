@@ -38,5 +38,73 @@
         "selfPosts": [
             "1"
         ]
+    },
+    {
+        "id": "4",
+        "username": "Jay",
+        "password": "123",
+        "followers": [],
+        "followees": [],
+        "followedPosts": [],
+        "selfPosts": [
+            "0"
+        ]
+    },
+    {
+        "id": "5",
+        "username": "Amy",
+        "password": "123",
+        "followers": [],
+        "followees": [],
+        "followedPosts": [],
+        "selfPosts": [
+            "1"
+        ]
+    },
+    {
+        "id": "6",
+        "username": "Cat",
+        "password": "123",
+        "followers": [],
+        "followees": [],
+        "followedPosts": [],
+        "selfPosts": [
+            "2",
+            "3"
+        ]
+    },
+    {
+        "id": "7",
+        "username": "Coco",
+        "password": "123",
+        "followers": [],
+        "followees": [],
+        "followedPosts": [],
+        "selfPosts": [
+            "4"
+        ]
+    },
+    {
+        "id": "8",
+        "username": "A",
+        "password": "123",
+        "followers": [],
+        "followees": [],
+        "followedPosts": [],
+        "selfPosts": [
+            "5"
+        ]
+    },
+    {
+        "id": "9",
+        "username": "B",
+        "password": "123",
+        "followers": [],
+        "followees": [],
+        "followedPosts": [],
+        "selfPosts": [
+            "6",
+            "7"
+        ]
     }
 ]
