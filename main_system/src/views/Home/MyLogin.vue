@@ -17,10 +17,10 @@ v-card.pa-0(rounded="lg" min-height="268" flat="flat")
       //- v-col(cols="12")
       //-   .text-center
       //-     v-btn(width="90%" @click="Dev()") Dev log in
-      v-col(cols="12")
-        .text-center
-          v-btn(width="90%" @click="Line()")
-            | LINE log in
+      //v-col(cols="12")
+      //  .text-center
+      //    v-btn(width="90%" @click="Line()")
+      //      | LINE log in
   v-overlay.align-start(:value="show_info" absolute="absolute" opacity="0")                              
     v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
 </template>
