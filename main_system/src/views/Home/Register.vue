@@ -76,8 +76,12 @@ export default {
       if (status) {
         apiRegister(this.user)
           .then((res) => {
-            if (res.status == 200)
+            if (res.status == 200){
+              this.user.username='';
+              this.user.password='';
+              this.user.password_confirm='';
               this.Show_info('Success registered', 'success');
+              }
             else this.Show_info(res.data.err_msg, 'error');
           })
           .catch((err) => {
