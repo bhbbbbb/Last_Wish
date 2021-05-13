@@ -164,7 +164,7 @@ export default {
       }, 1000);
     },
     NPT() {
-      //New Post True
+      //New Post Toggle
       this.NP = !this.NP;
     },
   },
