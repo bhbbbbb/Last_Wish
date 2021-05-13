@@ -14,9 +14,9 @@ v-card.pa-0(rounded="lg" min-height="268" flat="flat")
         .text-center
           router-link(:to="{name: 'Register'}" custom="custom" v-slot="{ navigate }")
             v-btn(width="90%" @click="navigate") Register   
-      v-col(cols="12")
-        .text-center
-          v-btn(width="90%" @click="Dev()") Dev log in
+      //- v-col(cols="12")
+      //-   .text-center
+      //-     v-btn(width="90%" @click="Dev()") Dev log in
       v-col(cols="12")
         .text-center
           v-btn(width="90%" @click="Line()")
