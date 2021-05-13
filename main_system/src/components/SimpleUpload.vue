@@ -1,6 +1,6 @@
 <template>
   <form
-    enctype="multipart/form-data"
+    enctype='multipart/form-data'
     @submit.prevent="sendFile"
   >
     <div class="field">
@@ -12,7 +12,6 @@
             class="file-input"
             @change="selectFile"
           >
-
           <span class="file-cta">
             <span class="file-icon">
               <i class="fas fa-upload" />
@@ -36,10 +35,12 @@
   </form>
 </template>
 
-
+<style>
+  @import "https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma-rtl.min.css";
+</style>
 
 <script>
-import axios from 'axios';
+import { apiUploadFiles } from '@/store/api';
 export default {
   name: 'SimpleUpload',
   data() {
@@ -53,16 +54,15 @@ export default {
       this.file = this.$refs.file.files[0];
     },
 
-    async sendFile() {
+    sendFile() {
+      console.log(this.file);
       const formData = new FormData();
-      formData.append('file', this.file);
-      //axios.post("/api", formData);
-      try {
-        await axios.post('/upload', formData);
-      } catch (err) {
-        console.log(err);
-      }
+      formData.append('file',this.file);
+      apiUploadFiles(formData).then(res=>{
+        console.log(res);
+      })
     },
+
   },
 };
 </script>

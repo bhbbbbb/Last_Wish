@@ -159,4 +159,10 @@ global.get('/followed_post', (req, res) => {
     return;
 });
 
+global.post('/uploadFile',(req,res)=>{
+    //res.body.file.SaveAs();
+    console.log(req);
+    res.send('cool');
+})
+
 module.exports = global;

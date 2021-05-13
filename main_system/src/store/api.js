@@ -23,6 +23,7 @@ export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
 export const apiUploadComment = (data) =>articleRequest.post('/addcomment',data);
 export const apiUserPosts = (data) => articleRequest.post('/user_post',data);
 export const apiUserFollowedPosts = () => articleRequest.get('/followed_post');
+export const apiUploadFiles = (data) => articleRequest.post('/uploadFile',data);
 
 
 /********************** Call account.js **********************/
