@@ -17,13 +17,20 @@ const userRequest = axios.create({
     headers: { 'Content-Type': 'application/json' },
 })
 
+const uploadRequest = axios.create({
+    baseURL: baseURL + '/uploads',
+    headers: { 'Content-Type': 'multipart/form-data' },
+})
+/********************** Call upload.js **********************/
+export const apiUploadFiles = (data) => uploadRequest.post('/uploadFile',data);
+
+
 /********************** Call article.js **********************/
 export const apiGetArticles = () => articleRequest.get('/');
 export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
 export const apiUploadComment = (data) =>articleRequest.post('/addcomment',data);
 export const apiUserPosts = (data) => articleRequest.post('/user_post',data);
 export const apiUserFollowedPosts = () => articleRequest.get('/followed_post');
-export const apiUploadFiles = (data) => articleRequest.post('/uploadFile',data);
 
 
 /********************** Call account.js **********************/
@@ -42,3 +49,5 @@ export const apiLogout = () => userRequest.get('/logout'); // clear the session 
 export const apiGetPublicInfo = (id) => userRequest.get('get_public_info', {params: {id: id}});
 
 export const apiLineLogin = (data) => userRequest.post('/line_login_req', data);
+
+

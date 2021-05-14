@@ -18,11 +18,12 @@ app.use(express.json())
 
 var user = require('./router/user');
 var articles = require('./router/articles');
+var uploads = require('./router/upload');
 // setup router
 
 app.use('/articles', articles);
 app.use('/user', user);
-
+app.use('/uploads',uploads);
 // process.env.NODE_ENV = 'production';
 
 app.listen(port,() => {
