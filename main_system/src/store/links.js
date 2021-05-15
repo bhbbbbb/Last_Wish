@@ -30,13 +30,6 @@ export const user_links = [
         },
         icon: 'mdi-earth',
     },
-    // {
-    //     text: '我的追蹤',
-    //     to: {
-    //         name: 'Register'
-    //     },
-    //     icon: 'mdi-account-multiple'
-    // },
     {
         text: '發新貼文',
         to: {
@@ -44,6 +37,20 @@ export const user_links = [
             
         },
         icon: 'mdi-note-plus-outline',
+    },
+    {
+        text: '關注文章',
+        to: {
+            name: 'FollowArticle'
+        },
+        icon: 'mdi-account'
+    },
+    {
+        text: '追蹤中',
+        to: {
+            name: 'Following'
+        },
+        icon: 'mdi-account'
     },
     {
         text: '個人頁',

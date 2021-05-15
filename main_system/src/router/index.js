@@ -107,7 +107,19 @@ const routes = [
           if (store.state.is_login) next();
           else next('/articles');
         }
-      }
+      },
+      {
+        path: 'follow_article',
+        name: 'FollowArticle',
+        component: () => import('@/views/FollowArticle'),
+
+      },
+      {
+        path: 'following',
+        name: 'Following',
+        component: () => import('@/views/Following'),
+
+      },
     ]
   },
   {

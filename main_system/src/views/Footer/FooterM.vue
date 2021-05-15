@@ -3,6 +3,7 @@ v-bottom-navigation(
   app
   v-model="selected"
   mandatory
+  dense
 )
   v-btn(
     v-for="link in links"
