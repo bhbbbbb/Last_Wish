@@ -28,7 +28,6 @@ v-card(min-height="70vh" rounded="lg" flat)
     v-card-actions.justify-center
       v-btn(@click="UplooadRegiser()") confirm
 
-
   v-overlay.align-start(
     :value="show_info"
     absolute
@@ -36,12 +35,12 @@ v-card(min-height="70vh" rounded="lg" flat)
   )                              
     v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
 
-
-
 </template>
 
 <script>
-import {apiRegister} from '@/store/api';
+import {
+  apiRegister
+} from '@/store/api';
 
 export default {
   name: 'Register',
@@ -76,13 +75,10 @@ export default {
       if (status) {
         apiRegister(this.user)
           .then((res) => {
-            if (res.status == 200){
-              this.user.username='';
-              this.user.password='';
-              this.user.password_confirm='';
+            if (res.status == 200) {
+              this.$store.dispatch('tryLogin', {username: this.user.username, password: this.user.password});
               this.Show_info('Success registered', 'success');
-              }
-            else this.Show_info(res.data.err_msg, 'error');
+            } else this.Show_info(res.data.err_msg, 'error');
           })
           .catch((err) => {
             console.log(err);

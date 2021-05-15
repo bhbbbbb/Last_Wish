@@ -80,24 +80,31 @@ export default new Vuex.Store({
       })
     },
 
-    tryLogin(context, payload) {
-      apiTryLogin(payload).then(() => {
-        //var tmp = [];
+
+    /**
+     * 
+     * @param {Object} payload : {username, password}
+     * 
+     */
+    async tryLogin(context, payload) {
+      return apiTryLogin(payload).then(() => {
 
         context.commit('login', payload.username);
 
         Vue.$cookies.set('login', payload.username);
-        console.log(payload.username);
-        //var str = payload.username;
+
         apiGetUserId({name: payload.username})
         .then(res=>{
-          //console.log(String(res.data),'QWQ');
+
           context.commit('setid',String(res.data));
         });
-        // router.push({ name: "UserArticle", params: { username: payload.username } });
+
         router.push({ name: 'Articles', params: { links: context.state.user_links } });
         return;
 
+      }).catch(err => {
+        console.log(err);
+        return err;
       })
     },
 

@@ -50,7 +50,9 @@ v-card.ma-3.pa-1(min-height="80vh", rounded="lg", :color="color")
 
 <script>
 // import { mapState } from 'vuex'
-import { apiUploadComment } from '@/store/api';
+import {
+  apiUploadComment
+} from '@/store/api';
 
 //var Article_id = '';
 
@@ -83,25 +85,18 @@ export default {
     info_type: 'success',
     infos: '',
     Newcomments: '',
-    ThePost:[],
+    ThePost: [],
     NP: false,
   }),
   computed: {
-    // ...mapState(['articles']),
-    // context() {
-    //   console.log(this.context.comments);
-    //   return this.articles[this.id];
-    // }
+
   },
   created() {
-    this.$store.dispatch('getArticle', this.id).then((res) => {
-      this.context = res;
-      this.ThePost = JSON.parse(JSON.stringify(res));
-      this.ThePost.wishes = String(this.ThePost.wishes).replace(/,/g,'\n');
-      //Article_id = this.id;
-      this.$store.dispatch('getUser', this.context.from).then((res) => {
-        this.author = res;
-      });
+    this.ThePost = JSON.parse(JSON.stringify(this.context));
+    this.ThePost.wishes = String(this.ThePost.wishes).replace(/,/g, '\n');
+    //Article_id = this.id;
+    this.$store.dispatch('getUser', this.context.from).then((res) => {
+      this.author = res;
     });
   },
 
@@ -148,12 +143,12 @@ export default {
     },
     Clone() {
       this.$router.push({
-          name: 'ArticleClone',
-          params: {
-            id: this.id,
-            newArticle: this.ThePost
-          }
-        });
+        name: 'ArticleClone',
+        params: {
+          id: this.id,
+          newArticle: this.ThePost
+        }
+      });
     },
   },
 };
