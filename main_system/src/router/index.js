@@ -85,6 +85,21 @@ const routes = [
         }
       },
       {
+        path: 'article/:id/clone',
+        name: 'ArticleClone',
+        component: () => import('@/views/ClonePostCard'),
+        props: (route) => ({
+          newArticle: route.params.newArticle
+        }),
+        beforeEnter(to, from, next) {
+          if (!to.params.newArticle) {
+            if (to.params.id) next({name: 'Article', params: {id: to.params.id}});
+            else next(false);
+          }
+          next();
+        }
+      },
+      {
         path: 'newpost',
         name: 'NewPost',
         component: () => import('@/views/NewPost'),

@@ -1,10 +1,5 @@
 <template lang="pug">
-ClonePostCard(
-      v-if="NP"
-      :newArticle="ThePost"
-      @Turnback="NPT"
-    )
-v-card.ma-3.pa-1(v-else="", min-height="80vh", rounded="lg", :color="color")
+v-card.ma-3.pa-1(min-height="80vh", rounded="lg", :color="color")
   v-container
     v-row.flex-column(no-gutters="no-gutters")
       v-menu(
@@ -17,7 +12,7 @@ v-card.ma-3.pa-1(v-else="", min-height="80vh", rounded="lg", :color="color")
             v-icon mdi-dots-horizontal
         v-list
           v-list-item(@click="Copy") 複製連結
-          v-list-item(@click="NPT") 願望拷貝
+          v-list-item(@click="Clone") 願望拷貝
     v-row(no-gutters="no-gutters")
       v-col.d-flex.flex-column.flex-shrink-1.align-center.ma-0(cols="4")
         v-avatar.grey.lighten-1(size="64")
@@ -63,7 +58,6 @@ export default {
   name: 'Article',
   components: {
     CommentCard: () => import('@/components/article/CommentCard'),
-    ClonePostCard: () => import('@/views/ClonePostCard'),
   },
   props: {
     id: {
@@ -89,12 +83,6 @@ export default {
     info_type: 'success',
     infos: '',
     Newcomments: '',
-    new_article: {
-      title: '',
-      body: '',
-      from: '',
-      wishes: '',
-    },
     ThePost:[],
     NP: false,
   }),
@@ -113,7 +101,6 @@ export default {
       //Article_id = this.id;
       this.$store.dispatch('getUser', this.context.from).then((res) => {
         this.author = res;
-        console.log(this.author.username);
       });
     });
   },
@@ -125,10 +112,6 @@ export default {
       ele.select();
       document.execCommand('copy');
       this.Show_info('Copied', 'success');
-    },
-    Clone() {
-      //new_article.push({title: 'QQ'});
-      //Post this article but from is set to user's id
     },
     SubmitNewComment() {
       apiUploadComment({
@@ -163,9 +146,14 @@ export default {
         this.show_info = false;
       }, 1000);
     },
-    NPT() {
-      //New Post Toggle
-      this.NP = !this.NP;
+    Clone() {
+      this.$router.push({
+          name: 'ArticleClone',
+          params: {
+            id: this.id,
+            newArticle: this.ThePost
+          }
+        });
     },
   },
 };

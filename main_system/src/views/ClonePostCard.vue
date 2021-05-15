@@ -23,13 +23,11 @@ v-card.ma-3.pa-3(min-height="10vh", rounded="lg", elevation="5")
     ) {{ infos }}
   v-card-actions.justify-center
     v-btn(@click="SubmitNewArticle()") submit
-  v-btn(@click="Back()") return
   
   v-checkbox(v-model="checkbox", label="匿名")
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import { apiUploadArticle, apiUserPosts } from '@/store/api';
 export default {
   name: 'ClonePostCard',
@@ -43,9 +41,9 @@ export default {
     show_info: false,
     info_type: 'success',
     infos: '',
+    checkbox: false,
   }),
   computed: {
-    ...mapState(['articles']),
   },
   created(){
     this.newArticle.wishes = this.newArticle.wishes.replace(/,/g,'\n');
@@ -101,9 +99,6 @@ export default {
         this.show_info = false;
       }, 1000);
     },
-    Back(){
-      this.$emit('Turnback');
-    }
   },
 };
 </script>
