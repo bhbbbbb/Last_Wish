@@ -33,7 +33,9 @@ export const apiUserPosts = (data) => articleRequest.post('/user_post',data);
 export const apiUserFollowedPosts = () => articleRequest.get('/followed_post');
 
 
-/********************** Call account.js **********************/
+
+
+/********************** Call user.js **********************/
 export const apiGetUserId = (data) => userRequest.post('/get_id_by_name',data);
 export const apiTryLogin = (data) => userRequest.post('/try_login', data);
 export const apiRegister = (data) =>userRequest.post('/register',data);
