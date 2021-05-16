@@ -78,23 +78,31 @@ module.exports = function() {
         synchronize(this.articles, this.articlePATH);
     }
 
+    /**
+    *Now the milestone has no id
+    *However we need to add an id
+    *later for better management
+    *such as editing milestone or
+    *editing the article contaned in
+    *each milestone
+    */
     this.addMilestoneToArticle = function(articleId, milestoneStr) {
         if (!this.hasArticle(articleId)) {
             throw "no such article";
         }
         let article = this.articles[Number(articleId)];
-        let newMilestoneId = String(article.wishes.length);
+        let newMilestoneId = String(article.wishes.length);     
         article.wishes.push(today.split(' ')[0]+'\t'+milestoneStr);
         synchronize(this.articles, this.articlePATH);
     }
 
     this.getToday=function(choose){
         if(choose == 1)
-            return today.split('/')[0];
+            return today.split('/')[0];             //return Month
         else if(choose == 2)
-            return today.split(' ')[0];
+            return today.split(' ')[0];             //return Month/Date
         else
-            return today;
+            return today;                           //return Month/Date Day
             
     }
 
