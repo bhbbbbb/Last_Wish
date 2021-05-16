@@ -4,6 +4,7 @@ v-bottom-navigation(
   v-model="selected"
   mandatory
   dense
+  dark
   background-color="#9ba2aa"
   color="rgba(255, 255, 255, 1)"
 )
@@ -42,7 +43,5 @@ export default {
 </script>
 
 <style scoped>
-.v-btn:not(.v-btn--active) {
-  color: rgba(255, 255, 255, 0.5);
-}
+
 </style>
