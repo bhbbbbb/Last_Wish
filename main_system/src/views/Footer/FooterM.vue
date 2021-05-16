@@ -45,6 +45,6 @@ export default {
 
 <style>
 .v-item-group.v-bottom-navigation .v-btn {
-  min-width: 64px;
+  min-width: 64px !important;
 }
 </style>
