@@ -70,7 +70,8 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
 <script>
 // import { mapState } from 'vuex'
 import {
-  apiUploadComment
+  apiUploadComment,
+  apiUploadMilestone
 } from '@/store/api';
 
 //var Article_id = '';
@@ -181,9 +182,12 @@ export default {
       })
     },
     submitMilestone(){
-      console.log('QQ');
-      this.context.wishes.push(this.newMilestone);
-      this.newMilestone='';
+      apiUploadMilestone({article_id: String(this.id),newMilestone:this.newMilestone})
+      .then(res=>{
+        console.log(res);
+        this.context.wishes.push(res.data+'\t'+this.newMilestone);
+        this.newMilestone='';
+      })
     }
   },
 };
