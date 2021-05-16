@@ -1,7 +1,7 @@
 <template lang="pug">
 v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
 
-  v-col(
+  v-col.ma-0.pa-0(
     v-if="articles"
     cols="12"
     v-for="(article, idx) in articles",

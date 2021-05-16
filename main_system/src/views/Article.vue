@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card.ma-3.pa-1(min-height="80vh", rounded="lg", :color="color")
+v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
   v-container
     v-row.flex-column(no-gutters="no-gutters")
       v-menu(
@@ -37,7 +37,17 @@ v-card.ma-3.pa-1(min-height="80vh", rounded="lg", :color="color")
             :key="idx"
           )
             v-avatar(slot="icon", @click="Go(idx)")
-            span.text-no-wrap(@click="Go(idx)") {{ wish }}
+            span.d-flex.text-no-wrap(
+              @click="Go(idx)" 
+            ) {{ wish }}
+
+          v-timeline-item.align-center(
+            small
+            :color="$store.state.COLOR_LIST[7]"
+          )
+            v-icon(slot="icon" small color="white") mdi-plus
+            span.d-flex.text-no-wrap(
+            ) 新增里程碑
         br
         p.pre {{ context.body }}
         br

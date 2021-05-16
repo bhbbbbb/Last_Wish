@@ -80,7 +80,6 @@ export default {
 .subtitle {
   font-size: 1.2rem;
   font-weight: lighter;
-  font-family: 'Times New Roman', Times, serif;
   color: white;
   letter-spacing: 0.2rem; 
   height: 30px;

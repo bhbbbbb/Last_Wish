@@ -1,26 +1,23 @@
 <template lang="pug">
-v-container()
-  v-row.justify-center
-    //- v-col(cols="12" sm="2")
-    //-   v-sheet(rounded="lg" min-height="268")
-    
-    //- v-col(cols="12" sm="2")
-    //-   my-login/
-    v-col(cols="12" sm="8")
+v-container.pa-0()
+  v-row.justify-center.mar()
+    v-col.pa-0.ma-0(cols="12" sm="6")
       router-view/
-
-    //- v-col(cols="12" sm="2")
-    //-   my-login
-
-
 </template>
 
 <script>
 export default {
     name: 'Home',
     components: {
-        // NewPost: () => import('@/components/NewPost'),
-        // NewRecord: () => import('@/components/NewRecord'),
+
     }
 }
 </script>
+
+<style scoped>
+.mar {
+  margin-left: 30px;
+  margin-right: 30px;
+  margin-top: 17px;
+}
+</style>

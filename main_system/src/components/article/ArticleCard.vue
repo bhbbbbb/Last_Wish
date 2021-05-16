@@ -1,11 +1,11 @@
 <template lang="pug">
-v-card.ma-3.pa-3(
+v-card.my.pa-3(
   min-height="10vh"
   rounded="lg"
   v-on="$listeners"
   :color="color"
 )
-    h2 {{ content.title }}
+    h2(style="font-size: 1rem;") {{ content.title }}
 
 </template>
 
@@ -30,8 +30,12 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .pre {
   white-space: pre-wrap;
+}
+.my {
+  margin-top: 6px;
+  margin-bottom: 6px;
 }
 </style>
