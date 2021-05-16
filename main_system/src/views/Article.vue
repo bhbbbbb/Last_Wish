@@ -61,7 +61,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
         :type="info_type",
         transition="slide-x-transition"
       ) {{ infos }}
-  v-text-field.ma-0.pa-1(placeholder="comment here", v-model="Newcomments")
+  v-text-field.my-0.mx-8.pa-1(placeholder="comment here", v-model="Newcomments")
   v-card-actions.justify-center
     v-btn(@click="SubmitNewComment()") submit
   input#url(style="position: absolute; opacity: 0")
@@ -107,7 +107,7 @@ export default {
     Newcomments: '',
     ThePost: [],
     NP: false,
-    newMilestone:'',
+    newMilestone: '',
   }),
   computed: {
 
@@ -181,13 +181,15 @@ export default {
         }
       })
     },
-    submitMilestone(){
-      apiUploadMilestone({article_id: String(this.id),newMilestone:this.newMilestone})
-      .then(res=>{
-        console.log(res);
-        this.context.wishes.push(res.data+'\t'+this.newMilestone);
-        this.newMilestone='';
-      })
+    submitMilestone() {
+      apiUploadMilestone({
+          article_id: String(this.id),
+          newMilestone: this.newMilestone
+        })
+        .then(res => {
+          this.context.wishes.push(res.data + '\t' + this.newMilestone);
+          this.newMilestone = '';
+        })
     }
   },
 };
