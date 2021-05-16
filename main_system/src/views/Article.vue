@@ -26,8 +26,18 @@ v-card.ma-3.pa-1(min-height="80vh", rounded="lg", :color="color")
         v-card-subtitle.ma-0.px-4.py-0 {{ context.date }}
     v-row
       v-col.px-8
-        h3(v-for="wish in context.wishes", :key="wish")
-          | {{ wish }}
+        v-timeline(
+          align-top
+          dense
+        )
+          v-timeline-item(
+            v-for="(wish, idx) in context.wishes"
+            small
+            :color="$store.state.COLOR_LIST[7]"
+            :key="idx"
+          )
+            v-avatar(slot="icon", @click="Go(idx)")
+            span.text-no-wrap(@click="Go(idx)") {{ wish }}
         br
         p.pre {{ context.body }}
         br
@@ -150,6 +160,16 @@ export default {
         }
       });
     },
+    Go(idx) {
+      this.$router.push({
+        name: 'Wish',
+        params: {
+          id: this.id,
+          wish: this.context.wishes[idx],
+          context: this.context.wishes[idx],
+        }
+      })
+    }
   },
 };
 </script>

@@ -86,6 +86,14 @@ const routes = [
         }
       },
       {
+        path: 'article/:id/:wish',
+        name: 'Wish',
+        component: () => import('@/views/Wish'),
+        props: (route) => ({
+          context: route.params.context
+        })
+      },
+      {
         path: 'article/:id/clone',
         name: 'ArticleClone',
         component: () => import('@/views/ClonePostCard'),
