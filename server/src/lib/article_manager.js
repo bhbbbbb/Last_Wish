@@ -29,8 +29,9 @@ module.exports = function() {
             "body": article.body,
             "title": article.title,
             "date": today,
-            "wishes": article.wishes
+            "wishes":[]
         };
+        newPostData.wishes.push(String(article.wishes)+this.getDay(2));
         this.articles.push(newArticle(newPostData));
         synchronize(this.articles, this.articlePATH);
         return newPostId;

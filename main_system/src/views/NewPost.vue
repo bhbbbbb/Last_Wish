@@ -7,13 +7,6 @@ v-card.ma-0.pa-3(min-height="10vh" rounded="lg" elevation="5")
   v-textarea.ma-0.pa-0(
     solo
     auto-grow
-    hint="Write some wishes"
-    placeholder="wishes here"
-    v-model="new_article.wishes"
-  )
-  v-textarea.ma-0.pa-0(
-    solo
-    auto-grow
     hint="Tell me about your wish"
     placeholder="body here"
     v-model="new_article.body"
@@ -51,7 +44,7 @@ export default {
   },
   methods: {
     SubmitNewArticle() {
-      this.new_article.wishes = this.new_article.wishes.split('\n');
+      this.new_article.wishes = '開始願望: '+this.new_article.title;
       if (this.checkbox) this.new_article.from = '0';
       else this.new_article.from = this.$store.state.user_id;
       if (!this.new_article.title || !this.new_article.body) {
@@ -69,7 +62,6 @@ export default {
           this.Show_info('Posted', 'success');
           this.new_article.title = '';
           this.new_article.body = '';
-          this.new_article.wishes = '';
         })
         .catch((err) => {
           this.Show_info('Something went wrong', 'error');
