@@ -1,6 +1,6 @@
 <template>
   <form
-    enctype='multipart/form-data'
+    enctype="multipart/form-data"
     @submit.prevent="sendFile"
   >
     <div class="field">

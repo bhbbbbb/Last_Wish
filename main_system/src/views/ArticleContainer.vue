@@ -9,6 +9,7 @@ v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
   )
     ArticleCard(
       :content="article"
+      :color="$store.state.COLOR_LIST[idx]"
       @click.stop="ToInnerArticle(article.id, idx)"
     )
 
@@ -23,7 +24,6 @@ v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
 </template>
 
 <script>
-// import {mapState} from 'vuex'
 export default {
   name: 'ArticleContainer',
 
@@ -44,6 +44,8 @@ export default {
       default: false,
     }
   },
+  data: () => ({
+  }),
   computed: {
     // ...mapState(['articles', 'is_login']),
   },
@@ -60,6 +62,7 @@ export default {
         params: {
           id: article_id,
           context: this.articles[idx],
+          color: this.$store.state.COLOR_LIST[idx],
         }
       });
     }

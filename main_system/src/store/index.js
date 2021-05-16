@@ -4,7 +4,7 @@ import { apiGetArticles, apiGetPublicInfo, apiLogout, apiTryLogin, apiUserPosts,
 // import { apiGetArticles } from './api.js'
 import router from '@/router/index';
 import { global_links, user_links } from './links.js'
-
+import {COLOR_LIST} from '@/store/color_list.js'
 Vue.use(Vuex)
 
 
@@ -17,6 +17,7 @@ export default new Vuex.Store({
     is_login: false,
     links: global_links,
     user_id:'0',
+    COLOR_LIST: COLOR_LIST,
   },
   mutations: {
     updateGlobalArticles(state, payload) {

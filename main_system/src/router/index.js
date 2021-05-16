@@ -80,7 +80,8 @@ const routes = [
             store.state.global_articles[route.params.id];
           return {
             id: Number(route.params.id),
-            context: context
+            context: context,
+            color: route.params.color
           }
         }
       },
@@ -188,7 +189,8 @@ const routes = [
             store.state.global_articles[route.params.id];
           return {
             id: Number(route.params.id),
-            context: context
+            context: context,
+            color: route.params.color
           }
         }
       }
