@@ -18,6 +18,7 @@ export default new Vuex.Store({
     links: global_links,
     user_id:'0',
     COLOR_LIST: COLOR_LIST,
+    decktop: false,
   },
   mutations: {
     updateGlobalArticles(state, payload) {
@@ -40,8 +41,11 @@ export default new Vuex.Store({
       state.username = '';
       state.links = global_links;
     },
-    setid(state,payload){
+    setid(state, payload) {
       state.user_id = payload;
+    },
+    setDecktop(state) {
+      state.decktop = true;
     }
 
   },
