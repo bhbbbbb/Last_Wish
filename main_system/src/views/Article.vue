@@ -38,6 +38,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
           )
             v-avatar(slot="icon", @click="Go(idx)")
             span.d-flex.text-no-wrap(
+              style="overflow-x: hidden;"
               @click="Go(idx)" 
             ) {{ wish }}
 

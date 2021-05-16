@@ -12,7 +12,7 @@ v-app-bar.d-flex.justify-center.align-end(
     v-row(no-gutters)
       v-col.align-self-center(cols="2")
         v-avatar(@click.stop="Back")
-          v-icon(x-large) mdi-chevron-left
+          v-icon(large color="white") mdi-chevron-left
       v-col.d-flex.justify-center(cols="8")
         v-app-bar-title
           .text-center()
