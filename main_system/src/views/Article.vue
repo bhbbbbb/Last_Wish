@@ -46,7 +46,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
             :color="$store.state.COLOR_LIST[7]"
           )
             v-icon(slot="icon" small color="white" @click="submitMilestone") mdi-plus
-            v-text-field.ma-0.pa-1(placeholder="新增里程碑", v-model="newMilestone")
+            v-text-field.ma-0.pa-1(placeholder="新增里程碑" v-model="newMilestone" @keydown.enter="submitMilestone")
         br
         p.pre {{ context.body }}
         br
@@ -61,7 +61,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
         :type="info_type",
         transition="slide-x-transition"
       ) {{ infos }}
-  v-text-field.my-0.mx-8.pa-1(placeholder="comment here", v-model="Newcomments")
+  v-text-field.my-0.mx-8.pa-1(placeholder="comment here" v-model="Newcomments" @keydown.enter="SubmitNewComment()")
   v-card-actions.justify-center
     v-btn(@click="SubmitNewComment()") submit
   input#url(style="position: absolute; opacity: 0")
@@ -130,6 +130,8 @@ export default {
       this.Show_info('Copied', 'success');
     },
     SubmitNewComment() {
+      if(!this.Newcomments)
+        return;
       apiUploadComment({
         author: {
           name: this.$store.state.username,
@@ -182,6 +184,8 @@ export default {
       })
     },
     submitMilestone() {
+      if(!this.newMilestone)
+        return;
       apiUploadMilestone({
           article_id: String(this.id),
           newMilestone: this.newMilestone
