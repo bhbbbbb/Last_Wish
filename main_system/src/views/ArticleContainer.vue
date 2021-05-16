@@ -9,7 +9,7 @@ v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
   )
     ArticleCard(
       :content="article"
-      :color="$store.state.COLOR_LIST[idx]"
+      :color="$store.state.COLOR_LIST[idx % $store.state.COLOR_LIST.length]"
       @click.stop="ToInnerArticle(article.id, idx)"
     )
 
