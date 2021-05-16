@@ -45,9 +45,8 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
             small
             :color="$store.state.COLOR_LIST[7]"
           )
-            v-icon(slot="icon" small color="white") mdi-plus
-            span.d-flex.text-no-wrap(
-            ) 新增里程碑
+            v-icon(slot="icon" small color="white" @click="submitMilestone") mdi-plus
+            v-text-field.ma-0.pa-1(placeholder="新增里程碑", v-model="newMilestone")
         br
         p.pre {{ context.body }}
         br
@@ -107,6 +106,7 @@ export default {
     Newcomments: '',
     ThePost: [],
     NP: false,
+    newMilestone:'',
   }),
   computed: {
 
@@ -179,6 +179,11 @@ export default {
           context: this.context.wishes[idx],
         }
       })
+    },
+    submitMilestone(){
+      console.log('QQ');
+      this.context.wishes.push(this.newMilestone);
+      this.newMilestone='';
     }
   },
 };
