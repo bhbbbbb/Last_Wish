@@ -4,14 +4,16 @@ v-bottom-navigation(
   v-model="selected"
   mandatory
   dense
+  background-color="#9ba2aa"
+  color="rgba(255, 255, 255, 1)"
 )
   v-btn(
     v-for="link in links"
     :key="link.to.name"
     :to="is_login ? {name: link.to.name, params: {username: username}} : link.to"
   )
-    span {{ link.text }}
-    v-icon {{ link.icon }}
+    span() {{ link.text }}
+    v-icon() {{ link.icon }}
 
 </template>
 
@@ -38,3 +40,9 @@ export default {
  
 }
 </script>
+
+<style scoped>
+.v-btn:not(.v-btn--active) {
+  color: rgba(255, 255, 255, 0.5);
+}
+</style>
