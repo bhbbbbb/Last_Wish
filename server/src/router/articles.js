@@ -159,7 +159,10 @@ global.get('/followed_post', (req, res) => {
     res.status(response.status).json(posts);
     return;
 });
-
+global.post('/addMilestone',(req,res)=>{
+    articleManager.addMilestoneToArticle(req.body.article_id,req.body.newMilestone);
+    res.send(articleManager.getToday(2));
+})
 
 
 
