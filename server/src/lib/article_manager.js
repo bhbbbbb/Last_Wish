@@ -92,7 +92,7 @@ module.exports = function() {
             throw "no such article";
         }
         let article = this.articles[Number(articleId)];
-        let newMilestoneId = String(article.wishes.length);     
+        let newMilestoneId = String(article.wishes.length);
         article.wishes.push(today.split(' ')[0]+'\t'+milestoneStr);
         synchronize(this.articles, this.articlePATH);
     }

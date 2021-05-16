@@ -7,8 +7,9 @@ v-bottom-navigation(
   dark
   background-color="#9ba2aa"
   color="rgba(255, 255, 255, 1)"
+  grow
 )
-  v-btn(
+  v-btn.mx-0(
     v-for="link in links"
     :key="link.to.name"
     :to="is_login ? {name: link.to.name, params: {username: username}} : link.to"
@@ -42,6 +43,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+.v-item-group.v-bottom-navigation .v-btn {
+  min-width: 64px;
+}
 </style>
