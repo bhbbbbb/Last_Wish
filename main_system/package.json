@@ -39,7 +39,8 @@
     "vuetify-loader": "^1.7.0"
   },
   "prettier": {
-    "singleQuote": true
+    "singleQuote": true,
+    "endOfLine": "auto"
   },
   "eslintConfig": {
     "root": true,
@@ -67,7 +68,7 @@
   },
   "browserslist": [
     "> 1%",
-    "last 2 versions",
+    "last 2 versions", 
     "not dead"
   ]
 }
