@@ -30,7 +30,7 @@ export const apiGetArticles = () => articleRequest.get('/');
 export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
 export const apiUploadComment = (data) =>articleRequest.post('/addcomment',data);
 export const apiUserPosts = (data) => articleRequest.post('/user_post',data);
-export const apiUserFollowedPosts = () => articleRequest.get('/followed_post');
+export const apiUserFollowedPosts = (data) => articleRequest.post('/followed_post',data);
 export const apiUploadMilestone=(data)=>articleRequest.post('/addMilestone',data);
 
 

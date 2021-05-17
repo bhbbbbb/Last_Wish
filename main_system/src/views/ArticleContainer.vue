@@ -24,6 +24,7 @@ v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
 </template>
 
 <script>
+import {apiUserFollowedPosts} from '@/store/api';
 export default {
   name: 'ArticleContainer',
 
@@ -50,6 +51,11 @@ export default {
     // ...mapState(['articles', 'is_login']),
   },
   created() {
+    if(this.$store.state.followed_articles==undefined)
+      apiUserFollowedPosts({username:this.$store.state.username})
+      .then(res=>{
+        this.$store.state.followed_articles = res.data;
+    })
     // without running 'getGlobalArticles' the articles would be blank
     // this.$store.dispatch('getGlobalArticles');
   },

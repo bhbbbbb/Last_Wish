@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import {apiUserFollowedPosts} from '@/store/api';
 export default {
   name: 'App',
   components: {
@@ -18,10 +17,7 @@ export default {
   computed: {
   },
   created() {
-    apiUserFollowedPosts({username:this.$store.state.username})
-    .then(res=>{
-    this.articles = res.data;
-    })
+    this.articles=this.$store.state.followed_articles;
   }
 };
 </script>

@@ -115,7 +115,7 @@ const FOLLOWED_POST = [
         }
     }
 ]
-global.get('/followed_post', (req, res) => {
+global.post('/followed_post', (req, res) => {
     // var User_id = String(0);   //Here can be replaced with api returns current user's id
     // var F_User = [];
     // var F_Post = [];
@@ -146,7 +146,7 @@ global.get('/followed_post', (req, res) => {
     var response;
     let posts = [];
     try {
-        accountManager.getFollowedPostsByUser(req.query.username).forEach(articleId => {
+        accountManager.getFollowedPostsByUser(req.body.username).forEach(articleId => {
             posts.push(articleManager.getArticleById(articleId));
         });
     } catch (error) {

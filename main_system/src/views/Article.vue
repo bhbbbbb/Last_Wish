@@ -1,6 +1,12 @@
 <template lang="pug">
 v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
   v-container
+    v-container(v-if="hasFollowed")
+      v-icon(@click="follow")="mdi-heart"
+      v-text=' 關注中'
+    v-container(v-else)
+      v-icon(@click="follow")="mdi-heart-outline"
+      v-text=' 關注貼文'
     v-row.flex-column(no-gutters="no-gutters")
       v-menu(
         offset-y="offset-y",
@@ -13,6 +19,8 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
         v-list
           v-list-item(@click="Copy") 複製連結
           v-list-item(@click="Clone") 願望拷貝
+          v-list-item(v-if="hasFollowed" @click="follow") 取消關注
+          v-list-item(v-else @click="follow") 關注此文
     v-row(no-gutters="no-gutters")
       v-col.d-flex.flex-column.flex-shrink-1.align-center.ma-0(cols="4")
         v-avatar.grey.lighten-1(size="64")
@@ -108,6 +116,7 @@ export default {
     ThePost: [],
     NP: false,
     newMilestone: '',
+    hasFollowed:false
   }),
   computed: {
 
@@ -119,6 +128,11 @@ export default {
     this.$store.dispatch('getUser', this.context.from).then((res) => {
       this.author = res;
     });
+    for(var i = 0;i<this.$store.state.followed_articles.length;i++)
+      if(this.$store.state.followed_articles[i].id == this.context.id){
+        this.hasFollowed = true;
+        break;
+      }
   },
 
   methods: {
@@ -198,6 +212,9 @@ export default {
           this.context.wishes.push(res.data + '\t' + this.newMilestone);
           this.newMilestone = '';
         })
+    },
+    follow(){        
+      this.hasFollowed=!this.hasFollowed;
     }
   },
 };

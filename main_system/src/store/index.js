@@ -13,6 +13,7 @@ export default new Vuex.Store({
   state: {
     global_articles: '',
     user_articles: '',
+    followed_articles:undefined,
     username: '',
     is_login: false,
     links: global_links,
