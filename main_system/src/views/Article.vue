@@ -130,7 +130,7 @@ export default {
       this.Show_info('Copied', 'success');
     },
     SubmitNewComment() {
-      if(!this.Newcomments)
+      if(!this.Newcomments.trim())
         return;
       apiUploadComment({
         author: {
@@ -184,8 +184,12 @@ export default {
       })
     },
     submitMilestone() {
-      if(!this.newMilestone)
+      if(!this.newMilestone.trim())
         return;
+      else if(this.$store.state.user_id != this.author.id){
+        this.Show_info('You are not the owner of the article!','error')
+        return;
+        }
       apiUploadMilestone({
           article_id: String(this.id),
           newMilestone: this.newMilestone
