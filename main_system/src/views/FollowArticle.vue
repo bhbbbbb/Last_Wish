@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import {apiUserFollowedPosts} from '@/store/api';
 export default {
   name: 'App',
   components: {
