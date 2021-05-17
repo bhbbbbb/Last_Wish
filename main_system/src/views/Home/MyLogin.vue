@@ -55,7 +55,6 @@ export default {
     Try_Login() {
       var status =
         this.rules.regex(this.user.username) == true;
-      console.log(status);
       if (!(this.user.username && this.user.password)) {
         // username or pswd is blank
         this.Show_info('Empty data','error');

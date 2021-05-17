@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 // this class is to manage all users
 // or simply manage the data stored in json files
 const fs = require("fs");
@@ -32,7 +33,8 @@ module.exports = function() {
         }
         let account = this.accounts_info.find(account => account.username == username);
         // let account = this.accounts_info[Number(this.user_list[username])];
-        return account.password == password;
+        // return account.password == password;
+        return bcrypt.compareSync(password, account.password);
     }
 
     /**
@@ -45,10 +47,11 @@ module.exports = function() {
             throw "duplicated user";
         }
         let newUserId = String(Object.keys(this.user_list).length);
+        let hash = bcrypt.hashSync(password, 10);
         let newUserData = {
             "id": newUserId,
             "username": username,
-            "password": password
+            "password": hash
         }
         this.user_list[username] = newUserId;
         this.accounts_info.push(newAccountInfo(newUserData));
