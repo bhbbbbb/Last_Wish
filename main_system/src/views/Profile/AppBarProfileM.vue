@@ -26,10 +26,10 @@ v-app-bar.d-flex.align-center.flex-wrap(
 </template>
 
 <script>
-import {mapState} from 'vuex';
+import { mapState } from 'vuex';
 export default {
   name: 'AppBarProfileM',
-    components: {
+  components: {
     //SimpleUpload:()=> import('@/components/SimpleUpload')
   },
   props: {

@@ -7,11 +7,9 @@ v-container.pa-0()
 
 <script>
 export default {
-    name: 'Home',
-    components: {
-
-    }
-}
+  name: 'Home',
+  components: {},
+};
 </script>
 
 <style scoped>

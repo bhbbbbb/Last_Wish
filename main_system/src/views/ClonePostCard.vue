@@ -43,12 +43,10 @@ export default {
     infos: '',
     checkbox: false,
   }),
-  computed: {
+  computed: {},
+  created() {
+    this.newArticle.wishes = this.newArticle.wishes.replace(/,/g, '\n');
   },
-  created(){
-    this.newArticle.wishes = this.newArticle.wishes.replace(/,/g,'\n');
-  }
-  ,
   methods: {
     SubmitNewArticle() {
       this.newArticle.wishes = this.newArticle.wishes.split('\n');

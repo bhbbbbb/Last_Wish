@@ -38,9 +38,7 @@ v-card(min-height="70vh" rounded="lg" flat)
 </template>
 
 <script>
-import {
-  apiRegister
-} from '@/store/api';
+import { apiRegister } from '@/store/api';
 
 export default {
   name: 'Register',
@@ -76,7 +74,10 @@ export default {
         apiRegister(this.user)
           .then((res) => {
             if (res.status == 200) {
-              this.$store.dispatch('tryLogin', {username: this.user.username, password: this.user.password});
+              this.$store.dispatch('tryLogin', {
+                username: this.user.username,
+                password: this.user.password,
+              });
               this.Show_info('Success registered', 'success');
             } else this.Show_info(res.data.err_msg, 'error');
           })

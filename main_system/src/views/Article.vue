@@ -77,10 +77,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
 
 <script>
 // import { mapState } from 'vuex'
-import {
-  apiUploadComment,
-  apiUploadMilestone
-} from '@/store/api';
+import { apiUploadComment, apiUploadMilestone } from '@/store/api';
 
 //var Article_id = '';
 
@@ -116,11 +113,9 @@ export default {
     ThePost: [],
     NP: false,
     newMilestone: '',
-    hasFollowed:false
+    hasFollowed: false,
   }),
-  computed: {
-
-  },
+  computed: {},
   created() {
     this.ThePost = JSON.parse(JSON.stringify(this.context));
     this.ThePost.wishes = String(this.ThePost.wishes).replace(/,/g, '\n');
@@ -128,8 +123,8 @@ export default {
     this.$store.dispatch('getUser', this.context.from).then((res) => {
       this.author = res;
     });
-    for(var i = 0;i<this.$store.state.followed_articles.length;i++)
-      if(this.$store.state.followed_articles[i].id == this.context.id){
+    for (var i = 0; i < this.$store.state.followed_articles.length; i++)
+      if (this.$store.state.followed_articles[i].id == this.context.id) {
         this.hasFollowed = true;
         break;
       }
@@ -144,8 +139,7 @@ export default {
       this.Show_info('Copied', 'success');
     },
     SubmitNewComment() {
-      if(!this.Newcomments.trim())
-        return;
+      if (!this.Newcomments.trim()) return;
       apiUploadComment({
         author: {
           name: this.$store.state.username,
@@ -183,8 +177,8 @@ export default {
         name: 'ArticleClone',
         params: {
           id: this.id,
-          newArticle: this.ThePost
-        }
+          newArticle: this.ThePost,
+        },
       });
     },
     Go(idx) {
@@ -194,28 +188,26 @@ export default {
           id: this.id,
           wish: this.context.wishes[idx],
           context: this.context.wishes[idx],
-        }
-      })
+        },
+      });
     },
     submitMilestone() {
-      if(!this.newMilestone.trim())
+      if (!this.newMilestone.trim()) return;
+      else if (this.$store.state.user_id != this.author.id) {
+        this.Show_info('You are not the owner of the article!', 'error');
         return;
-      else if(this.$store.state.user_id != this.author.id){
-        this.Show_info('You are not the owner of the article!','error')
-        return;
-        }
+      }
       apiUploadMilestone({
-          article_id: String(this.id),
-          newMilestone: this.newMilestone
-        })
-        .then(res => {
-          this.context.wishes.push(res.data + '\t' + this.newMilestone);
-          this.newMilestone = '';
-        })
+        article_id: String(this.id),
+        newMilestone: this.newMilestone,
+      }).then((res) => {
+        this.context.wishes.push(res.data + '\t' + this.newMilestone);
+        this.newMilestone = '';
+      });
     },
-    follow(){        
-      this.hasFollowed=!this.hasFollowed;
-    }
+    follow() {
+      this.hasFollowed = !this.hasFollowed;
+    },
   },
 };
 </script>

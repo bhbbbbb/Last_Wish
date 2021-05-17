@@ -23,8 +23,8 @@ v-card.ma-0.pa-3(min-height="10vh" rounded="lg" elevation="5")
 </template>
 
 <script>
-import {mapState} from 'vuex';
-import {apiUploadArticle, apiUserPosts} from '@/store/api';
+import { mapState } from 'vuex';
+import { apiUploadArticle, apiUserPosts } from '@/store/api';
 export default {
   name: 'NewPost',
   data: () => ({
@@ -32,7 +32,7 @@ export default {
       title: '',
       body: '',
       from: '',
-      wishes:'',
+      wishes: '',
     },
     show_info: false,
     info_type: 'success',
@@ -44,7 +44,7 @@ export default {
   },
   methods: {
     SubmitNewArticle() {
-      this.new_article.wishes = '開始願望: '+this.new_article.title;
+      this.new_article.wishes = '開始願望: ' + this.new_article.title;
       if (this.checkbox) this.new_article.from = '0';
       else this.new_article.from = this.$store.state.user_id;
       if (!this.new_article.title || !this.new_article.body) {
@@ -68,7 +68,7 @@ export default {
           console.log(err);
         });
 
-      apiUserPosts({username: this.$store.state.username})
+      apiUserPosts({ username: this.$store.state.username })
         .then((res) => {
           this.$store.commit('updateUserArticles', res.data);
         })

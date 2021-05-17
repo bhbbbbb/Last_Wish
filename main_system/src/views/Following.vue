@@ -1,23 +1,20 @@
 <template>
-  <ArticleContainer
-    v-if="articles"
-    :articles="articles"
-  />
+  <ArticleContainer v-if="articles" :articles="articles" />
 </template>
 
 <script>
 export default {
   name: 'App',
   components: {
-    ArticleContainer: () => import('@/views/ArticleContainer')
+    ArticleContainer: () => import('@/views/ArticleContainer'),
   },
   data: () => ({
-    articles: undefined
+    articles: undefined,
   }),
-  computed: {
-  },
+  computed: {},
   created() {
-    if (this.$store.state.global_articles) this.articles = this.$store.state.global_articles;
-  }
+    if (this.$store.state.global_articles)
+      this.articles = this.$store.state.global_articles;
+  },
 };
 </script>

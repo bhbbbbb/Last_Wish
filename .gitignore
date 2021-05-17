@@ -20,3 +20,4 @@ vue-flip-card
 # ignore assets to imporve efficency
 about_us_old/src/assets
 server/src/crawl.py
+node_modules

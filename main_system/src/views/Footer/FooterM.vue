@@ -20,27 +20,23 @@ v-bottom-navigation(
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from 'vuex';
 export default {
-    name: 'FooterM',
-    components: {
-    },
-    props: {
-      // links: {
-      //   required: true,
-      //   type: Array
-      // },
-    },
-    data: () => ({
-        selected: 0,
-    }),
-    computed: {
-      ...mapState(['links', 'is_login', 'username']),
-      
-    },
-    
- 
-}
+  name: 'FooterM',
+  components: {},
+  props: {
+    // links: {
+    //   required: true,
+    //   type: Array
+    // },
+  },
+  data: () => ({
+    selected: 0,
+  }),
+  computed: {
+    ...mapState(['links', 'is_login', 'username']),
+  },
+};
 </script>
 
 <style>

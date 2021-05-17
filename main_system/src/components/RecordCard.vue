@@ -5,15 +5,10 @@ v-card.ma-3.pa-3(min-height="10vh" rounded="lg")
 </template>
 
 <script>
-  export default {
-    name: 'RecordCard',
-    props: {
-      
-    }
-
-  }
+export default {
+  name: 'RecordCard',
+  props: {},
+};
 </script>
 
-<style>
-
-</style>
+<style></style>
