@@ -1,26 +1,21 @@
 <template lang="pug">
 v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
-  v-container
-    v-container(v-if="hasFollowed")
-      v-icon(@click="follow")="mdi-heart"
-      v-text=' 關注中'
-    v-container(v-else)
-      v-icon(@click="follow")="mdi-heart-outline"
-      v-text=' 關注貼文'
-    v-row.flex-column(no-gutters="no-gutters")
-      v-menu(
-        offset-y="offset-y",
-        close-on-content-click="close-on-content-click",
-        nudge-left="50"
-      )
-        template(v-slot:activator="{ on, attrs }")
-          v-btn.align-self-end(icon="icon", v-bind="attrs", v-on="on")
-            v-icon mdi-dots-horizontal
-        v-list
-          v-list-item(@click="Copy") 複製連結
-          v-list-item(@click="Clone") 願望拷貝
-          v-list-item(v-if="hasFollowed" @click="follow") 取消關注
-          v-list-item(v-else @click="follow") 關注此文
+  v-container      
+    v-row(no-gutters="no-gutters")
+      v-col.d-flex.justify-start(cols="6")
+        v-icon(@click="hasFollowed = !hasFollowed") {{ hasFollowed ? "mdi-heart" : "mdi-heart-outline" }}
+      v-col.d-flex.justify-end(cols="6")
+        v-menu(
+          offset-y,
+          close-on-content-click="close-on-content-click",
+          nudge-left="50"
+        )
+          template(v-slot:activator="{ on, attrs }")
+            v-btn.align-self-end(icon="icon", v-bind="attrs", v-on="on")
+              v-icon mdi-dots-horizontal
+          v-list
+            v-list-item(@click="Copy") 複製連結
+            v-list-item(@click="Clone") 願望拷貝
     v-row(no-gutters="no-gutters")
       v-col.d-flex.flex-column.flex-shrink-1.align-center.ma-0(cols="4")
         v-avatar.grey.lighten-1(size="64")
@@ -50,6 +45,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
             ) {{ wish }}
 
           v-timeline-item.align-center(
+            v-if="$store.state.user_id === author.id"
             small
             :color="$store.state.COLOR_LIST[7]"
           )
@@ -123,6 +119,7 @@ export default {
     this.$store.dispatch('getUser', this.context.from).then((res) => {
       this.author = res;
     });
+
     for (var i = 0; i < this.$store.state.followed_articles.length; i++)
       if (this.$store.state.followed_articles[i].id == this.context.id) {
         this.hasFollowed = true;
@@ -193,10 +190,7 @@ export default {
     },
     submitMilestone() {
       if (!this.newMilestone.trim()) return;
-      else if (this.$store.state.user_id != this.author.id) {
-        this.Show_info('You are not the owner of the article!', 'error');
-        return;
-      }
+
       apiUploadMilestone({
         article_id: String(this.id),
         newMilestone: this.newMilestone,
@@ -204,9 +198,6 @@ export default {
         this.context.wishes.push(res.data + '\t' + this.newMilestone);
         this.newMilestone = '';
       });
-    },
-    follow() {
-      this.hasFollowed = !this.hasFollowed;
     },
   },
 };

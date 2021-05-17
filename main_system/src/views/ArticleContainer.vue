@@ -56,8 +56,6 @@ export default {
           this.$store.state.followed_articles = res.data;
         }
       );
-    // without running 'getGlobalArticles' the articles would be blank
-    // this.$store.dispatch('getGlobalArticles');
   },
 
   methods: {
@@ -68,7 +66,10 @@ export default {
         params: {
           id: article_id,
           context: this.articles[idx],
-          color: this.$store.state.COLOR_LIST[idx],
+          color:
+            this.$store.state.COLOR_LIST[
+              idx % this.$store.state.COLOR_LIST.length
+            ],
         },
       });
     },

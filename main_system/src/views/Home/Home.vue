@@ -1,5 +1,5 @@
 <template lang="pug">
-v-container.pa-0()
+v-container.pa-0(fill-height)
   v-row.justify-center.mar()
     v-col.pa-0.ma-0(cols="12" sm="6")
       router-view/
@@ -17,5 +17,6 @@ export default {
   margin-left: 30px;
   margin-right: 30px;
   margin-top: 17px;
+  margin-bottom: 17px;
 }
 </style>
