@@ -209,7 +209,7 @@ export default {
         articleId: String(this.id),
       }).then((res) => {
         this.$store.dispatch('getUserFollowed');
-        console.log(res);
+        console.log(res.status);
         this.hasFollowed = !this.hasFollowed;
       });
     },

@@ -51,7 +51,7 @@ export default {
       const formData = new FormData();
       formData.append('file', this.file);
       apiUploadFiles(formData).then((res) => {
-        console.log(res);
+        console.log(res.status);
       });
     },
   },

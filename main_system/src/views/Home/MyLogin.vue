@@ -77,7 +77,7 @@ export default {
     Line() {
       apiLineLogin({ username: 'haha' })
         .then((res) => {
-          console.log(res);
+          console.log(res.status);
           window.open(res.data);
         })
         .catch((err) => {
