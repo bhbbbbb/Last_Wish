@@ -126,6 +126,13 @@ const routes = [
         path: 'follow_article',
         name: 'FollowArticle',
         component: () => import('@/views/FollowArticle'),
+        beforeEnter(to, from, next) {
+          if (store.state.followed_articles) next();
+          else
+            store.dispatch('getUserFollowed').then(() => {
+              next();
+            });
+        },
       },
       {
         path: 'following',

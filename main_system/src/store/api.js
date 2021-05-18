@@ -29,16 +29,18 @@ export const apiGetArticles = () => articleRequest.get('/');
 export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
 export const apiUploadComment = (data) =>
   articleRequest.post('/addcomment', data);
-export const apiUserPosts = (data) => articleRequest.post('/user_post', data);
+export const apiGetUserPosts = (data) =>
+  articleRequest.get('/user_post', { params: data });
 export const apiUserFollowedPosts = (data) =>
-  articleRequest.post('/followed_post', data);
+  articleRequest.get('/followed_post', { params: data });
 export const apiUploadMilestone = (data) =>
   articleRequest.post('/addMilestone', data);
 export const apiUserFollowedPostToggle = (data) =>
   articleRequest.post('FollowedPostToggle', data);
 
 /********************** Call user.js **********************/
-export const apiGetUserId = (data) => userRequest.post('/get_id_by_name', data);
+export const apiGetUserId = (data) =>
+  userRequest.get('/get_id_by_name', { params: data });
 export const apiTryLogin = (data) => userRequest.post('/try_login', data);
 export const apiRegister = (data) => userRequest.post('/register', data);
 export const apiWho = () => userRequest.get('/who');

@@ -24,7 +24,7 @@ v-card.ma-0.pa-3(min-height="10vh" rounded="lg" elevation="5")
 
 <script>
 import { mapState } from 'vuex';
-import { apiUploadArticle, apiUserPosts } from '@/store/api';
+import { apiUploadArticle } from '@/store/api';
 export default {
   name: 'NewPost',
   data: () => ({
@@ -58,23 +58,17 @@ export default {
       })
         .then((res) => {
           // TODO : insert new post locally
-          this.$store.commit('updateGlobalArticles', res.data);
-          this.Show_info('Posted', 'success');
-          this.new_article.title = '';
-          this.new_article.body = '';
+          let newPostId = res.data;
+          this.$store.dispatch('getGlobalArticles', true).then(() => {
+            this.$router.push(`/article/${newPostId}`);
+          });
         })
         .catch((err) => {
           this.Show_info('Something went wrong', 'error');
           console.log(err);
         });
 
-      apiUserPosts({ username: this.$store.state.username })
-        .then((res) => {
-          this.$store.commit('updateUserArticles', res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      this.$store.dispatch('getUserArticles', true);
     },
     Show_info(Info, infoType) {
       /**

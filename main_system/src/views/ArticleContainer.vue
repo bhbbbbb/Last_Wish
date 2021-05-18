@@ -1,6 +1,5 @@
 <template lang="pug">
-v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
-
+v-sheet.d-flex.flex-wrap.flex-column-reverse(rounded="lg")
   v-col.ma-0.pa-0(
     v-if="articles"
     cols="12"
@@ -49,7 +48,10 @@ export default {
     // ...mapState(['articles', 'is_login']),
   },
   created() {
-    if (this.$store.state.followed_articles == undefined)
+    if (
+      this.$store.state.is_login &&
+      this.$store.state.followed_articles === undefined
+    )
       this.$store.dispatch('getUserFollowed');
   },
 

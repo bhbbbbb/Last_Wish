@@ -69,7 +69,7 @@ export default {
     Dev() {
       this.tryLogin({
         username: 'Dev',
-        password: '',
+        password: '123',
         id: '1',
       });
     },

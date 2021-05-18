@@ -13,7 +13,7 @@
     {
         "id": "1",
         "username": "Dev",
-        "password": "",
+        "password": "$2a$10$l4N4fXqDWCF9rkUmWo4cOOpxGx5AnHl3p8mb6uqLDjSUqv6MG6oNm",
         "followers": [],
         "followees": [],
         "followedPosts": [],

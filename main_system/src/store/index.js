@@ -5,8 +5,7 @@ import {
   apiGetPublicInfo,
   apiLogout,
   apiTryLogin,
-  apiUserPosts,
-  apiGetUserId,
+  apiGetUserPosts,
   apiUserFollowedPosts,
 } from './api';
 // import { apiGetArticles } from './api.js'
@@ -36,9 +35,15 @@ export default new Vuex.Store({
     updateUserFollowed(state, payload) {
       state.followed_articles = payload;
     },
+
+    /**
+     *
+     * @param {Object} payload {username, id}
+     */
     login(state, payload) {
       state.is_login = true;
-      state.username = payload;
+      state.username = payload.username;
+      state.user_id = payload.id;
       state.links = user_links;
       state.links.forEach((link) => {
         if (link.to.params) link.to.params.username = payload;
@@ -55,8 +60,13 @@ export default new Vuex.Store({
   },
   getters: {},
   actions: {
-    async getGlobalArticles(context) {
-      if (context.state.global_articles) return;
+    /**
+     *
+     * @param {Boolean} forceUpdate : forceUpdate or not
+     * @returns
+     */
+    async getGlobalArticles(context, forceUpdate = false) {
+      if (context.state.global_articles && !forceUpdate) return;
       await apiGetArticles()
         .then((res) => {
           context.commit('updateGlobalArticles', res.data);
@@ -83,9 +93,14 @@ export default new Vuex.Store({
         });
     },
 
-    async getUserArticles(context) {
-      if (context.state.user_articles) return;
-      await apiUserPosts({ username: context.state.username })
+    /**
+     *
+     * @param {Boolean} forceUpdate
+     * @returns
+     */
+    async getUserArticles(context, forceUpdate) {
+      if (context.state.user_articles && !forceUpdate) return;
+      await apiGetUserPosts({ username: context.state.username })
         .then((res) => {
           context.commit('updateUserArticles', res.data);
         })
@@ -101,14 +116,9 @@ export default new Vuex.Store({
      */
     async tryLogin(context, payload) {
       return apiTryLogin(payload)
-        .then(() => {
-          context.commit('login', payload.username);
-
+        .then((res) => {
+          context.commit('login', res.data);
           Vue.$cookies.set('login', payload.username);
-
-          apiGetUserId({ name: payload.username }).then((res) => {
-            context.commit('setid', String(res.data));
-          });
 
           router.push({
             name: 'Articles',

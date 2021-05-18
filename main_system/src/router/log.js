@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import store from '@/store/index';
-import { apiWho, apiGetUserId } from '@/store/api';
+import { apiWho } from '@/store/api';
 //import Vuex from 'vuex'
 
 /*********
@@ -15,12 +15,8 @@ export const isLogin = async () => {
     let cookies_login = Vue.$cookies.get('login');
     if (cookies_login) {
       try {
-        apiGetUserId({ name: cookies_login }).then((res) => {
-          //console.log(String(res.data),'QWQ');
-          store.commit('setid', String(res.data));
-        });
         let who = await apiWho().then((res) => res.data);
-        if (String(cookies_login) === String(who)) {
+        if (String(cookies_login) === String(who.username)) {
           store.commit('login', who);
           return true;
         }

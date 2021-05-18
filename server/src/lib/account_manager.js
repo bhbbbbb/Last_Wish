@@ -180,14 +180,17 @@ module.exports = function() {
      * @param {String} username 
      * @param {Object} article: {String} title, {String} body and {Array} wishes
      * @throws "user not found" exception
+     * @return {Number} newPostId
      */
     this.addPostsToAuthor = function(username, article) {
         if (!this.hasUser(username)) {
             throw "user not found";
         }
-        let author = this.accounts_info.find(account => account['username'] == username)
-        author.selfPosts.push(this.articleManager.addArticle(author, article));
+        let author = this.accounts_info.find(account => account['username'] == username);
+        let newPostId = this.articleManager.addArticle(author, article);
+        author.selfPosts.push(newPostId);
         synchronize(this.accounts_info, this.accountsPATH);
+        return newPostId;
     }
 
     /**

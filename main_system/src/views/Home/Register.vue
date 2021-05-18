@@ -7,6 +7,7 @@ v-card(min-height="70vh" rounded="lg" flat)
       v-model="user.username"
       label=""
       :rules="[rules.empty, rules.regex]"
+      autocomplete="off"
     )
     br/
     h2 your password
@@ -15,6 +16,7 @@ v-card(min-height="70vh" rounded="lg" flat)
       label=""
       type="password"
       :rules="[rules.empty, rules.regex]"
+      autocomplete="off"
     )
     br/
     h2 confirm your password
@@ -23,6 +25,7 @@ v-card(min-height="70vh" rounded="lg" flat)
       label=""
       type="password"
       :rules="[rules.empty, rules.regex, rules.confirm_match]"
+      autocomplete="off"
     )
 
     v-card-actions.justify-center

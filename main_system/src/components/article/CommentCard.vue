@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card.ma-0.pa-0.transparent.d-flex.align-center(
+v-card.ma-1.pa-1.transparent.d-flex.align-center(
   v-if="author"
   flat
   min-height="48"

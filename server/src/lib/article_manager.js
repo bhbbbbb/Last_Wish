@@ -62,6 +62,7 @@ module.exports = function() {
      * @param {String} articleId 
      * @param {String} commentStr 
      * @throws "no such article" exception
+     * @returns {Object} newComment
      */
     this.addCommentToArticle = function(author, articleId, commentStr) {
         if (!this.hasArticle(articleId)) {
@@ -75,8 +76,10 @@ module.exports = function() {
             "body": commentStr,
             "from": author.id
         }
-        article.comments.push(newComment(newCommentData));
+        let newNewComment = newComment(newCommentData);
+        article.comments.push(newNewComment);
         synchronize(this.articles, this.articlePATH);
+        return newNewComment;
     }
 
     /**

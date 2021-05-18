@@ -3,7 +3,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
   v-container      
     v-row(no-gutters="no-gutters")
       v-col.d-flex.justify-start(cols="6")
-        v-icon(@click="followedToggle") {{ hasFollowed ? "mdi-heart" : "mdi-heart-outline" }}
+        v-icon(@click="followedToggle") {{ hasFollowed ? "mdi-star" : "mdi-star-outline" }}
       v-col.d-flex.justify-end(cols="6")
         v-menu(
           offset-y,
@@ -59,25 +59,21 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
           :key="comment.id",
           :context="comment"
         )
+        NewComment(@update="updateComment")
+
     v-overlay.align-start(:value="show_info", absolute="absolute", opacity="0")
       v-alert.mt-10(
         :value="show_info",
         :type="info_type",
         transition="slide-x-transition"
       ) {{ infos }}
-  v-text-field.my-0.mx-8.pa-1(placeholder="comment here" v-model="Newcomments" @keydown.enter="SubmitNewComment()")
-  v-card-actions.justify-center
-    v-btn(@click="SubmitNewComment()") submit
+  
   input#url(style="position: absolute; opacity: 0")
 </template>
 
 <script>
 // import { mapState } from 'vuex'
-import {
-  apiUploadComment,
-  apiUploadMilestone,
-  apiUserFollowedPostToggle,
-} from '@/store/api';
+import { apiUploadMilestone, apiUserFollowedPostToggle } from '@/store/api';
 
 //var Article_id = '';
 
@@ -85,6 +81,7 @@ export default {
   name: 'Article',
   components: {
     CommentCard: () => import('@/components/article/CommentCard'),
+    NewComment: () => import('@/components/article/NewComment'),
   },
   props: {
     id: {
@@ -109,7 +106,6 @@ export default {
     show_info: false,
     info_type: 'success',
     infos: '',
-    Newcomments: '',
     ThePost: [],
     NP: false,
     newMilestone: '',
@@ -124,11 +120,12 @@ export default {
       this.author = res;
     });
 
-    for (var i = 0; i < this.$store.state.followed_articles.length; i++)
-      if (this.$store.state.followed_articles[i].id == this.context.id) {
-        this.hasFollowed = true;
-        break;
-      }
+    if (this.$store.state.followed_articles)
+      for (var i = 0; i < this.$store.state.followed_articles.length; i++)
+        if (this.$store.state.followed_articles[i].id == this.context.id) {
+          this.hasFollowed = true;
+          break;
+        }
   },
 
   methods: {
@@ -138,25 +135,6 @@ export default {
       ele.select();
       document.execCommand('copy');
       this.Show_info('Copied', 'success');
-    },
-    SubmitNewComment() {
-      if (!this.Newcomments.trim()) return;
-      apiUploadComment({
-        author: {
-          name: this.$store.state.username,
-          id: this.$store.state.user_id,
-        },
-        article_id: String(this.id),
-        comment: this.Newcomments,
-      });
-      // console.log(this.context);
-      this.context.comments.push({
-        body: this.Newcomments,
-        date: 'Today',
-        from: this.$store.state.user_id,
-        id: String(this.context.comments.length),
-      });
-      this.Newcomments = '';
     },
     Show_info(Info, infoType) {
       /**
@@ -192,6 +170,9 @@ export default {
         },
       });
     },
+    updateComment(newComment) {
+      this.context.comments.push(newComment);
+    },
     submitMilestone() {
       if (!this.newMilestone.trim()) return;
 
@@ -207,9 +188,8 @@ export default {
       apiUserFollowedPostToggle({
         username: this.$store.state.username,
         articleId: String(this.id),
-      }).then((res) => {
+      }).then(() => {
         this.$store.dispatch('getUserFollowed');
-        console.log(res.status);
         this.hasFollowed = !this.hasFollowed;
       });
     },

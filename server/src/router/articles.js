@@ -2,7 +2,7 @@ const articlePATH = __dirname + "/../data/articles.json";
 const accountsPATH = __dirname + "/../data/accounts.json";
 var express = require('express');
 var global = express.Router();
-
+var user_session = require('../lib/session.js');
 // const { stringify } = require('querystring');
 // var articles = require(articlePATH);
 // var accounts = require(accountsPATH);
@@ -32,9 +32,9 @@ const INSERT = [
     }
 ]
 global.post('/insert', (req, res) => {
-    var response;
+    var response, newPostId;
     try {
-        accountManager.addPostsToAuthor(
+        newPostId = accountManager.addPostsToAuthor(
                 req.body.username, req.body.article);
     } catch (error) {
         console.log(error);
@@ -43,15 +43,14 @@ global.post('/insert', (req, res) => {
         return;
     }
     response = INSERT[SUCCEED];
-    res.status(response.status).json(response.body);
+    res.status(response.status).json(newPostId);
     return;
 });
 
+
 global.post('/addcomment', (req, res) => {
-    
-    //console.log(req.body.author,req.body.article_id,req.body.comment,'QQ');
-    articleManager.addCommentToArticle(req.body.author,req.body.article_id,req.body.comment);
-    res.send('cool');
+    let newComent = articleManager.addCommentToArticle(req.body.author, req.body.article_id, req.body.comment);
+    res.json(newComent);
 });
 
 global.get('/', (req, res) => {
@@ -69,14 +68,21 @@ const USER_POST = [
             err_code: BAD_REQUEST,
             err_msg: ""
         }
-    }
+    },
 ]
-global.post('/user_post', (req, res) => {
 
+/**
+ * @req req.query { username }
+ */
+global.get('/user_post', user_session, (req, res) => {
     var response;
+    if (req.query.username != req.session.username) {
+        res.sendStatus(401);
+        return;
+    }
     let posts = [];
     try {
-        accountManager.getPostsByAuthor(req.body.username).forEach(articleId => {
+        accountManager.getPostsByAuthor(req.query.username).forEach(articleId => {
             posts.push(articleManager.getArticleById(articleId));
         });
     } catch (error) {
@@ -85,7 +91,6 @@ global.post('/user_post', (req, res) => {
         return;
     }
     response = USER_POST[SUCCEED];
-    console.log(posts);
     res.status(response.status).json(posts);
     return;
 });
@@ -102,11 +107,11 @@ const FOLLOWED_POST = [
         }
     }
 ]
-global.post('/followed_post', (req, res) => {
+global.get('/followed_post', (req, res) => {
     var response;
     let posts = [];
     try {
-        accountManager.getFollowedPostsByUser(req.body.username).forEach(articleId => {
+        accountManager.getFollowedPostsByUser(req.query.username).forEach(articleId => {
             posts.push(articleManager.getArticleById(articleId));
         });
     } catch (error) {
@@ -125,7 +130,6 @@ global.post('/addMilestone',(req,res)=>{
 })
 
 global.post('/FollowedPostToggle',(req,res)=>{
-    console.log(req.body);
     try{
     accountManager.toggleFollowedPostsToUser(req.body.username,req.body.articleId);
     }catch(err){
