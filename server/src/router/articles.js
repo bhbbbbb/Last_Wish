@@ -16,12 +16,7 @@ var articleManager = new ArticleManager();
 // it would be more elegant to utilize the class 
 // but maybe update later today
 
-// var d = new Date();
-// var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-// var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-// var today = month[d.getMonth()] + ' ' + String(d.getDate()) + ', ' + days[d.getDay()];
 
-// add a post anonymously
 const SUCCEED = 0;
 const USER_NOT_FOUND = 1;
 const INSERT = [
@@ -77,15 +72,7 @@ const USER_POST = [
     }
 ]
 global.post('/user_post', (req, res) => {
-    // here may simply call getPostsByUser method of account_manager
-    // var User_id = accountManager.getIdbyUsername(req.body.username);   //Here can be replaced with api returns current user's id
-    // var UserPost = [];
-    // for(var i = 0;i<articles.length;i++)
-    //     if(articles[i].from === User_id)
-    //         UserPost.push(articles[i]);
-    // //console.log(UserPost);
-    // res.json(UserPost);
-    // //TODO: Deal with some exception 
+
     var response;
     let posts = [];
     try {
@@ -116,33 +103,6 @@ const FOLLOWED_POST = [
     }
 ]
 global.post('/followed_post', (req, res) => {
-    // var User_id = String(0);   //Here can be replaced with api returns current user's id
-    // var F_User = [];
-    // var F_Post = [];
-    // var Total_Post = [];
-    // for(var i = 0;i<articles.length;i++)
-    //     if(accounts[i].id === User_id){
-    //         F_User=accounts[i].followees;
-    //         F_Post=accounts[i].followedPosts;
-    //         //console.log(F_User,F_Post,F_User[1]);
-    //         break;
-    //     }
-    
-    // if(F_User.length)
-    // for(var i = 0;i<F_User.length;i++)
-    //     for(var k in articles){
-    //         if(articles[k].from==F_User[i])
-    //             Total_Post.push(articles[k]);
-    //         console.log(articles[k].from,F_User[i]);
-    //         }
-
-    // if(F_Post.length)
-    // for(var j in F_Post)
-    //     for(var k in articles)
-    //         if(articles[k].id==F_Post[j])
-    //             Total_Post.push(articles[k]);
-    // //TODO: Deal with some exception 
-    // res.json(Total_Post);
     var response;
     let posts = [];
     try {
