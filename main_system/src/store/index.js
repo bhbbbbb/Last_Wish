@@ -7,6 +7,7 @@ import {
   apiTryLogin,
   apiUserPosts,
   apiGetUserId,
+  apiUserFollowedPosts,
 } from './api';
 // import { apiGetArticles } from './api.js'
 import router from '@/router/index';
@@ -31,6 +32,9 @@ export default new Vuex.Store({
     },
     updateUserArticles(state, payload) {
       state.user_articles = payload;
+    },
+    updateUserFollowed(state, payload) {
+      state.followed_articles = payload;
     },
     login(state, payload) {
       state.is_login = true;
@@ -124,6 +128,16 @@ export default new Vuex.Store({
       apiLogout().then().catch();
       context.commit('logout');
       return;
+    },
+
+    async getUserFollowed(context) {
+      apiUserFollowedPosts({ username: context.state.username })
+        .then((res) => {
+          context.commit('updateUserFollowed', res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
   },
   modules: {},

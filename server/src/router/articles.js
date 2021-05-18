@@ -124,6 +124,16 @@ global.post('/addMilestone',(req,res)=>{
     res.send(articleManager.getToday(2));
 })
 
+global.post('/FollowedPostToggle',(req,res)=>{
+    console.log(req.body);
+    try{
+    accountManager.toggleFollowedPostsToUser(req.body.username,req.body.articleId);
+    }catch(err){
+        console.log(err);
+    }
+    res.sendStatus(200);
+})
+
 
 
 

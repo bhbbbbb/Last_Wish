@@ -24,7 +24,6 @@ v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
 </template>
 
 <script>
-import { apiUserFollowedPosts } from '@/store/api';
 export default {
   name: 'ArticleContainer',
 
@@ -51,11 +50,7 @@ export default {
   },
   created() {
     if (this.$store.state.followed_articles == undefined)
-      apiUserFollowedPosts({ username: this.$store.state.username }).then(
-        (res) => {
-          this.$store.state.followed_articles = res.data;
-        }
-      );
+      this.$store.dispatch('getUserFollowed');
   },
 
   methods: {

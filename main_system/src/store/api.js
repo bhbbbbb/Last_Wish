@@ -34,6 +34,8 @@ export const apiUserFollowedPosts = (data) =>
   articleRequest.post('/followed_post', data);
 export const apiUploadMilestone = (data) =>
   articleRequest.post('/addMilestone', data);
+export const apiUserFollowedPostToggle = (data) =>
+  articleRequest.post('FollowedPostToggle', data);
 
 /********************** Call user.js **********************/
 export const apiGetUserId = (data) => userRequest.post('/get_id_by_name', data);

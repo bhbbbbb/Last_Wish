@@ -3,7 +3,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
   v-container      
     v-row(no-gutters="no-gutters")
       v-col.d-flex.justify-start(cols="6")
-        v-icon(@click="hasFollowed = !hasFollowed") {{ hasFollowed ? "mdi-heart" : "mdi-heart-outline" }}
+        v-icon(@click="followedToggle") {{ hasFollowed ? "mdi-heart" : "mdi-heart-outline" }}
       v-col.d-flex.justify-end(cols="6")
         v-menu(
           offset-y,
@@ -73,7 +73,11 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
 
 <script>
 // import { mapState } from 'vuex'
-import { apiUploadComment, apiUploadMilestone } from '@/store/api';
+import {
+  apiUploadComment,
+  apiUploadMilestone,
+  apiUserFollowedPostToggle,
+} from '@/store/api';
 
 //var Article_id = '';
 
@@ -197,6 +201,16 @@ export default {
       }).then((res) => {
         this.context.wishes.push(res.data + '\t' + this.newMilestone);
         this.newMilestone = '';
+      });
+    },
+    followedToggle() {
+      apiUserFollowedPostToggle({
+        username: this.$store.state.username,
+        articleId: String(this.id),
+      }).then((res) => {
+        this.$store.dispatch('getUserFollowed');
+        console.log(res);
+        this.hasFollowed = !this.hasFollowed;
       });
     },
   },
