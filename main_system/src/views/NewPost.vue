@@ -42,9 +42,14 @@ export default {
   computed: {
     ...mapState(['articles']),
   },
+  created() {
+    let now = new Date(Date.now());
+    this.max = now.toISOString().substring(0, 10);
+  },
   methods: {
     SubmitNewArticle() {
-      this.new_article.wishes = '開始願望: ' + this.new_article.title;
+      this.new_article.wishes =
+        this.max + '\t' + '開始願望: ' + this.new_article.title;
       if (this.checkbox) this.new_article.from = '0';
       else this.new_article.from = this.$store.state.user_id;
       if (!this.new_article.title || !this.new_article.body) {

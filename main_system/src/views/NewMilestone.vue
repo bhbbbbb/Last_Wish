@@ -73,7 +73,7 @@ export default {
   methods: {
     color_list,
     submitMilestone() {
-      console.log(this.id);
+      console.log(this.max);
       if (!this.newMilestone.trim()) return;
 
       apiUploadMilestone({
