@@ -101,6 +101,7 @@ const routes = [
         name: 'NewMilestone',
         component: () => import('@/views/NewMilestone'),
         props: (route) => ({
+          id: route.params.id,
           wishes: route.params.wishes,
         }),
       },

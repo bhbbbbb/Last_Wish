@@ -112,13 +112,14 @@ module.exports = function() {
     *editing the article contaned in
     *each milestone
     */
-    this.addMilestoneToArticle = function(articleId, milestoneStr) {
+    this.addMilestoneToArticle = function(articleId, milestone) {
         if (!this.hasArticle(articleId)) {
             throw "no such article";
         }
         let article = this.articles[Number(articleId)];
         let newMilestoneId = String(article.wishes.length);
-        article.wishes.push(today.split(' ')[0]+'\t'+milestoneStr);
+        console.log(milestone);
+        article.wishes.push(milestone);
         synchronize(this.articles, this.articlePATH);
     }
 

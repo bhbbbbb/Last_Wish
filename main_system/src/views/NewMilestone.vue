@@ -44,12 +44,16 @@
 </template>
 
 <script>
-// import { apiUploadMilestone } from '@/store/api';
+import { apiUploadMilestone } from '@/store/api';
 import color_list from '@/store/color_list.js';
 export default {
   name: 'NewMilestone',
   components: {},
   props: {
+    id: {
+      type: Number,
+      required: true,
+    },
     wishes: {
       type: Array,
       required: true,
@@ -69,17 +73,18 @@ export default {
   methods: {
     color_list,
     submitMilestone() {
-      console.log(this.selected);
-      // if (!this.newMilestone.trim()) return;
+      console.log(this.id);
+      if (!this.newMilestone.trim()) return;
 
-      // apiUploadMilestone({
-      //   article_id: String(this.id),
-      //   newMilestone: this.newMilestone,
-      // }).then(() => {
-      //   // this.context.wishes.push(res.data + '\t' + this.newMilestone);
-      //   // TODO emit update to parent
-      //   this.newMilestone = '';
-      // });
+      apiUploadMilestone({
+        article_id: String(this.id),
+        newMilestone: this.selected + '\t' + this.newMilestone,
+        //newMilestone: { title: this.newMilestone, time: this.selected },
+      }).then(() => {
+        // this.context.wishes.push(res.data + '\t' + this.newMilestone);
+        // TODO emit update to parent
+        this.newMilestone = '';
+      });
     },
   },
 };
