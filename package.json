@@ -1,8 +1,4 @@
 {
-  "scripts": {
-    "frontend-lint": "do_lint.sh"
-  },
-  "pre-commit": ["frontend-lint"],
   "dependencies": {
     "pre-commit": "^1.2.2"
   }
