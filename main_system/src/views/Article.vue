@@ -16,7 +16,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
           v-list
             v-list-item(@click="Copy") 複製連結
             v-list-item(@click="Clone") 願望拷貝
-            v-list-item(@click="GoEdit") 編輯內文
+            v-list-item(@click="GoEdit" v-if="$store.state.user_id === author.id") 編輯內文
     v-row(no-gutters="no-gutters")
       v-col.d-flex.flex-column.flex-shrink-1.align-center.ma-0(cols="4")
         v-avatar.grey.lighten-1(size="64")
