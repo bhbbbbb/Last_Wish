@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
+v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)")
   v-container      
     v-row(no-gutters="no-gutters")
       v-col.d-flex.justify-start(cols="6")
@@ -16,6 +16,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
           v-list
             v-list-item(@click="Copy") 複製連結
             v-list-item(@click="Clone") 願望拷貝
+            v-list-item(@click="GoEdit") 編輯內文
     v-row(no-gutters="no-gutters")
       v-col.d-flex.flex-column.flex-shrink-1.align-center.ma-0(cols="4")
         v-avatar.grey.lighten-1(size="64")
@@ -36,18 +37,19 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
           v-timeline-item(
             v-for="(wish, idx) in context.wishes"
             small
-            :color="$store.state.COLOR_LIST[7]"
+            :color="color_list(7)"
             :key="idx"
           )
-            v-avatar(slot="icon", @click="Go(idx)")
+            v-avatar(slot="icon", @click="GoWish(idx)")
             span.d-flex.text-no-wrap(
-              @click="Go(idx)" 
+              @click="GoWish(idx)" 
+              style="overflow-x: hidden;"
             ) {{ wish }}
 
           v-timeline-item.align-center(
             v-if="$store.state.user_id === author.id"
             small
-            :color="$store.state.COLOR_LIST[7]"
+            :color="color_list(7)"
           )
             v-icon(slot="icon" small color="white" @click="submitMilestone") mdi-plus
             v-text-field.ma-0.pa-1(placeholder="新增里程碑" v-model="newMilestone" @keydown.enter="submitMilestone")
@@ -74,7 +76,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
 <script>
 // import { mapState } from 'vuex'
 import { apiUploadMilestone, apiUserFollowedPostToggle } from '@/store/api';
-
+import color_list from '@/store/color_list.js';
 //var Article_id = '';
 
 export default {
@@ -92,13 +94,12 @@ export default {
       type: Object,
       required: true,
     },
-    color: {
-      type: String,
-      default: '#F5F4F0',
-    },
+    // color: {
+    //   type: String,
+    //   default: '#F5F4F0',
+    // },
   },
   data: () => ({
-    // context: undefined,
     author: {
       id: '',
       username: '',
@@ -160,13 +161,24 @@ export default {
         },
       });
     },
-    Go(idx) {
+    GoWish(idx) {
       this.$router.push({
         name: 'Wish',
         params: {
           id: this.id,
           wish: this.context.wishes[idx],
           context: this.context.wishes[idx],
+          // color: this.color,
+        },
+      });
+    },
+    GoEdit() {
+      this.$router.push({
+        name: 'ArticleEdit',
+        params: {
+          id: this.id,
+          author: this.author,
+          context: this.context,
         },
       });
     },
@@ -193,6 +205,7 @@ export default {
         this.hasFollowed = !this.hasFollowed;
       });
     },
+    color_list,
   },
 };
 </script>

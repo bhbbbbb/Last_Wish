@@ -21,3 +21,5 @@ vue-flip-card
 about_us_old/src/assets
 server/src/crawl.py
 node_modules
+main_system/deploy.cmd
+server/deploy.cmd
