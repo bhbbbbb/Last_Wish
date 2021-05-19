@@ -83,6 +83,7 @@ export default {
       }).then(() => {
         // this.context.wishes.push(res.data + '\t' + this.newMilestone);
         // TODO emit update to parent
+        this.wishes.push(this.newMilestone);
         this.newMilestone = '';
       });
     },
