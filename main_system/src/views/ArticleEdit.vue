@@ -65,6 +65,7 @@ export default {
       newArticle.body = this.context.body;
       apiUpdateArticle({ newArticle, articleId: this.id }).then(() => {
         this.$store.dispatch('getGlobalArticles');
+        this.$router.go(-1);
       });
     },
   },
