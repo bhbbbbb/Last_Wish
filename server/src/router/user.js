@@ -5,20 +5,7 @@ const jwt_decode = require('jwt-decode');
 let lineLoginStates = {};
 var AccountManager = require('../lib/account_manager.js');
 var accountManager = new AccountManager();
-
-// Set sessoin's config (https://www.npmjs.com/package/express-session)
-var session = require('express-session')
-var sess = session({
-    name: 'threesmall',
-    secret: 'u6m04fu/ 20 ',
-    resave: false,
-    saveUninitialized: false,//
-    cookie: {
-        secure: false, // set true for https
-        maxAge: 86400000, // 1 day
-        // sameSite: 'none',
-    }
-})
+var user_session = require('../lib/session.js');
 
 const SUCCEED = 0;
 const USER_NOT_FOUND = 1;
@@ -42,7 +29,7 @@ const TRY_LOGIN = [
         }
     }
 ];
-user.post('/try_login', sess, (req, res) => {
+user.post('/try_login', user_session, (req, res) => {
     var response;
     try {
         if (!accountManager.checkPassword(req.body.username, req.body.password)) {
@@ -59,8 +46,9 @@ user.post('/try_login', sess, (req, res) => {
     
     response = TRY_LOGIN[SUCCEED]
     req.session.username = req.body.username;
-    req.session.id = accountManager.getIdbyUsername(req.body.username);
-    res.sendStatus(response.status);
+    // notice thate 'id' cannot be set in session
+    req.session.user_id = accountManager.getIdbyUsername(req.body.username);
+    res.status(response.status).json({username: req.body.username, id: req.session.user_id});
     return;
 });
 
@@ -81,7 +69,6 @@ user.post('/register', (req, res) => {
     var response;
     let trimmedUsername = req.body.username.trim();
     let trimmedPassword = req.body.password.trim();
-    console.log(trimmedUsername);
     try {
         accountManager.addUser(trimmedUsername, trimmedPassword);
     } catch (error) {
@@ -94,9 +81,9 @@ user.post('/register', (req, res) => {
     return;
 });
 
-user.get('/who', sess, (req, res) => {
+user.get('/who', user_session, (req, res) => {
     let u = req.session.username;
-    if (u) res.send(u);
+    if (u) res.send({username: u, id: req.session.user_id});
     else res.sendStatus(401);
 });
 
@@ -113,7 +100,7 @@ const FOLLOW = [
         }
     }
 ]
-user.post('/follow', sess, (req, res) => {
+user.post('/follow', user_session, (req, res) => {
     var response;
     try {
         accountManager.setFollowRelation(
@@ -131,7 +118,7 @@ user.post('/follow', sess, (req, res) => {
     return;
 });
 
-user.get('/logout', sess, (req, res) => {
+user.get('/logout', user_session, (req, res) => {
     req.session.destroy();
     res.sendStatus(200);
 })
@@ -165,7 +152,6 @@ user.get('/get_public_info', (req, res) => {
 
 const line = require('../lib/line_login_request.js');
 user.post('/line_login_req', (req, res) => {
-    console.log(req.body);
     let newState = genNonce(5);
     let newNonce = genNonce(6);
     let req_body = {
@@ -181,12 +167,12 @@ user.post('/line_login_req', (req, res) => {
     res.send(line.getLineLoginUrl(req_body));
 })
 
-user.post('/login_state', sess, (req, res) => {
+user.post('/login_state', user_session, (req, res) => {
 
 });
 
 
-user.post('/line_login_state', sess, (req, res) => {
+user.post('/line_login_state', user_session, (req, res) => {
     // check if the given state of a line login has finished
     // if finished, switch the session?
     if (!(req.body.state in lineLoginStates)) {
@@ -196,7 +182,7 @@ user.post('/line_login_state', sess, (req, res) => {
     // and login the user?
 })
 
-user.get('/is_valid_username', sess, (req, res) => {
+user.get('/is_valid_username', user_session, (req, res) => {
     let response = {
         isValid: false
     }
@@ -251,9 +237,8 @@ user.get('/resolve_line_login', (req, res) => {
     res.send("<script>window.close();</script>");
 });
 
-user.post('/get_id_by_name',(req,res)=>{
-    res.send(accountManager.getIdbyUsername(req.body.name));
-
+user.get('/get_id_by_name',(req,res)=>{
+    res.send(accountManager.getIdbyUsername(req.query.name));
 })
 
 function genNonce(length) {

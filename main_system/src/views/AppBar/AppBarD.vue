@@ -20,29 +20,23 @@ v-app-bar(app flat)
 </template>
 
 <script>
-import {
-  mapState
-} from 'vuex'
+import { mapState } from 'vuex';
 export default {
   name: 'AppBarD',
   components: {},
-  props: {
-
-  },
+  props: {},
   data: () => ({
     drawer: false,
     selected: 0,
   }),
   computed: {
     ...mapState(['links', 'is_login', 'username']),
-
   },
   methods: {
     logout() {
       this.$store.dispatch('logout');
       if (this.$route.path !== '/articles') this.$router.push('/articles');
-    }
+    },
   },
-
-}
+};
 </script>

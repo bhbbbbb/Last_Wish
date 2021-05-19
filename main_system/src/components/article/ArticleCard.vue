@@ -25,9 +25,8 @@ export default {
       type: String,
       default: '#F5F4F0',
     },
-  }
-
-}
+  },
+};
 </script>
 
 <style scoped>

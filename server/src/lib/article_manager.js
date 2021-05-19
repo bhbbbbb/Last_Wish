@@ -29,8 +29,9 @@ module.exports = function() {
             "body": article.body,
             "title": article.title,
             "date": today,
-            "wishes": article.wishes
+            "wishes":[]
         };
+        newPostData.wishes.push(this.getToday(2)+'\t'+String(article.wishes));
         this.articles.push(newArticle(newPostData));
         synchronize(this.articles, this.articlePATH);
         return newPostId;
@@ -61,6 +62,7 @@ module.exports = function() {
      * @param {String} articleId 
      * @param {String} commentStr 
      * @throws "no such article" exception
+     * @returns {Object} newComment
      */
     this.addCommentToArticle = function(author, articleId, commentStr) {
         if (!this.hasArticle(articleId)) {
@@ -74,9 +76,43 @@ module.exports = function() {
             "body": commentStr,
             "from": author.id
         }
-        article.comments.push(newComment(newCommentData));
+        let newNewComment = newComment(newCommentData);
+        article.comments.push(newNewComment);
+        synchronize(this.articles, this.articlePATH);
+        return newNewComment;
+    }
+
+    /**
+    *Now the milestone has no id
+    *However we need to add an id
+    *later for better management
+    *such as editing milestone or
+    *editing the article contaned in
+    *each milestone
+    */
+    this.addMilestoneToArticle = function(articleId, milestoneStr) {
+        if (!this.hasArticle(articleId)) {
+            throw "no such article";
+        }
+        let article = this.articles[Number(articleId)];
+        let newMilestoneId = String(article.wishes.length);
+        article.wishes.push(today.split(' ')[0]+'\t'+milestoneStr);
         synchronize(this.articles, this.articlePATH);
     }
+
+    this.getToday=function(choose){
+        if(choose == 1)
+            return today.split('/')[0];             //return Month
+        else if(choose == 2)
+            return today.split(' ')[0];             //return Month/Date
+        else
+            return today;                           //return Month/Date Day
+            
+    }
+
+
+
+
 }
 
 function newArticle(newArticleData) {

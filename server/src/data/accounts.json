@@ -13,7 +13,7 @@
     {
         "id": "1",
         "username": "Dev",
-        "password": "",
+        "password": "$2a$10$l4N4fXqDWCF9rkUmWo4cOOpxGx5AnHl3p8mb6uqLDjSUqv6MG6oNm",
         "followers": [],
         "followees": [],
         "followedPosts": [],
@@ -22,7 +22,7 @@
     {
         "id": "2",
         "username": "Smark",
-        "password": "123",
+        "password": "$2a$10$l4N4fXqDWCF9rkUmWo4cOOpxGx5AnHl3p8mb6uqLDjSUqv6MG6oNm",
         "followers": [],
         "followees": [],
         "followedPosts": [],
@@ -35,14 +35,12 @@
         "followers": [],
         "followees": [],
         "followedPosts": [],
-        "selfPosts": [
-            "1"
-        ]
+        "selfPosts": []
     },
     {
         "id": "4",
         "username": "Jay",
-        "password": "123",
+        "password": "$2a$10$l4N4fXqDWCF9rkUmWo4cOOpxGx5AnHl3p8mb6uqLDjSUqv6MG6oNm",
         "followers": [],
         "followees": [],
         "followedPosts": [],
@@ -53,7 +51,7 @@
     {
         "id": "5",
         "username": "Amy",
-        "password": "123",
+        "password": "$2a$10$l4N4fXqDWCF9rkUmWo4cOOpxGx5AnHl3p8mb6uqLDjSUqv6MG6oNm",
         "followers": [],
         "followees": [],
         "followedPosts": [],
@@ -64,7 +62,7 @@
     {
         "id": "6",
         "username": "Cat",
-        "password": "123",
+        "password": "$2a$10$l4N4fXqDWCF9rkUmWo4cOOpxGx5AnHl3p8mb6uqLDjSUqv6MG6oNm",
         "followers": [],
         "followees": [],
         "followedPosts": [],
@@ -76,7 +74,7 @@
     {
         "id": "7",
         "username": "Coco",
-        "password": "123",
+        "password": "$2a$10$l4N4fXqDWCF9rkUmWo4cOOpxGx5AnHl3p8mb6uqLDjSUqv6MG6oNm",
         "followers": [],
         "followees": [],
         "followedPosts": [],
@@ -87,7 +85,7 @@
     {
         "id": "8",
         "username": "A",
-        "password": "123",
+        "password": "$2a$10$l4N4fXqDWCF9rkUmWo4cOOpxGx5AnHl3p8mb6uqLDjSUqv6MG6oNm",
         "followers": [],
         "followees": [],
         "followedPosts": [],
@@ -98,7 +96,7 @@
     {
         "id": "9",
         "username": "B",
-        "password": "123",
+        "password": "$2a$10$l4N4fXqDWCF9rkUmWo4cOOpxGx5AnHl3p8mb6uqLDjSUqv6MG6oNm",
         "followers": [],
         "followees": [],
         "followedPosts": [],

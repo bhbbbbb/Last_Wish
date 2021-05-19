@@ -26,8 +26,8 @@ v-card.pa-0(rounded="lg" min-height="268" flat="flat")
 </template>
 
 <script>
-import {mapActions} from 'vuex';
-import {apiLineLogin} from '@/store/api.js';
+import { mapActions } from 'vuex';
+import { apiLineLogin } from '@/store/api.js';
 export default {
   name: 'MyLogin',
   data: () => ({
@@ -53,38 +53,35 @@ export default {
     ...mapActions(['tryLogin']),
 
     Try_Login() {
-      var status =
-        this.rules.regex(this.user.username) == true;
-      console.log(status);
+      var status = this.rules.regex(this.user.username) == true;
       if (!(this.user.username && this.user.password)) {
         // username or pswd is blank
-        this.Show_info('Empty data','error');
+        this.Show_info('Empty data', 'error');
         return;
-      }else if(!status)
-          this.Show_info('Invalid data','error');
+      } else if (!status) this.Show_info('Invalid data', 'error');
       else
-      this.tryLogin({
-        username: this.user.username,
-        password: this.user.password,
-      })
+        this.tryLogin({
+          username: this.user.username,
+          password: this.user.password,
+        });
     },
 
     Dev() {
       this.tryLogin({
         username: 'Dev',
-        password: '',
+        password: '123',
         id: '1',
       });
     },
 
     Line() {
-      apiLineLogin({username: 'haha'})
+      apiLineLogin({ username: 'haha' })
         .then((res) => {
-          console.log(res);
+          console.log(res.status);
           window.open(res.data);
         })
         .catch((err) => {
-          this.Show_info('Something went wrong','error');
+          this.Show_info('Something went wrong', 'error');
           console.log(err);
         });
     },

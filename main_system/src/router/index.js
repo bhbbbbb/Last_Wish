@@ -1,26 +1,25 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
 // import store from '@/store/index'
-import { isLogin } from '@/router/log'
-import store from '../store'
-Vue.use(VueRouter)
+import { isLogin } from '@/router/log';
+import store from '../store';
+Vue.use(VueRouter);
 
 const routes = [
-  
   {
     path: '/',
     name: 'Home',
     components: {
       AppBar: () => import('@/views/AppBar/AppBarWrap'),
       Main: () => import('@/views/Home/Home'),
-      Footer: () => import('@/views/Footer/FooterWrap')
+      Footer: () => import('@/views/Footer/FooterWrap'),
     },
     // props: {
     //   AppBar: false,
     //   Main: false,
     //   Footer: false
     // },
-    redirect: {name: 'Articles'},
+    redirect: { name: 'Articles' },
     children: [
       {
         path: 'articles',
@@ -30,16 +29,19 @@ const routes = [
           // TODO : may need to update global_articles
           if (store.state.global_articles) next();
           else {
-            store.dispatch('getGlobalArticles').then(() => {
-              // console.log(store.state.global_articles);
-              next();
-            }).catch(() => {
-              next(false);
-            })
+            store
+              .dispatch('getGlobalArticles')
+              .then(() => {
+                // console.log(store.state.global_articles);
+                next();
+              })
+              .catch(() => {
+                next(false);
+              });
           }
         },
         props: () => ({
-          articles: store.state.global_articles
+          articles: store.state.global_articles,
         }),
       },
       {
@@ -49,7 +51,7 @@ const routes = [
         beforeEnter(to, from, next) {
           if (store.state.is_login) next('/articles');
           else next();
-        }
+        },
       },
       {
         path: 'login',
@@ -58,7 +60,7 @@ const routes = [
         beforeEnter(to, from, next) {
           if (store.state.is_login) next('/articles');
           else next();
-        }
+        },
       },
       {
         path: 'article/:id',
@@ -66,47 +68,50 @@ const routes = [
         component: () => import('@/views/Article'),
         beforeEnter(to, from, next) {
           if (!store.state.global_articles) {
-            store.dispatch('getGlobalArticles').then(() => {
-              next();
-            }).catch(() => {
-              next(false);
-            })
-          }
-          else next();
+            store
+              .dispatch('getGlobalArticles')
+              .then(() => {
+                next();
+              })
+              .catch(() => {
+                next(false);
+              });
+          } else next();
         },
         props: (route) => {
-          let context = route.params.context ? 
-            route.params.context : 
-            store.state.global_articles[route.params.id];
+          let context = route.params.context
+            ? route.params.context
+            : store.state.global_articles[route.params.id];
           return {
             id: Number(route.params.id),
             context: context,
-            color: route.params.color
-          }
-        }
+            color: route.params.color,
+          };
+        },
       },
       {
         path: 'article/:id/:wish',
         name: 'Wish',
         component: () => import('@/views/Wish'),
         props: (route) => ({
-          context: route.params.context
-        })
+          context: route.params.context,
+        }),
       },
       {
         path: 'article/:id/clone',
         name: 'ArticleClone',
         component: () => import('@/views/ClonePostCard'),
         props: (route) => ({
-          newArticle: route.params.newArticle
+          newArticle: route.params.newArticle,
         }),
         beforeEnter(to, from, next) {
           if (!to.params.newArticle) {
-            if (to.params.id) next({name: 'Article', params: {id: to.params.id}});
+            if (to.params.id)
+              next({ name: 'Article', params: { id: to.params.id } });
             else next(false);
           }
           next();
-        }
+        },
       },
       {
         path: 'newpost',
@@ -115,21 +120,26 @@ const routes = [
         beforeEnter(to, from, next) {
           if (store.state.is_login) next();
           else next('/articles');
-        }
+        },
       },
       {
         path: 'follow_article',
         name: 'FollowArticle',
         component: () => import('@/views/FollowArticle'),
-
+        beforeEnter(to, from, next) {
+          if (store.state.followed_articles) next();
+          else
+            store.dispatch('getUserFollowed').then(() => {
+              next();
+            });
+        },
       },
       {
         path: 'following',
         name: 'Following',
         component: () => import('@/views/Following'),
-
       },
-    ]
+    ],
   },
   {
     path: '/:username',
@@ -137,7 +147,7 @@ const routes = [
     components: {
       AppBar: () => import('@/views/Profile/AppBarProfileM'),
       Main: () => import('@/views/Home/Home'),
-      Footer: () => import('@/views/Footer/FooterWrap')
+      Footer: () => import('@/views/Footer/FooterWrap'),
     },
     // beforeEnter: (to, from, next) => {
     //   isLogin().then(res => {
@@ -147,7 +157,7 @@ const routes = [
     //     next(false);
     //   })
     // },
-    redirect: {name: 'UserArticles'},
+    redirect: { name: 'UserArticles' },
     children: [
       {
         path: 'articles',
@@ -158,62 +168,69 @@ const routes = [
           if (store.state.is_login) {
             if (store.state.user_articles) next();
             else {
-              store.dispatch('getUserArticles').then(() => {
-                next();
-              }).catch(() => {
-                next(false);
-              })
+              store
+                .dispatch('getUserArticles')
+                .then(() => {
+                  next();
+                })
+                .catch(() => {
+                  next(false);
+                });
             }
-          }
-          else next('/articles');
+          } else next('/articles');
         },
         props: () => ({
           articles: store.state.user_articles,
-          toUser: true
-        })
+          toUser: true,
+        }),
       },
       {
         path: 'article/:id',
         name: 'UserArticle',
         component: () => import('@/views/Article'),
         beforeEnter(to, from, next) {
-          isLogin().then(res => {
+          isLogin().then((res) => {
             if (res) {
               if (!store.state.global_articles) {
-                store.dispatch('getGlobalArticles').then(() => {
-                  next();
-                }).catch(() => {
-                  next(false);
-                })
-              }
-              else next();
-            }
-            else next({name: 'Article', params: {id: to.params.id}});
-          })
+                store
+                  .dispatch('getGlobalArticles')
+                  .then(() => {
+                    next();
+                  })
+                  .catch(() => {
+                    next(false);
+                  });
+              } else next();
+            } else next({ name: 'Article', params: { id: to.params.id } });
+          });
         },
         props: (route) => {
-          let context = route.params.context ? 
-            route.params.context : 
-            store.state.global_articles[route.params.id];
+          let context = route.params.context
+            ? route.params.context
+            : store.state.global_articles[route.params.id];
           return {
             id: Number(route.params.id),
             context: context,
-            color: route.params.color
-          }
-        }
-      }
-    ]
+            color: route.params.color,
+          };
+        },
+      },
+    ],
   },
-]
+];
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes
-})
+  routes,
+});
 
 router.beforeEach((to, from, next) => {
-  isLogin().then(() => { next() }).catch(() => next(false));
-})
+  isLogin()
+    .then(() => {
+      next();
+    })
+    .catch(() => next(false));
+});
 
-export default router
+export default router;

@@ -1,8 +1,5 @@
 <template>
-  <form
-    enctype="multipart/form-data"
-    @submit.prevent="sendFile"
-  >
+  <form enctype="multipart/form-data" @submit.prevent="sendFile">
     <div class="field">
       <div class="file is-boxed is-primary">
         <label class="file-label">
@@ -11,7 +8,7 @@
             type="file"
             class="file-input"
             @change="selectFile"
-          >
+          />
           <span class="file-cta">
             <span class="file-icon">
               <i class="fas fa-upload" />
@@ -19,24 +16,19 @@
             <span class="file-label"> Choose a file... </span>
           </span>
 
-          <span
-            v-if="file"
-            class="file-name"
-          >{{ file.name }}</span>
+          <span v-if="file" class="file-name">{{ file.name }}</span>
         </label>
       </div>
     </div>
 
     <div class="field">
-      <button class="button is-info">
-        Send
-      </button>
+      <button class="button is-info">Send</button>
     </div>
   </form>
 </template>
 
 <style>
-  @import "https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma-rtl.min.css";
+@import 'https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma-rtl.min.css';
 </style>
 
 <script>
@@ -57,12 +49,11 @@ export default {
     sendFile() {
       console.log(this.file);
       const formData = new FormData();
-      formData.append('file',this.file);
-      apiUploadFiles(formData).then(res=>{
-        console.log(res);
-      })
+      formData.append('file', this.file);
+      apiUploadFiles(formData).then((res) => {
+        console.log(res.status);
+      });
     },
-
   },
 };
 </script>

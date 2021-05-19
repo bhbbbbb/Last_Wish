@@ -1,6 +1,5 @@
 <template lang="pug">
-v-sheet.d-flex.flex-wrap(min-height="70vh" rounded="lg")
-
+v-sheet.d-flex.flex-wrap.flex-column-reverse(rounded="lg")
   v-col.ma-0.pa-0(
     v-if="articles"
     cols="12"
@@ -38,20 +37,22 @@ export default {
       required: true,
       type: Array,
     },
-    toUser : {
+    toUser: {
       required: false,
       type: Boolean,
       default: false,
-    }
+    },
   },
-  data: () => ({
-  }),
+  data: () => ({}),
   computed: {
     // ...mapState(['articles', 'is_login']),
   },
   created() {
-    // without running 'getGlobalArticles' the articles would be blank
-    // this.$store.dispatch('getGlobalArticles');
+    if (
+      this.$store.state.is_login &&
+      this.$store.state.followed_articles === undefined
+    )
+      this.$store.dispatch('getUserFollowed');
   },
 
   methods: {
@@ -62,16 +63,19 @@ export default {
         params: {
           id: article_id,
           context: this.articles[idx],
-          color: this.$store.state.COLOR_LIST[idx],
-        }
+          color:
+            this.$store.state.COLOR_LIST[
+              idx % this.$store.state.COLOR_LIST.length
+            ],
+        },
       });
-    }
+    },
   },
-}
+};
 </script>
 
 <style lang="sass" scoped>
 .fixed-bottom
-  position: sticky 
+  position: sticky
   bottom: 0
 </style>

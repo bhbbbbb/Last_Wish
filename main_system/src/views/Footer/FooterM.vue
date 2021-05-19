@@ -7,8 +7,9 @@ v-bottom-navigation(
   dark
   background-color="#9ba2aa"
   color="rgba(255, 255, 255, 1)"
+  grow
 )
-  v-btn(
+  v-btn.mx-0(
     v-for="link in links"
     :key="link.to.name"
     :to="is_login ? {name: link.to.name, params: {username: username}} : link.to"
@@ -19,29 +20,27 @@ v-bottom-navigation(
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from 'vuex';
 export default {
-    name: 'FooterM',
-    components: {
-    },
-    props: {
-      // links: {
-      //   required: true,
-      //   type: Array
-      // },
-    },
-    data: () => ({
-        selected: 0,
-    }),
-    computed: {
-      ...mapState(['links', 'is_login', 'username']),
-      
-    },
-    
- 
-}
+  name: 'FooterM',
+  components: {},
+  props: {
+    // links: {
+    //   required: true,
+    //   type: Array
+    // },
+  },
+  data: () => ({
+    selected: 0,
+  }),
+  computed: {
+    ...mapState(['links', 'is_login', 'username']),
+  },
+};
 </script>
 
-<style scoped>
-
+<style>
+.v-item-group.v-bottom-navigation .v-btn {
+  min-width: 64px !important;
+}
 </style>
