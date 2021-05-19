@@ -37,6 +37,8 @@ export const apiUploadMilestone = (data) =>
   articleRequest.post('/addMilestone', data);
 export const apiUserFollowedPostToggle = (data) =>
   articleRequest.post('FollowedPostToggle', data);
+export const apiUpdateArticle = (data) =>
+  articleRequest.post('/editArticle', data);
 
 /********************** Call user.js **********************/
 export const apiGetUserId = (data) =>

@@ -34,6 +34,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)")
 </template>
 
 <script>
+import { apiUpdateArticle } from '@/store/api.js';
 import color_list from '@/store/color_list.js';
 export default {
   name: 'Article',
@@ -59,7 +60,12 @@ export default {
   methods: {
     color_list,
     Submit() {
-      console.log(this.context);
+      var newArticle = {};
+      newArticle.title = this.context.title;
+      newArticle.body = this.context.body;
+      apiUpdateArticle({ newArticle, articleId: this.id }).then(() => {
+        this.$store.dispatch('getGlobalArticles');
+      });
     },
   },
 };

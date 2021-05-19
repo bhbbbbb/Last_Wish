@@ -82,6 +82,28 @@ module.exports = function() {
         return newNewComment;
     }
 
+    this.replaceArticle = function(newArticle, articleId) {
+        if (!this.hasArticle(articleId)) {
+            throw "no such article";
+        }
+        this.articles[Number(articleId)].title = newArticle.title;
+        this.articles[Number(articleId)].body = newArticle.body;
+        synchronize(this.articles, this.articlePATH);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
     *Now the milestone has no id
     *However we need to add an id

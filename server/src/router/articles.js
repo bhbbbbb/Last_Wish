@@ -137,7 +137,10 @@ global.post('/FollowedPostToggle',(req,res)=>{
     }
     res.sendStatus(200);
 })
-
+global.post('/editArticle',(req,res)=>{
+    articleManager.replaceArticle(req.body.newArticle,req.body.articleId);
+    res.sendStatus(200);
+})
 
 
 
