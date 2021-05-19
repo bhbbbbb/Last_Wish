@@ -97,6 +97,14 @@ const routes = [
         }),
       },
       {
+        path: 'article/:id/new_milestone',
+        name: 'NewMilestone',
+        component: () => import('@/views/NewMilestone'),
+        props: (route) => ({
+          wishes: route.params.wishes,
+        }),
+      },
+      {
         path: 'aritcle/:id/edit',
         name: 'ArticleEdit',
         component: () => import('@/views/ArticleEdit'),

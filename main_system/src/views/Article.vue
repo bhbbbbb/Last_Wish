@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)")
+v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width="100%")
   v-container      
     v-row(no-gutters="no-gutters")
       v-col.d-flex.justify-start(cols="6")
@@ -51,8 +51,9 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)")
             small
             :color="color_list(7)"
           )
-            v-icon(slot="icon" small color="white" @click="submitMilestone") mdi-plus
-            v-text-field.ma-0.pa-1(placeholder="新增里程碑" v-model="newMilestone" @keydown.enter="submitMilestone")
+            v-icon(slot="icon" small color="white" @click="GoNewMilestone") mdi-plus
+            v-btn(@click="GoNewMilestone") 點我新增里程碑
+            //- v-text-field.ma-0.pa-1(placeholder="新增里程碑" v-model="newMilestone" @keydown.enter="submitMilestone")
         br
         p.pre {{ context.body }}
         br
@@ -75,7 +76,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)")
 
 <script>
 // import { mapState } from 'vuex'
-import { apiUploadMilestone, apiUserFollowedPostToggle } from '@/store/api';
+import { apiUserFollowedPostToggle } from '@/store/api';
 import color_list from '@/store/color_list.js';
 //var Article_id = '';
 
@@ -109,7 +110,7 @@ export default {
     infos: '',
     ThePost: [],
     NP: false,
-    newMilestone: '',
+    // newMilestone: '',
     hasFollowed: false,
   }),
   computed: {},
@@ -182,19 +183,17 @@ export default {
         },
       });
     },
+    GoNewMilestone() {
+      this.$router.push({
+        name: 'NewMilestone',
+        params: {
+          id: this.id,
+          wishes: this.context.wishes,
+        },
+      });
+    },
     updateComment(newComment) {
       this.context.comments.push(newComment);
-    },
-    submitMilestone() {
-      if (!this.newMilestone.trim()) return;
-
-      apiUploadMilestone({
-        article_id: String(this.id),
-        newMilestone: this.newMilestone,
-      }).then((res) => {
-        this.context.wishes.push(res.data + '\t' + this.newMilestone);
-        this.newMilestone = '';
-      });
     },
     followedToggle() {
       apiUserFollowedPostToggle({
