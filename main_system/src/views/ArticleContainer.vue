@@ -8,7 +8,7 @@ v-sheet.d-flex.flex-wrap.flex-column-reverse(rounded="lg")
   )
     ArticleCard(
       :content="article"
-      :color="$store.state.COLOR_LIST[idx % $store.state.COLOR_LIST.length]"
+      :color="color_list(article.id)"
       @click.stop="ToInnerArticle(article.id, idx)"
     )
 
@@ -23,6 +23,7 @@ v-sheet.d-flex.flex-wrap.flex-column-reverse(rounded="lg")
 </template>
 
 <script>
+import color_list from '@/store/color_list.js';
 export default {
   name: 'ArticleContainer',
 
@@ -63,13 +64,10 @@ export default {
         params: {
           id: article_id,
           context: this.articles[idx],
-          color:
-            this.$store.state.COLOR_LIST[
-              idx % this.$store.state.COLOR_LIST.length
-            ],
         },
       });
     },
+    color_list: color_list,
   },
 };
 </script>

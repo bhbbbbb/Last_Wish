@@ -67,16 +67,14 @@ const routes = [
         name: 'Article',
         component: () => import('@/views/Article'),
         beforeEnter(to, from, next) {
-          if (!store.state.global_articles) {
-            store
-              .dispatch('getGlobalArticles')
-              .then(() => {
-                next();
-              })
-              .catch(() => {
-                next(false);
-              });
-          } else next();
+          store
+            .dispatch('getGlobalArticles')
+            .then(() => {
+              next();
+            })
+            .catch(() => {
+              next(false);
+            });
         },
         props: (route) => {
           let context = route.params.context
@@ -90,12 +88,42 @@ const routes = [
         },
       },
       {
-        path: 'article/:id/:wish',
+        path: 'article/:id/wish/:wish',
         name: 'Wish',
         component: () => import('@/views/Wish'),
         props: (route) => ({
           context: route.params.context,
+          color: route.params.color,
         }),
+      },
+      {
+        path: 'article/:id/new_milestone',
+        name: 'NewMilestone',
+        component: () => import('@/views/NewMilestone'),
+        props: (route) => ({
+          id: route.params.id,
+          wishes: route.params.wishes,
+        }),
+        beforeEnter(to, from, next) {
+          if (!to.params.wishes)
+            next({ name: 'Article', params: { id: to.params.id } });
+          else next();
+        },
+      },
+      {
+        path: 'aritcle/:id/edit',
+        name: 'ArticleEdit',
+        component: () => import('@/views/ArticleEdit'),
+        props: (route) => ({
+          id: route.params.id,
+          context: route.params.context,
+          author: route.params.author,
+        }),
+        beforeEnter(to, from, next) {
+          if (!to.params.context)
+            next({ name: 'Article', params: { id: to.params.id } });
+          else next();
+        },
       },
       {
         path: 'article/:id/clone',

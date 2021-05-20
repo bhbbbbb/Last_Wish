@@ -20,3 +20,5 @@ export const COLOR_LIST = [
   '#eee5d6',
   '#d8dad9',
 ];
+
+export default (idx) => COLOR_LIST[idx % COLOR_LIST.length];

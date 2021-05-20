@@ -43,13 +43,13 @@ export const user_links = [
     },
     icon: 'mdi-account',
   },
-  {
-    text: '追蹤中',
-    to: {
-      name: 'Following',
-    },
-    icon: 'mdi-account',
-  },
+  // {
+  //   text: '追蹤中',
+  //   to: {
+  //     name: 'Following',
+  //   },
+  //   icon: 'mdi-account',
+  // },
   {
     text: '個人頁',
     to: {
