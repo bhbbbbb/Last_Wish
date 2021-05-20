@@ -49,7 +49,7 @@ export default {
       let now = new Date(Date.now());
       now = now.toISOString().substring(0, 10);
       this.new_article.wish = {
-        title: '開始願望: ' + this.new_article.title,
+        title: '開始這個願望',
         time: now,
       };
       if (this.checkbox) this.new_article.from = '0';
