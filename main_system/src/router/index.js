@@ -88,7 +88,7 @@ const routes = [
         },
       },
       {
-        path: 'article/:id/:wish',
+        path: 'article/:id/wish/:wish',
         name: 'Wish',
         component: () => import('@/views/Wish'),
         props: (route) => ({
@@ -104,6 +104,11 @@ const routes = [
           id: route.params.id,
           wishes: route.params.wishes,
         }),
+        beforeEnter(to, from, next) {
+          if (!to.params.wishes)
+            next({ name: 'Article', params: { id: to.params.id } });
+          else next();
+        },
       },
       {
         path: 'aritcle/:id/edit',

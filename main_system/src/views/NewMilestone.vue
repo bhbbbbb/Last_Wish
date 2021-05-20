@@ -14,9 +14,18 @@
         :color="color_list(7)"
       >
         <v-avatar slot="icon" />
-        <span class="d-flex text-no-wrap" style="overflow-x: hidden">
-          {{ wish }}
-        </span>
+        <v-row no-gutters>
+          <v-col class="d-flex flex-grow-1">
+            <span class="d-flex text-no-wrap" style="overflow-x: hidden">
+              {{ wish.title ? wish.title : wish }}
+            </span>
+          </v-col>
+          <v-col cols="auto" class="d-flex justify-end pr-4">
+            <span class="subtitle-2 text--disabled">
+              {{ wish.time ? date_format(wish.time) : '' }}
+            </span>
+          </v-col>
+        </v-row>
       </v-timeline-item>
 
       <v-timeline-item
@@ -26,13 +35,18 @@
         style="padding-top: 12px"
       >
         <v-icon slot="icon" small color="white"> mdi-plus </v-icon>
-        <v-text-field v-model.lazy="newMilestone" class="pr-5"> </v-text-field>
+        <v-text-field v-model.lazy="newMilestone.title" class="pr-5">
+        </v-text-field>
       </v-timeline-item>
     </v-timeline>
     <v-card-actions class="justify-center">
       <v-row>
         <v-col cols="12" class="d-flex justify-center">
-          <v-date-picker v-model="selected" :color="color_list(7)" :max="max">
+          <v-date-picker
+            v-model="newMilestone.time"
+            :color="color_list(7)"
+            :max="max"
+          >
           </v-date-picker>
         </v-col>
         <v-col cols="12" class="d-flex justify-center">
@@ -60,9 +74,12 @@ export default {
     },
   },
   data: () => ({
-    newMilestone: '',
+    newMilestone: {
+      title: undefined,
+      time: undefined,
+      body: undefined,
+    },
     max: undefined,
-    selected: undefined,
   }),
   computed: {},
   created() {
@@ -71,19 +88,21 @@ export default {
   },
 
   methods: {
+    date_format(time) {
+      let time_arr = time.split('-');
+      return time_arr[1] + '/' + time_arr[2];
+    },
     color_list,
     submitMilestone() {
-      console.log(this.max);
-      if (!this.newMilestone.trim()) return;
+      // TODO : tell user error message
+      if (!this.newMilestone.time) return;
+      if (!this.newMilestone.title.trim()) return;
 
       apiUploadMilestone({
         article_id: String(this.id),
-        newMilestone: this.selected + '\t' + this.newMilestone,
-        //newMilestone: { title: this.newMilestone, time: this.selected },
-      }).then(() => {
-        // this.context.wishes.push(res.data + '\t' + this.newMilestone);
-        // TODO emit update to parent
-        this.wishes.push(this.selected + '\t' + this.newMilestone);
+        newMilestone: this.newMilestone,
+      }).then(({ data }) => {
+        this.wishes.push(data);
         this.newMilestone = '';
       });
     },

@@ -34,8 +34,7 @@ const INSERT = [
 global.post('/insert', (req, res) => {
     var response, newPostId;
     try {
-        newPostId = accountManager.addPostsToAuthor(
-                req.body.username, req.body.article);
+        newPostId = accountManager.addPostsToAuthor(req.body.username, req.body.article);
     } catch (error) {
         console.log(error);
         response = INSERT[USER_NOT_FOUND];
@@ -124,9 +123,14 @@ global.get('/followed_post', (req, res) => {
     res.status(response.status).json(posts);
     return;
 });
+
+/**
+ * @param {Number} req.body.article_id
+ * @param {Object} req.body.newMilestone { title, body, time }
+ */
 global.post('/addMilestone',(req,res)=>{
-    articleManager.addMilestoneToArticle(req.body.article_id,req.body.newMilestone);
-    res.send(articleManager.getToday(2));
+    let newMilestone = articleManager.addMilestoneToArticle(req.body.article_id,req.body.newMilestone);
+    res.json(newMilestone);
 })
 
 global.post('/FollowedPostToggle',(req,res)=>{
