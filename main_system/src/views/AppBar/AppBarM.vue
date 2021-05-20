@@ -47,47 +47,42 @@ v-app-bar.d-flex.justify-center.align-end(
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import { mapState } from 'vuex';
 export default {
-    name: 'AppBarM',
-    components: {
+  name: 'AppBarM',
+  components: {},
+  props: {
+    // links: {
+    //   required: true,
+    //   type: Array
+    // },
+  },
+  data: () => ({
+    drawer: false,
+    selected: 0,
+  }),
+  computed: {
+    ...mapState(['links']),
+  },
+  methods: {
+    Back() {
+      this.$router.go(-1);
     },
-    props: {
-      // links: {
-      //   required: true,
-      //   type: Array
-      // },
-    },
-    data: () => ({
-        drawer: false,
-        selected: 0,
-    }),
-    computed: {
-      ...mapState(['links']),
-      
-    },
-    methods: {
-        Back() {
-          this.$router.go(-1);
-        }
-    }, 
-
-    
- 
-}
+  },
+};
 </script>
 <style scoped>
 .subtitle {
   font-size: 1.2rem;
   font-weight: lighter;
   color: white;
-  letter-spacing: 0.2rem; 
+  letter-spacing: 0.2rem;
   height: 30px;
 }
 .title {
   font-size: 3rem;
 }
-h3.subtitle{
+h3.subtitle {
   font-size: 1.6rem;
 }
 </style>

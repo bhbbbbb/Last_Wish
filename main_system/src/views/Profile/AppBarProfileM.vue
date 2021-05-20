@@ -14,7 +14,7 @@ v-app-bar.d-flex.align-center.flex-wrap.justify-center(
         v-icon() mdi-cog
     v-row.px-3.align-self-center.align-center(no-gutters)
       v-col(cols="3")
-        v-avatar.grey.lighten-3(size="64")
+        v-avatar.grey.lighten-3(size="64" @click="$store.dispatch('logout')")
       v-col.d-flex.flex-column.align-start(cols="7")
         span(style="font-size:2rem") {{this.$store.state.username}}
         span(style="font-size:1rem") 簡單自介
@@ -26,10 +26,10 @@ v-app-bar.d-flex.align-center.flex-wrap.justify-center(
 </template>
 
 <script>
-import {mapState} from 'vuex';
+import { mapState } from 'vuex';
 export default {
   name: 'AppBarProfileM',
-    components: {
+  components: {
     //SimpleUpload:()=> import('@/components/SimpleUpload')
   },
   props: {

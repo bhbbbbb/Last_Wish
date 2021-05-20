@@ -1,18 +1,22 @@
 <template lang="pug">
-v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
-  v-container
-    v-row.flex-column(no-gutters="no-gutters")
-      v-menu(
-        offset-y="offset-y",
-        close-on-content-click="close-on-content-click",
-        nudge-left="50"
-      )
-        template(v-slot:activator="{ on, attrs }")
-          v-btn.align-self-end(icon="icon", v-bind="attrs", v-on="on")
-            v-icon mdi-dots-horizontal
-        v-list
-          v-list-item(@click="Copy") 複製連結
-          v-list-item(@click="Clone") 願望拷貝
+v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width="100%")
+  v-container      
+    v-row(no-gutters="no-gutters")
+      v-col.d-flex.justify-start(cols="6")
+        v-icon(@click="followedToggle") {{ hasFollowed ? "mdi-star" : "mdi-star-outline" }}
+      v-col.d-flex.justify-end(cols="6")
+        v-menu(
+          offset-y,
+          close-on-content-click="close-on-content-click",
+          nudge-left="50"
+        )
+          template(v-slot:activator="{ on, attrs }")
+            v-btn.align-self-end(icon="icon", v-bind="attrs", v-on="on")
+              v-icon mdi-dots-horizontal
+          v-list
+            v-list-item(@click="Copy") 複製連結
+            //- v-list-item(@click="Clone") 願望拷貝
+            v-list-item(@click="GoEdit" v-if="$store.state.user_id === author.id") 編輯內文
     v-row(no-gutters="no-gutters")
       v-col.d-flex.flex-column.flex-shrink-1.align-center.ma-0(cols="4")
         v-avatar.grey.lighten-1(size="64")
@@ -33,21 +37,30 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
           v-timeline-item(
             v-for="(wish, idx) in context.wishes"
             small
-            :color="$store.state.COLOR_LIST[7]"
+            :color="color_list(7)"
             :key="idx"
           )
-            v-avatar(slot="icon", @click="Go(idx)")
-            span.d-flex.text-no-wrap(
-              style="overflow-x: hidden;"
-              @click="Go(idx)" 
-            ) {{ wish }}
+            v-avatar(slot="icon", @click="GoWish(idx)")
+            v-row(no-gutters="")
+              v-col.d-flex.flex-grow-1
+                span.d-flex.text-no-wrap(style="overflow-x: hidden")
+                  | {{ wish.title ? wish.title : wish }}
+              v-col.d-flex.justify-end.pr-4(cols="auto" slot="opposite")
+                span.subtitle-2.text--disabled(slot="opposite")
+                  | {{ wish.time ? date_format(wish.time) : "" }}
+            //- span.d-flex.text-no-wrap(
+            //-   @click="GoWish(idx)" 
+            //-   style="overflow-x: hidden;"
+            //- ) {{ wish.title ? wish.title : wish }}
 
           v-timeline-item.align-center(
+            v-if="$store.state.user_id === author.id"
             small
-            :color="$store.state.COLOR_LIST[7]"
+            :color="color_list(7)"
           )
-            v-icon(slot="icon" small color="white" @click="submitMilestone") mdi-plus
-            v-text-field.ma-0.pa-1(placeholder="新增里程碑", v-model="newMilestone")
+            v-icon(slot="icon" small color="white" @click="GoNewMilestone") mdi-plus
+            v-btn(@click="GoNewMilestone") 點我新增里程碑
+            //- v-text-field.ma-0.pa-1(placeholder="新增里程碑" v-model="newMilestone" @keydown.enter="submitMilestone")
         br
         p.pre {{ context.body }}
         br
@@ -56,31 +69,29 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color")
           :key="comment.id",
           :context="comment"
         )
+        NewComment(@update="updateComment")
+
     v-overlay.align-start(:value="show_info", absolute="absolute", opacity="0")
       v-alert.mt-10(
         :value="show_info",
         :type="info_type",
         transition="slide-x-transition"
       ) {{ infos }}
-  v-text-field.my-0.mx-8.pa-1(placeholder="comment here", v-model="Newcomments")
-  v-card-actions.justify-center
-    v-btn(@click="SubmitNewComment()") submit
+  
   input#url(style="position: absolute; opacity: 0")
 </template>
 
 <script>
 // import { mapState } from 'vuex'
-import {
-  apiUploadComment,
-  apiUploadMilestone
-} from '@/store/api';
-
+import { apiUserFollowedPostToggle } from '@/store/api';
+import color_list from '@/store/color_list.js';
 //var Article_id = '';
 
 export default {
   name: 'Article',
   components: {
     CommentCard: () => import('@/components/article/CommentCard'),
+    NewComment: () => import('@/components/article/NewComment'),
   },
   props: {
     id: {
@@ -91,13 +102,12 @@ export default {
       type: Object,
       required: true,
     },
-    color: {
-      type: String,
-      default: '#F5F4F0',
-    },
+    // color: {
+    //   type: String,
+    //   default: '#F5F4F0',
+    // },
   },
   data: () => ({
-    // context: undefined,
     author: {
       id: '',
       username: '',
@@ -105,14 +115,12 @@ export default {
     show_info: false,
     info_type: 'success',
     infos: '',
-    Newcomments: '',
     ThePost: [],
     NP: false,
-    newMilestone: '',
+    // newMilestone: '',
+    hasFollowed: false,
   }),
-  computed: {
-
-  },
+  computed: {},
   created() {
     this.ThePost = JSON.parse(JSON.stringify(this.context));
     this.ThePost.wishes = String(this.ThePost.wishes).replace(/,/g, '\n');
@@ -120,33 +128,26 @@ export default {
     this.$store.dispatch('getUser', this.context.from).then((res) => {
       this.author = res;
     });
+
+    if (this.$store.state.followed_articles)
+      for (var i = 0; i < this.$store.state.followed_articles.length; i++)
+        if (this.$store.state.followed_articles[i].id == this.context.id) {
+          this.hasFollowed = true;
+          break;
+        }
   },
 
   methods: {
+    date_format(time) {
+      let time_arr = time.split('-');
+      return time_arr[1] + '/' + time_arr[2];
+    },
     Copy() {
       let ele = document.getElementById('url');
       ele.value = window.location.href;
       ele.select();
       document.execCommand('copy');
       this.Show_info('Copied', 'success');
-    },
-    SubmitNewComment() {
-      apiUploadComment({
-        author: {
-          name: this.$store.state.username,
-          id: this.$store.state.user_id,
-        },
-        article_id: String(this.id),
-        comment: this.Newcomments,
-      });
-      // console.log(this.context);
-      this.context.comments.push({
-        body: this.Newcomments,
-        date: 'Today',
-        from: this.$store.state.user_id,
-        id: String(this.context.comments.length),
-      });
-      this.Newcomments = '';
     },
     Show_info(Info, infoType) {
       /**
@@ -168,30 +169,53 @@ export default {
         name: 'ArticleClone',
         params: {
           id: this.id,
-          newArticle: this.ThePost
-        }
+          newArticle: this.ThePost,
+        },
       });
     },
-    Go(idx) {
+    GoWish(idx) {
       this.$router.push({
         name: 'Wish',
         params: {
           id: this.id,
           wish: this.context.wishes[idx],
           context: this.context.wishes[idx],
-        }
-      })
+          // color: this.color,
+        },
+      });
     },
-    submitMilestone() {
-      apiUploadMilestone({
-          article_id: String(this.id),
-          newMilestone: this.newMilestone
-        })
-        .then(res => {
-          this.context.wishes.push(res.data + '\t' + this.newMilestone);
-          this.newMilestone = '';
-        })
-    }
+    GoEdit() {
+      this.$router.push({
+        name: 'ArticleEdit',
+        params: {
+          id: this.id,
+          author: this.author,
+          context: this.context,
+        },
+      });
+    },
+    GoNewMilestone() {
+      this.$router.push({
+        name: 'NewMilestone',
+        params: {
+          id: this.id,
+          wishes: this.context.wishes,
+        },
+      });
+    },
+    updateComment(newComment) {
+      this.context.comments.push(newComment);
+    },
+    followedToggle() {
+      apiUserFollowedPostToggle({
+        username: this.$store.state.username,
+        articleId: String(this.id),
+      }).then(() => {
+        this.$store.dispatch('getUserFollowed');
+        this.hasFollowed = !this.hasFollowed;
+      });
+    },
+    color_list,
   },
 };
 </script>

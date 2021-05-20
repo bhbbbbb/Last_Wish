@@ -9,22 +9,19 @@ export default {
   components: {
     AppBarD: () => import('@/views/AppBar/AppBarD'),
     AppBarM: () => import('@/views/AppBar/AppBarM'),
-    AppBarProfileM: () => import('@/views/Profile/AppBarProfileM')
+    AppBarProfileM: () => import('@/views/Profile/AppBarProfileM'),
   },
-  props: {
-    
-  },
+  props: {},
   data: () => ({
     which: undefined,
   }),
   watch: {
-    '$vuetify.breakpoint.mobile': function(val) {
+    '$vuetify.breakpoint.mobile': function (val) {
       if (!val) this.which = 'AppBarD';
       else this.which = 'AppBarM';
-    }
+    },
   },
   created() {
-
     if (!this.$vuetify.breakpoint.mobile) this.which = 'AppBarD';
     else this.which = 'AppBarM';
   },
@@ -32,6 +29,6 @@ export default {
     if (!this.$vuetify.breakpoint.mobile) this.which = 'AppBarD';
     else this.which = 'AppBarM';
     next();
-  }
-}
+  },
+};
 </script>

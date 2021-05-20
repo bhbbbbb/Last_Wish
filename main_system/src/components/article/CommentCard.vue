@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card.ma-0.pa-0.transparent.d-flex.align-center(
+v-card.ma-1.pa-1.transparent.d-flex.align-center(
   v-if="author"
   flat
   min-height="48"
@@ -13,9 +13,7 @@ v-card.ma-0.pa-0.transparent.d-flex.align-center(
 </template>
 
 <script>
-import {
-  apiGetPublicInfo
-} from '@/store/api'
+import { apiGetPublicInfo } from '@/store/api';
 export default {
   name: 'CommentCard',
 
@@ -31,26 +29,27 @@ export default {
     context: {
       type: Object,
       required: true,
-    }
+    },
   },
   data: () => ({
     author: undefined,
   }),
 
   created() {
-    this.getAuthor().then(res => {
-      this.author = res.data;
-    }).catch(err => {
-      console.log(err);
-    });
+    this.getAuthor()
+      .then((res) => {
+        this.author = res.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   },
   methods: {
     async getAuthor() {
       return await apiGetPublicInfo(this.context.from);
-    }
-  }
-
-}
+    },
+  },
+};
 </script>
 
 <style>

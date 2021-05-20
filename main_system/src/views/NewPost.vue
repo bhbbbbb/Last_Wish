@@ -18,13 +18,13 @@ v-card.ma-0.pa-3(min-height="10vh" rounded="lg" elevation="5")
   )                              
     v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
   v-card-actions.justify-center
-    v-btn(@click="SubmitNewArticle()") submit
+    v-btn(@click="SubmitNewArticle()" :disabled="submit_buffer") submit
   v-checkbox(v-model='checkbox' label='匿名')
 </template>
 
 <script>
-import {mapState} from 'vuex';
-import {apiUploadArticle, apiUserPosts} from '@/store/api';
+import { mapState } from 'vuex';
+import { apiUploadArticle } from '@/store/api';
 export default {
   name: 'NewPost',
   data: () => ({
@@ -32,19 +32,26 @@ export default {
       title: '',
       body: '',
       from: '',
-      wishes:'',
+      wish: '',
     },
     show_info: false,
     info_type: 'success',
     infos: '',
     checkbox: false,
+    submit_buffer: false,
   }),
   computed: {
     ...mapState(['articles']),
   },
+  created() {},
   methods: {
     SubmitNewArticle() {
-      this.new_article.wishes = '開始願望: '+this.new_article.title;
+      let now = new Date(Date.now());
+      now = now.toISOString().substring(0, 10);
+      this.new_article.wish = {
+        title: '開始這個願望',
+        time: now,
+      };
       if (this.checkbox) this.new_article.from = '0';
       else this.new_article.from = this.$store.state.user_id;
       if (!this.new_article.title || !this.new_article.body) {
@@ -52,29 +59,24 @@ export default {
         this.Show_info('Blank data!', 'error');
         return;
       }
+      this.submit_buffer = true;
       apiUploadArticle({
         username: this.checkbox ? 'Unknown' : this.$store.state.username,
         article: this.new_article,
       })
         .then((res) => {
           // TODO : insert new post locally
-          this.$store.commit('updateGlobalArticles', res.data);
-          this.Show_info('Posted', 'success');
-          this.new_article.title = '';
-          this.new_article.body = '';
+          let newPostId = res.data;
+          this.$store.dispatch('getGlobalArticles', true).then(() => {
+            this.$router.push(`/article/${newPostId}`);
+          });
         })
         .catch((err) => {
           this.Show_info('Something went wrong', 'error');
           console.log(err);
         });
 
-      apiUserPosts({username: this.$store.state.username})
-        .then((res) => {
-          this.$store.commit('updateUserArticles', res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      this.$store.dispatch('getUserArticles', true);
     },
     Show_info(Info, infoType) {
       /**

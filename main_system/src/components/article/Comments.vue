@@ -14,31 +14,25 @@ v-sheet(min-height="70vh" rounded="lg")
 <script>
 // import {mapState} from 'vuex'
 export default {
-    name: 'Comments',
-    components: {
-      CommentCard: () => import('@/components/article/CommentCard.vue'),
+  name: 'Comments',
+  components: {
+    CommentCard: () => import('@/components/article/CommentCard.vue'),
+  },
+  props: {
+    comments: {
+      type: Object,
+      required: true,
     },
-    props: {
-        comments: {
-            type: Object,
-            required: true,
-        }
-    },
+  },
 
-    computed: {
+  computed: {},
+  created() {
+    // without running 'getGlobalArticles' the articles would be blank
+    this.$store.dispatch('getGlobalArticles');
+  },
 
-    },
-    created() {
-      // without running 'getGlobalArticles' the articles would be blank
-      this.$store.dispatch('getGlobalArticles');
-    },
-
-    methods: {
-
-    },
-}
+  methods: {},
+};
 </script>
 
-<style lang="sass" scoped>
-
-</style>
+<style lang="sass" scoped></style>

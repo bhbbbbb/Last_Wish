@@ -3,13 +3,14 @@
     class="ma-3 pa-1"
     min-height="80vh"
     rounded="lg"
-    :color="color"
+    :color="color_list($route.params.id)"
   >
     <h3>this is a wish page for {{ context }}</h3>
   </v-card>
 </template>
 
 <script>
+import color_list from '@/store/color_list.js';
 export default {
   name: 'Wish',
   components: {},
@@ -18,28 +19,15 @@ export default {
       type: String,
       required: true,
     },
-    color: {
-      type: String,
-      default: '#F5F4F0',
-    },
-
   },
-  data: () => ({
-
-  }),
-  computed: {
-
-  },
-  created() {
-
-  },
+  data: () => ({}),
+  computed: {},
+  created() {},
 
   methods: {
-
+    color_list,
   },
 };
 </script>
 
-<style>
-
-</style>
+<style></style>

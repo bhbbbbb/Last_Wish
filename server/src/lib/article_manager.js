@@ -31,7 +31,7 @@ module.exports = function() {
             "date": today,
             "wishes":[]
         };
-        newPostData.wishes.push(String(article.wishes)+this.getDay(2));
+        newPostData.wishes.push(article.wish);
         this.articles.push(newArticle(newPostData));
         synchronize(this.articles, this.articlePATH);
         return newPostId;
@@ -62,6 +62,7 @@ module.exports = function() {
      * @param {String} articleId 
      * @param {String} commentStr 
      * @throws "no such article" exception
+     * @returns {Object} newComment
      */
     this.addCommentToArticle = function(author, articleId, commentStr) {
         if (!this.hasArticle(articleId)) {
@@ -75,9 +76,33 @@ module.exports = function() {
             "body": commentStr,
             "from": author.id
         }
-        article.comments.push(newComment(newCommentData));
+        let newNewComment = newComment(newCommentData);
+        article.comments.push(newNewComment);
+        synchronize(this.articles, this.articlePATH);
+        return newNewComment;
+    }
+
+    this.replaceArticle = function(newArticle, articleId) {
+        if (!this.hasArticle(articleId)) {
+            throw "no such article";
+        }
+        this.articles[Number(articleId)].title = newArticle.title;
+        this.articles[Number(articleId)].body = newArticle.body;
         synchronize(this.articles, this.articlePATH);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
     *Now the milestone has no id
@@ -87,20 +112,34 @@ module.exports = function() {
     *editing the article contaned in
     *each milestone
     */
-    this.addMilestoneToArticle = function(articleId, milestoneStr) {
+    this.addMilestoneToArticle = function(articleId, milestone) {
         if (!this.hasArticle(articleId)) {
             throw "no such article";
         }
         let article = this.articles[Number(articleId)];
         let newMilestoneId = String(article.wishes.length);
-        article.wishes.push(today.split(' ')[0]+'\t'+milestoneStr);
+        let newMilestone = {
+            title: milestone.title,
+            body: milestone.body,
+            time: milestone.time,
+            id: newMilestoneId,
+        };
+        article.wishes.push(newMilestone);
         synchronize(this.articles, this.articlePATH);
+        return newMilestone;
     }
 
-    this.getToday=function(choose){
-        if(choose == 1)
+    /**
+     * 
+     * @param {Number} choose 
+     * @returns choose = 1 : Month
+     * @returns choose = 2 : Month/Date
+     * @returns choose else : Month/Date Day
+     */
+    this.getToday = function(choose){
+        if(choose === 1)
             return today.split('/')[0];             //return Month
-        else if(choose == 2)
+        else if(choose === 2)
             return today.split(' ')[0];             //return Month/Date
         else
             return today;                           //return Month/Date Day

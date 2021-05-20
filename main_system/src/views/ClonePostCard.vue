@@ -28,7 +28,7 @@ v-card.ma-3.pa-3(min-height="10vh", rounded="lg", elevation="5")
 </template>
 
 <script>
-import { apiUploadArticle, apiUserPosts } from '@/store/api';
+import { apiUploadArticle, apiGetUserPosts } from '@/store/api';
 export default {
   name: 'ClonePostCard',
   props: {
@@ -43,12 +43,10 @@ export default {
     infos: '',
     checkbox: false,
   }),
-  computed: {
+  computed: {},
+  created() {
+    this.newArticle.wishes = this.newArticle.wishes.replace(/,/g, '\n');
   },
-  created(){
-    this.newArticle.wishes = this.newArticle.wishes.replace(/,/g,'\n');
-  }
-  ,
   methods: {
     SubmitNewArticle() {
       this.newArticle.wishes = this.newArticle.wishes.split('\n');
@@ -76,7 +74,7 @@ export default {
           console.log(err);
         });
 
-      apiUserPosts({ username: this.$store.state.username })
+      apiGetUserPosts({ username: this.$store.state.username })
         .then((res) => {
           this.$store.commit('updateUserArticles', res.data);
         })

@@ -2,7 +2,7 @@ const articlePATH = __dirname + "/../data/articles.json";
 const accountsPATH = __dirname + "/../data/accounts.json";
 var express = require('express');
 var global = express.Router();
-
+var user_session = require('../lib/session.js');
 // const { stringify } = require('querystring');
 // var articles = require(articlePATH);
 // var accounts = require(accountsPATH);
@@ -16,12 +16,7 @@ var articleManager = new ArticleManager();
 // it would be more elegant to utilize the class 
 // but maybe update later today
 
-// var d = new Date();
-// var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-// var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-// var today = month[d.getMonth()] + ' ' + String(d.getDate()) + ', ' + days[d.getDay()];
 
-// add a post anonymously
 const SUCCEED = 0;
 const USER_NOT_FOUND = 1;
 const INSERT = [
@@ -37,10 +32,9 @@ const INSERT = [
     }
 ]
 global.post('/insert', (req, res) => {
-    var response;
+    var response, newPostId;
     try {
-        accountManager.addPostsToAuthor(
-                req.body.username, req.body.article);
+        newPostId = accountManager.addPostsToAuthor(req.body.username, req.body.article);
     } catch (error) {
         console.log(error);
         response = INSERT[USER_NOT_FOUND];
@@ -48,15 +42,14 @@ global.post('/insert', (req, res) => {
         return;
     }
     response = INSERT[SUCCEED];
-    res.status(response.status).json(response.body);
+    res.status(response.status).json(newPostId);
     return;
 });
 
+
 global.post('/addcomment', (req, res) => {
-    
-    //console.log(req.body.author,req.body.article_id,req.body.comment,'QQ');
-    articleManager.addCommentToArticle(req.body.author,req.body.article_id,req.body.comment);
-    res.send('cool');
+    let newComent = articleManager.addCommentToArticle(req.body.author, req.body.article_id, req.body.comment);
+    res.json(newComent);
 });
 
 global.get('/', (req, res) => {
@@ -74,22 +67,21 @@ const USER_POST = [
             err_code: BAD_REQUEST,
             err_msg: ""
         }
-    }
+    },
 ]
-global.post('/user_post', (req, res) => {
-    // here may simply call getPostsByUser method of account_manager
-    // var User_id = accountManager.getIdbyUsername(req.body.username);   //Here can be replaced with api returns current user's id
-    // var UserPost = [];
-    // for(var i = 0;i<articles.length;i++)
-    //     if(articles[i].from === User_id)
-    //         UserPost.push(articles[i]);
-    // //console.log(UserPost);
-    // res.json(UserPost);
-    // //TODO: Deal with some exception 
+
+/**
+ * @req req.query { username }
+ */
+global.get('/user_post', user_session, (req, res) => {
     var response;
+    if (req.query.username != req.session.username) {
+        res.sendStatus(401);
+        return;
+    }
     let posts = [];
     try {
-        accountManager.getPostsByAuthor(req.body.username).forEach(articleId => {
+        accountManager.getPostsByAuthor(req.query.username).forEach(articleId => {
             posts.push(articleManager.getArticleById(articleId));
         });
     } catch (error) {
@@ -98,7 +90,6 @@ global.post('/user_post', (req, res) => {
         return;
     }
     response = USER_POST[SUCCEED];
-    console.log(posts);
     res.status(response.status).json(posts);
     return;
 });
@@ -116,33 +107,6 @@ const FOLLOWED_POST = [
     }
 ]
 global.get('/followed_post', (req, res) => {
-    // var User_id = String(0);   //Here can be replaced with api returns current user's id
-    // var F_User = [];
-    // var F_Post = [];
-    // var Total_Post = [];
-    // for(var i = 0;i<articles.length;i++)
-    //     if(accounts[i].id === User_id){
-    //         F_User=accounts[i].followees;
-    //         F_Post=accounts[i].followedPosts;
-    //         //console.log(F_User,F_Post,F_User[1]);
-    //         break;
-    //     }
-    
-    // if(F_User.length)
-    // for(var i = 0;i<F_User.length;i++)
-    //     for(var k in articles){
-    //         if(articles[k].from==F_User[i])
-    //             Total_Post.push(articles[k]);
-    //         console.log(articles[k].from,F_User[i]);
-    //         }
-
-    // if(F_Post.length)
-    // for(var j in F_Post)
-    //     for(var k in articles)
-    //         if(articles[k].id==F_Post[j])
-    //             Total_Post.push(articles[k]);
-    // //TODO: Deal with some exception 
-    // res.json(Total_Post);
     var response;
     let posts = [];
     try {
@@ -159,11 +123,28 @@ global.get('/followed_post', (req, res) => {
     res.status(response.status).json(posts);
     return;
 });
+
+/**
+ * @param {Number} req.body.article_id
+ * @param {Object} req.body.newMilestone { title, body, time }
+ */
 global.post('/addMilestone',(req,res)=>{
-    articleManager.addMilestoneToArticle(req.body.article_id,req.body.newMilestone);
-    res.send(articleManager.getToday(2));
+    let newMilestone = articleManager.addMilestoneToArticle(req.body.article_id,req.body.newMilestone);
+    res.json(newMilestone);
 })
 
+global.post('/FollowedPostToggle',(req,res)=>{
+    try{
+    accountManager.toggleFollowedPostsToUser(req.body.username,req.body.articleId);
+    }catch(err){
+        console.log(err);
+    }
+    res.sendStatus(200);
+})
+global.post('/editArticle',(req,res)=>{
+    articleManager.replaceArticle(req.body.newArticle,req.body.articleId);
+    res.sendStatus(200);
+})
 
 
 
