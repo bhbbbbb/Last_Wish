@@ -121,32 +121,69 @@ global.get('/followed_post', (req, res) => {
  * @param {Object} req.body.newMilestone { title, body, time }
  */
 global.post('/addMilestone', (req, res) => {
-    let newMilestone = articleManager.addMilestoneToArticle(req.body.article_id, req.body.newMilestone);
-    res.json(newMilestone);
+    var newMilestone;
+    try {
+        newMilestone = articleManager.addMilestoneToArticle(req.body.article_id, req.body.newMilestone);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(400);
+        return;
+    }
+    res.status(200).json(newMilestone);
+    return;
 })
 
 global.post('/FollowedPostToggle', (req, res) => {
     try {
-    accountManager.toggleFollowedPostsToUser(req.body.username, req.body.articleId);
+        accountManager.toggleFollowedPostsToUser(req.body.username, req.body.articleId);
     } catch (err) {
         console.log(err);
+        res.sendStatus(400);
+        return;
     }
     res.sendStatus(200);
+    return;
+})
+
+global.post('/getArticleById', (req, res) => {
+    var article;
+    try {
+        article = articleManager.getArticleById(req.body.article_id);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(400);
+        return;
+    }
+    res.status(200).json(article);
+    return;
 })
 
 global.post('/editArticle', (req, res) => {
-    articleManager.replaceArticle(req.body.newArticle, req.body.articleId);
+    try {
+        articleManager.replaceArticle(req.body.newArticle, req.body.articleId);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(400);
+        return;
+    }
     res.sendStatus(200);
+    return
 })
 
 // TODO:
 
 // editComment
 global.post('/editComment', (req, res) => {
-    
-
+    try {
+        articleManager.replaceCommentOfArticle(req.body.newComment, req.body.articleId, req.body.commentId);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(400);
+        return;
+    }
+    res.sendStatus(200);
+    return
 })
 // editMileStone
-
 
 module.exports = global;
