@@ -11,7 +11,7 @@
 *.sw*
 *zip
 .now
-
+*.un~
 
 blog-free-v1.0.0
 example
@@ -23,3 +23,5 @@ server/src/crawl.py
 node_modules
 main_system/deploy.cmd
 server/deploy.cmd
+run.cmd
+serve.sh

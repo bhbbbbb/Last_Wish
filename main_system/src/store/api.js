@@ -1,5 +1,5 @@
 import axios from 'axios';
-const proURL = 'http://luffy.ee.ncku.edu.tw:2222';
+const proURL = 'https://luffy.ee.ncku.edu.tw:2222';
 const devURL = '';
 // const devURL = 'http://192.168.0.3:2222';
 
