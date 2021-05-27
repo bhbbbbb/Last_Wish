@@ -16,6 +16,10 @@ module.exports = function() {
         return Number(articleId) <= this.articles.length;
     }
 
+    this.hasCommentInArticle = function(commentId, articleId) {
+        return Number(commentId) <= this.articles[Number(articleId)].comments.length
+    }
+
     /**
      * @param {Object} author the account info of the author
      * @param {Object} article = {body, title, wishes}
@@ -88,6 +92,14 @@ module.exports = function() {
         }
         this.articles[Number(articleId)].title = newArticle.title;
         this.articles[Number(articleId)].body = newArticle.body;
+        synchronize(this.articles, this.articlePATH);
+    }
+
+    this.replaceCommentOfArticle = function(newComment, articleId, commentId) {
+        if (!this.hasArticle(articleId)) {
+            throw "no such article";
+        }
+        this.articles[Number(articleId)].comment = newComment;
         synchronize(this.articles, this.articlePATH);
     }
 
