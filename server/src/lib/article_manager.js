@@ -86,35 +86,42 @@ module.exports = function() {
         return newNewComment;
     }
 
+    /**
+     * Replace the body and title of an article
+     * 
+     * @param {Object} newComment 
+     * @param {String} articleId 
+     * @param {String} commentId 
+     * 
+     * @throws "no such article" exception
+     */
     this.replaceArticle = function(newArticle, articleId) {
         if (!this.hasArticle(articleId)) {
             throw "no such article";
-        }
-        this.articles[Number(articleId)].title = newArticle.title;
+        } this.articles[Number(articleId)].title = newArticle.title;
         this.articles[Number(articleId)].body = newArticle.body;
         synchronize(this.articles, this.articlePATH);
     }
 
+    /**
+     * Replace a comment body in an article
+     * 
+     * @param {Object} newComment 
+     * @param {String} articleId 
+     * @param {String} commentId 
+     * 
+     * @throws "no such article" exception
+     */
     this.replaceCommentOfArticle = function(newComment, articleId, commentId) {
         if (!this.hasArticle(articleId)) {
             throw "no such article";
         }
-        this.articles[Number(articleId)].comment = newComment;
+        if (!this.hasCommentInArticle(commentId, articleId)) {
+            throw "no such comment"
+        }
+        this.articles[Number(articleId)].comment[Number(commentId)].body = newComment;
         synchronize(this.articles, this.articlePATH);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Now the milestone has no id
@@ -155,12 +162,7 @@ module.exports = function() {
             return today.split(' ')[0];             //return Month/Date
         else
             return today;                           //return Month/Date Day
-            
     }
-
-
-
-
 }
 
 function newArticle(newArticleData) {

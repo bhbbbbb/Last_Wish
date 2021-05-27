@@ -23,7 +23,7 @@ var uploads = require('./router/upload');
 
 app.use('/articles', articles);
 app.use('/user', user);
-app.use('/uploads',uploads);
+app.use('/uploads', uploads);
 // process.env.NODE_ENV = 'production';
 
 app.listen(port,() => {
