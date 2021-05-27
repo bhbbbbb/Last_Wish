@@ -103,8 +103,10 @@ export default {
         newMilestone: this.newMilestone,
       }).then(({ data }) => {
         this.wishes.push(data);
-        this.newMilestone = '';
       });
+      this.newMilestone.title = undefined;
+      this.newMilestone.time = undefined;
+      this.newMilestone.body = undefined;
     },
   },
 };
