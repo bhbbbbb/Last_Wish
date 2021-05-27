@@ -128,24 +128,23 @@ global.get('/followed_post', (req, res) => {
  * @param {Number} req.body.article_id
  * @param {Object} req.body.newMilestone { title, body, time }
  */
-global.post('/addMilestone',(req,res)=>{
-    let newMilestone = articleManager.addMilestoneToArticle(req.body.article_id,req.body.newMilestone);
+global.post('/addMilestone', (req, res) => {
+    let newMilestone = articleManager.addMilestoneToArticle(req.body.article_id, req.body.newMilestone);
     res.json(newMilestone);
 })
 
-global.post('/FollowedPostToggle',(req,res)=>{
-    try{
-    accountManager.toggleFollowedPostsToUser(req.body.username,req.body.articleId);
-    }catch(err){
+global.post('/FollowedPostToggle', (req, res) => {
+    try {
+    accountManager.toggleFollowedPostsToUser(req.body.username, req.body.articleId);
+    } catch (err) {
         console.log(err);
     }
     res.sendStatus(200);
 })
-global.post('/editArticle',(req,res)=>{
-    articleManager.replaceArticle(req.body.newArticle,req.body.articleId);
+
+global.post('/editArticle', (req, res) => {
+    articleManager.replaceArticle(req.body.newArticle, req.body.articleId);
     res.sendStatus(200);
 })
-
-
 
 module.exports = global;

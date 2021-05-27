@@ -144,12 +144,12 @@ module.exports = function() {
             throw "no such article";
         }
         let follower = this.accounts_info.find(account => account['username'] == username);
-        if (follower.followedPosts.indexOf(articleId)>-1) {     
+        if (follower.followedPosts.indexOf(articleId) > -1) {     
             follower.followedPosts.splice(follower.followedPosts.indexOf(articleId), 1);
             //throw "article already followed";
-        }
-        else
+        } else {
             follower.followedPosts.push(articleId);
+        }
         synchronize(this.accounts_info, this.accountsPATH);
     }
     /**

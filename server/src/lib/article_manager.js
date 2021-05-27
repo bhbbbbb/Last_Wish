@@ -105,13 +105,13 @@ module.exports = function() {
 
 
     /**
-    *Now the milestone has no id
-    *However we need to add an id
-    *later for better management
-    *such as editing milestone or
-    *editing the article contaned in
-    *each milestone
-    */
+     * Now the milestone has no id
+     * However we need to add an id
+     * later for better management
+     * such as editing milestone or
+     * editing the article contaned in
+     * each milestone
+     */
     this.addMilestoneToArticle = function(articleId, milestone) {
         if (!this.hasArticle(articleId)) {
             throw "no such article";
@@ -137,9 +137,9 @@ module.exports = function() {
      * @returns choose else : Month/Date Day
      */
     this.getToday = function(choose){
-        if(choose === 1)
+        if (choose === 1)
             return today.split('/')[0];             //return Month
-        else if(choose === 2)
+        else if (choose === 2)
             return today.split(' ')[0];             //return Month/Date
         else
             return today;                           //return Month/Date Day

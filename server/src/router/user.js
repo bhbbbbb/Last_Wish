@@ -171,7 +171,6 @@ user.post('/login_state', user_session, (req, res) => {
 
 });
 
-
 user.post('/line_login_state', user_session, (req, res) => {
     // check if the given state of a line login has finished
     // if finished, switch the session?
@@ -237,7 +236,7 @@ user.get('/resolve_line_login', (req, res) => {
     res.send("<script>window.close();</script>");
 });
 
-user.get('/get_id_by_name',(req,res)=>{
+user.get('/get_id_by_name', (req, res) => {
     res.send(accountManager.getIdbyUsername(req.query.name));
 })
 
