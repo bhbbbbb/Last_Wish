@@ -16,6 +16,10 @@ module.exports = function() {
         return Number(articleId) <= this.articles.length;
     }
 
+    this.hasCommentInArticle = function(commentId, articleId) {
+        return Number(commentId) <= this.articles[Number(articleId)].comments.length
+    }
+
     /**
      * @param {Object} author the account info of the author
      * @param {Object} article = {body, title, wishes}
@@ -91,6 +95,14 @@ module.exports = function() {
         synchronize(this.articles, this.articlePATH);
     }
 
+    this.replaceCommentOfArticle = function(newComment, articleId, commentId) {
+        if (!this.hasArticle(articleId)) {
+            throw "no such article";
+        }
+        this.articles[Number(articleId)].comment = newComment;
+        synchronize(this.articles, this.articlePATH);
+    }
+
 
 
 
@@ -105,13 +117,13 @@ module.exports = function() {
 
 
     /**
-    *Now the milestone has no id
-    *However we need to add an id
-    *later for better management
-    *such as editing milestone or
-    *editing the article contaned in
-    *each milestone
-    */
+     * Now the milestone has no id
+     * However we need to add an id
+     * later for better management
+     * such as editing milestone or
+     * editing the article contaned in
+     * each milestone
+     */
     this.addMilestoneToArticle = function(articleId, milestone) {
         if (!this.hasArticle(articleId)) {
             throw "no such article";
@@ -137,9 +149,9 @@ module.exports = function() {
      * @returns choose else : Month/Date Day
      */
     this.getToday = function(choose){
-        if(choose === 1)
+        if (choose === 1)
             return today.split('/')[0];             //return Month
-        else if(choose === 2)
+        else if (choose === 2)
             return today.split(' ')[0];             //return Month/Date
         else
             return today;                           //return Month/Date Day

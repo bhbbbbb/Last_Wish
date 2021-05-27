@@ -3,18 +3,10 @@ const accountsPATH = __dirname + "/../data/accounts.json";
 var express = require('express');
 var global = express.Router();
 var user_session = require('../lib/session.js');
-// const { stringify } = require('querystring');
-// var articles = require(articlePATH);
-// var accounts = require(accountsPATH);
-// The line above can be replaced with
 var AccountManager = require('../lib/account_manager.js');
 var accountManager = new AccountManager();
 var ArticleManager = require('../lib/article_manager.js');
 var articleManager = new ArticleManager();
-// to handle issues that is to do with user
-// also I wrote a new class to handle articles: article_manager
-// it would be more elegant to utilize the class 
-// but maybe update later today
 
 
 const SUCCEED = 0;
@@ -128,24 +120,33 @@ global.get('/followed_post', (req, res) => {
  * @param {Number} req.body.article_id
  * @param {Object} req.body.newMilestone { title, body, time }
  */
-global.post('/addMilestone',(req,res)=>{
-    let newMilestone = articleManager.addMilestoneToArticle(req.body.article_id,req.body.newMilestone);
+global.post('/addMilestone', (req, res) => {
+    let newMilestone = articleManager.addMilestoneToArticle(req.body.article_id, req.body.newMilestone);
     res.json(newMilestone);
 })
 
-global.post('/FollowedPostToggle',(req,res)=>{
-    try{
-    accountManager.toggleFollowedPostsToUser(req.body.username,req.body.articleId);
-    }catch(err){
+global.post('/FollowedPostToggle', (req, res) => {
+    try {
+    accountManager.toggleFollowedPostsToUser(req.body.username, req.body.articleId);
+    } catch (err) {
         console.log(err);
     }
     res.sendStatus(200);
 })
-global.post('/editArticle',(req,res)=>{
-    articleManager.replaceArticle(req.body.newArticle,req.body.articleId);
+
+global.post('/editArticle', (req, res) => {
+    articleManager.replaceArticle(req.body.newArticle, req.body.articleId);
     res.sendStatus(200);
 })
 
+// TODO:
+
+// editComment
+global.post('/editComment', (req, res) => {
+    
+
+})
+// editMileStone
 
 
 module.exports = global;
