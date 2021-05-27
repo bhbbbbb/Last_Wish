@@ -7,6 +7,7 @@ let baseURL = process.env.NODE_ENV === 'development' ? devURL : proURL;
 
 const articleRequest = axios.create({
   baseURL: baseURL + '/articles',
+  withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
   // headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 });
@@ -19,6 +20,7 @@ const userRequest = axios.create({
 
 const uploadRequest = axios.create({
   baseURL: baseURL + '/uploads',
+  withCredentials: true,
   headers: { 'Content-Type': 'multipart/form-data' },
 });
 /********************** Call upload.js **********************/

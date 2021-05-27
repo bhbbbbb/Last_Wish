@@ -10,7 +10,7 @@ module.exports = session({
     saveUninitialized: false,
     cookie: {
         secure: https_enable,
-        maxAge: 86400000, // 1 day
+        maxAge: 30 * 86400000, // 1 month
         sameSite: https_enable ? 'none' : 'lax',
     }
 })
