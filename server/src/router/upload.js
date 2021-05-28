@@ -8,23 +8,18 @@ var storage = multer.diskStorage({
         callback(null, './data/uploads');
     },
     filename: function (req, file, callback) {
-        console.log(file);
-        callback(null, file.originalname);          //The file.originalname can be change to any string you want.
-                                                    //While if you want to change to other name, you need to append Filename Extension, too.
+        var fileFormat = (file.originalname).split(".");
+        callback(null, file.fieldname + '-' + Date.now() + "." + fileFormat[fileFormat.length - 1]);
+    //The file.originalname can be change to any string you want.
+    //While if you want to change to other name, you need to append Filename Extension, too.
     }
 });
 
-const upload = multer({ storage: storage }).single('file'); 
+const upload = multer({ storage: storage }); 
 
-uploads.post('/uploadFile', async (req, res) => {
-    upload(req, res, function (err) {
-        if (err) {
-            console.log(err)
-        } else {
-            var FileName = req.file.filename;
-            res.status(200).send(FileName);
-        }
-    })
+uploads.post('/uploadFile', upload.single('avatar'),async (req, res, next) => {
+    if(req.file)
+        res.send({res:'success'});
 });
 
 //File upload part
