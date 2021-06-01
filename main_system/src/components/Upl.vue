@@ -9,6 +9,8 @@
       url="/uploads/uploadFile"
       :params="params"
       :headers="headers"
+      :langType="langType"
+      :noRotate=false
       img-format="png"
       @crop-success="cropSuccess"
       @crop-upload-success="cropUploadSuccess"
@@ -37,6 +39,7 @@ export default {
       smail: '*_~',
     },
     imgDataUrl: '', // the datebase64 url of created image
+    langType: 'zh-tw'
   }),
   methods: {
     toggleShow() {
