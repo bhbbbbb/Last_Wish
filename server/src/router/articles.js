@@ -145,10 +145,12 @@ global.post('/FollowedPostToggle', (req, res) => {
     return;
 })
 
-global.post('/getArticleById', (req, res) => {
+global.get('/getArticleById', (req, res) => {
     var article;
+    console.log(req.query.article_id);
     try {
-        article = articleManager.getArticleById(req.body.article_id);
+        article = articleManager.getArticleById(req.query.article_id);
+
     } catch (err) {
         console.log(err);
         res.sendStatus(400);

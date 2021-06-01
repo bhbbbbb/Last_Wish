@@ -13,6 +13,9 @@ module.exports = function() {
      * @returns if there is an article with such id
      */
     this.hasArticle = function(articleId) {
+        console.log(`has: ${articleId}`);
+        console.log(Number(articleId));
+        console.log(this.articles.length);
         return Number(articleId) <= this.articles.length;
     }
 
@@ -190,6 +193,19 @@ function newComment(newCommentData) {
     };
     for (keys in newCommentData) {
         template[keys] = newCommentData[keys];
+    }
+    return template;
+}
+
+function newMilestone(newMilestoneData) {
+    let template = {
+        "id": "",
+        "estDate": "",
+        "finishDate": "",
+        "isDoen": false
+    };
+    for (keys in newCommentData) {
+        template[keys] = newMilestoneData[keys];
     }
     return template;
 }
