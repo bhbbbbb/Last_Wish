@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
-// this class is to manage all users
-// or simply manage the data stored in json files
 const fs = require("fs");
+// const mongoose = require('mongoose');
+const User = require('../models/User');
 var ArticleManager = require('./article_manager.js');
 
 module.exports = function() {

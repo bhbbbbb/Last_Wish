@@ -1,4 +1,4 @@
-const mongoose = require("mogoose");
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
   username: String,
@@ -8,11 +8,11 @@ const userSchema = new mongoose.Schema({
   },
   selfIntro: String,
   proPic: String,  // url to profile picture
-  fans: [{ type: mongoose.Type.ObjectId, ref: 'User'}],
-  followingUsers: [{ type: mongoose.Type.ObjectId, ref: 'User'}],
-  followingPosts: [{ type: mongoose.Type.ObjectId, ref: 'Article'}],
-  selfPosts: [{ type: mongoose.Type.ObjectId, ref: 'Article'}],
-  finishedPosts: [{ type: mongoose.Type.ObjectId, ref: 'Article'}]
+  fans: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
+  followingUsers: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
+  followingPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
+  selfPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
+  finishedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}]
 });
 
 module.exports = mongoose.model('User', userSchema);
