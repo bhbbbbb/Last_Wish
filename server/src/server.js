@@ -1,10 +1,12 @@
 const express = require('express');
-const app = express();
-const fs = require('fs');
+const mongoose = require('mongoose');
+// const app = express();
+// const fs = require('fs');
 var cors = require("cors");
 const port = 2222;
 const https_config = require('../https.config');
 const https = require('https');
+const db_config = require('../db.config');
 
 const corsOptions = {
   origin: ["http://localhost:8080", "http://luffy.ee.ncku.edu.tw:5000", "https://luffy.ee.ncku.edu.tw:5000", "https://bhbbbbb.github.io"],
@@ -13,12 +15,13 @@ const corsOptions = {
   credentials: true
 };
 
+const db_url = `mongodb://${db_config.user}:${db_config.password}@${db_config.host}/${db_config.database}`
+mongoose.connect(db_url, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
 app.use(cors(corsOptions));
 // app.use(cors());
 
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
-
 
 var user = require('./router/user');
 var articles = require('./router/articles');
@@ -40,10 +43,10 @@ if (https_config.https_enable) {
   https.createServer(https_options, app).listen(port,()=>{
     console.log(`listen on port:${port}`)
   })
-}
-
-else {
+} else {
   app.listen(port, () => {
     console.log(`listening on port: ${port}, at ` + __dirname);
   })
 }
+});
+

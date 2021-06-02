@@ -4,10 +4,6 @@ var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','
 var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 var today = `${month[d.getMonth()]}/${String(d.getDate())} ${days[d.getDay()]}`;
 
-const db_config = require('../lib/db_config.js');
-const mongoose = require('mongoose');
-const url = `mongodb://${db_config.user}:${db_config.password}@${db_config.host}/${db_config.database}`;
-
 module.exports = function() {
     this.articlePATH = __dirname + "/../data/articles.json";
     this.articles = require(this.articlePATH);
