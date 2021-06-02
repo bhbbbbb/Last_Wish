@@ -17,8 +17,29 @@ module.exports = function() {
      * @returns if the user is in the list
      */
     this.hasUser = function(username) {
-        // console.log(`check for ${username}`);
-        return username in this.user_list;
+        // I don't know how to write with mongoose
+    }
+    
+    /**
+     * @description the following code is to print all users stored in db to 
+     *   the console
+     */
+    this.getAllUsers = function() {
+        User.find().exec((err, res) => {
+            if (err) console.log(err);
+            console.log(res);
+        });
+    }
+    
+    /**
+     * @description the following code is to delete all existing users stored
+     *   in db
+     */
+    this.clearAllUsers = function() {
+        User.remove().exec((err, res) => {
+            if (err) console.log(err);
+            console.log(res);
+        });
     }
 
     /**
@@ -43,20 +64,33 @@ module.exports = function() {
      * @throws "duplicated user" exception
      */
     this.addUser = function(username, password) {
-        if (this.hasUser(username)) {
-            throw "duplicated user";
-        }
-        let newUserId = String(Object.keys(this.user_list).length);
-        let hash = bcrypt.hashSync(password, 10);
-        let newUserData = {
-            "id": newUserId,
-            "username": username,
-            "password": hash
-        }
-        this.user_list[username] = newUserId;
-        this.accounts_info.push(newAccountInfo(newUserData));
-        synchronize(this.user_list, this.user_listPATH);
-        synchronize(this.accounts_info, this.accountsPATH);
+        // if (this.hasUser(username)) {
+        //     throw "duplicated user";
+        // }
+        User.findOne({ username: username}, (err, user) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            
+            if (res) {
+                console.log(user);
+                throw "duplicated user";
+            }
+
+            let hash = bcrypt.hashSync(password, 10);
+            let newUserData = {
+                "username": username,
+                "password": hash,
+            };
+            const newUser = new User(newUserData);
+            newUser.save();
+        });
+        // let newUserId = String(Object.keys(this.user_list).length);
+        // this.user_list[username] = newUserId;
+        // this.accounts_info.push(newAccountInfo(newUserData));
+        // synchronize(this.user_list, this.user_listPATH);
+        // synchronize(this.accounts_info, this.accountsPATH);
     }
 
     /**
@@ -246,6 +280,7 @@ module.exports = function() {
     }
 };
 
+/*
 function newAccountInfo(newUserData) {
     let template = {
         "id": "",
@@ -267,4 +302,4 @@ function synchronize(obj, path) {
     fs.writeFile(path, data, (err) => {
         if (err) console.log(err);
     });
-}
+}*/

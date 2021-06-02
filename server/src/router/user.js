@@ -7,6 +7,17 @@ var AccountManager = require('../lib/account_manager.js');
 var accountManager = new AccountManager();
 var user_session = require('../lib/session.js');
 
+// the following API is to test the db
+user.get('/get_all_users', user_session, (_req, res) => {
+    accountManager.getAllUsers();
+    res.sendStatus(200);
+})
+
+user.get('/clear_all_users', user_session, (_req, res) => {
+    accountManager.clearAllUsers();
+    res.sendStatus(200);
+})
+
 const SUCCEED = 0;
 const USER_NOT_FOUND = 1;
 const PASSWORD_INCORRECT = 2;
