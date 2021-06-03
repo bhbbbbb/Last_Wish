@@ -11,13 +11,28 @@ module.exports = function() {
     this.accounts_info = require(this.accountsPATH);
     this.user_listPATH = __dirname + "/../data/user_list.json";
     this.user_list = require(this.user_listPATH);
+    
+    this.findUserbyUsername = function(username) {
+        return User.findOne({ username: username }).exec();
+    }
 
     /**
      * @param {String} username 
      * @returns if the user is in the list
      */
-    this.hasUser = function(username) {
-        // I don't know how to write with mongoose
+    this.hasUser = async function(username) {
+        let duplicated = await User.findOne({username: username})
+                         .exec()
+                         .then((user) => {
+                             console.log(user);
+                             return user != null;
+                         })
+                         .catch((err) => {
+                             console.log(err);
+                             return true;
+                         });
+        console.log(duplicated);
+        return duplicated;
     }
     
     /**
@@ -64,29 +79,19 @@ module.exports = function() {
      * @throws "duplicated user" exception
      */
     this.addUser = function(username, password) {
-        // if (this.hasUser(username)) {
-        //     throw "duplicated user";
-        // }
-        User.findOne({ username: username}, (err, user) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            
-            if (res) {
-                console.log(user);
-                throw "duplicated user";
-            }
-
-            let hash = bcrypt.hashSync(password, 10);
-            let newUserData = {
-                "username": username,
-                "password": hash,
-            };
-            const newUser = new User(newUserData);
-            newUser.save();
-        });
+        let duplicated = this.hasUser(username).then((duplicated) => { console.log("11", duplicated); return duplicated; });
+        console.log(duplicated);
+        if (duplicated) {
+            throw 'duplicated user'
+        }
         // let newUserId = String(Object.keys(this.user_list).length);
+        let hash = bcrypt.hashSync(password, 10);
+        let newUserData = {
+            "username": username,
+            "password": hash,
+        };
+        const user = new User(newUserData);
+        user.save();
         // this.user_list[username] = newUserId;
         // this.accounts_info.push(newAccountInfo(newUserData));
         // synchronize(this.user_list, this.user_listPATH);
@@ -280,7 +285,6 @@ module.exports = function() {
     }
 };
 
-/*
 function newAccountInfo(newUserData) {
     let template = {
         "id": "",
@@ -302,4 +306,4 @@ function synchronize(obj, path) {
     fs.writeFile(path, data, (err) => {
         if (err) console.log(err);
     });
-}*/
+}
