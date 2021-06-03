@@ -93,7 +93,6 @@ export default {
       } else this.Show_info('Incorrect Register data', 'error');
     },
     checkValid() {
-      this.valid_message = 'error';
       if (this.user.username)
         apiIsValid(this.user.username).then((res) => {
           console.log(res.data);

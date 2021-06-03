@@ -181,7 +181,7 @@ user.post('/line_login_state', user_session, (req, res) => {
     // and login the user?
 })
 
-user.get('/is_valid_username', user_session, (req, res) => {
+user.get('/is_valid_username', (req, res) => {
     let response = {
         isValid: false
     }
