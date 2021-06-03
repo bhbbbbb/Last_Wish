@@ -43,11 +43,22 @@ const TRY_LOGIN = [
 user.post('/try_login', user_session, (req, res) => {
     var response;
     accountManager.checkPassword(req.body.username, req.body.password)
-                  .then(() => {
-
+                  .then((correct, id) => {
+                      if (correct) {
+                          response = TRY_LOGIN[SUCCEED]
+                          req.session.username = req.body.username;
+                          // notice thate 'id' cannot be set in session
+                          req.session.user_id = id;
+                          res.status(response.status).json({username: req.body.username, id: req.session.user_id});
+                      } else {
+                          response = TRY_LOGIN[PASSWORD_INCORRECT];
+                          res.status(response.status).json(response.body);
+                      }
                   })
                   .catch((error) => {
-
+                      console.log(error);
+                      response = TRY_LOGIN[USER_NOT_FOUND];
+                      res.status(response.status).json(response.body);
                   });
     /*
     try {
@@ -62,13 +73,13 @@ user.post('/try_login', user_session, (req, res) => {
         res.status(response.status).json(response.body);
         return;
     }
-    */
     
     response = TRY_LOGIN[SUCCEED]
     req.session.username = req.body.username;
     // notice thate 'id' cannot be set in session
     req.session.user_id = accountManager.getIdbyUsername(req.body.username);
     res.status(response.status).json({username: req.body.username, id: req.session.user_id});
+    */
     return;
 });
 

@@ -69,6 +69,7 @@ module.exports = function() {
             user = await User.findOne({username: username})
                              .exec()
                              .then((user) => {
+                                 console.log(user);
                                  return user;
                              });
         } catch (error) {
@@ -86,7 +87,7 @@ module.exports = function() {
         // let account = this.accounts_info[Number(this.user_list[username])];
         // return account.password == password;
         // */
-        return bcrypt.compareSync(password, user.password);
+        return bcrypt.compareSync(password, user.password), user._id;
     }
 
     /**
