@@ -63,14 +63,30 @@ module.exports = function() {
      * @returns if the password matches the username
      * @throws "user not found" exception
      */
-    this.checkPassword = function(username, password) {
+    this.checkPassword = async function(username, password) {
+        var user;
+        try {
+            user = await User.findOne({username: username})
+                             .exec()
+                             .then((user) => {
+                                 return user;
+                             });
+        } catch (error) {
+            
+        }
+        if (!user) {
+            throw "user not found";
+        }
+        console.log("checkfor", user);
+        /*
         if (!this.hasUser(username)) {
             throw "user not found";
         }
         let account = this.accounts_info.find(account => account.username == username);
         // let account = this.accounts_info[Number(this.user_list[username])];
         // return account.password == password;
-        return bcrypt.compareSync(password, account.password);
+        // */
+        return bcrypt.compareSync(password, user.password);
     }
 
     /**
@@ -78,11 +94,19 @@ module.exports = function() {
      * @param {String} password 
      * @throws "duplicated user" exception
      */
-    this.addUser = function(username, password) {
-        let duplicated = this.hasUser(username).then((duplicated) => { console.log("11", duplicated); return duplicated; });
-        console.log(duplicated);
+    this.addUser = async function(username, password) {
+        var duplicated;
+        try {
+            duplicated = await User.findOne({username: username})
+                         .exec()
+                         .then((user) => {
+                             return user != null;
+                         });
+        } catch (error) {
+            throw 'cannot access db';
+        }
         if (duplicated) {
-            throw 'duplicated user'
+            throw 'duplicated user';
         }
         // let newUserId = String(Object.keys(this.user_list).length);
         let hash = bcrypt.hashSync(password, 10);
@@ -92,10 +116,6 @@ module.exports = function() {
         };
         const user = new User(newUserData);
         user.save();
-        // this.user_list[username] = newUserId;
-        // this.accounts_info.push(newAccountInfo(newUserData));
-        // synchronize(this.user_list, this.user_listPATH);
-        // synchronize(this.accounts_info, this.accountsPATH);
     }
 
     /**

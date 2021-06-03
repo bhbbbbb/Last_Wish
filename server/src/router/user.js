@@ -42,6 +42,14 @@ const TRY_LOGIN = [
 ];
 user.post('/try_login', user_session, (req, res) => {
     var response;
+    accountManager.checkPassword(req.body.username, req.body.password)
+                  .then(() => {
+
+                  })
+                  .catch((error) => {
+
+                  });
+    /*
     try {
         if (!accountManager.checkPassword(req.body.username, req.body.password)) {
             response = TRY_LOGIN[PASSWORD_INCORRECT];
@@ -54,6 +62,7 @@ user.post('/try_login', user_session, (req, res) => {
         res.status(response.status).json(response.body);
         return;
     }
+    */
     
     response = TRY_LOGIN[SUCCEED]
     req.session.username = req.body.username;
@@ -80,6 +89,18 @@ user.post('/register', (req, res) => {
     var response;
     let trimmedUsername = req.body.username.trim();
     let trimmedPassword = req.body.password.trim();
+    accountManager.addUser(trimmedUsername, trimmedPassword)
+                  .then(() => {
+                      response = REGISTER[SUCCEED];
+                      res.sendStatus(response.status);
+                  })
+                  .catch((err) => {
+                      console.log(err);
+                      response = REGISTER[DUPLICATED_USER];
+                      res.status(response.status).json(response.body);
+                  });
+    
+    /*
     try {
         accountManager.addUser(trimmedUsername, trimmedPassword);
     } catch (error) {
@@ -88,7 +109,8 @@ user.post('/register', (req, res) => {
         return;
     }
     response = REGISTER[SUCCEED];
-    res.sendStatus(response.status);
+    */
+    // res.sendStatus(response.status);
     return;
 });
 
