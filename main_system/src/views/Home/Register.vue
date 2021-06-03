@@ -8,6 +8,8 @@ v-card(min-height="70vh" rounded="lg" flat)
       label=""
       :rules="[rules.empty, rules.regex]"
       autocomplete="off"
+      @blur="checkValid"
+      :error-messages="valid_message"
     )
     br/
     h2 your password
@@ -41,7 +43,7 @@ v-card(min-height="70vh" rounded="lg" flat)
 </template>
 
 <script>
-import { apiRegister } from '@/store/api';
+import { apiRegister, apiIsValid } from '@/store/api';
 
 export default {
   name: 'Register',
@@ -50,6 +52,7 @@ export default {
     show_info: false,
     infos: '',
     info_type: 'success',
+    valid_message: undefined,
     user: {
       username: '',
       password: '',
@@ -88,6 +91,15 @@ export default {
             console.log(err);
           });
       } else this.Show_info('Incorrect Register data', 'error');
+    },
+    checkValid() {
+      this.valid_message = 'error';
+      if (this.user.username)
+        apiIsValid(this.user.username).then((res) => {
+          console.log(res.data);
+          if (!res.data.isValid) this.valid_message = '使用者以重複';
+          else this.valid_message = 'OK';
+        });
     },
     Show_info(Info, infoType) {
       /**

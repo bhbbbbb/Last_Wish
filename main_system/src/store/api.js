@@ -49,6 +49,8 @@ export const apiTryLogin = (data) => userRequest.post('/try_login', data);
 export const apiRegister = (data) => userRequest.post('/register', data);
 export const apiWho = () => userRequest.get('/who');
 export const apiLogout = () => userRequest.get('/logout'); // clear the session on server
+export const apiIsValid = (data) =>
+  userRequest.get('/is_valid_username', { params: data });
 
 /**
  *
