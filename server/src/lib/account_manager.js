@@ -139,11 +139,14 @@ module.exports = function() {
                              });
             if (user) {
                 user.honor = honor;
-                user.save();
+                let error = user.validateSync();
+                if (error) {
+                    throw error;
+                }
                 return;
             }
         } catch (error) {
-            throw 'db access failed';
+            throw error;
         }
         throw "user not found";
     }

@@ -44,8 +44,6 @@ user.post('/try_login', user_session, (req, res) => {
     accountManager
         .checkPassword(req.body.username, req.body.password)
         .then((result) => {
-            console.log('shit');
-            console.log(result);
             if (result.correct) {
                 let response = TRY_LOGIN[SUCCEED]
                 req.session.username = req.body.username;
@@ -96,7 +94,43 @@ user.post('/register', (req, res) => {
             let response = REGISTER[DUPLICATED_USER];
             res.status(response.status).json(response.body);
         });
-    return;
+});
+
+user.post('/set_self_intro', user_session, (req, res) => {
+    accountManager
+        .setSelfIntroToUser(req.session.username, req.body.selfIntro)
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.sendStatus(400);
+        })
+});
+
+user.post('/set_honor', user_session, (req, res) => {
+    accountManager
+        .setHonorToUser(req.session.username, req.body.honor)
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.sendStatus(400);
+        })
+});
+
+user.post('/set_pro_pic', user_session, (req, res) => {
+    accountManager
+        .setProPicToUser(req.session.username, req.body.pro_pic_url)
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.sendStatus(400);
+        })
+
 });
 
 user.get('/who', user_session, (req, res) => {
