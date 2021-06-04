@@ -31,13 +31,12 @@ module.exports = function() {
                              console.log(err);
                              return true;
                          });
-        console.log(duplicated);
         return duplicated;
     }
     
     /**
      * @description the following code is to print all users stored in db to 
-     *   the console
+     *              the console
      */
     this.getAllUsers = function() {
         User.find().exec((err, res) => {
@@ -48,7 +47,7 @@ module.exports = function() {
     
     /**
      * @description the following code is to delete all existing users stored
-     *   in db
+     *              in db
      */
     this.clearAllUsers = function() {
         User.remove().exec((err, res) => {
@@ -69,16 +68,14 @@ module.exports = function() {
             user = await User.findOne({username: username})
                              .exec()
                              .then((user) => {
-                                 console.log(user);
                                  return user;
                              });
         } catch (error) {
-            
+            throw "cannot access db";
         }
         if (!user) {
             throw "user not found";
         }
-        console.log("checkfor", user);
         /*
         if (!this.hasUser(username)) {
             throw "user not found";
@@ -87,9 +84,11 @@ module.exports = function() {
         // let account = this.accounts_info[Number(this.user_list[username])];
         // return account.password == password;
         // */
-        console.log(user.password)
-        console.log(password)
-        return bcrypt.compareSync(password, user.password), user._id;
+        let result = {
+            correct: bcrypt.compareSync(password, user.password),
+            userId: user._id,
+        }
+        return result;
     }
 
     /**
@@ -101,10 +100,10 @@ module.exports = function() {
         var duplicated;
         try {
             duplicated = await User.findOne({username: username})
-                         .exec()
-                         .then((user) => {
-                             return user != null;
-                         });
+                                   .exec()
+                                   .then((user) => {
+                                       return user != null;
+                                   });
         } catch (error) {
             throw 'cannot access db';
         }
@@ -126,14 +125,22 @@ module.exports = function() {
      * @returns user info with given id
      * @throws "user not found" exception
      */
-    this.getUserInfo = function(id) {
-        let account = this.accounts_info.find(account => account.id == id);
-        if (!account) {
-            throw "user not found";
+    this.getUserInfo = async function(id) {
+        var user;
+        try {
+            user = await User.findOne({ _id: id })
+                             .then((user) => {
+                                 return user;
+                             })
+        } catch (error) {
+            throw 'cannot access db';
+        }
+        if (!user) {
+            throw "user not found"
         }
         let userInfo = {
-            "id": account.id,
-            "username": account.username
+            "id": user._id,
+            "username": user.username
         };
         return userInfo;
     }
@@ -142,12 +149,20 @@ module.exports = function() {
      * @param {String} username 
      * @returns id of given username
      */
-    this.getIdbyUsername = function(username) {
-        if (!this.hasUser(username)) {
-            return "0";
-            // throw "user not found";
+    this.getIdbyUsername = async function(username) {
+        var user;
+        try {
+            user = await User.findOne({ username: username })
+                             .then((user) => {
+                                 return user;
+                             })
+        } catch (error) {
+            throw 'cannot access db';
         }
-        return this.user_list[username];
+        if (!user) {
+            throw "user not found";
+        }
+        return user._id;
     }
 
     /**

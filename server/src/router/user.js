@@ -41,45 +41,31 @@ const TRY_LOGIN = [
     }
 ];
 user.post('/try_login', user_session, (req, res) => {
-    var response;
-    accountManager.checkPassword(req.body.username, req.body.password)
-                  .then((correct, id) => {
-                      if (correct) {
-                          response = TRY_LOGIN[SUCCEED]
-                          req.session.username = req.body.username;
-                          // notice thate 'id' cannot be set in session
-                          req.session.user_id = id;
-                          res.status(response.status).json({username: req.body.username, id: req.session.user_id});
-                      } else {
-                          response = TRY_LOGIN[PASSWORD_INCORRECT];
-                          res.status(response.status).json(response.body);
-                      }
-                  })
-                  .catch((error) => {
-                      console.log(error);
-                      response = TRY_LOGIN[USER_NOT_FOUND];
-                      res.status(response.status).json(response.body);
-                  });
-    /*
-    try {
-        if (!accountManager.checkPassword(req.body.username, req.body.password)) {
-            response = TRY_LOGIN[PASSWORD_INCORRECT];
+    accountManager
+        .checkPassword(req.body.username, req.body.password)
+        .then((result) => {
+            console.log('shit');
+            console.log(result);
+            if (result.correct) {
+                let response = TRY_LOGIN[SUCCEED]
+                req.session.username = req.body.username;
+                // notice thate 'id' cannot be set in session
+                req.session.user_id = result.userId;
+                res.status(response.status)
+                   .json({
+                       username: req.body.username,
+                       id: req.session.user_id
+                    });
+            } else {
+                response = TRY_LOGIN[PASSWORD_INCORRECT];
+                res.status(response.status).json(response.body);
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            let response = TRY_LOGIN[USER_NOT_FOUND];
             res.status(response.status).json(response.body);
-            return;
-        }
-    } catch (error) {
-        console.log(error);
-        response = TRY_LOGIN[USER_NOT_FOUND];
-        res.status(response.status).json(response.body);
-        return;
-    }
-    
-    response = TRY_LOGIN[SUCCEED]
-    req.session.username = req.body.username;
-    // notice thate 'id' cannot be set in session
-    req.session.user_id = accountManager.getIdbyUsername(req.body.username);
-    res.status(response.status).json({username: req.body.username, id: req.session.user_id});
-    */
+        });
     return;
 });
 
@@ -97,31 +83,19 @@ const REGISTER = [
     }
 ];
 user.post('/register', (req, res) => {
-    var response;
     let trimmedUsername = req.body.username.trim();
     let trimmedPassword = req.body.password.trim();
-    accountManager.addUser(trimmedUsername, trimmedPassword)
-                  .then(() => {
-                      response = REGISTER[SUCCEED];
-                      res.sendStatus(response.status);
-                  })
-                  .catch((err) => {
-                      console.log(err);
-                      response = REGISTER[DUPLICATED_USER];
-                      res.status(response.status).json(response.body);
-                  });
-    
-    /*
-    try {
-        accountManager.addUser(trimmedUsername, trimmedPassword);
-    } catch (error) {
-        response = REGISTER[DUPLICATED_USER];
-        res.status(response.status).json(response.body);
-        return;
-    }
-    response = REGISTER[SUCCEED];
-    */
-    // res.sendStatus(response.status);
+    accountManager
+        .addUser(trimmedUsername, trimmedPassword)
+        .then(() => {
+            let response = REGISTER[SUCCEED];
+            res.sendStatus(response.status);
+        })
+        .catch((err) => {
+            console.log(err);
+            let response = REGISTER[DUPLICATED_USER];
+            res.status(response.status).json(response.body);
+        });
     return;
 });
 
@@ -181,17 +155,21 @@ const GET_PUBLIC_INFO = [
 ];
 // retrieve public info of a username by its user's ID
 user.get('/get_public_info', (req, res) => {
-    try {
-        let userInfo = accountManager.getUserInfo(req.query.id);
-        res.send(userInfo);
-    } catch (error) {
-        let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
-        // it seems that with get method one can not send status and body
-        // together, only post methond can do that
-        // res.sendStatus(response.status).json(response.body);
-        res.sendStatus(response.status);
-        return;
-    }
+    accountManager
+        .getUserInfo(req.query.id)
+        .then((userInfo) => {
+            let response = GET_PUBLIC_INFO[SUCCEED];
+            res.status(response.status)
+               .json(userInfo);
+        })
+        .catch((error) => {
+            console.log(error);
+            let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
+            // it seems that with get method one can not send status and body
+            // together, only post methond can do that
+            // res.sendStatus(response.status).json(response.body);
+            res.sendStatus(response.status);
+        });
 });
 
 const line = require('../lib/line_login_request.js');
@@ -281,8 +259,16 @@ user.get('/resolve_line_login', (req, res) => {
 });
 
 user.get('/get_id_by_name', (req, res) => {
-    res.send(accountManager.getIdbyUsername(req.query.name));
-})
+    accountManager
+        .getIdbyUsername(req.query.name)
+        .then((id) => {
+            res.send(id);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.sendStatus(400);
+        });
+});
 
 function genNonce(length) {
     let result           = [];
