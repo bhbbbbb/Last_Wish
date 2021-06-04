@@ -87,6 +87,8 @@ module.exports = function() {
         // let account = this.accounts_info[Number(this.user_list[username])];
         // return account.password == password;
         // */
+        console.log(user.password)
+        console.log(password)
         return bcrypt.compareSync(password, user.password), user._id;
     }
 
