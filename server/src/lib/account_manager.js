@@ -23,7 +23,6 @@ module.exports = function() {
             return await User.findOne({username: username})
                              .exec()
                              .then((user) => {
-                                 console.log(user);
                                  return user != null;
                              })
         } catch {
@@ -228,31 +227,11 @@ module.exports = function() {
      *         "target already followed" or "target already unfollowed" exceptions 
      */
     this.setFollowRelation = function(username, target, isFollow) {
-        if (!this.hasUser(username)) {
-            throw "user not found";
+        try {
+            
+        } catch (error) {
+            
         }
-        if (!this.hasUser(target)) {
-            throw "target not found";
-        }
-        if (username == target) {
-            throw "username cannot be target";
-        }
-        let follower = this.accounts_info.find(account => account['username'] == username);
-        let followee = this.accounts_info.find(account => account['username'] == target);
-        if (isFollow) {
-            if (follower.followees.includes(followee.id)) {
-                throw "target already followed"
-            }
-            follower.followees.push(followee.id);
-            followee.followers.push(follower.id);
-        } else {
-            if (!follower.followees.includes(followee.id)) {
-                throw "target already unfollowed"
-            }
-            follower.followees.splice(follower.followees.indexOf(followee.id), 1);
-            followee.followers.splice(followee.followers.indexOf(follower.id), 1);
-        }
-        synchronize(this.accounts_info, this.accountsPATH);
     }
 
     /**

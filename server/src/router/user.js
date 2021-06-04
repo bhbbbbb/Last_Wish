@@ -98,7 +98,7 @@ user.post('/register', (req, res) => {
 
 user.post('/set_self_intro', user_session, (req, res) => {
     accountManager
-        .setSelfIntroToUser(req.session.username, req.body.selfIntro)
+        .setSelfIntroToUser(req.session.username, req.body.self_intro)
         .then(() => {
             res.sendStatus(200);
         })
@@ -238,11 +238,15 @@ user.post('/line_login_state', user_session, (req, res) => {
 })
 
 user.get('/is_valid_username', user_session, (req, res) => {
-    let response = {
-        isValid: false
-    }
-    response.isValid = !accountManager.hasUser(req.query.username);
-    res.send(response);
+    accountManager
+        .hasUser(req.query.username)
+        .then((exist) => {
+            res.send(!exist);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.sendStatus(400);
+        });
 });
     
 user.get('/resolve_line_login', (req, res) => {
