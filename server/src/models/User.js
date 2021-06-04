@@ -6,9 +6,16 @@ const userSchema = new mongoose.Schema({
   honor: {
     type: String,
     enum: ['lv1', 'lv2', 'lv3', 'lv4', 'lv5', 'lv6', 'lv7', 'lv8'],
+    default: 'lv1',
   },
-  selfIntro: String,
-  proPic: String,  // url to profile picture
+  selfIntro: {
+    type: String,
+    default: 'The user don\'t have a self intro',
+  },
+  proPic: {
+    type: String,  // url to profile picture
+    default: 'pic source url',
+  },
   fans: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
   followingUsers: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
   followingPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],

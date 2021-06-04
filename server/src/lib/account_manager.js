@@ -1,6 +1,4 @@
 const bcrypt = require('bcrypt');
-const fs = require("fs");
-// const mongoose = require('mongoose');
 const User = require('../models/User');
 var ArticleManager = require('./article_manager.js');
 
@@ -21,17 +19,16 @@ module.exports = function() {
      * @returns if the user is in the list
      */
     this.hasUser = async function(username) {
-        let duplicated = await User.findOne({username: username})
-                         .exec()
-                         .then((user) => {
-                             console.log(user);
-                             return user != null;
-                         })
-                         .catch((err) => {
-                             console.log(err);
-                             return true;
-                         });
-        return duplicated;
+        try {
+            return await User.findOne({username: username})
+                             .exec()
+                             .then((user) => {
+                                 console.log(user);
+                                 return user != null;
+                             })
+        } catch {
+            throw "db access failed";
+        }
     }
     
     /**
@@ -70,25 +67,17 @@ module.exports = function() {
                              .then((user) => {
                                  return user;
                              });
+            if (user) {
+                let result = {
+                    correct: bcrypt.compareSync(password, user.password),
+                    userId: user._id,
+                }
+                return result;
+            }
         } catch (error) {
-            throw "cannot access db";
+            throw "db access failed";
         }
-        if (!user) {
-            throw "user not found";
-        }
-        /*
-        if (!this.hasUser(username)) {
-            throw "user not found";
-        }
-        let account = this.accounts_info.find(account => account.username == username);
-        // let account = this.accounts_info[Number(this.user_list[username])];
-        // return account.password == password;
-        // */
-        let result = {
-            correct: bcrypt.compareSync(password, user.password),
-            userId: user._id,
-        }
-        return result;
+        throw "user not found";
     }
 
     /**
@@ -104,20 +93,78 @@ module.exports = function() {
                                    .then((user) => {
                                        return user != null;
                                    });
+            if (!duplicated) {
+                // let newUserId = String(Object.keys(this.user_list).length);
+                let hash = bcrypt.hashSync(password, 10);
+                let newUserData = {
+                    "username": username,
+                    "password": hash,
+                };
+                const user = new User(newUserData);
+                user.save();
+                return;  // if the function is executed normally
+            }
         } catch (error) {
-            throw 'cannot access db';
+            throw 'db access failed';
         }
-        if (duplicated) {
-            throw 'duplicated user';
+        throw 'duplicated user';
+    }
+    
+    this.setSelfIntroToUser = async function(username, selfIntro) {
+        var user;
+        try {
+            user = await User.findOne({username: username})
+                             .exec()
+                             .then((user) => {
+                                 return user;
+                             });
+            if (user) {
+                user.selfIntro = selfIntro;
+                user.save();
+                return;
+            }
+        } catch (error) {
+            throw 'db access failed';
         }
-        // let newUserId = String(Object.keys(this.user_list).length);
-        let hash = bcrypt.hashSync(password, 10);
-        let newUserData = {
-            "username": username,
-            "password": hash,
-        };
-        const user = new User(newUserData);
-        user.save();
+        throw "user not found";
+    }
+    
+    this.setHonorToUser = async function(username, honor) {
+        var user;
+        try {
+            user = await User.findOne({username: username})
+                             .exec()
+                             .then((user) => {
+                                 return user;
+                             });
+            if (user) {
+                user.honor = honor;
+                user.save();
+                return;
+            }
+        } catch (error) {
+            throw 'db access failed';
+        }
+        throw "user not found";
+    }
+
+    this.setProPicToUser = async function(username, proPicUrl) {
+        var user;
+        try {
+            user = await User.findOne({username: username})
+                                   .exec()
+                                   .then((user) => {
+                                       return user;
+                                   });
+            if (user) {
+                user.proPic = proPicUrl;
+                user.save();
+                return;
+            }
+        } catch (error) {
+            throw 'db access failed';
+        }
+        throw "user not found";
     }
 
     /**
@@ -132,17 +179,20 @@ module.exports = function() {
                              .then((user) => {
                                  return user;
                              })
+            if (user) {
+                let userInfo = {
+                    "id": user._id,
+                    "username": user.username,
+                    "selfIntro": user.selfIntro,
+                    "honor": user.honor,
+                    "proPic": user.proPic
+                };
+                return userInfo;
+            }
         } catch (error) {
-            throw 'cannot access db';
+            throw 'db access failed';
         }
-        if (!user) {
-            throw "user not found"
-        }
-        let userInfo = {
-            "id": user._id,
-            "username": user.username
-        };
-        return userInfo;
+        throw "user not found"
     }
 
     /**
@@ -156,13 +206,13 @@ module.exports = function() {
                              .then((user) => {
                                  return user;
                              })
+            if (user) {
+                return user._id;
+            }
         } catch (error) {
-            throw 'cannot access db';
+            throw 'db access failed';
         }
-        if (!user) {
-            throw "user not found";
-        }
-        return user._id;
+        throw "user not found";
     }
 
     /**
@@ -229,29 +279,6 @@ module.exports = function() {
         }
         synchronize(this.accounts_info, this.accountsPATH);
     }
-    /**
-     * To make an user to unfollow the given post
-     * 
-     * @param {String} username 
-     * @param {String} articleId 
-     * @throw "user not found", "no such article" or "article already unfollowed" exception
-     */
-    /*
-    this.removeFollowedPostsFromUser = function(username, articleId) {
-        if (!this.hasUser(username)) {
-            throw "user not found";
-        }
-        if (!this.articleManager.hasArticle(articleId)) {
-            throw "no such article";
-        }
-        let follower = this.accounts_info.find(account => account['username'] == username);
-        if (!follower.followedPosts.include(articleId)) {
-            throw "article already unfollowed";
-        }
-        follower.followedPosts.splice(follower.followedPosts.indexOf(articleId), 1);
-        synchronize(this.accounts_info, this.accountsPATH);
-    }
-    */
 
     /**
      * @param {String} username 
@@ -322,26 +349,3 @@ module.exports = function() {
         this.articleManager.addCommentToArticle(author, articleId, commentStr);
     }
 };
-
-function newAccountInfo(newUserData) {
-    let template = {
-        "id": "",
-        "username": "",
-        "password": "",
-        "followers": [],
-        "followees": [],
-        "followedPosts": [],
-        "selfPosts": []
-    };
-    for (keys in newUserData) {
-        template[keys] = newUserData[keys];
-    }
-    return template;
-}
-
-function synchronize(obj, path) {
-    let data = JSON.stringify(obj, null, 4);
-    fs.writeFile(path, data, (err) => {
-        if (err) console.log(err);
-    });
-}
