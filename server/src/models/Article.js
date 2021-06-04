@@ -24,6 +24,7 @@ const articleSchema = new mongoose.Schema({
     default: Date.now
   },
   author: { type: mongoose.Type.ObjectId, ref: 'User' },
+  tags: String,
   finishedMilestones: [milestoneSchema],
   undoneMilestones: [milestoneSchema],
   likes: {
