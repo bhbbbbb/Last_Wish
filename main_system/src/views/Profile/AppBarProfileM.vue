@@ -11,7 +11,19 @@ v-app-bar.d-flex.align-center.flex-wrap.justify-center(
       v-col(cols="6")
         v-icon(@click.stop="Back") mdi-chevron-left
       v-col.d-flex.justify-end(cols="6")
-        v-icon() mdi-cog
+        v-menu(offset-y)
+          template(#activator="{ on, attrs }")
+            v-btn(
+              icon
+              v-bind="attrs"
+              v-on="on"
+            ) 
+              v-icon mdi-cog
+          v-list
+            v-list-item
+              v-list-item-title 設定自介
+            v-list-item(@click="logout")
+              v-list-item-title 登出
     v-row.px-3.align-self-center.align-center(no-gutters)
       v-col(cols="3")
         v-avatar.grey.lighten-3(size="64" @click="$store.dispatch('logout')")
@@ -51,6 +63,10 @@ export default {
   methods: {
     Back() {
       this.$router.go(-1);
+    },
+    logout() {
+      this.$store.dispatch('logout');
+      this.$router.push('/');
     },
   },
 };

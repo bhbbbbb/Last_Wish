@@ -64,7 +64,10 @@ export default new Vuex.Store({
       state.user_list[payload.id] = payload.info;
     },
   },
-  getters: {},
+  getters: {
+    // hasFollowed(state, id) {
+    // }
+  },
   actions: {
     /**
      *

@@ -1,6 +1,5 @@
 <template lang="pug">
 v-card(min-height="70vh" rounded="lg" flat)
-  v-card-title.justify-center {{ Title }}
   v-card-text.justify-center
     h2 your user name
     v-text-field(
@@ -48,7 +47,6 @@ import { apiRegister, apiIsValid } from '@/store/api';
 export default {
   name: 'Register',
   data: () => ({
-    Title: 'this is a register page',
     show_info: false,
     infos: '',
     info_type: 'success',

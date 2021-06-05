@@ -1,33 +1,8 @@
 <template lang="pug">
 v-sheet(rounded="lg")
-  v-row(no-gutters style="width: 100%")
-    v-text-field(
-      outlined
-      clearable
-      append-outer-icon="mdi-magnify"
-      @focus="mode_options_show = true"
-      autocomplete="off"
-    )
-
-  v-row(
-    no-gutters
-    style="width: 100%;margin-top: -30px;"
-    v-show="mode_options_show"
-  )
-    v-tabs.justify-space-around(
-      fixed-tabs
-      v-model="search_mode"
-      style="width: 100%;"
-      mandatory
-    )
-      v-tab(value="all" height="25px") 全部
-      v-tab(value="article" height="25px") 文章
-      v-tab(value="tag" height="25px") 標籤
-      v-tab(value="user" height="25px") 用戶
-
+  Search
   v-row.flex-column-reverse(
     no-gutters
-    :style="mode_options_show ? 'margin-top: -0px;' : 'margin-top: -20px;'"
   )
     v-col.ma-0.pa-0(
       v-if="articles"
@@ -58,9 +33,7 @@ export default {
 
   components: {
     ArticleCard: () => import('@/components/article/ArticleCard.vue'),
-    // RecordCard: () => import('@/components/RecordCard'),
-    // NewPost: () => import('@/components/NewPost'),
-    // NewRecord: () => import('@/components/NewRecord'),
+    Search: () => import('@/components/Search'),
   },
   props: {
     articles: {
@@ -73,13 +46,8 @@ export default {
       default: false,
     },
   },
-  data: () => ({
-    search_mode: 'all',
-    mode_options_show: false,
-  }),
-  computed: {
-    // ...mapState(['articles', 'is_login']),
-  },
+  data: () => ({}),
+  computed: {},
   created() {
     if (
       this.$store.state.is_login &&
