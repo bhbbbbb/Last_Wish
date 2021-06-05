@@ -1,16 +1,45 @@
 <template lang="pug">
-v-sheet.d-flex.flex-wrap.flex-column-reverse(rounded="lg")
-  v-col.ma-0.pa-0(
-    v-if="articles"
-    cols="12"
-    v-for="(article, idx) in articles",
-    :key="idx"
-  )
-    ArticleCard(
-      :content="article"
-      :color="color_list(article.id)"
-      @click.stop="ToInnerArticle(article.id, idx)"
+v-sheet(rounded="lg")
+  v-row(no-gutters style="width: 100%")
+    v-text-field(
+      outlined
+      clearable
+      append-outer-icon="mdi-magnify"
+      @focus="mode_options_show = true"
+      autocomplete="off"
     )
+
+  v-row(
+    no-gutters
+    style="width: 100%;margin-top: -30px;"
+    v-show="mode_options_show"
+  )
+    v-tabs.justify-space-around(
+      fixed-tabs
+      v-model="search_mode"
+      style="width: 100%;"
+      mandatory
+    )
+      v-tab(value="all" height="25px") 全部
+      v-tab(value="article" height="25px") 文章
+      v-tab(value="tag" height="25px") 標籤
+      v-tab(value="user" height="25px") 用戶
+
+  v-row.flex-column-reverse(
+    no-gutters
+    :style="mode_options_show ? 'margin-top: -0px;' : 'margin-top: -20px;'"
+  )
+    v-col.ma-0.pa-0(
+      v-if="articles"
+      cols="12"
+      v-for="(article, idx) in articles",
+      :key="idx"
+    )
+      ArticleCard(
+        :content="article"
+        :color="color_list(article.id)"
+        @click.stop="ToInnerArticle(article.id, idx)"
+      )
 
   //- v-col(
   //-   v-if="is_login"
@@ -44,7 +73,10 @@ export default {
       default: false,
     },
   },
-  data: () => ({}),
+  data: () => ({
+    search_mode: 'all',
+    mode_options_show: false,
+  }),
   computed: {
     // ...mapState(['articles', 'is_login']),
   },

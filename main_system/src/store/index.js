@@ -22,6 +22,7 @@ export default new Vuex.Store({
     is_login: false,
     links: global_links,
     user_id: '0',
+    user_list: {},
   },
   mutations: {
     updateGlobalArticles(state, payload) {
@@ -55,6 +56,13 @@ export default new Vuex.Store({
     setid(state, payload) {
       state.user_id = payload;
     },
+    /**
+     *
+     * @param {Object} payload { id , info}
+     */
+    add_user(state, payload) {
+      state.user_list[payload.id] = payload.info;
+    },
   },
   getters: {},
   actions: {
@@ -81,9 +89,11 @@ export default new Vuex.Store({
         return context.state.global_articles[id];
       }
     },
-    async getUser(context, id) {
+    async getUser({ state, commit }, id) {
+      if (id in state.user_list) return state.user_list[id];
       return await apiGetPublicInfo(id)
         .then((res) => {
+          commit('add_user', { id, info: res.data });
           return res.data;
         })
         .catch((err) => {
