@@ -134,10 +134,6 @@ export default {
         src: null,
         type: null,
       };
-      this.result = {
-        coordinates: null,
-        image: null,
-      };
     },
     loadImage(event) {
       // Reference to the DOM input element
@@ -186,6 +182,8 @@ export default {
           // You can use axios, superagent and other libraries instead here
           apiUploadFiles(form).then((res) => {
             console.log(res.status);
+            console.log(res.data)
+            this.$emit('get_img',res.data);
             if (res.status == 200) {
               this.file = '';
               this.reset();
