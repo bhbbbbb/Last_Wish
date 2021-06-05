@@ -1,8 +1,9 @@
 <template>
-  <div>
+  <div class="PIC">
     <cropper
       ref="cropper"
       class="cropper"
+      stencil-component="circle-stencil"
       :src="image.src"
       :debounce="false"
       :stencil-props="{
@@ -206,5 +207,9 @@ export default {
 }
 .Preview {
   border-radius: 50%;
+}
+
+.PIC {
+  width: 100vw;
 }
 </style>
