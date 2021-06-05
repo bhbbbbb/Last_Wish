@@ -8,7 +8,7 @@ export default {
   name: 'AppBarProfileM',
   components: {
     //SimpleUpload:()=> import('@/components/SimpleUpload')
-    Upl:()=> import ('@/components/Upl')
+    Upl: () => import('@/components/Upl'),
   },
   props: {
     // links: {

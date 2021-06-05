@@ -1,82 +1,73 @@
 <template>
-  <div id="app">
-    <a class="btn" @click="toggleShow">set avatar</a>
-    <my-upload
-      v-model="show"
-      field="avatar"
-      :width="300"
-      :height="300"
-      url="/uploads/uploadFile"
-      :params="params"
-      :headers="headers"
-      :langType="langType"
-      :noRotate=false
-      img-format="png"
-      @crop-success="cropSuccess"
-      @crop-upload-success="cropUploadSuccess"
-      @crop-upload-fail="cropUploadFail"
-    ></my-upload>
-    <img :src="imgDataUrl" />
+<div>
+  <cropper
+	class="cropper"
+	:src="img"
+  :debounce="false"
+	:stencil-props="{
+		aspectRatio: 1,
+    handlers: {},
+		movable: false,
+		scalable: false,
+	}"
+  :stencil-size="{
+		width: 280,
+		height: 280
+	}"
+  image-restriction="stencil"
+	@change="onChange"
+/>
+  <div class="Preview">
+	  <preview
+      class="Preview"
+	  	:width="120"
+	  	:height="120"
+	  	:image="result.image"
+	  	:coordinates="result.coordinates"
+	  />
   </div>
+</div>
 </template>
 
 <script>
-//import 'babel-polyfill'; // es6 shim
-import myUpload from 'vue-image-crop-upload';
-
+import { Cropper, Preview} from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css';
+//import 'vue-advanced-cropper/dist/themes/theme.compact.css';
 export default {
   name: 'Upl',
-  components: {
-    'my-upload': myUpload,
-  },
-  data: () => ({
-    show: true,
-    params: {
-      token: '123456798',
-      name: 'avatar',
-    },
-    headers: {
-      smail: '*_~',
-    },
-    imgDataUrl: '', // the datebase64 url of created image
-    langType: 'zh-tw'
-  }),
-  methods: {
-    toggleShow() {
-      this.show = !this.show;
-    },
-    /**
-     * crop success
-     *
-     * [param] imgDataUrl
-     * [param] field
-     */
-    cropSuccess(imgDataUrl, field) {
-      console.log('-------- crop success --------', field);
-      this.imgDataUrl = imgDataUrl;
-    },
-    /**
-     * upload success
-     *
-     * [param] jsonData   服务器返回数据，已进行json转码
-     * [param] field
-     */
-    cropUploadSuccess(jsonData, field) {
-      console.log('-------- upload success --------');
-      console.log(jsonData);
-      console.log('field: ' + field);
-    },
-    /**
-     * upload fail
-     *
-     * [param] status    server api return error status, like 500
-     * [param] field
-     */
-    cropUploadFail(status, field) {
-      console.log('-------- upload fail --------');
-      console.log(status);
-      console.log('field: ' + field);
-    },
-  },
-};
+	components: {
+		Cropper,
+    preview:Preview
+	},
+	data() {
+		return {
+			img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Golden_star.svg/1200px-Golden_star.svg.png',
+			result: {
+				coordinates: null,
+				image: null
+			}
+		};
+	},
+	methods: {
+		change({ coordinates, canvas }) {
+			console.log(coordinates, canvas)
+		},
+    onChange({ coordinates, image }) {
+			this.result = {
+				coordinates,
+				image
+			};
+		},
+	},
+}
 </script>
+
+<style>
+.cropper {
+	height: 600px;
+	background: #DDD;
+}
+.Preview{
+  border-radius: 50%;
+}
+</style>
