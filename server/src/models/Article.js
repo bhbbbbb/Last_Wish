@@ -3,6 +3,10 @@ const User = require("./User");
 
 const commentSchema = new mongoose.Schema({
   body: String, author: { type: mongoose.Types.ObjectId, ref: 'User' },
+  date: {
+    type: Date,
+    default: Date.now
+  },
   likes: {
     type: Number,
     default: 0,
@@ -26,8 +30,13 @@ const articleSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  citing: String,
   author: { type: mongoose.Types.ObjectId, ref: 'User' },
   tags: [String],
+  finished: {
+    type: Boolean,
+    default: false
+  },
   finishedMilestones: [milestoneSchema],
   undoneMilestones: [milestoneSchema],
   likes: {

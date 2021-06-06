@@ -19,6 +19,7 @@ const corsOptions = {
 // const db_url = `mongodb+srv://${db_config.user}:${db_config.password}@${db_config.host}/${db_config.database}`
 
 // if using Atlas:
+// make sure that you have added your computer's ip to the DB's ip access list
 const db_url = 'mongodb://yuyu:isengineer@cluster0-shard-00-00.jhbg0.mongodb.net:27017,cluster0-shard-00-01.jhbg0.mongodb.net:27017,cluster0-shard-00-02.jhbg0.mongodb.net:27017/test?ssl=true&replicaSet=atlas-qfbkre-shard-0&authSource=admin&retryWrites=true&w=majority';
 
 // do the shit only when db is connected

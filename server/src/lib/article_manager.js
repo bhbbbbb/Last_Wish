@@ -51,7 +51,6 @@ module.exports = function() {
             };
             const article = new Article(newArticleData);
             for (newMilestoneData of articleContent.milestones) {
-                console.log(newMilestoneData);
                 article.undoneMilestones.push(newMilestoneData);
             }
             article.save();
