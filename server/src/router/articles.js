@@ -1,5 +1,3 @@
-const articlePATH = __dirname + "/../data/articles.json";
-const accountsPATH = __dirname + "/../data/accounts.json";
 var express = require('express');
 var global = express.Router();
 var user_session = require('../lib/session.js');
@@ -23,7 +21,19 @@ const INSERT = [
         }
     }
 ]
-global.post('/insert', (req, res) => {
+global.post('/insert', user_session, (req, res) => {
+    accountManager
+        .addPostsToAuthor(req.session.username, req.body.articleContent)
+        .then((newPostId) => {
+            response = INSERT[SUCCEED];
+            res.status(response.status).json(newPostId);
+        })
+        .catch((error) => {
+            console.log(error);
+            response = INSERT[USER_NOT_FOUND];
+            res.status(response.status).json(response.body);
+        })
+    /*
     var response, newPostId;
     try {
         newPostId = accountManager.addPostsToAuthor(req.body.username, req.body.article);
@@ -36,6 +46,19 @@ global.post('/insert', (req, res) => {
     response = INSERT[SUCCEED];
     res.status(response.status).json(newPostId);
     return;
+    */
+});
+
+global.post('/delete', user_session, (req, res) => {
+    articleManager
+        .rmArticleById(req.body.articleId)
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.sendStatus(400);
+        });
 });
 
 
@@ -44,9 +67,29 @@ global.post('/addcomment', (req, res) => {
     res.json(newComent);
 });
 
-global.get('/', (req, res) => {
-    res.json(articleManager.getAllArticles());
+global.get('/', (_req, res) => {
+    articleManager
+        .getAllArticles()
+        .then((allArticles) => {
+            res.status(200).json(allArticles);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.sendStatus(400);
+        })
 });
+
+global.get('/rm_all', (_req, res) => {
+    articleManager
+        .clearAllArticle()
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.sendStatus(400);
+        });
+})
 
 const BAD_REQUEST = 1;
 const USER_POST = [

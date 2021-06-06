@@ -3,20 +3,33 @@ var d = new Date();
 var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 var today = `${month[d.getMonth()]}/${String(d.getDate())} ${days[d.getDay()]}`;
+const Article = require('../models/Article');
+const User = require("../models/User");
 
 module.exports = function() {
-    this.articlePATH = __dirname + "/../data/articles.json";
-    this.articles = require(this.articlePATH);
+    // this.articlePATH = __dirname + "/../data/articles.json";
+    // this.articles = require(this.articlePATH);
 
     /**
      * @param {String} articleId 
      * @returns if there is an article with such id
      */
-    this.hasArticle = function(articleId) {
+    this.hasArticle = async function(articleId) {
+        try {
+            return await Article.fineOne({ _id: articleId})
+                                .exec()
+                                .then((article) => {
+                                    return article != null;
+                                });
+        } catch (error) {
+            throw "db access failed";
+        }
+        /*
         console.log(`has: ${articleId}`);
         console.log(Number(articleId));
         console.log(this.articles.length);
         return Number(articleId) <= this.articles.length;
+        */
     }
 
     this.hasCommentInArticle = function(commentId, articleId) {
@@ -25,10 +38,29 @@ module.exports = function() {
 
     /**
      * @param {Object} author the account info of the author
-     * @param {Object} article = {body, title, wishes}
+     * @param {Object} articleContent = {body, title, [tags], [milestones]}
      * @returns {String} the new article id
      */
-    this.addArticle = function(author, article) {
+    this.addArticle = function(author, articleContent) {
+        try {
+            let newArticleData = {
+                title: articleContent.title,
+                body: articleContent.body,
+                author: author._id,
+                tags: articleContent.tags,
+            };
+            const article = new Article(newArticleData);
+            for (newMilestoneData of articleContent.milestones) {
+                console.log(newMilestoneData);
+                article.undoneMilestones.push(newMilestoneData);
+            }
+            article.save();
+            return article._id;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+        /**
         let newPostId = String(this.articles.length);
         let newPostData = {
             "id": newPostId,
@@ -42,13 +74,56 @@ module.exports = function() {
         this.articles.push(newArticle(newPostData));
         synchronize(this.articles, this.articlePATH);
         return newPostId;
+         */
     }
 
     /**
      * @returns the json object containing all articles
      */
-    this.getAllArticles = function() {
-        return this.articles;
+    this.getAllArticles = async function() {
+        try {
+            return await Article.find({})
+                                .then((allArticles) => {
+                                    return allArticles;
+                                });
+        } catch (error) {
+            throw "db access failed";
+        }
+    }
+    
+    this.rmArticleById = async function(articleId) {
+        try {
+            let deletedArticle = await Article.findByIdAndDelete(articleId)
+                         .exec()
+                         .then((deletedArticle) => {
+                             return deletedArticle;
+                         });
+            if (deletedArticle) {
+                User.findByIdAndUpdate(deletedArticle.author, {
+                    $pullAll: {
+                        selfPosts: [deletedArticle._id]
+                    }
+                }).exec();
+                for (fan of deletedArticle.fans) {
+                    User.findByIdAndUpdate(fan, {
+                        $pullAll: {
+                            followingPosts: [deletedArticle_id]
+                        }
+                    }).exec();
+                }
+                return deletedArticle
+            }
+        } catch (error) {
+            throw "shit";
+        }
+        throw "no such article";
+    }
+    
+    this.clearAllArticle = async function() {
+        Article.deleteMany().exec((err, res) => {
+            if (err) console.log(err);
+            console.log(res);
+        });
     }
     
     /**

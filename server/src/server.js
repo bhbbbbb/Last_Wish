@@ -15,8 +15,13 @@ const corsOptions = {
   credentials: true
 };
 
+// if using luffy:
+// const db_url = `mongodb+srv://${db_config.user}:${db_config.password}@${db_config.host}/${db_config.database}`
+
+// if using Atlas:
+const db_url = 'mongodb://yuyu:isengineer@cluster0-shard-00-00.jhbg0.mongodb.net:27017,cluster0-shard-00-01.jhbg0.mongodb.net:27017,cluster0-shard-00-02.jhbg0.mongodb.net:27017/test?ssl=true&replicaSet=atlas-qfbkre-shard-0&authSource=admin&retryWrites=true&w=majority';
+
 // do the shit only when db is connected
-const db_url = `mongodb://${db_config.user}:${db_config.password}@${db_config.host}/${db_config.database}`
 mongoose.connect(db_url, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
   const app = express();
   app.use(cors(corsOptions));

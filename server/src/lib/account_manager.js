@@ -32,7 +32,7 @@ module.exports = function() {
     
     /**
      * @description the following code is to print all users stored in db to 
-     *              the console
+     *              the console for debugging
      */
     this.getAllUsers = function() {
         User.find().exec((err, res) => {
@@ -43,13 +43,14 @@ module.exports = function() {
     
     /**
      * @description the following code is to delete all existing users stored
-     *              in db
+     *              in db for debugging
      */
     this.clearAllUsers = function() {
-        User.remove().exec((err, res) => {
-            if (err) console.log(err);
-            console.log(res);
-        });
+        User.deleteMany()
+            .exec((err, res) => {
+                if (err) console.log(err);
+                console.log(res);
+            });
     }
 
     /**
@@ -59,13 +60,12 @@ module.exports = function() {
      * @throws "user not found" exception
      */
     this.checkPassword = async function(username, password) {
-        var user;
         try {
-            user = await User.findOne({username: username})
-                             .exec()
-                             .then((user) => {
-                                 return user;
-                             });
+            let user = await User.findOne({username: username})
+                                 .exec()
+                                 .then((user) => {
+                                     return user;
+                                 });
             if (user) {
                 let result = {
                     correct: bcrypt.compareSync(password, user.password),
@@ -142,6 +142,7 @@ module.exports = function() {
                 if (error) {
                     throw error;
                 }
+                user.save();
                 return;
             }
         } catch (error) {
@@ -151,13 +152,12 @@ module.exports = function() {
     }
 
     this.setProPicToUser = async function(username, proPicUrl) {
-        var user;
         try {
-            user = await User.findOne({username: username})
-                                   .exec()
-                                   .then((user) => {
-                                       return user;
-                                   });
+            let user = await User.findOne({username: username})
+                                 .exec()
+                                 .then((user) => {
+                                     return user;
+                                 });
             if (user) {
                 user.proPic = proPicUrl;
                 user.save();
@@ -175,24 +175,28 @@ module.exports = function() {
      * @throws "user not found" exception
      */
     this.getUserInfo = async function(id) {
-        var user;
         try {
-            user = await User.findOne({ _id: id })
-                             .then((user) => {
-                                 return user;
-                             })
+            let user = await User.findById(id)
+                                 .exec()
+                                 .then((user) => {
+                                     return user;
+                                 })
             if (user) {
                 let userInfo = {
                     "id": user._id,
                     "username": user.username,
                     "selfIntro": user.selfIntro,
                     "honor": user.honor,
-                    "proPic": user.proPic
+                    "proPic": user.proPic,
+                    "nFans": user.fans.length,
+                    "nFollowing": user.followingUsers.length,
+                    "nPosts": user.selfPosts.length,
                 };
                 return userInfo;
             }
         } catch (error) {
-            throw 'db access failed';
+            console.log(error);
+            throw error;
         }
         throw "user not found"
     }
@@ -202,12 +206,12 @@ module.exports = function() {
      * @returns id of given username
      */
     this.getIdbyUsername = async function(username) {
-        var user;
         try {
-            user = await User.findOne({ username: username })
-                             .then((user) => {
-                                 return user;
-                             })
+            let user = await User.findOne({ username: username })
+                                 .exec()
+                                 .then((user) => {
+                                     return user;
+                                 })
             if (user) {
                 return user._id;
             }
@@ -268,15 +272,24 @@ module.exports = function() {
      * @throws "user not found" exception
      * @return {Number} newPostId
      */
-    this.addPostsToAuthor = function(username, article) {
-        if (!this.hasUser(username)) {
-            throw "user not found";
+    this.addPostsToAuthor = async function(username, articleContent) {
+        try {
+            let author = await User.findOne({ username: username })
+                                   .exec()
+                                   .then((user) => {
+                                       return user;
+                                   });
+            if (author) {
+                let newPostId = this.articleManager.addArticle(author, articleContent)
+                author.selfPosts.push(newPostId);
+                author.save();
+                return newPostId;
+            }
+        } catch (error) {
+            console.log(error);
+            throw error;
         }
-        let author = this.accounts_info.find(account => account['username'] == username);
-        let newPostId = this.articleManager.addArticle(author, article);
-        author.selfPosts.push(newPostId);
-        synchronize(this.accounts_info, this.accountsPATH);
-        return newPostId;
+        throw "user not found";
     }
 
     /**

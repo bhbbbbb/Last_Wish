@@ -1,9 +1,12 @@
-const mongoose = require("mogoose");
+const mongoose = require("mongoose");
+const User = require("./User");
 
 const commentSchema = new mongoose.Schema({
-  body: String,
-  author: { type: mongoose.Type.ObjectId, ref: 'User' },
-  likes: Number,
+  body: String, author: { type: mongoose.Types.ObjectId, ref: 'User' },
+  likes: {
+    type: Number,
+    default: 0,
+  },
 })
 
 const milestoneSchema = new mongoose.Schema({
@@ -23,8 +26,8 @@ const articleSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  author: { type: mongoose.Type.ObjectId, ref: 'User' },
-  tags: String,
+  author: { type: mongoose.Types.ObjectId, ref: 'User' },
+  tags: [String],
   finishedMilestones: [milestoneSchema],
   undoneMilestones: [milestoneSchema],
   likes: {
@@ -32,7 +35,7 @@ const articleSchema = new mongoose.Schema({
     default: 0,
   },
   comments: [commentSchema],
-  fans: [{ type: mongoose.Type.ObjectId, ref: 'User' }],
+  fans: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
 });
 
 module.exports = mongoose.model('Article', articleSchema);

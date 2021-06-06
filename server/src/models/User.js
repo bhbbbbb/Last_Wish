@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Article = require("./Article");
 
 const userSchema = new mongoose.Schema({
   username: String,
@@ -21,6 +22,13 @@ const userSchema = new mongoose.Schema({
   followingPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   selfPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   finishedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}]
+});
+
+userSchema.post('remove', (user) => {
+  console.log("deleting", user.username);
+  for (articleId of user.selfPosts) {
+    Article.findByIdAndRemove(articleId);
+  }
 });
 
 module.exports = mongoose.model('User', userSchema);
