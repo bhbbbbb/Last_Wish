@@ -14,13 +14,14 @@ v-app-bar.d-flex.align-center.flex-wrap.justify-center(
         v-icon() mdi-cog
     v-row.px-3.align-self-center.align-center(no-gutters)
       v-col(cols="3")
-        v-avatar.grey.lighten-3(size="64" @click="$store.dispatch('logout')")
-          img(:src="imgUrl" alt="Jhns")
+        v-avatar.grey.lighten-3(size="100" color="red")
+          img(:src="imgUrl" v-if="imgUrl")
+          span(style="font-size:2rem" v-else) {{this.$store.state.username[0]}}
       v-col.d-flex.flex-column.align-start(cols="7")
         span(style="font-size:2rem") {{this.$store.state.username}}
         span(style="font-size:1rem") 簡單自介
       v-col(cols="2")
-    Upl(@get_img="getIMG")
+      Upl(@get_img="getIMG")
 </template>
 
 <script>
@@ -40,7 +41,7 @@ export default {
   data: () => ({
     drawer: false,
     selected: 0,
-    imgUrl:'',
+    imgUrl: '',
   }),
   computed: {
     ...mapState(['links']),
@@ -52,11 +53,11 @@ export default {
     Back() {
       this.$router.go(-1);
     },
-    getIMG(srcUrl){
-      this.imgUrl='/media/' + srcUrl;
+    getIMG(srcUrl) {
+      this.imgUrl = '/media/' + srcUrl;
       console.log(srcUrl);
       console.log(this.imgUrl);
-    }
+    },
   },
 };
 </script>

@@ -1,62 +1,35 @@
-<template>
-  <div class="PIC">
-    <cropper
-      ref="cropper"
-      class="cropper"
-      stencil-component="circle-stencil"
-      :src="image.src"
-      :debounce="false"
-      :stencil-props="{
-        aspectRatio: 1,
-        handlers: {},
-        movable: false,
-        scalable: false,
-      }"
-      :stencil-size="{
-        width: 280,
-        height: 280,
-      }"
-      image-restriction="stencil"
-      @change="onChange"
-    />
-    <div class="Preview">
-      <preview
-        class="Preview"
-        :width="120"
-        :height="120"
-        :image="result.image"
-        :coordinates="result.coordinates"
-      />
-    </div>
-
-    <form enctype="multipart/form-data" @submit.prevent="sendFile">
-      <div class="field">
-        <div class="file is-boxed is-primary">
-          <label class="file-label">
-            <input
-              ref="file"
-              type="file"
-              class="file-input"
-              accept="image/*"
-              @change="loadImage($event)"
-            />
-            <span class="file-cta">
-              <span class="file-icon">
-                <i class="fas fa-upload" />
-              </span>
-              <span class="file-label"> Choose a file... </span>
-            </span>
-
-            <span v-if="file" class="file-name">{{ file.name }}</span>
-          </label>
-        </div>
-      </div>
-
-      <div class="field">
-        <button class="button is-info">Send</button>
-      </div>
-    </form>
-  </div>
+<template lang="pug">
+.PIC
+  v-container.grey.lighten-5
+    v-row(no-gutters='')
+      v-col(cols='12' sm='6' md='8')
+        div
+          cropper.cropper(ref='cropper' stencil-component='circle-stencil' :src='image.src' :debounce='false' :stencil-props='{\
+          aspectRatio: 1,\
+          handlers: {},\
+          movable: false,\
+          scalable: false,\
+          }' :stencil-size='{\
+          width: 280,\
+          height: 280,\
+          }' image-restriction='stencil' @change='onChange')
+      v-col(cols='6' md='4')
+        .Preview
+          preview.Preview(:width='120' :height='120' :image='result.image' :coordinates='result.coordinates')
+    v-row(no-gutters='')
+      v-col(cols='6' md='4')
+        form(enctype='multipart/form-data' @submit.prevent='sendFile')
+          .field
+            .file.is-boxed.is-primary
+              label.file-label
+                input.file-input(ref='file' type='file' accept='image/*' @change='loadImage($event)')
+                span.file-cta
+                  span.file-icon
+                    i.fas.fa-upload
+                  span.file-label  Choose a file... 
+                span.file-name(v-if='file') {{ file.name }}
+          .field
+            button.button.is-info Send
 </template>
 
 <script>
@@ -182,8 +155,8 @@ export default {
           // You can use axios, superagent and other libraries instead here
           apiUploadFiles(form).then((res) => {
             console.log(res.status);
-            console.log(res.data)
-            this.$emit('get_img',res.data);
+            console.log(res.data);
+            this.$emit('get_img', res.data);
             if (res.status == 200) {
               this.file = '';
               this.reset();
