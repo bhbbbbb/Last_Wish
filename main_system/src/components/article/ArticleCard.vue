@@ -1,12 +1,35 @@
 <template lang="pug">
 v-card.my.pa-3(
-  min-height="10vh"
-  rounded="lg"
-  v-on="$listeners"
-  :color="color"
-)
-    h2(style="font-size: 1rem;") {{ content.title }}
-
+    height="170"
+    rounded="lg"
+    :color="color"
+    v-on="$listeners"
+  )
+  v-row(no-gutters="")
+    v-col(cols="5")
+      span(v-if="user_info")
+        | {{ user_info.username }}
+    v-col(cols="5")
+      span.subtitle-2.text--disabled {{ content.date }}
+    v-col.d-flex.justify-end.pl-2(cols="2")
+      | 引用
+  v-row(no-gutters="")
+    strong {{ content.title }}
+  v-row(
+    no-gutters
+    style="height: 50px;"
+  )
+    p.ma-0(style="white-space: pre-wrap; overflow: hidden;height: 50px;") {{ content.body }}
+  v-row(no-gutters)
+    span {{ content.wishes.length }} 個里程碑
+  v-row(no-gutters)
+    v-btn(icon)
+      v-icon mdi-heart-outline
+    v-btn(icon)
+      v-icon mdi-star-outline
+    v-btn(icon)
+      v-icon mdi-comment-processing-outline
+    
 </template>
 
 <script>
@@ -25,6 +48,14 @@ export default {
       type: String,
       default: '#F5F4F0',
     },
+  },
+  data: () => ({
+    user_info: undefined,
+  }),
+  created() {
+    this.$store.dispatch('getUser', this.content.from).then((res) => {
+      this.user_info = res;
+    });
   },
 };
 </script>

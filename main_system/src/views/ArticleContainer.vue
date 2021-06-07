@@ -1,16 +1,20 @@
 <template lang="pug">
-v-sheet.d-flex.flex-wrap.flex-column-reverse(rounded="lg")
-  v-col.ma-0.pa-0(
-    v-if="articles"
-    cols="12"
-    v-for="(article, idx) in articles",
-    :key="idx"
+v-sheet(rounded="lg")
+  Search
+  v-row.flex-column-reverse(
+    no-gutters
   )
-    ArticleCard(
-      :content="article"
-      :color="color_list(article.id)"
-      @click.stop="ToInnerArticle(article.id, idx)"
+    v-col.ma-0.pa-0(
+      v-if="articles"
+      cols="12"
+      v-for="(article, idx) in articles",
+      :key="idx"
     )
+      ArticleCard(
+        :content="article"
+        :color="color_list(article.id)"
+        @click.stop="ToInnerArticle(article.id, idx)"
+      )
 
   //- v-col(
   //-   v-if="is_login"
@@ -29,9 +33,7 @@ export default {
 
   components: {
     ArticleCard: () => import('@/components/article/ArticleCard.vue'),
-    // RecordCard: () => import('@/components/RecordCard'),
-    // NewPost: () => import('@/components/NewPost'),
-    // NewRecord: () => import('@/components/NewRecord'),
+    Search: () => import('@/components/Search'),
   },
   props: {
     articles: {
@@ -45,9 +47,7 @@ export default {
     },
   },
   data: () => ({}),
-  computed: {
-    // ...mapState(['articles', 'is_login']),
-  },
+  computed: {},
   created() {
     if (
       this.$store.state.is_login &&

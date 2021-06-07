@@ -52,6 +52,14 @@ export const apiLogout = () => userRequest.get('/logout'); // clear the session 
 
 /**
  *
+ * @param {String} username
+ * @returns
+ */
+export const apiIsValid = (data) =>
+  userRequest.get('/is_valid_username', { params: { username: data } });
+
+/**
+ *
  * @param {Number} id
  * @returns {Object} id and username
  */
