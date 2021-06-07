@@ -23,7 +23,7 @@ const INSERT = [
 ]
 global.post('/insert', user_session, (req, res) => {
     accountManager
-        .addPostsToAuthor(req.session.username, req.body.articleContent)
+        .addPostsToAuthor(req.session.username, req.body.article_content)
         .then((newPostId) => {
             response = INSERT[SUCCEED];
             res.status(response.status).json(newPostId);
@@ -33,25 +33,11 @@ global.post('/insert', user_session, (req, res) => {
             response = INSERT[USER_NOT_FOUND];
             res.status(response.status).json(response.body);
         })
-    /*
-    var response, newPostId;
-    try {
-        newPostId = accountManager.addPostsToAuthor(req.body.username, req.body.article);
-    } catch (error) {
-        console.log(error);
-        response = INSERT[USER_NOT_FOUND];
-        res.status(response.status).json(response.body);
-        return;
-    }
-    response = INSERT[SUCCEED];
-    res.status(response.status).json(newPostId);
-    return;
-    */
 });
 
 global.post('/delete', user_session, (req, res) => {
     articleManager
-        .rmArticleById(req.body.articleId)
+        .rmArticleById(req.body.article_id)
         .then(() => {
             res.sendStatus(200);
         })
@@ -188,19 +174,28 @@ global.post('/FollowedPostToggle', (req, res) => {
     return;
 })
 
-global.get('/getArticleById', (req, res) => {
+global.get('/get_article_by_id', (req, res) => {
+    articleManager
+        .getArticleById(req.query.article_id)
+        .then((article) => {
+            res.status(200)
+               .json(article);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.sendStatus(400);
+        })
+    /*
     var article;
     console.log(req.query.article_id);
     try {
         article = articleManager.getArticleById(req.query.article_id);
 
     } catch (err) {
-        console.log(err);
-        res.sendStatus(400);
-        return;
     }
     res.status(200).json(article);
     return;
+    */
 })
 
 global.post('/editArticle', (req, res) => {

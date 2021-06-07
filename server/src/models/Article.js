@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const User = require("./User");
 
 const commentSchema = new mongoose.Schema({
   body: String, author: { type: mongoose.Types.ObjectId, ref: 'User' },
@@ -11,12 +10,13 @@ const commentSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  // replys: [commentSchema],
 })
 
 const milestoneSchema = new mongoose.Schema({
   title: String,
   body: String,
-  finishedDate: Date,
+  estDate: Date,
   finished: {
     type: Boolean,
     default: false,
@@ -30,16 +30,19 @@ const articleSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  citing: String,
+  citeFrom: { type: mongoose.Types.ObjectId, ref: 'User' },
   author: { type: mongoose.Types.ObjectId, ref: 'User' },
   tags: [String],
   finished: {
     type: Boolean,
     default: false
   },
-  finishedMilestones: [milestoneSchema],
-  undoneMilestones: [milestoneSchema],
+  milestones: [milestoneSchema],
   likes: {
+    type: Number,
+    default: 0,
+  },
+  citedCount: {
     type: Number,
     default: 0,
   },

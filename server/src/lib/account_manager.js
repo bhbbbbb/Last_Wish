@@ -109,10 +109,10 @@ module.exports = function() {
         throw 'duplicated user';
     }
     
-    this.setSelfIntroToUser = async function(username, selfIntro) {
+    this.setSelfIntroToUser = async function(userId, selfIntro) {
         var user;
         try {
-            user = await User.findOne({username: username})
+            user = await User.findById(userId)
                              .exec()
                              .then((user) => {
                                  return user;
@@ -128,10 +128,10 @@ module.exports = function() {
         throw "user not found";
     }
     
-    this.setHonorToUser = async function(username, honor) {
+    this.setHonorToUser = async function(userId, honor) {
         var user;
         try {
-            user = await User.findOne({username: username})
+            user = await User.findById(userId)
                              .exec()
                              .then((user) => {
                                  return user;
@@ -151,9 +151,9 @@ module.exports = function() {
         throw "user not found";
     }
 
-    this.setProPicToUser = async function(username, proPicUrl) {
+    this.setProPicToUser = async function(userId, proPicUrl) {
         try {
-            let user = await User.findOne({username: username})
+            let user = await User.findById(userId)
                                  .exec()
                                  .then((user) => {
                                      return user;
@@ -189,7 +189,7 @@ module.exports = function() {
                     "honor": user.honor,
                     "proPic": user.proPic,
                     "nFans": user.fans.length,
-                    "nFollowing": user.followingUsers.length,
+                    "nFollowing": user.followedUsers.length,
                     "nPosts": user.selfPosts.length,
                 };
                 return userInfo;
@@ -224,46 +224,88 @@ module.exports = function() {
     /**
      * To make an user to follow/unfollow another user
      * 
-     * @param {String} username 
-     * @param {String} target 
-     * @param {Boolean} isFollow 
-     * @throws "user not found", "target not found", "username cannot be target",
-     *         "target already followed" or "target already unfollowed" exceptions 
+     * @param {String} userId 
+     * @param {String} targetId
+     * @throws "user not found"
      */
-    this.setFollowRelation = function(username, target, isFollow) {
+    this.toggleFollowRelation = async function(userId, targetId) {
         try {
-            
+            let target = await User.findById(targetId)
+                                   .exec()
+                                   .then((target) => {
+                                       return target;
+                                   });
+            if (target) {
+                let user  = await User.findById(userId)
+                                      .exec()
+                                      .then((user) => {
+                                          return user;
+                                      });
+                if (user) {
+                    if (user.followedUsers.includes(target._id)) {
+                        // In this case it is going to unfollow
+                        user.followedUsers.pull(target._id);
+                        target.fans.pull(user._id);
+                    } else {
+                        // In this case it is going to follow
+                        user.followedUsers.push(target._id);
+                        target.fans.push(user._id);
+                    }
+                    user.save();
+                    target.save();
+                    return;
+                }
+            }
         } catch (error) {
-            
+            console.log(error);
+            throw error;
         }
+        throw "user not found";
     }
 
     /**
-     * To make an user to follow the given post
+     * To make an user to follow/unfollow the given post
      * 
-     * @param {String} username 
+     * @param {String} userId 
      * @param {String} articleId 
      * @throw "user not found", "no such article" or "article already followed" exception
      */
-
-    //I change addFollowedPoststoUser into toggle... funq for easier management
-    //Mind that Line 147 used to be ...include, however it can be used on string only
-    //while follower.followedPosts is an obj.
-    this.toggleFollowedPostsToUser = function(username, articleId) {
-        if (!this.hasUser(username)) {
-            throw "user not found";
+    this.toggleFollowedPostsToUser = async function(userId, articleId) {
+        try {
+            let article = await this.articleManager.getArticleById(articleId)
+                                                   .then((article) => {
+                                                       return article;
+                                                   });
+            if (article) {
+                let user = await User.findById(userId)
+                                     .exec()
+                                     .then((user) => {
+                                         return user;
+                                     });
+                if (user) {
+                    console.log(user.username);
+                    if (user.followedPosts.includes(article._id)) {
+                        // In this case it is going to unfollow
+                        console.log('unfollow');
+                        user.followedPosts.pull(article._id);
+                        article.fans.pull(user._id);
+                    } else {
+                        // In this case it is going to follow
+                        console.log('follow');
+                        user.followedPosts.push(article._id);
+                        article.fans.push(user._id);
+                    }
+                    console.log(article._id);
+                    user.save();
+                    article.save();
+                    return;
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            throw error;
         }
-        if (!this.articleManager.hasArticle(articleId)) {
-            throw "no such article";
-        }
-        let follower = this.accounts_info.find(account => account['username'] == username);
-        if (follower.followedPosts.indexOf(articleId) > -1) {     
-            follower.followedPosts.splice(follower.followedPosts.indexOf(articleId), 1);
-            //throw "article already followed";
-        } else {
-            follower.followedPosts.push(articleId);
-        }
-        synchronize(this.accounts_info, this.accountsPATH);
+        throw "user not found"
     }
 
     /**

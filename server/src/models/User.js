@@ -18,8 +18,8 @@ const userSchema = new mongoose.Schema({
     default: 'pic source url',
   },
   fans: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
-  followingUsers: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
-  followingPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
+  followedUsers: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
+  followedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   selfPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   finishedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}]
 });

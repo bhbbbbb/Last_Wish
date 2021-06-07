@@ -51,7 +51,7 @@ module.exports = function() {
             };
             const article = new Article(newArticleData);
             for (newMilestoneData of articleContent.milestones) {
-                article.undoneMilestones.push(newMilestoneData);
+                article.milestones.push(newMilestoneData);
             }
             article.save();
             return article._id;
@@ -59,21 +59,6 @@ module.exports = function() {
             console.log(error);
             throw error;
         }
-        /**
-        let newPostId = String(this.articles.length);
-        let newPostData = {
-            "id": newPostId,
-            "from": author.id,
-            "body": article.body,
-            "title": article.title,
-            "date": today,
-            "wishes":[]
-        };
-        newPostData.wishes.push(article.wish);
-        this.articles.push(newArticle(newPostData));
-        synchronize(this.articles, this.articlePATH);
-        return newPostId;
-         */
     }
 
     /**
@@ -98,22 +83,24 @@ module.exports = function() {
                              return deletedArticle;
                          });
             if (deletedArticle) {
+                for (fan of deletedArticle.fans) {
+                    console.log(fan);
+                    User.findByIdAndUpdate(fan, {
+                        $pullAll: {
+                            followedPosts: [deletedArticle._id]
+                        }
+                    }).exec();
+                }
                 User.findByIdAndUpdate(deletedArticle.author, {
                     $pullAll: {
                         selfPosts: [deletedArticle._id]
                     }
                 }).exec();
-                for (fan of deletedArticle.fans) {
-                    User.findByIdAndUpdate(fan, {
-                        $pullAll: {
-                            followingPosts: [deletedArticle_id]
-                        }
-                    }).exec();
-                }
                 return deletedArticle
             }
         } catch (error) {
-            throw "shit";
+            console.log(error);
+            throw error;
         }
         throw "no such article";
     }
@@ -131,11 +118,22 @@ module.exports = function() {
      * @returns the article with given article id
      * @trhows "no such article" exception
      */
-    this.getArticleById = function(articleId) {
-        if (!this.hasArticle(articleId)) {
-            throw "no such article";
+    this.getArticleById = async function(articleId) {
+        try {
+            let article = Article.findById(articleId)
+                                 .populate('author')
+                                 .exec()
+                                 .then((article) => {
+                                     return article;
+                                 });
+            if (article) {
+                return article;
+            }
+        } catch (error) {
+            throw "db access failed";
+            
         }
-        return this.articles.find(article => article.id == articleId);
+        throw "no such article";
     }
 
     /**

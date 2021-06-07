@@ -98,7 +98,7 @@ user.post('/register', (req, res) => {
 
 user.post('/set_self_intro', user_session, (req, res) => {
     accountManager
-        .setSelfIntroToUser(req.session.username, req.body.self_intro)
+        .setSelfIntroToUser(req.session.user_id, req.body.self_intro)
         .then(() => {
             res.sendStatus(200);
         })
@@ -110,7 +110,7 @@ user.post('/set_self_intro', user_session, (req, res) => {
 
 user.post('/set_honor', user_session, (req, res) => {
     accountManager
-        .setHonorToUser(req.session.username, req.body.honor)
+        .setHonorToUser(req.session.user_id, req.body.honor)
         .then(() => {
             res.sendStatus(200);
         })
@@ -122,7 +122,7 @@ user.post('/set_honor', user_session, (req, res) => {
 
 user.post('/set_pro_pic', user_session, (req, res) => {
     accountManager
-        .setProPicToUser(req.session.username, req.body.pro_pic_url)
+        .setProPicToUser(req.session.user_id, req.body.pro_pic_url)
         .then(() => {
             res.sendStatus(200);
         })
@@ -152,22 +152,32 @@ const FOLLOW = [
         }
     }
 ]
-user.post('/follow', user_session, (req, res) => {
-    var response;
-    try {
-        accountManager.setFollowRelation(
-                req.body.username, req.body.target, req.body.follow_unfollow == "true");
-        
-    } catch (error) {
-        console.log(`error is ${error}`);
-        response = FOLLOW[BAD_REQUEST];
-        response.body.err_msg = error;
-        res.status(response.status).json(response.body);
-        return;
-    }
-    response = FOLLOW[SUCCEED];
-    res.sendStatus(response.status);
-    return;
+user.post('/toggle_followed_user', user_session, (req, res) => {
+    accountManager
+        .toggleFollowRelation(req.session.user_id, req.body.target_id)
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error);
+            response = FOLLOW[BAD_REQUEST];
+            response.body.err_msg = error;
+            res.status(response.status).json(response.body);
+        })
+});
+
+user.post('/toggle_followed_post', user_session, (req, res) => {
+    accountManager
+        .toggleFollowedPostsToUser(req.session.user_id, req.body.article_id)
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error);
+            response = FOLLOW[BAD_REQUEST];
+            response.body.err_msg = error;
+            res.status(response.status).json(response.body);
+        })
 });
 
 user.get('/logout', user_session, (req, res) => {
@@ -221,21 +231,7 @@ user.post('/line_login_req', (req, res) => {
     }
     lineLoginStates[newState] = stateInfo;
     res.send(line.getLineLoginUrl(req_body));
-})
-
-user.post('/login_state', user_session, (req, res) => {
-
 });
-
-user.post('/line_login_state', user_session, (req, res) => {
-    // check if the given state of a line login has finished
-    // if finished, switch the session?
-    if (!(req.body.state in lineLoginStates)) {
-        // pose an error
-    }
-    // pop the state from the list
-    // and login the user?
-})
 
 user.get('/is_valid_username', user_session, (req, res) => {
     accountManager
