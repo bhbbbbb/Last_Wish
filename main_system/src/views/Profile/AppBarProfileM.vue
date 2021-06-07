@@ -1,16 +1,17 @@
 <template lang="pug">
-v-app-bar.d-flex.align-center.flex-wrap.justify-center(
+v-app-bar.d-flex.align-center.flex-wrap.justify-start(
   app
   flat
   prominent
   color="#CED3CD"
   height="180"
+  extension-height="50"
 )
   v-container.ma-0.fill-height(fluid style="width: 100vw")
     v-row.align-self-start(no-gutters)
       v-col(cols="6")
         v-icon(@click.stop="Back") mdi-chevron-left
-      v-col.d-flex.justify-end(cols="6")
+      v-col.d-flex.justify-end.pr-3(cols="6")
         v-menu(offset-y)
           template(#activator="{ on, attrs }")
             v-btn(
@@ -31,10 +32,22 @@ v-app-bar.d-flex.align-center.flex-wrap.justify-center(
         span(style="font-size:2rem") {{this.$store.state.username}}
         span(style="font-size:1rem") 簡單自介
       v-col(cols="2")
-  //- template(v-slot:extension)
-  //-   v-tabs(hide-slider)
-  //-     v-tab.tab.white(active-class="") 我的願望
-  //-     v-tab.tab.lighten-3(style="background-color: #CED3CD") ff
+  template(v-slot:extension)
+    v-tabs(hide-slider v-model="tab_which")
+      v-tab.tab(
+        active-class="white"
+        to="articles"
+        key="articles"
+      ) 
+        span 我的願望 (VAR)
+        v-btn(text) 全部
+          v-icon mdi-menu-down
+      v-tab.tab.lighten-3(
+        active-class="white"
+        style="background-color: #CED3CD"
+        to="honorRoll"
+        key="honorRoll"
+      ) 我的榮譽榜
 </template>
 
 <script>
@@ -53,6 +66,7 @@ export default {
   data: () => ({
     drawer: false,
     selected: 0,
+    tab_which: 'articles',
   }),
   computed: {
     ...mapState(['links']),

@@ -213,6 +213,11 @@ const routes = [
         }),
       },
       {
+        path: 'honorRoll',
+        name: 'HonorRoll',
+        component: () => import('@/views/HonorRoll'),
+      },
+      {
         path: 'article/:id',
         name: 'UserArticle',
         component: () => import('@/views/Article'),
