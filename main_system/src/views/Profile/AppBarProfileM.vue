@@ -27,9 +27,11 @@ v-app-bar.d-flex.align-center.flex-wrap.justify-start(
               v-list-item-title 登出
     v-row.px-3.align-self-center.align-center(no-gutters)
       v-col(cols="3")
-        v-avatar.grey.lighten-3(size="64" @click="$store.dispatch('logout')")
+        v-avatar.grey.lighten-3(size="100" color="red")
+          img(:src="imgUrl" v-if="imgUrl")
+          span(style="font-size:2rem" v-else) {{$store.state.username[0]}}
       v-col.d-flex.flex-column.align-start(cols="7")
-        span(style="font-size:2rem") {{this.$store.state.username}}
+        span(style="font-size:2rem") {{$store.state.username}}
         span(style="font-size:1rem") 簡單自介
       v-col(cols="2")
   template(v-slot:extension)
@@ -68,9 +70,7 @@ v-app-bar.d-flex.align-center.flex-wrap.justify-start(
 import { mapState } from 'vuex';
 export default {
   name: 'AppBarProfileM',
-  components: {
-    //SimpleUpload:()=> import('@/components/SimpleUpload')
-  },
+  components: {},
   props: {
     // links: {
     //   required: true,
@@ -81,6 +81,7 @@ export default {
     drawer: false,
     selected: 0,
     tab_which: 'articles',
+    imgUrl: '',
   }),
   computed: {
     ...mapState(['links']),
@@ -95,6 +96,11 @@ export default {
     logout() {
       this.$store.dispatch('logout');
       this.$router.push('/');
+    },
+    getIMG(srcUrl) {
+      this.imgUrl = '/media/' + srcUrl;
+      console.log(srcUrl);
+      console.log(this.imgUrl);
     },
   },
 };

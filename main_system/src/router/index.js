@@ -191,6 +191,7 @@ const routes = [
         path: 'articles',
         name: 'UserArticles',
         component: () => import('@/views/ArticleContainer'),
+        // component: () => import('@/components/Upl'),
         // TODO : redirect un login visiter to public profile page
         beforeEnter(to, from, next) {
           if (store.state.is_login) {
@@ -247,6 +248,11 @@ const routes = [
             color: route.params.color,
           };
         },
+      },
+      {
+        path: 'upl',
+        name: 'Upl',
+        component: () => import('@/components/Upl'),
       },
     ],
   },
