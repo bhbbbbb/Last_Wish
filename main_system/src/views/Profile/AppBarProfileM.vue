@@ -16,22 +16,18 @@ v-app-bar.d-flex.align-center.flex-wrap.justify-center(
       v-col(cols="3")
         v-avatar.grey.lighten-3(size="100" color="red")
           img(:src="imgUrl" v-if="imgUrl")
-          span(style="font-size:2rem" v-else) {{this.$store.state.username[0]}}
+          span(style="font-size:2rem" v-else) {{$store.state.username[0]}}
       v-col.d-flex.flex-column.align-start(cols="7")
-        span(style="font-size:2rem") {{this.$store.state.username}}
+        span(style="font-size:2rem") {{$store.state.username}}
         span(style="font-size:1rem") 簡單自介
       v-col(cols="2")
-      Upl(@get_img="getIMG")
 </template>
 
 <script>
 import { mapState } from 'vuex';
 export default {
   name: 'AppBarProfileM',
-  components: {
-    //SimpleUpload:()=> import('@/components/SimpleUpload')
-    Upl: () => import('@/components/Upl'),
-  },
+  components: {},
   props: {
     // links: {
     //   required: true,

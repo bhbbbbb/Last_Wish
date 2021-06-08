@@ -1,35 +1,38 @@
 <template lang="pug">
-.PIC
-  v-container.grey.lighten-5
-    v-row(no-gutters='')
-      v-col(cols='12' sm='6' md='8')
-        div
-          cropper.cropper(ref='cropper' stencil-component='circle-stencil' :src='image.src' :debounce='false' :stencil-props='{\
-          aspectRatio: 1,\
-          handlers: {},\
-          movable: false,\
-          scalable: false,\
-          }' :stencil-size='{\
-          width: 280,\
-          height: 280,\
-          }' image-restriction='stencil' @change='onChange')
-      v-col(cols='6' md='4')
-        .Preview
-          preview.Preview(:width='120' :height='120' :image='result.image' :coordinates='result.coordinates')
-    v-row(no-gutters='')
-      v-col(cols='6' md='4')
-        form(enctype='multipart/form-data' @submit.prevent='sendFile')
-          .field
-            .file.is-boxed.is-primary
-              label.file-label
-                input.file-input(ref='file' type='file' accept='image/*' @change='loadImage($event)')
-                span.file-cta
-                  span.file-icon
-                    i.fas.fa-upload
-                  span.file-label  Choose a file... 
-                span.file-name(v-if='file') {{ file.name }}
-          .field
-            button.button.is-info Send
+v-sheet(flat)
+  v-row(no-gutters)
+    cropper.cropper(
+      ref='cropper'
+      stencil-component='circle-stencil'
+      :src='image.src'
+      :debounce='false'
+      :stencil-props='{\
+        aspectRatio: 1,\
+        handlers: {},\
+        movable: false,\
+        scalable: false,\
+      }'
+      :stencil-size='{\
+        width: 280,\
+        height: 280,\
+      }'
+      image-restriction='stencil'
+      @change='onChange'
+    )
+  v-row.mt-5.align-center.justify-center(no-gutters)
+    //- preview.Preview(:width='120' :height='120' :image='result.image' :coordinates='result.coordinates')
+    form(enctype='multipart/form-data' @submit.prevent='sendFile')
+      .field
+        .file.is-boxed.is-primary
+          label.file-label
+            input.file-input(ref='file' type='file' accept='image/*' @change='loadImage($event)')
+            span.file-cta
+              span.file-icon
+                i.fas.fa-upload
+              span.file-label  Choose a file... 
+            span.file-name(v-if='file') {{ file.name }}
+      .field.d-flex.justify-center
+          button.button.is-info Send
 </template>
 
 <script>
@@ -173,8 +176,11 @@ export default {
 <style>
 @import 'https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma-rtl.min.css';
 .cropper {
-  height: 600px;
-  background: #ddd;
+  height: 50vh;
+  width: 100%;
+  border-style: solid;
+  border-width: 1px;
+  /* background: #ddd; */
 }
 .Preview {
   border-radius: 50%;
