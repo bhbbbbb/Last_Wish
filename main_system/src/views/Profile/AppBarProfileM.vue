@@ -33,18 +33,32 @@ v-app-bar.d-flex.align-center.flex-wrap.justify-start(
         span(style="font-size:1rem") 簡單自介
       v-col(cols="2")
   template(v-slot:extension)
+    //- v-row.white.pa-0.ma-0(no-gutters)
+    //-   v-btn(
+    //-     text
+    //-   )
+    //-     span() 我的願望 (n)
+    //-     v-btn(text) 全部
+
+    //-   v-btn
     v-tabs(hide-slider v-model="tab_which")
-      v-tab.tab(
+      v-tab.px-2.tab.white(
+        :ripple="false"
         active-class="white"
         to="articles"
         key="articles"
       ) 
-        span 我的願望 (VAR)
-        v-btn(text) 全部
+        span 我的願望 (n)
+        v-btn.pa-0(text) 全部
           v-icon mdi-menu-down
-      v-tab.tab.lighten-3(
+      v-tab.pa-0.white(
+        style="min-width: 3px;"
+        :ripple="false"
+      )
+        v-divider(vertical)
+      v-tab.tab.white(
+        :ripple="false"
         active-class="white"
-        style="background-color: #CED3CD"
         to="honorRoll"
         key="honorRoll"
       ) 我的榮譽榜
@@ -88,7 +102,7 @@ export default {
 
 <style scoped>
 .tab {
-  border-radius: 15% 15% 0 0;
+  width: 50vw;
 }
 
 .v-tab:before {

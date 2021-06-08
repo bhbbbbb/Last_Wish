@@ -17,6 +17,7 @@ v-card.ma-0.pa-3(min-height="10vh" rounded="lg" elevation="5")
     solo
     flat
     autocomplete="off"
+    placeholder="add new tag here"
     prepend-icon="mdi-plus"
     append-outer-icon="mdi-check"
     v-model="tag_model"
@@ -25,9 +26,16 @@ v-card.ma-0.pa-3(min-height="10vh" rounded="lg" elevation="5")
     persistent-hint
     hint="TODO: add rule to check empty, repeat..."
   )
-  strong(
+  v-chip.ma-1(
     v-for="(tag, idx) in new_article.tags"
     :key="idx"
+    draggable
+    close
+    close-icon="mdi-close"
+    close-label="刪除"
+    color="#9BA2AA"
+    small
+    dark
   ) {{ tag }} &nbsp;
   NewMilestone(:wishes="new_article.wishes" :id="0")
   v-overlay.align-start(
@@ -126,3 +134,7 @@ export default {
   },
 };
 </script>
+
+<style lang="sass" scoped>
+$chip-close-size: 12px
+</style>
