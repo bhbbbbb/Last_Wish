@@ -10,12 +10,24 @@ const transporter = nodemailer.createTransport({
 var status;
 
 module.exports= function(){
+    
+  
+    /**
+     * @param {String} mailAddr 
+     * @returns if mailAddr is a valid email address
+     */
+
+    this.isValidAddr = (mailAddr) => {
+    return isValidAddr(mailAddr);
+    }
+    
     /**
      * @param {String} mailAddr 
      * @param {String} subject 
      * @param {String} bodyText
      * @returns 200/401 if mail was sent suc/fail
      */
+
     this.sendMails = (mailAddr,subject,bodyText) => {
       var mailOptions = {
       from: 'noreply',
@@ -27,7 +39,7 @@ module.exports= function(){
      try{
         transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
-            throw error;
+            console.log(error);
           } else {
             console.log('Email sent: ' + info.response);
           }
@@ -62,7 +74,7 @@ module.exports= function(){
       try{
         transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
-            throw error;
+            console.log(error);
           } else {
             console.log('Email sent: ' + info.response);
           }
@@ -88,4 +100,9 @@ function genNonce(length) {
           characters.charAt(Math.floor(Math.random() * charactersLength)));
    }
    return result.join('');
+}
+
+function isValidAddr(mailAddr){
+  var pattern ="\A[a-z0-9!#$%&'*+/=?^_‘{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_‘{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\z";
+  return mailAddr.match(pattern);
 }
