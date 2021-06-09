@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card.ma-0.pa-3(min-height="10vh" rounded="lg" elevation="5")
+v-card.ma-0.pa-3(min-height="10vh" flat)
   v-text-field.ma-0.pa-1(
     placeholder="Title here"
     v-model="new_article.title"
