@@ -89,8 +89,8 @@ user.post('/register', (req, res) => {
             let response = REGISTER[SUCCEED];
             res.sendStatus(response.status);
         })
-        .catch((err) => {
-            console.log(err);
+        .catch((error) => {
+            console.log(error);
             let response = REGISTER[DUPLICATED_USER];
             res.status(response.status).json(response.body);
         });
@@ -102,9 +102,9 @@ user.post('/set_self_intro', user_session, (req, res) => {
         .then(() => {
             res.sendStatus(200);
         })
-        .catch((err) => {
-            console.log(err);
-            res.sendStatus(400);
+        .catch((error) => {
+            console.log(error);
+            res.status(400).json(error);
         })
 });
 
@@ -114,9 +114,9 @@ user.post('/set_honor', user_session, (req, res) => {
         .then(() => {
             res.sendStatus(200);
         })
-        .catch((err) => {
-            console.log(err);
-            res.sendStatus(400);
+        .catch((error) => {
+            console.log(error);
+            res.status(400).json(error);
         })
 });
 
@@ -126,9 +126,9 @@ user.post('/set_pro_pic', user_session, (req, res) => {
         .then(() => {
             res.sendStatus(200);
         })
-        .catch((err) => {
-            console.log(err);
-            res.sendStatus(400);
+        .catch((error) => {
+            console.log(error);
+            res.status(400).json(error);
         })
 
 });
@@ -139,19 +139,6 @@ user.get('/who', user_session, (req, res) => {
     else res.sendStatus(401);
 });
 
-const BAD_REQUEST = 1;
-const FOLLOW = [
-    {
-        status: 200
-    },
-    {
-        status: 400,  // bad request
-        body: {
-            err_code: BAD_REQUEST,
-            err_msg: "bad request"
-        }
-    }
-]
 user.post('/toggle_followed_user', user_session, (req, res) => {
     accountManager
         .toggleFollowRelation(req.session.user_id, req.body.target_id)
@@ -160,9 +147,7 @@ user.post('/toggle_followed_user', user_session, (req, res) => {
         })
         .catch((error) => {
             console.log(error);
-            response = FOLLOW[BAD_REQUEST];
-            response.body.err_msg = error;
-            res.status(response.status).json(response.body);
+            res.status(400).json(error);
         })
 });
 
@@ -174,9 +159,7 @@ user.post('/toggle_followed_post', user_session, (req, res) => {
         })
         .catch((error) => {
             console.log(error);
-            response = FOLLOW[BAD_REQUEST];
-            response.body.err_msg = error;
-            res.status(response.status).json(response.body);
+            res.status(400).json(error);
         })
 });
 
@@ -188,9 +171,7 @@ user.post('/toggle_liked_post', user_session, (req, res) => {
         })
         .catch((error) => {
             console.log(error);
-            response = FOLLOW[BAD_REQUEST];
-            response.body.err_msg = error;
-            res.status(response.status).json(response.body);
+            res.status(400).json(error);
         })
 });
 

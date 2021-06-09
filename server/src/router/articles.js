@@ -6,7 +6,6 @@ var accountManager = new AccountManager();
 var ArticleManager = require('../lib/article_manager.js');
 var articleManager = new ArticleManager();
 
-
 const SUCCEED = 0;
 const USER_NOT_FOUND = 1;
 const INSERT = [
@@ -43,7 +42,7 @@ global.post('/delete', user_session, (req, res) => {
         })
         .catch((error) => {
             console.log(error);
-            res.sendStatus(400);
+            res.status(400).json(error);
         });
 });
 
@@ -61,23 +60,22 @@ global.get('/', (_req, res) => {
         })
         .catch((error) => {
             console.log(error);
-            res.sendStatus(400);
+            res.status(400).json(error);
         })
 });
 
-const BAD_REQUEST = 1;
-const USER_POST = [
-    {
-        status: 200
-    },
-    {
-        status: 400,  // bad request
-        body: {
-            err_code: BAD_REQUEST,
-            err_msg: ""
-        }
-    },
-]
+global.get('/get_article_by_id', (req, res) => {
+    articleManager
+        .getFormatedArticleById(req.query.article_id)
+        .then((article) => {
+            res.status(200)
+               .json(article);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.status(400).json(error);
+        })
+});
 
 /**
  * @req req.query { username }
@@ -92,57 +90,23 @@ global.get('/get_user_posts', user_session, (req, res) => {
             console.log(error);
             res.status(400).json(error);
         });
-    /*
-    var response;
-    if (req.query.username != req.session.username) {
-        res.sendStatus(401);
-        return;
-    }
-    let posts = [];
-    try {
-        accountManager.getPostsByAuthor(req.query.username).forEach(articleId => {
-            posts.push(articleManager.getArticleById(articleId));
-        });
-    } catch (error) {
-        response = USER_POST[BAD_REQUEST];
-        res.status(response.status).json(response.body);
-        return;
-    }
-    response = USER_POST[SUCCEED];
-    res.status(response.status).json(posts);
-    return;
-    */
 });
 
-const FOLLOWED_POST = [
-    {
-        status: 200
-    },
-    {
-        status: 400,  // bad request
-        body: {
-            err_code: BAD_REQUEST,
-            err_msg: ""
-        }
-    }
-]
-global.get('/get_followed_posts', (req, res) => {
-    var response;
-    let posts = [];
-    try {
-        accountManager.getFollowedPostsByUser(req.query.username).forEach(articleId => {
-            posts.push(articleManager.getArticleById(articleId));
+global.get('/get_followed_posts', user_session, (req, res) => {
+    accountManager
+        .getFollowedPostsByUser(req.session.user_id)
+        .then((articleIds) => {
+            res.status(200).json(articleIds);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.sendStatus(400);
+            res.status(400).json(error);
         });
-    } catch (error) {
-        response = FOLLOWED_POST[USER_NOT_FOUND];
-        response.body.err_msg = error;
-        res.status(response.status).json(response.body);
-        return;
-    }
-    response = FOLLOWED_POST[SUCCEED];
-    res.status(response.status).json(posts);
-    return;
 });
+
+// the code below is not working for now
+//============================================================================//
 
 /**
  * @param {Number} req.body.article_id
@@ -171,30 +135,6 @@ global.post('/FollowedPostToggle', (req, res) => {
     }
     res.sendStatus(200);
     return;
-})
-
-global.get('/get_article_by_id', (req, res) => {
-    articleManager
-        .getFormatedArticleById(req.query.article_id)
-        .then((article) => {
-            res.status(200)
-               .json(article);
-        })
-        .catch((error) => {
-            console.log(error);
-            res.sendStatus(400);
-        })
-    /*
-    var article;
-    console.log(req.query.article_id);
-    try {
-        article = articleManager.getArticleById(req.query.article_id);
-
-    } catch (err) {
-    }
-    res.status(200).json(article);
-    return;
-    */
 })
 
 global.post('/editArticle', (req, res) => {
