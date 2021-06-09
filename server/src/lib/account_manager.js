@@ -25,8 +25,8 @@ module.exports = function() {
                              .then((user) => {
                                  return user != null;
                              })
-        } catch {
-            throw "db access failed";
+        } catch (error) {
+            throw error;
         }
     }
     
@@ -74,7 +74,7 @@ module.exports = function() {
                 return result;
             }
         } catch (error) {
-            throw "db access failed";
+            throw error;
         }
         throw "user not found";
     }
@@ -104,7 +104,7 @@ module.exports = function() {
                 return;  // if the function is executed normally
             }
         } catch (error) {
-            throw 'db access failed';
+            throw error;
         }
         throw 'duplicated user';
     }
@@ -123,7 +123,7 @@ module.exports = function() {
                 return;
             }
         } catch (error) {
-            throw 'db access failed';
+            throw error;
         }
         throw "user not found";
     }
@@ -164,7 +164,7 @@ module.exports = function() {
                 return;
             }
         } catch (error) {
-            throw 'db access failed';
+            throw error;
         }
         throw "user not found";
     }
@@ -195,7 +195,6 @@ module.exports = function() {
                 return userInfo;
             }
         } catch (error) {
-            console.log(error);
             throw error;
         }
         throw "user not found"
@@ -216,7 +215,7 @@ module.exports = function() {
                 return user._id;
             }
         } catch (error) {
-            throw 'db access failed';
+            throw error;
         }
         throw "user not found";
     }
@@ -257,7 +256,6 @@ module.exports = function() {
                 }
             }
         } catch (error) {
-            console.log(error);
             throw error;
         }
         throw "user not found";
@@ -302,7 +300,6 @@ module.exports = function() {
                 }
             }
         } catch (error) {
-            console.log(error);
             throw error;
         }
         throw "user not found"
@@ -340,7 +337,6 @@ module.exports = function() {
                 }
             }
         } catch (error) {
-            console.log(error);
             throw error;
         }
         throw "user not found"
@@ -366,7 +362,6 @@ module.exports = function() {
                 return newPostId;
             }
         } catch (error) {
-            console.log(error);
             throw error;
         }
         throw "user not found";
@@ -374,13 +369,37 @@ module.exports = function() {
 
     /**
      * @param {String} username 
-     * @returns all posts of user's followee or user following posts
+     * @returns all articleId of user's followedUsers and followedPosts
      * @throws "user not found" exception
      */
-    this.getFollowedPostsByUser = function(username) {
-        if (!this.hasUser(username)) {
-            throw "user not found";
+    this.getFollowedPostsByUser = async function(userId) {
+        try {
+            let user = await User.findById(userId)
+                                 .populate('followedUsers')
+                                 .exec()
+                                 .then((user) => {
+                                     return user;
+                                 });
+            if (user) {
+                let articleIds = [];
+                articleIds.push.apply(articleIds, user.followedPosts);
+                for (followedUser of user.followedUsers) {
+                    for (userPost of followedUser.selfPosts) {
+                        if (!articleIds.includes(userPost)) {
+                            articleIds.push(userPost);
+                        }
+                    }
+                }
+                return articleIds;
+            }
+        } catch (error) {
+            throw error;
         }
+        throw "user not found"; 
+        /*
+        if (!this.hasUser(username)) {
+            throw "user not fou  nd";
+        }                        
         let account = this.accounts_info.find(account => account.username == username);
         let posts = [];
         posts.push.apply(posts, account.followedPosts);
@@ -394,6 +413,7 @@ module.exports = function() {
             }
         }
         return posts;
+        */
     }
     
     /**
@@ -402,12 +422,27 @@ module.exports = function() {
      * @returns the user's post
      * @throws "user not found" exception
      */
-    this.getPostsByAuthor = function(username) {
+    this.getPostsByAuthor = async function(userId) {
+        try {
+            let author = await User.findById(userId)
+                                   .exec()
+                                   .then((user) => {
+                                       return user;
+                                   });
+            if (author) {
+                return author.selfPosts;
+            }
+        } catch (error) {
+            throw error;
+        }
+        throw "user not found";
+        /*
         if (!this.hasUser(username)) {
             throw "user not found";
         }
         let author = this.accounts_info.find(account => account.username == username);
         return author.selfPosts;
+        */
     }
 
     /**
