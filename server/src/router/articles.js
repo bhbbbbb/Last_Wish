@@ -23,14 +23,14 @@ const INSERT = [
 ]
 global.post('/insert', user_session, (req, res) => {
     accountManager
-        .addPostsToAuthor(req.session.username, req.body.article_content)
+        .addPostsToAuthor(req.session.user_id, req.body.article_content)
         .then((newPostId) => {
-            response = INSERT[SUCCEED];
+            let response = INSERT[SUCCEED];
             res.status(response.status).json(newPostId);
         })
         .catch((error) => {
             console.log(error);
-            response = INSERT[USER_NOT_FOUND];
+            let response = INSERT[USER_NOT_FOUND];
             res.status(response.status).json(response.body);
         })
 });
@@ -48,7 +48,7 @@ global.post('/delete', user_session, (req, res) => {
 });
 
 
-global.post('/addcomment', (req, res) => {
+global.post('/add_comment', (req, res) => {
     let newComent = articleManager.addCommentToArticle(req.body.author, req.body.article_id, req.body.comment);
     res.json(newComent);
 });
@@ -64,18 +64,6 @@ global.get('/', (_req, res) => {
             res.sendStatus(400);
         })
 });
-
-global.get('/rm_all', (_req, res) => {
-    articleManager
-        .clearAllArticle()
-        .then(() => {
-            res.sendStatus(200);
-        })
-        .catch((error) => {
-            console.log(error);
-            res.sendStatus(400);
-        });
-})
 
 const BAD_REQUEST = 1;
 const USER_POST = [

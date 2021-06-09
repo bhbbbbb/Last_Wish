@@ -307,16 +307,20 @@ module.exports = function() {
         }
         throw "user not found"
     }
+    
+    this.toggleLikedPostsToUser = async function(userId, articleId) {
+
+    }
 
     /**
-     * @param {String} username 
-     * @param {Object} article: {String} title, {String} body and {Array} wishes
+     * @param {String} userId 
+     * @param {Object} articleContent: {String} title, {String} body and {Array} wishes
      * @throws "user not found" exception
      * @return {Number} newPostId
      */
-    this.addPostsToAuthor = async function(username, articleContent) {
+    this.addPostsToAuthor = async function(userId, articleContent) {
         try {
-            let author = await User.findOne({ username: username })
+            let author = await User.findById(userId)
                                    .exec()
                                    .then((user) => {
                                        return user;

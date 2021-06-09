@@ -53,6 +53,7 @@ module.exports = function() {
             for (newMilestoneData of articleContent.milestones) {
                 article.milestones.push(newMilestoneData);
             }
+            article.sortMilestones();
             article.save();
             return article._id;
         } catch (error) {
@@ -66,10 +67,16 @@ module.exports = function() {
      */
     this.getAllArticles = async function() {
         try {
-            return await Article.find({})
-                                .then((allArticles) => {
-                                    return allArticles;
-                                });
+            let allArticles = [];
+            let rawArticles = await Article.find({})
+                                           .populate('author')
+                                           .then((allArticles) => {
+                                               return allArticles;
+                                           });
+            for (article of rawArticles) {
+                allArticles.push(article.toFrontendFormat());
+            }
+            return allArticles;
         } catch (error) {
             throw "db access failed";
         }
@@ -105,13 +112,6 @@ module.exports = function() {
         throw "no such article";
     }
     
-    this.clearAllArticle = async function() {
-        Article.deleteMany().exec((err, res) => {
-            if (err) console.log(err);
-            console.log(res);
-        });
-    }
-    
     /**
      * 
      * @param {String} articleId 
@@ -124,12 +124,13 @@ module.exports = function() {
                                  .populate('author')
                                  .exec()
                                  .then((article) => {
-                                     return article;
+                                     return article.toFrontendFormat();
                                  });
             if (article) {
                 return article;
             }
         } catch (error) {
+            console.log(error);
             throw "db access failed";
             
         }

@@ -10,8 +10,7 @@ const commentSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  // replys: [commentSchema],
-})
+});
 
 const milestoneSchema = new mongoose.Schema({
   title: String,
@@ -48,6 +47,39 @@ const articleSchema = new mongoose.Schema({
   },
   comments: [commentSchema],
   fans: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
+});
+
+// this is not stable maybe need revising
+articleSchema.method('sortMilestones', function() {
+  this.milestones.sort((m, n) => {
+    return m.estDate - n.estDate;
+  });
+  this.milestones.sort((m, n) => {
+    return n.finished - m.finished;
+  });
+  this.save();
+});
+
+articleSchema.method('toFrontendFormat', function() {
+  return {
+    author: {
+      id: this.author._id,
+      name: this.author.username,
+      pro_pic: this.author.proPic,
+    },
+    content: {
+      tags: this.tags,
+      title: this.title,
+      body: this.body,
+      milestones: this.milestones,
+    },
+    date: this.date,
+    cite_from: this.citeFrom,
+    cited_count: this.cited_count,
+    likes: this.likes,
+    comments: this.comments,
+    fans: this.fans
+  }
 });
 
 module.exports = mongoose.model('Article', articleSchema);

@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
   fans: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
   followedUsers: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
   followedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
+  likedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article' }],
   selfPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   finishedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}]
 });
