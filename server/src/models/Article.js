@@ -62,6 +62,7 @@ articleSchema.method('sortMilestones', function() {
 
 articleSchema.method('toFrontendFormat', function() {
   return {
+    id: this._id,
     author: {
       id: this.author._id,
       name: this.author.username,

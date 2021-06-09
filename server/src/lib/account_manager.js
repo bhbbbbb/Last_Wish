@@ -309,7 +309,41 @@ module.exports = function() {
     }
     
     this.toggleLikedPostsToUser = async function(userId, articleId) {
-
+        try {
+            let article = await this.articleManager.getArticleById(articleId)
+                                                   .then((article) => {
+                                                       return article;
+                                                   });
+            if (article) {
+                let user = await User.findById(userId)
+                                     .exec()
+                                     .then((user) => {
+                                         return user;
+                                     });
+                if (user) {
+                    console.log(user.username);
+                    if (user.likedPosts.includes(article._id)) {
+                        // In this case it is going to unfollow
+                        console.log('dislike');
+                        user.likedPosts.pull(article._id);
+                        article.likes -= 1;
+                    } else {
+                        // In this case it is going to follow
+                        console.log('like');
+                        user.likedPosts.push(article._id);
+                        article.likes += 1;
+                    }
+                    console.log(article._id);
+                    user.save();
+                    article.save();
+                    return;
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+        throw "user not found"
     }
 
     /**

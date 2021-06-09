@@ -180,6 +180,20 @@ user.post('/toggle_followed_post', user_session, (req, res) => {
         })
 });
 
+user.post('/toggle_liked_post', user_session, (req, res) => {
+    accountManager
+        .toggleLikedPostsToUser(req.session.user_id, req.body.article_id)
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error);
+            response = FOLLOW[BAD_REQUEST];
+            response.body.err_msg = error;
+            res.status(response.status).json(response.body);
+        })
+});
+
 user.get('/logout', user_session, (req, res) => {
     req.session.destroy();
     res.sendStatus(200);

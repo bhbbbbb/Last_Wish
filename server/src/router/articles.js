@@ -164,7 +164,7 @@ global.post('/FollowedPostToggle', (req, res) => {
 
 global.get('/get_article_by_id', (req, res) => {
     articleManager
-        .getArticleById(req.query.article_id)
+        .getFormatedArticleById(req.query.article_id)
         .then((article) => {
             res.status(200)
                .json(article);

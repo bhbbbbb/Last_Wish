@@ -63,7 +63,7 @@ module.exports = function() {
     }
 
     /**
-     * @returns the json object containing all articles
+     * @returns the json object containing all articles with frontend format
      */
     this.getAllArticles = async function() {
         try {
@@ -76,6 +76,7 @@ module.exports = function() {
             for (article of rawArticles) {
                 allArticles.push(article.toFrontendFormat());
             }
+            // add sorting mechanism
             return allArticles;
         } catch (error) {
             throw "db access failed";
@@ -119,6 +120,31 @@ module.exports = function() {
      * @trhows "no such article" exception
      */
     this.getArticleById = async function(articleId) {
+        try {
+            let article = Article.findById(articleId)
+                                 .populate('author')
+                                 .exec()
+                                 .then((article) => {
+                                     return article;
+                                 });
+            if (article) {
+                return article;
+            }
+        } catch (error) {
+            console.log(error);
+            throw "db access failed";
+            
+        }
+        throw "no such article";
+    }
+
+    /**
+     * 
+     * @param {String} articleId 
+     * @returns the article with given article id
+     * @trhows "no such article" exception
+     */
+    this.getFormatedArticleById = async function(articleId) {
         try {
             let article = Article.findById(articleId)
                                  .populate('author')
