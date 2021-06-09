@@ -53,8 +53,7 @@ module.exports = function() {
             for (newMilestoneData of articleContent.milestones) {
                 article.milestones.push(newMilestoneData);
             }
-            article.sortMilestones();
-            article.save();
+            article.sortMilestonesAndSave();
             return article._id;
         } catch (error) {
             console.log(error);

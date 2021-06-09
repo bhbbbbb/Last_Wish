@@ -82,7 +82,17 @@ const USER_POST = [
 /**
  * @req req.query { username }
  */
-global.get('/user_post', user_session, (req, res) => {
+global.get('/get_user_posts', user_session, (req, res) => {
+    accountManager
+        .getPostsByAuthor(req.session.user_id)
+        .then((articleIds) => {
+            res.status(200).json(articleIds);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.status(400).json(error);
+        });
+    /*
     var response;
     if (req.query.username != req.session.username) {
         res.sendStatus(401);
@@ -101,6 +111,7 @@ global.get('/user_post', user_session, (req, res) => {
     response = USER_POST[SUCCEED];
     res.status(response.status).json(posts);
     return;
+    */
 });
 
 const FOLLOWED_POST = [

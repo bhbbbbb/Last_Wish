@@ -50,7 +50,7 @@ const articleSchema = new mongoose.Schema({
 });
 
 // this is not stable maybe need revising
-articleSchema.method('sortMilestones', function() {
+articleSchema.method('sortMilestonesAndSave', function() {
   this.milestones.sort((m, n) => {
     return m.estDate - n.estDate;
   });
