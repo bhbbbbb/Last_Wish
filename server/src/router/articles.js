@@ -115,7 +115,7 @@ const FOLLOWED_POST = [
         }
     }
 ]
-global.get('/followed_post', (req, res) => {
+global.get('/get_followed_posts', (req, res) => {
     var response;
     let posts = [];
     try {

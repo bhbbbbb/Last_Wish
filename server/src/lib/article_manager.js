@@ -137,6 +137,17 @@ module.exports = function() {
         }
         throw "no such article";
     }
+    
+    this.getMultipleArticlesById = async function(articleIds, options) {
+        let articles = [];
+        for (articleId of articleIds) {
+            this.getFormatedArticleById(articleId)
+                .then((article) => {
+                    articles.push(article);
+                });
+        }
+        return articles;
+    }
 
     /**
      * 
