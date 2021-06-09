@@ -191,6 +191,7 @@ const routes = [
         path: 'articles',
         name: 'UserArticles',
         component: () => import('@/views/ArticleContainer'),
+        // component: () => import('@/components/Upl'),
         // TODO : redirect un login visiter to public profile page
         beforeEnter(to, from, next) {
           if (store.state.is_login) {
@@ -211,6 +212,11 @@ const routes = [
           articles: store.state.user_articles,
           toUser: true,
         }),
+      },
+      {
+        path: 'honorRoll',
+        name: 'HonorRoll',
+        component: () => import('@/views/HonorRoll'),
       },
       {
         path: 'article/:id',
@@ -242,6 +248,11 @@ const routes = [
             color: route.params.color,
           };
         },
+      },
+      {
+        path: 'upl',
+        name: 'Upl',
+        component: () => import('@/components/Upl'),
       },
     ],
   },

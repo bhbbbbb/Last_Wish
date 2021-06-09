@@ -31,6 +31,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
     v-row
       v-col.px-8
         v-timeline(
+          v-if="$store.state.user_id === author.id && !newMilestone_show"
           align-top
           dense
         )
@@ -54,13 +55,19 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
             //- ) {{ wish.title ? wish.title : wish }}
 
           v-timeline-item.align-center(
-            v-if="$store.state.user_id === author.id"
             small
             :color="color_list(7)"
           )
             v-icon(slot="icon" small color="white" @click="GoNewMilestone") mdi-plus
-            v-btn(@click="GoNewMilestone") 點我新增里程碑
-            //- v-text-field.ma-0.pa-1(placeholder="新增里程碑" v-model="newMilestone" @keydown.enter="submitMilestone")
+            v-btn(@click="newMilestone_show = true") 點我新增里程碑
+          
+        NewMilestone(
+          v-if="$store.state.user_id === author.id && newMilestone_show"
+          :id="id"
+          :wishes="context.wishes"
+        )
+          template(v-slot="newMilestone")
+
         br
         p.pre {{ context.body }}
         br
@@ -92,6 +99,7 @@ export default {
   components: {
     CommentCard: () => import('@/components/article/CommentCard'),
     NewComment: () => import('@/components/article/NewComment'),
+    NewMilestone: () => import('@/views/NewMilestone'),
   },
   props: {
     id: {
@@ -108,6 +116,7 @@ export default {
     // },
   },
   data: () => ({
+    newMilestone_show: false,
     author: {
       id: '',
       username: '',

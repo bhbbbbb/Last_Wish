@@ -5,6 +5,7 @@
     rounded="lg"
     :color="color_list($route.params.id)"
     width="100%"
+    flat
   >
     <v-timeline align-top dense>
       <v-timeline-item
@@ -54,11 +55,12 @@
         </v-col>
       </v-row>
     </v-card-actions>
+    <slot :newMilestone="newMilestone"></slot>
   </v-card>
 </template>
 
 <script>
-import { apiUploadMilestone } from '@/store/api';
+// import { apiUploadMilestone } from '@/store/api';
 import color_list from '@/store/color_list.js';
 export default {
   name: 'NewMilestone',
@@ -83,11 +85,22 @@ export default {
   }),
   computed: {},
   created() {
-    let now = new Date(Date.now());
-    this.max = now.toISOString().substring(0, 10);
+    this.max = this.getISONow();
+    this.newMilestone.time = this.max;
   },
 
   methods: {
+    getISONow() {
+      let now = new Date(Date.now());
+      let M = now.getMonth() + 1;
+      let d = now.getDate();
+      // let time = now.toTimeString();
+      let str = `${now.getFullYear()}-${M < 10 ? '0' : ''}${M}-${
+        d < 10 ? '0' : ''
+      }${d}`;
+      // str = str + 'T' + time.substring(0, 8);
+      return str;
+    },
     date_format(time) {
       let time_arr = time.split('-');
       return time_arr[1] + '/' + time_arr[2];
@@ -98,12 +111,14 @@ export default {
       if (!this.newMilestone.time) return;
       if (!this.newMilestone.title.trim()) return;
 
-      apiUploadMilestone({
-        article_id: String(this.id),
-        newMilestone: this.newMilestone,
-      }).then(({ data }) => {
-        this.wishes.push(data);
-      });
+      // apiUploadMilestone({
+      //   article_id: String(this.id),
+      //   newMilestone: this.newMilestone,
+      // }).then(({ data }) => {
+      //   this.wishes.push(data);
+      // });
+      let copy = JSON.parse(JSON.stringify(this.newMilestone));
+      this.wishes.push(copy);
       this.newMilestone.title = undefined;
       this.newMilestone.time = undefined;
       this.newMilestone.body = undefined;

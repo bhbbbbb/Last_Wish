@@ -1,6 +1,6 @@
 <template lang="pug">
 v-card.my.pa-3(
-    height="170"
+    height="185"
     rounded="lg"
     :color="color"
     v-on="$listeners"
@@ -12,7 +12,8 @@ v-card.my.pa-3(
     v-col(cols="5")
       span.subtitle-2.text--disabled {{ content.date }}
     v-col.d-flex.justify-end.pl-2(cols="2")
-      | 引用
+      v-btn(icon)
+        v-icon(style="transform: rotate(0.125turn);") mdi-link
   v-row(no-gutters="")
     strong {{ content.title }}
   v-row(
@@ -21,14 +22,17 @@ v-card.my.pa-3(
   )
     p.ma-0(style="white-space: pre-wrap; overflow: hidden;height: 50px;") {{ content.body }}
   v-row(no-gutters)
-    span {{ content.wishes.length }} 個里程碑
-  v-row(no-gutters)
+    span.subtitle-2.text--disabled {{ content.wishes.length }} 個里程碑
+  v-row.align-center(no-gutters)
     v-btn(icon)
       v-icon mdi-heart-outline
-    v-btn(icon)
-      v-icon mdi-star-outline
+    span.subtitle-2.text--secondary 喜歡 N
     v-btn(icon)
       v-icon mdi-comment-processing-outline
+    span.subtitle-2.text--secondary 留言 N
+    v-btn(icon)
+      v-icon mdi-star-outline
+    span.subtitle-2.text--secondary 追蹤 N
     
 </template>
 

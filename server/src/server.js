@@ -8,6 +8,7 @@ const https_config = require('../https.config');
 const https = require('https');
 const db_config = require('../db.config');
 
+app.use('/media', express.static('./data/uploads/'));
 const corsOptions = {
   origin: ["http://localhost:8080", "http://luffy.ee.ncku.edu.tw:5000", "https://luffy.ee.ncku.edu.tw:5000", "https://bhbbbbb.github.io"],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",

@@ -1,6 +1,6 @@
 <template lang="pug">
 v-sheet(rounded="lg")
-  Search
+  Search()
   v-row.flex-column-reverse(
     no-gutters
   )
@@ -15,14 +15,6 @@ v-sheet(rounded="lg")
         :color="color_list(article.id)"
         @click.stop="ToInnerArticle(article.id, idx)"
       )
-
-  //- v-col(
-  //-   v-if="is_login"
-  //-   cols="12"
-  //-   order-sm="first"
-  //-   :class="$vuetify.breakpoint.mobile ? 'fixed-bottom' : ''"
-  //- )
-  //-   NewPost/
 
 </template>
 
@@ -57,6 +49,9 @@ export default {
   },
 
   methods: {
+    onScroll() {
+      console.log('scroll');
+    },
     ToInnerArticle(article_id, idx) {
       let to_name = this.toUser ? 'UserArticle' : 'Article';
       this.$router.push({
@@ -75,5 +70,6 @@ export default {
 <style lang="sass" scoped>
 .fixed-bottom
   position: sticky
-  bottom: 0
+  top: 110px
+  z-index: 1000
 </style>

@@ -1,5 +1,5 @@
 <template lang="pug">
-v-sheet(rounded="lg")
+v-sheet.pt-3.sticky(flat style="margin: -5px -5px -5px -5px;")
   v-row.mb-2(no-gutters)
     v-menu(
       v-model="order"
@@ -10,9 +10,9 @@ v-sheet(rounded="lg")
           v-bind="attrs"
           v-on="on"
           rounded
-          text
-          outlined
           height="30"
+          elevation="0"
+          color="#D1D7D7"
         )
           span 最新發布
           v-icon mdi-menu-down
@@ -25,36 +25,49 @@ v-sheet(rounded="lg")
           v-bind="attrs"
           v-on="on"
           rounded
-          text
-          outlined
           height="30"
+          elevation="0"
+          color="#D1D7D7"
         )
           span 已完成
           v-icon mdi-menu-down
-  v-row(no-gutters style="width: 100%")
+    v-btn.ml-auto(
+      color="#D1D7D7"
+      fab
+      elevation="0"
+      x-small
+      @click="search_box_show = !search_box_show"
+    )
+      v-icon(v-if="!search_box_show") mdi-magnify
+      span(v-else) 取消
+  v-row(no-gutters style="width: 100%" v-if="search_box_show")
     v-text-field(
       outlined
+      rounded
       clearable
-      append-outer-icon="mdi-magnify"
       @focus="mode_options_show = true"
       autocomplete="off"
     )
+      template(#append-outer)
+        span.mt-1.d-flex.text-no-wrap 搜尋
 
-  v-row(
+  v-row.pb-1(
     no-gutters
-    style="width: 100%;margin-top: -30px;"
-    v-show="mode_options_show"
+    style="width: 100%;margin-top: -40px;"
+    v-if="mode_options_show && search_box_show"
   )
-    v-tabs.justify-space-around(
-      fixed-tabs
+    v-tabs(
       v-model="search_mode"
+      color="#9BA2AA"
+      background-color="transparent"
       style="width: 100%;"
       mandatory
+      grow
     )
-      v-tab(value="all" height="25px") 全部
-      v-tab(value="article" height="25px") 文章
-      v-tab(value="tag" height="25px") 標籤
-      v-tab(value="user" height="25px") 用戶
+      v-tab.align-self-end(value="all" style="min-width: 45px; height: 30px") 全部
+      v-tab.align-self-end(value="article" style="min-width: 45px; height: 30px") 文章
+      v-tab.align-self-end(value="tag" style="min-width: 45px; height: 30px") 標籤
+      v-tab.align-self-end(value="user" style="min-width: 45px; height: 30px") 用戶
 
 </template>
 
@@ -66,6 +79,7 @@ export default {
   components: {},
   props: {},
   data: () => ({
+    search_box_show: false,
     search_mode: 'all',
     mode_options_show: false,
     order: undefined,
@@ -78,4 +92,10 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped></style>
+<style lang="sass" scoped>
+.sticky
+  transform: translatey(-10px)
+  position: sticky
+  top: 110px
+  z-index: 1000
+</style>

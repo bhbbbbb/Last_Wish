@@ -11,6 +11,33 @@ v-card.ma-0.pa-3(min-height="10vh" rounded="lg" elevation="5")
     placeholder="body here"
     v-model="new_article.body"
   )
+  v-text-field(
+    style="font-weight: bold;"
+    id="tag-input"
+    solo
+    flat
+    autocomplete="off"
+    placeholder="add new tag here"
+    prepend-icon="mdi-plus"
+    append-outer-icon="mdi-check"
+    v-model="tag_model"
+    @click:prepend="focus()"
+    @click:append-outer="confirm()"
+    persistent-hint
+    hint="TODO: add rule to check empty, repeat..."
+  )
+  v-chip.ma-1(
+    v-for="(tag, idx) in new_article.tags"
+    :key="idx"
+    draggable
+    close
+    close-icon="mdi-close"
+    close-label="刪除"
+    color="#9BA2AA"
+    small
+    dark
+  ) {{ tag }} &nbsp;
+  NewMilestone(:wishes="new_article.wishes" :id="0")
   v-overlay.align-start(
     :value="show_info"
     absolute
@@ -19,7 +46,6 @@ v-card.ma-0.pa-3(min-height="10vh" rounded="lg" elevation="5")
     v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
   v-card-actions.justify-center
     v-btn(@click="SubmitNewArticle()" :disabled="submit_buffer") submit
-  v-checkbox(v-model='checkbox' label='匿名')
 </template>
 
 <script>
@@ -27,13 +53,18 @@ import { mapState } from 'vuex';
 import { apiUploadArticle } from '@/store/api';
 export default {
   name: 'NewPost',
+  components: {
+    NewMilestone: () => import('@/views/NewMilestone'),
+  },
   data: () => ({
     new_article: {
       title: '',
       body: '',
       from: '',
-      wish: '',
+      wishes: [],
+      tags: [],
     },
+    tag_model: '#',
     show_info: false,
     info_type: 'success',
     infos: '',
@@ -45,6 +76,13 @@ export default {
   },
   created() {},
   methods: {
+    focus() {
+      document.getElementById('tag-input').focus();
+    },
+    confirm() {
+      this.new_article.tags.push(this.tag_model);
+      this.tag_model = '#';
+    },
     SubmitNewArticle() {
       let now = new Date(Date.now());
       now = now.toISOString().substring(0, 10);
@@ -96,3 +134,7 @@ export default {
   },
 };
 </script>
+
+<style lang="sass" scoped>
+$chip-close-size: 12px
+</style>
