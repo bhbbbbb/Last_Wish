@@ -29,7 +29,6 @@ v-card.ma-0.pa-3(min-height="10vh" flat)
   v-chip.ma-1(
     v-for="(tag, idx) in new_article.tags"
     :key="idx"
-    draggable
     close
     close-icon="mdi-close"
     close-label="刪除"
