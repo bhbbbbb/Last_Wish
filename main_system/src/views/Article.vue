@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width="100%")
+v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width="100%" v-if="context")
   v-container      
     v-row(no-gutters="no-gutters")
       v-col.d-flex.justify-start(cols="6")
@@ -16,27 +16,28 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
           v-list
             v-list-item(@click="Copy") 複製連結
             //- v-list-item(@click="Clone") 願望拷貝
-            v-list-item(@click="GoEdit" v-if="$store.state.user_id === author.id") 編輯內文
+            v-list-item(@click="GoEdit" v-if="$store.state.user.id === context.author.id") 編輯內文
     v-row(no-gutters="no-gutters")
       v-col.d-flex.flex-column.flex-shrink-1.align-center.ma-0(cols="4")
-        v-avatar.grey.lighten-1(size="64")
-        span.py-3.text-center {{ author.username }}
+        //- v-avatar.grey.lighten-1(size="64")
+        UserAvatar(:user="context.author")
+        span.py-3.text-center {{ context.author.name }}
       v-col.d-flex.justify-center.align-center(cols="8")
-        h3 {{ context.title }}
+        h3 {{ context.content.title }}
     v-row(no-gutters="no-gutters")
       v-col.my-0(cols="12")
         v-divider
       v-col.py-2.my-0(cols="auto")
-        v-card-subtitle.ma-0.px-4.py-0 {{ context.date }}
+        v-card-subtitle.ma-0.px-4.py-0 {{ date }}
     v-row
       v-col.px-8
         v-timeline(
-          v-if="$store.state.user_id === author.id && !newMilestone_show"
+          v-if="$store.state.user.id === context.author.id && !newMilestone_show"
           align-top
           dense
         )
           v-timeline-item(
-            v-for="(wish, idx) in context.wishes"
+            v-for="(wish, idx) in context.content.milestones"
             small
             :color="color_list(7)"
             :key="idx"
@@ -62,14 +63,14 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
             v-btn(@click="newMilestone_show = true") 點我新增里程碑
           
         NewMilestone(
-          v-if="$store.state.user_id === author.id && newMilestone_show"
+          v-if="$store.state.user.id === context.author.id && newMilestone_show"
           :id="id"
           :wishes="context.wishes"
         )
           template(v-slot="newMilestone")
 
         br
-        p.pre {{ context.body }}
+        p.pre {{ context.content.body }}
         br
         CommentCard(
           v-for="comment in context.comments",
@@ -92,6 +93,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
 // import { mapState } from 'vuex'
 import { apiUserFollowedPostToggle } from '@/store/api';
 import color_list from '@/store/color_list.js';
+import formatDate from '@/lib/formatDate';
 //var Article_id = '';
 
 export default {
@@ -100,14 +102,11 @@ export default {
     CommentCard: () => import('@/components/article/CommentCard'),
     NewComment: () => import('@/components/article/NewComment'),
     NewMilestone: () => import('@/views/NewMilestone'),
+    UserAvatar: () => import('@/components/UserAvatar'),
   },
   props: {
     id: {
-      type: Number,
-      required: true,
-    },
-    context: {
-      type: Object,
+      type: String,
       required: true,
     },
     // color: {
@@ -117,10 +116,6 @@ export default {
   },
   data: () => ({
     newMilestone_show: false,
-    author: {
-      id: '',
-      username: '',
-    },
     show_info: false,
     info_type: 'success',
     infos: '',
@@ -128,22 +123,27 @@ export default {
     NP: false,
     // newMilestone: '',
     hasFollowed: false,
+    context: undefined,
   }),
-  computed: {},
+  computed: {
+    date() {
+      return formatDate(this.context.date);
+    },
+  },
   created() {
-    this.ThePost = JSON.parse(JSON.stringify(this.context));
-    this.ThePost.wishes = String(this.ThePost.wishes).replace(/,/g, '\n');
+    this.context = this.$store.state.article_data[this.id];
+    // this.ThePost = JSON.parse(JSON.stringify(this.context));
+    // this.ThePost.wishes = String(this.ThePost.wishes).replace(/,/g, '\n');
     //Article_id = this.id;
-    this.$store.dispatch('getUser', this.context.from).then((res) => {
-      this.author = res;
-    });
-
-    if (this.$store.state.followed_articles)
-      for (var i = 0; i < this.$store.state.followed_articles.length; i++)
-        if (this.$store.state.followed_articles[i].id == this.context.id) {
-          this.hasFollowed = true;
-          break;
-        }
+    // this.$store.dispatch('getUser', this.context.from).then((res) => {
+    //   this.author = res;
+    // });
+    // if (this.$store.state.followed_articles)
+    //   for (var i = 0; i < this.$store.state.followed_articles.length; i++)
+    //     if (this.$store.state.followed_articles[i].id == this.context.id) {
+    //       this.hasFollowed = true;
+    //       break;
+    //     }
   },
 
   methods: {
@@ -198,7 +198,7 @@ export default {
         name: 'ArticleEdit',
         params: {
           id: this.id,
-          author: this.author,
+          author: this.context.author,
           context: this.context,
         },
       });
@@ -217,7 +217,7 @@ export default {
     },
     followedToggle() {
       apiUserFollowedPostToggle({
-        username: this.$store.state.username,
+        username: this.$store.state.user.name,
         articleId: String(this.id),
       }).then(() => {
         this.$store.dispatch('getUserFollowed');

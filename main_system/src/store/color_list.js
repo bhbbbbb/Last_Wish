@@ -21,4 +21,17 @@ export const COLOR_LIST = [
   '#d8dad9',
 ];
 
-export default (idx) => COLOR_LIST[idx % COLOR_LIST.length];
+export default (idx) => COLOR_LIST[hashCode(idx) % COLOR_LIST.length];
+
+function hashCode(str) {
+  var hash = 0,
+    i,
+    chr;
+  if (str.length === 0) return hash;
+  for (i = 0; i < str.length; i++) {
+    chr = str.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+}

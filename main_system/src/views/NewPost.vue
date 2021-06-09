@@ -91,7 +91,7 @@ export default {
         time: now,
       };
       if (this.checkbox) this.new_article.from = '0';
-      else this.new_article.from = this.$store.state.user_id;
+      else this.new_article.from = this.$store.state.user.id;
       if (!this.new_article.title || !this.new_article.body) {
         // todo : error
         this.Show_info('Blank data!', 'error');
@@ -99,7 +99,7 @@ export default {
       }
       this.submit_buffer = true;
       apiUploadArticle({
-        username: this.checkbox ? 'Unknown' : this.$store.state.username,
+        username: this.checkbox ? 'Unknown' : this.$store.state.user.name,
         article: this.new_article,
       })
         .then((res) => {

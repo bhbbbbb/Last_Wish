@@ -1,19 +1,18 @@
 <template lang="pug">
 v-sheet(rounded="lg")
   Search()
-  v-row.flex-column-reverse(
+  v-row(
     no-gutters
   )
     v-col.ma-0.pa-0(
-      v-if="articles"
       cols="12"
-      v-for="(article, idx) in articles",
+      v-for="(id, idx) in articles",
       :key="idx"
     )
       ArticleCard(
-        :content="article"
-        :color="color_list(article.id)"
-        @click.stop="ToInnerArticle(article.id, idx)"
+        :id="id"
+        :color="color_list(idx)"
+        @click.stop="ToInnerArticle(id)"
       )
 
 </template>
@@ -41,24 +40,20 @@ export default {
   data: () => ({}),
   computed: {},
   created() {
-    if (
-      this.$store.state.is_login &&
-      this.$store.state.followed_articles === undefined
-    )
-      this.$store.dispatch('getUserFollowed');
+    // if (
+    //   this.$store.state.is_login &&
+    //   this.$store.state.followed_articles === undefined
+    // )
+    //   this.$store.dispatch('getUserFollowed');
   },
 
   methods: {
-    onScroll() {
-      console.log('scroll');
-    },
-    ToInnerArticle(article_id, idx) {
+    ToInnerArticle(article_id) {
       let to_name = this.toUser ? 'UserArticle' : 'Article';
       this.$router.push({
         name: to_name,
         params: {
           id: article_id,
-          context: this.articles[idx],
         },
       });
     },
