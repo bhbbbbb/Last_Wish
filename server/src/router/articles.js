@@ -1,5 +1,3 @@
-const articlePATH = __dirname + "/../data/articles.json";
-const accountsPATH = __dirname + "/../data/accounts.json";
 var express = require('express');
 var global = express.Router();
 var user_session = require('../lib/session.js');
@@ -23,29 +21,48 @@ const INSERT = [
         }
     }
 ]
-global.post('/insert', (req, res) => {
-    var response, newPostId;
-    try {
-        newPostId = accountManager.addPostsToAuthor(req.body.username, req.body.article);
-    } catch (error) {
-        console.log(error);
-        response = INSERT[USER_NOT_FOUND];
-        res.status(response.status).json(response.body);
-        return;
-    }
-    response = INSERT[SUCCEED];
-    res.status(response.status).json(newPostId);
-    return;
+global.post('/insert', user_session, (req, res) => {
+    accountManager
+        .addPostsToAuthor(req.session.user_id, req.body.article_content)
+        .then((newPostId) => {
+            let response = INSERT[SUCCEED];
+            res.status(response.status).json(newPostId);
+        })
+        .catch((error) => {
+            console.log(error);
+            let response = INSERT[USER_NOT_FOUND];
+            res.status(response.status).json(response.body);
+        })
+});
+
+global.post('/delete', user_session, (req, res) => {
+    articleManager
+        .rmArticleById(req.body.article_id)
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.sendStatus(400);
+        });
 });
 
 
-global.post('/addcomment', (req, res) => {
+global.post('/add_comment', (req, res) => {
     let newComent = articleManager.addCommentToArticle(req.body.author, req.body.article_id, req.body.comment);
     res.json(newComent);
 });
 
-global.get('/', (req, res) => {
-    res.json(articleManager.getAllArticles());
+global.get('/', (_req, res) => {
+    articleManager
+        .getAllArticles()
+        .then((allArticles) => {
+            res.status(200).json(allArticles);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.sendStatus(400);
+        })
 });
 
 const BAD_REQUEST = 1;
@@ -65,7 +82,17 @@ const USER_POST = [
 /**
  * @req req.query { username }
  */
-global.get('/user_post', user_session, (req, res) => {
+global.get('/get_user_posts', user_session, (req, res) => {
+    accountManager
+        .getPostsByAuthor(req.session.user_id)
+        .then((articleIds) => {
+            res.status(200).json(articleIds);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.status(400).json(error);
+        });
+    /*
     var response;
     if (req.query.username != req.session.username) {
         res.sendStatus(401);
@@ -84,6 +111,7 @@ global.get('/user_post', user_session, (req, res) => {
     response = USER_POST[SUCCEED];
     res.status(response.status).json(posts);
     return;
+    */
 });
 
 const FOLLOWED_POST = [
@@ -98,7 +126,7 @@ const FOLLOWED_POST = [
         }
     }
 ]
-global.get('/followed_post', (req, res) => {
+global.get('/get_followed_posts', (req, res) => {
     var response;
     let posts = [];
     try {
@@ -145,17 +173,28 @@ global.post('/FollowedPostToggle', (req, res) => {
     return;
 })
 
-global.post('/getArticleById', (req, res) => {
+global.get('/get_article_by_id', (req, res) => {
+    articleManager
+        .getFormatedArticleById(req.query.article_id)
+        .then((article) => {
+            res.status(200)
+               .json(article);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.sendStatus(400);
+        })
+    /*
     var article;
+    console.log(req.query.article_id);
     try {
-        article = articleManager.getArticleById(req.body.article_id);
+        article = articleManager.getArticleById(req.query.article_id);
+
     } catch (err) {
-        console.log(err);
-        res.sendStatus(400);
-        return;
     }
     res.status(200).json(article);
     return;
+    */
 })
 
 global.post('/editArticle', (req, res) => {

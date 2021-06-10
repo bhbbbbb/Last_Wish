@@ -3,17 +3,33 @@ var d = new Date();
 var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 var today = `${month[d.getMonth()]}/${String(d.getDate())} ${days[d.getDay()]}`;
+const Article = require('../models/Article');
+const User = require("../models/User");
 
 module.exports = function() {
-    this.articlePATH = __dirname + "/../data/articles.json";
-    this.articles = require(this.articlePATH);
+    // this.articlePATH = __dirname + "/../data/articles.json";
+    // this.articles = require(this.articlePATH);
 
     /**
      * @param {String} articleId 
      * @returns if there is an article with such id
      */
-    this.hasArticle = function(articleId) {
+    this.hasArticle = async function(articleId) {
+        try {
+            return await Article.fineOne({ _id: articleId})
+                                .exec()
+                                .then((article) => {
+                                    return article != null;
+                                });
+        } catch (error) {
+            throw "db access failed";
+        }
+        /*
+        console.log(`has: ${articleId}`);
+        console.log(Number(articleId));
+        console.log(this.articles.length);
         return Number(articleId) <= this.articles.length;
+        */
     }
 
     this.hasCommentInArticle = function(commentId, articleId) {
@@ -22,30 +38,78 @@ module.exports = function() {
 
     /**
      * @param {Object} author the account info of the author
-     * @param {Object} article = {body, title, wishes}
+     * @param {Object} articleContent = {body, title, [tags], [milestones]}
      * @returns {String} the new article id
      */
-    this.addArticle = function(author, article) {
-        let newPostId = String(this.articles.length);
-        let newPostData = {
-            "id": newPostId,
-            "from": author.id,
-            "body": article.body,
-            "title": article.title,
-            "date": today,
-            "wishes":[]
-        };
-        newPostData.wishes.push(article.wish);
-        this.articles.push(newArticle(newPostData));
-        synchronize(this.articles, this.articlePATH);
-        return newPostId;
+    this.addArticle = function(author, articleContent) {
+        try {
+            let newArticleData = {
+                title: articleContent.title,
+                body: articleContent.body,
+                author: author._id,
+                tags: articleContent.tags,
+            };
+            const article = new Article(newArticleData);
+            for (newMilestoneData of articleContent.milestones) {
+                article.milestones.push(newMilestoneData);
+            }
+            article.sortMilestonesAndSave();
+            return article._id;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
     }
 
     /**
-     * @returns the json object containing all articles
+     * @returns the json object containing all articles with frontend format
      */
-    this.getAllArticles = function() {
-        return this.articles;
+    this.getAllArticles = async function() {
+        try {
+            let allArticles = [];
+            let rawArticles = await Article.find({})
+                                           .populate('author')
+                                           .then((allArticles) => {
+                                               return allArticles;
+                                           });
+            for (article of rawArticles) {
+                allArticles.push(article.toFrontendFormat());
+            }
+            // add sorting mechanism
+            return allArticles;
+        } catch (error) {
+            throw "db access failed";
+        }
+    }
+    
+    this.rmArticleById = async function(articleId) {
+        try {
+            let deletedArticle = await Article.findByIdAndDelete(articleId)
+                         .exec()
+                         .then((deletedArticle) => {
+                             return deletedArticle;
+                         });
+            if (deletedArticle) {
+                for (fan of deletedArticle.fans) {
+                    console.log(fan);
+                    User.findByIdAndUpdate(fan, {
+                        $pullAll: {
+                            followedPosts: [deletedArticle._id]
+                        }
+                    }).exec();
+                }
+                User.findByIdAndUpdate(deletedArticle.author, {
+                    $pullAll: {
+                        selfPosts: [deletedArticle._id]
+                    }
+                }).exec();
+                return deletedArticle
+            }
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+        throw "no such article";
     }
     
     /**
@@ -54,11 +118,59 @@ module.exports = function() {
      * @returns the article with given article id
      * @trhows "no such article" exception
      */
-    this.getArticleById = function(articleId) {
-        if (!this.hasArticle(articleId)) {
-            throw "no such article";
+    this.getArticleById = async function(articleId) {
+        try {
+            let article = Article.findById(articleId)
+                                 .populate('author')
+                                 .exec()
+                                 .then((article) => {
+                                     return article;
+                                 });
+            if (article) {
+                return article;
+            }
+        } catch (error) {
+            console.log(error);
+            throw "db access failed";
+            
         }
-        return this.articles.find(article => article.id == articleId);
+        throw "no such article";
+    }
+    
+    this.getMultipleArticlesById = async function(articleIds, options) {
+        let articles = [];
+        for (articleId of articleIds) {
+            this.getFormatedArticleById(articleId)
+                .then((article) => {
+                    articles.push(article);
+                });
+        }
+        return articles;
+    }
+
+    /**
+     * 
+     * @param {String} articleId 
+     * @returns the article with given article id
+     * @trhows "no such article" exception
+     */
+    this.getFormatedArticleById = async function(articleId) {
+        try {
+            let article = Article.findById(articleId)
+                                 .populate('author')
+                                 .exec()
+                                 .then((article) => {
+                                     return article.toFrontendFormat();
+                                 });
+            if (article) {
+                return article;
+            }
+        } catch (error) {
+            console.log(error);
+            throw "db access failed";
+            
+        }
+        throw "no such article";
     }
 
     /**
@@ -190,6 +302,19 @@ function newComment(newCommentData) {
     };
     for (keys in newCommentData) {
         template[keys] = newCommentData[keys];
+    }
+    return template;
+}
+
+function newMilestone(newMilestoneData) {
+    let template = {
+        "id": "",
+        "estDate": "",
+        "finishDate": "",
+        "isDoen": false
+    };
+    for (keys in newCommentData) {
+        template[keys] = newMilestoneData[keys];
     }
     return template;
 }

@@ -27,7 +27,11 @@ const uploadRequest = axios.create({
 export const apiUploadFiles = (data) => uploadRequest.post('/uploadFile', data);
 
 /********************** Call article.js **********************/
-export const apiGetArticles = () => articleRequest.get('/');
+// export const apiGetArticles = () => articleRequest.get('/');
+export const apiGetArticles = () =>
+  new Promise((res) => {
+    res({ data: ['60c03edafd420b1c740ea78c'] });
+  });
 export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
 export const apiUploadComment = (data) =>
   articleRequest.post('/addcomment', data);
@@ -42,6 +46,9 @@ export const apiUserFollowedPostToggle = (data) =>
 export const apiUpdateArticle = (data) =>
   articleRequest.post('/editArticle', data);
 
+export const apiGetArticleById = (id) =>
+  articleRequest.get('/get_article_by_id', { params: { article_id: id } });
+
 /********************** Call user.js **********************/
 export const apiGetUserId = (data) =>
   userRequest.get('/get_id_by_name', { params: data });
@@ -49,6 +56,14 @@ export const apiTryLogin = (data) => userRequest.post('/try_login', data);
 export const apiRegister = (data) => userRequest.post('/register', data);
 export const apiWho = () => userRequest.get('/who');
 export const apiLogout = () => userRequest.get('/logout'); // clear the session on server
+
+/**
+ *
+ * @param {String} username
+ * @returns
+ */
+export const apiIsValid = (data) =>
+  userRequest.get('/is_valid_username', { params: { username: data } });
 
 /**
  *

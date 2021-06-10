@@ -1,24 +1,19 @@
 <template lang="pug">
-v-sheet.d-flex.flex-wrap.flex-column-reverse(rounded="lg")
-  v-col.ma-0.pa-0(
-    v-if="articles"
-    cols="12"
-    v-for="(article, idx) in articles",
-    :key="idx"
+v-sheet(rounded="lg")
+  Search()
+  v-row(
+    no-gutters
   )
-    ArticleCard(
-      :content="article"
-      :color="color_list(article.id)"
-      @click.stop="ToInnerArticle(article.id, idx)"
+    v-col.ma-0.pa-0(
+      cols="12"
+      v-for="(id, idx) in articles",
+      :key="idx"
     )
-
-  //- v-col(
-  //-   v-if="is_login"
-  //-   cols="12"
-  //-   order-sm="first"
-  //-   :class="$vuetify.breakpoint.mobile ? 'fixed-bottom' : ''"
-  //- )
-  //-   NewPost/
+      ArticleCard(
+        :id="id"
+        :color="color_list(idx)"
+        @click.stop="ToInnerArticle(id)"
+      )
 
 </template>
 
@@ -29,9 +24,7 @@ export default {
 
   components: {
     ArticleCard: () => import('@/components/article/ArticleCard.vue'),
-    // RecordCard: () => import('@/components/RecordCard'),
-    // NewPost: () => import('@/components/NewPost'),
-    // NewRecord: () => import('@/components/NewRecord'),
+    Search: () => import('@/components/Search'),
   },
   props: {
     articles: {
@@ -45,25 +38,22 @@ export default {
     },
   },
   data: () => ({}),
-  computed: {
-    // ...mapState(['articles', 'is_login']),
-  },
+  computed: {},
   created() {
-    if (
-      this.$store.state.is_login &&
-      this.$store.state.followed_articles === undefined
-    )
-      this.$store.dispatch('getUserFollowed');
+    // if (
+    //   this.$store.state.is_login &&
+    //   this.$store.state.followed_articles === undefined
+    // )
+    //   this.$store.dispatch('getUserFollowed');
   },
 
   methods: {
-    ToInnerArticle(article_id, idx) {
+    ToInnerArticle(article_id) {
       let to_name = this.toUser ? 'UserArticle' : 'Article';
       this.$router.push({
         name: to_name,
         params: {
           id: article_id,
-          context: this.articles[idx],
         },
       });
     },
@@ -75,5 +65,6 @@ export default {
 <style lang="sass" scoped>
 .fixed-bottom
   position: sticky
-  bottom: 0
+  top: 110px
+  z-index: 1000
 </style>

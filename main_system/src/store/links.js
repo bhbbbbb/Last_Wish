@@ -23,25 +23,25 @@ export const global_links = [
 ];
 export const user_links = [
   {
-    text: '世界文章',
+    text: 'global',
     to: {
       name: 'Articles',
     },
     icon: 'mdi-earth',
   },
   {
+    text: 'follow',
+    to: {
+      name: 'FollowArticle',
+    },
+    icon: 'mdi-bookmark',
+  },
+  {
     text: '發新貼文',
     to: {
       name: 'NewPost',
     },
-    icon: 'mdi-note-plus-outline',
-  },
-  {
-    text: '關注文章',
-    to: {
-      name: 'FollowArticle',
-    },
-    icon: 'mdi-account',
+    icon: 'mdi-playlist-plus',
   },
   // {
   //   text: '追蹤中',
@@ -51,13 +51,13 @@ export const user_links = [
   //   icon: 'mdi-account',
   // },
   {
-    text: '個人頁',
+    text: 'home',
     to: {
       name: 'User',
       params: {
         username: '',
       },
     },
-    icon: 'mdi-account',
+    icon: 'mdi-home',
   },
 ];
