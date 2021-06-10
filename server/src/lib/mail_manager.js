@@ -1,6 +1,8 @@
 var nodemailer = require('nodemailer');
 var mail_config = require('./mail_config');
 // const User = require('../models/User');
+const jwt = require('jsonwebtoken');
+
 const transporter = nodemailer.createTransport({
     service : 'gmail',
     auth : {
@@ -69,35 +71,50 @@ module.exports = function() {
     /**
      * @param {String} mailAddr
      * @param {String} username
+     * @param {String} EMAIL_SECRET
+     * @param {String} serverUrl
      * @returns {object} status: 200/401 if mail was sent suc/fail
      * @returns {object} token: token sent to newUser
      * @throws any error happened
      */
 
-    this.sendToken = (mailAddr, username) => {
-        var token = genNonce(25 + (Date.now() % 8));
-        var text = '哈囉 ' + username + '\n下面是你的驗證碼:\n' + token;
-        var sub = username + ' 這是你的驗證資訊 from lernen';
-        var mailOptions = {
-            from : 'noreply',
-            to : mailAddr,
-            subject : sub,
-            text : text,
-        };
-        var status = 401;
-        try {
-            transporter.sendMail(mailOptions, function(error, info) {
-                if (error) {
-                    throw error;
-                } else {
-                    console.log('Email sent: ' + info.response);
+    this.sendToken = (mailAddr, username, EMAIL_SECRET, serverUrl) => {
+        jwt.sign(
+            {
+                user : username,
+            },
+            EMAIL_SECRET,
+            {
+                expiresIn : '1d',
+            },
+            (err, emailToken) => {
+                const url = serverUrl + `/user/confirmation/${emailToken}`;
+                var html =
+                    `Please click this email to confirm your email:<br> <a href="${
+                        url}">${url}</a>`;
+                var sub = username + ' 這是你的驗證資訊 from lernen';
+                var mailOptions = {
+                    from : 'noreply',
+                    to : mailAddr,
+                    subject : sub,
+                    html : html,
+                };
+                var status = 401;
+                try {
+                    transporter.sendMail(mailOptions, function(error, info) {
+                        if (error) {
+                            throw error;
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                        }
+                    });
+                    status = 200;
+                } catch (e) {
+                    status = 401;
                 }
-            });
-            status = 200;
-        } catch (e) {
-            status = 401;
-        }
-        return {'token' : token, 'status' : status};
+                return {'token' : token, 'status' : status};
+            },
+        );
     };
 };
 
