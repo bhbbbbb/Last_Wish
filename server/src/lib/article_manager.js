@@ -22,12 +22,6 @@ module.exports = function() {
         } catch (error) {
             throw error;
         }
-        /*
-        console.log(`has: ${articleId}`);
-        console.log(Number(articleId));
-        console.log(this.articles.length);
-        return Number(articleId) <= this.articles.length;
-        */
     }
 
     this.hasCommentInArticle = function(commentId, articleId) {
@@ -134,15 +128,32 @@ module.exports = function() {
         throw "no such article";
     }
     
-    this.getMultipleArticlesById = async function(articleIds, options) {
+    this.getMultipleArticlesByIds = async function(articleIds, options) {
         let articles = [];
         for (articleId of articleIds) {
-            this.getFormatedArticleById(articleId)
-                .then((article) => {
-                    articles.push(article);
-                });
+            await this.getFormatedArticleById(articleId)
+                      .then((article) => {
+                          articles.push(article);
+                      });
         }
-        // TODO: sort the articles by given options: ordered by Date, finished or not?
+        if (options.includes('new2old')) {
+            console.log('new2old');
+            articles.sort((a, b) => {
+                return b.date - a.date;
+            });
+        } else if (options.includes('old2new')) {
+            console.log('old2new');
+            articles.sort((a, b) => {
+                return a.date - b.date;
+            });
+        }
+        
+        if (options.includes('finished')) {
+            articles.sort((a, b) => {
+                return a.finished - b.finished;
+            });
+        }
+
         return articles;
     }
 
@@ -171,6 +182,7 @@ module.exports = function() {
         throw "no such article";
     }
 
+    // TODO: modify this
     /**
      * @param {Object} author 
      * @param {String} articleId 

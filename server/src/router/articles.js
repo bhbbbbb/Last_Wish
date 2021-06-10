@@ -77,12 +77,25 @@ global.get('/get_article_by_id', (req, res) => {
         })
 });
 
+global.post('/list_articles', user_session, (req, res) => {
+    articleManager
+        .getMultipleArticlesByIds(req.body.article_ids, req.body.options)
+        .then((articles) => {
+            res.status(200).json(articles);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.sendStatus(400);
+            res.status(400).json(error);
+        });
+});
+
 /**
- * @req req.query { username }
+ * @req req.query { user_id }
  */
 global.get('/get_user_posts', user_session, (req, res) => {
     accountManager
-        .getPostsByAuthor(req.session.user_id)
+        .getPostsByAuthor(req.query.user_id)
         .then((articleIds) => {
             res.status(200).json(articleIds);
         })
@@ -92,9 +105,12 @@ global.get('/get_user_posts', user_session, (req, res) => {
         });
 });
 
+/**
+ * @req req.query { user_id }
+ */
 global.get('/get_followed_posts', user_session, (req, res) => {
     accountManager
-        .getFollowedPostsByUser(req.session.user_id)
+        .getFollowedPostsByUser(req.query.user_id)
         .then((articleIds) => {
             res.status(200).json(articleIds);
         })
