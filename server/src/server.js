@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const app = express();
 const fs = require('fs');
 var cors = require("cors");
 const port = 2222;
@@ -31,7 +30,7 @@ const db_url =
 mongoose.connect(db_url, {useNewUrlParser : true, useUnifiedTopology : true})
     .then(() => {
         const app = express();
-        app.use('/media', express.static('./data/uploads/'));
+        app.use('/media', express.static(__dirname + '/data/uploads/'));
         app.use(cors(corsOptions));
         // app.use(cors());
 
