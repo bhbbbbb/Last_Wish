@@ -38,7 +38,7 @@ v-sheet(flat)
 <script>
 import { Cropper, Preview } from 'vue-advanced-cropper';
 import { saveAs } from 'file-saver';
-import { apiUploadFiles } from '@/store/api';
+import { apiUploadFiles, apiSetProPic } from '@/store/api';
 import 'vue-advanced-cropper/dist/style.css';
 //import 'vue-advanced-cropper/dist/themes/theme.compact.css';
 function getMimeType(file, fallback = null) {
@@ -158,11 +158,18 @@ export default {
           // You can use axios, superagent and other libraries instead here
           apiUploadFiles(form).then((res) => {
             console.log(res.status);
-            console.log(res.data);
             this.$emit('get_img', res.data);
+            var filePath = '/media/' + res.data;
+            console.log(filePath);
             if (res.status == 200) {
-              this.file = '';
-              this.reset();
+              apiSetProPic({ pro_pic_url: filePath }).then((res) => {
+                if (res.status == 200) {
+                  console.log(filePath);
+                  this.$store.commit('updateProPic', filePath);
+                  this.file = '';
+                  this.reset();
+                }
+              });
             }
           });
           // Perhaps you should add the setting appropriate file format here

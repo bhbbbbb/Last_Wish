@@ -12,7 +12,7 @@ v-bottom-navigation(
   v-btn.mx-0(
     v-for="link in links"
     :key="link.to.name"
-    :to="is_login ? {name: link.to.name, params: {username: username}} : link.to"
+    :to="is_login ? {name: link.to.name, params: {username: user.name}} : link.to"
   )
     span() {{ link.text }}
     v-icon() {{ link.icon }}
@@ -34,7 +34,7 @@ export default {
     selected: 0,
   }),
   computed: {
-    ...mapState(['links', 'is_login', 'username']),
+    ...mapState(['links', 'is_login', 'user']),
   },
 };
 </script>

@@ -4,8 +4,7 @@ v-card.ma-1.pa-1.transparent.d-flex.align-center(
   flat
   min-height="48"
 )
-  v-avatar(size="32")
-    v-icon(large) mdi-account
+  UserAvatar(:user="context")
   .px-1
   span {{ author.username }}
   .px-2
@@ -13,10 +12,11 @@ v-card.ma-1.pa-1.transparent.d-flex.align-center(
 </template>
 
 <script>
-import { apiGetPublicInfo } from '@/store/api';
 export default {
   name: 'CommentCard',
-
+  components: {
+    UserAvatar: () => import('@/components/UserAvatar'),
+  },
   /*
   comment = {
       "id": "1",
@@ -35,20 +35,8 @@ export default {
     author: undefined,
   }),
 
-  created() {
-    this.getAuthor()
-      .then((res) => {
-        this.author = res.data;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  },
-  methods: {
-    async getAuthor() {
-      return await apiGetPublicInfo(this.context.from);
-    },
-  },
+  created() {},
+  methods: {},
 };
 </script>
 

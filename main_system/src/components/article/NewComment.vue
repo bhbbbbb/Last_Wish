@@ -1,12 +1,11 @@
 <template lang="pug">
-v-card.ma-1.pa-1.transparent.d-flex.align-center(
+v-sheet.ma-1.pa-1.transparent.d-flex.align-center(
   flat
   min-height="48"
 )
-  v-avatar(size="32")
-    v-icon(large) mdi-account
-  .px-1
-  span {{ $store.state.username ? $store.state.username : "Anon."}}
+  div
+  UserAvatar(:user="$store.state.user")
+  span.px-1.mx-2 {{ $store.state.user.name ? $store.state.user.name : "Anon."}}
   v-text-field.my-0.mx-3.pa-1(
     style="transform: translateY(5px);"
     placeholder="comment here"
@@ -24,6 +23,9 @@ import { apiUploadComment } from '@/store/api';
 export default {
   name: 'NewComment',
 
+  components: {
+    UserAvatar: () => import('@/components/UserAvatar'),
+  },
   /*
   comment = {
       "id": "1",
@@ -51,8 +53,8 @@ export default {
       if (!this.new_comment.trim()) return;
       apiUploadComment({
         author: {
-          name: this.$store.state.username,
-          id: this.$store.state.user_id,
+          name: this.$store.state.user.name,
+          id: this.$store.state.user.id,
         },
         article_id: this.$route.params.id,
         comment: this.new_comment,

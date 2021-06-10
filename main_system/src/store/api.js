@@ -27,7 +27,11 @@ const uploadRequest = axios.create({
 export const apiUploadFiles = (data) => uploadRequest.post('/uploadFile', data);
 
 /********************** Call article.js **********************/
-export const apiGetArticles = () => articleRequest.get('/');
+// export const apiGetArticles = () => articleRequest.get('/');
+export const apiGetArticles = () =>
+  new Promise((res) => {
+    res({ data: ['60c03edafd420b1c740ea78c'] });
+  });
 export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
 export const apiUploadComment = (data) =>
   articleRequest.post('/addcomment', data);
@@ -41,6 +45,9 @@ export const apiUserFollowedPostToggle = (data) =>
   articleRequest.post('FollowedPostToggle', data);
 export const apiUpdateArticle = (data) =>
   articleRequest.post('/editArticle', data);
+
+export const apiGetArticleById = (id) =>
+  articleRequest.get('/get_article_by_id', { params: { article_id: id } });
 
 /********************** Call user.js **********************/
 export const apiGetUserId = (data) =>
