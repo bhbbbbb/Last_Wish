@@ -3,7 +3,7 @@ const proURL = 'https://luffy.ee.ncku.edu.tw:2222';
 const devURL = '';
 // const devURL = 'http://192.168.0.3:2222';
 
-let baseURL = process.env.NODE_ENV === 'development' ? devURL : proURL;
+export const baseURL = process.env.NODE_ENV === 'development' ? devURL : proURL;
 
 const articleRequest = axios.create({
   baseURL: baseURL + '/articles',
