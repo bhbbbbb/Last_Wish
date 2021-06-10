@@ -27,11 +27,12 @@ v-app-bar.d-flex.align-center.flex-wrap.justify-start(
               v-list-item-title 登出
     v-row.px-3.align-self-center.align-center(no-gutters)
       v-col(cols="3")
-        v-avatar.grey.lighten-3(size="100" color="red")
-          img(:src="imgUrl" v-if="imgUrl")
-          span(style="font-size:2rem" v-else) {{$store.state.username[0]}}
+        UserAvatar(:user="$store.state.user" large)
+        //- v-avatar.grey.lighten-3(size="100" color="red")
+        //-   img(:src="imgUrl" v-if="imgUrl")
+        //-   span(style="font-size:2rem" v-else) {{$store.state.user.name[0]}}
       v-col.d-flex.flex-column.align-start(cols="7")
-        span(style="font-size:2rem") {{$store.state.username}}
+        span(style="font-size:2rem") {{$store.state.user.name}}
         span(style="font-size:1rem") 簡單自介
       v-col(cols="2")
   template(v-slot:extension)
@@ -70,7 +71,9 @@ v-app-bar.d-flex.align-center.flex-wrap.justify-start(
 import { mapState } from 'vuex';
 export default {
   name: 'AppBarProfileM',
-  components: {},
+  components: {
+    UserAvatar: () => import('@/components/UserAvatar'),
+  },
   props: {
     // links: {
     //   required: true,

@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card.ma-0.pa-3(min-height="10vh" rounded="lg" elevation="5")
+v-card.ma-0.pa-3(min-height="10vh" flat)
   v-text-field.ma-0.pa-1(
     placeholder="Title here"
     v-model="new_article.title"
@@ -29,7 +29,6 @@ v-card.ma-0.pa-3(min-height="10vh" rounded="lg" elevation="5")
   v-chip.ma-1(
     v-for="(tag, idx) in new_article.tags"
     :key="idx"
-    draggable
     close
     close-icon="mdi-close"
     close-label="刪除"
@@ -91,7 +90,7 @@ export default {
         time: now,
       };
       if (this.checkbox) this.new_article.from = '0';
-      else this.new_article.from = this.$store.state.user_id;
+      else this.new_article.from = this.$store.state.user.id;
       if (!this.new_article.title || !this.new_article.body) {
         // todo : error
         this.Show_info('Blank data!', 'error');
@@ -99,7 +98,7 @@ export default {
       }
       this.submit_buffer = true;
       apiUploadArticle({
-        username: this.checkbox ? 'Unknown' : this.$store.state.username,
+        username: this.checkbox ? 'Unknown' : this.$store.state.user.name,
         article: this.new_article,
       })
         .then((res) => {

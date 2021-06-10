@@ -35,7 +35,8 @@ const routes = [
                 // console.log(store.state.global_articles);
                 next();
               })
-              .catch(() => {
+              .catch((err) => {
+                console.log(err);
                 next(false);
               });
           }
@@ -68,7 +69,7 @@ const routes = [
         component: () => import('@/views/Article'),
         beforeEnter(to, from, next) {
           store
-            .dispatch('getGlobalArticles')
+            .dispatch('getArticle', to.params.id)
             .then(() => {
               next();
             })
@@ -77,15 +78,19 @@ const routes = [
             });
         },
         props: (route) => {
-          let context = route.params.context
-            ? route.params.context
-            : store.state.global_articles[route.params.id];
           return {
-            id: Number(route.params.id),
-            context: context,
-            color: route.params.color,
+            id: route.params.id,
           };
         },
+        // props: (route) => {
+        //   let context = route.params.context
+        //     ? route.params.context
+        //     : store.state.global_articles[route.params.id];
+        //   return {
+        //     id: route.params.id,
+        //     context: context,
+        //   };
+        // },
       },
       {
         path: 'article/:id/wish/:wish',
@@ -191,7 +196,6 @@ const routes = [
         path: 'articles',
         name: 'UserArticles',
         component: () => import('@/views/ArticleContainer'),
-        // component: () => import('@/components/Upl'),
         // TODO : redirect un login visiter to public profile page
         beforeEnter(to, from, next) {
           if (store.state.is_login) {

@@ -1,7 +1,5 @@
 const bcrypt = require('bcrypt');
-// this class is to manage all users
-// or simply manage the data stored in json files
-const fs = require("fs");
+const User = require('../models/User');
 var ArticleManager = require('./article_manager.js');
 
 module.exports = function() {
@@ -11,14 +9,48 @@ module.exports = function() {
     this.accounts_info = require(this.accountsPATH);
     this.user_listPATH = __dirname + "/../data/user_list.json";
     this.user_list = require(this.user_listPATH);
+    
+    this.findUserbyUsername = function(username) {
+        return User.findOne({ username: username }).exec();
+    }
 
     /**
      * @param {String} username 
      * @returns if the user is in the list
      */
-    this.hasUser = function(username) {
-        // console.log(`check for ${username}`);
-        return username in this.user_list;
+    this.hasUser = async function(username) {
+        try {
+            return await User.findOne({username: username})
+                             .exec()
+                             .then((user) => {
+                                 return user != null;
+                             })
+        } catch (error) {
+            throw error;
+        }
+    }
+    
+    /**
+     * @description the following code is to print all users stored in db to 
+     *              the console for debugging
+     */
+    this.getAllUsers = function() {
+        User.find().exec((err, res) => {
+            if (err) console.log(err);
+            console.log(res);
+        });
+    }
+    
+    /**
+     * @description the following code is to delete all existing users stored
+     *              in db for debugging
+     */
+    this.clearAllUsers = function() {
+        User.deleteMany()
+            .exec((err, res) => {
+                if (err) console.log(err);
+                console.log(res);
+            });
     }
 
     /**
@@ -27,14 +59,24 @@ module.exports = function() {
      * @returns if the password matches the username
      * @throws "user not found" exception
      */
-    this.checkPassword = function(username, password) {
-        if (!this.hasUser(username)) {
-            throw "user not found";
+    this.checkPassword = async function(username, password) {
+        try {
+            let user = await User.findOne({username: username})
+                                 .exec()
+                                 .then((user) => {
+                                     return user;
+                                 });
+            if (user) {
+                let result = {
+                    correct: bcrypt.compareSync(password, user.password),
+                    userId: user._id,
+                }
+                return result;
+            }
+        } catch (error) {
+            throw error;
         }
-        let account = this.accounts_info.find(account => account.username == username);
-        // let account = this.accounts_info[Number(this.user_list[username])];
-        // return account.password == password;
-        return bcrypt.compareSync(password, account.password);
+        throw "user not found";
     }
 
     /**
@@ -42,21 +84,89 @@ module.exports = function() {
      * @param {String} password 
      * @throws "duplicated user" exception
      */
-    this.addUser = function(username, password) {
-        if (this.hasUser(username)) {
-            throw "duplicated user";
+    this.addUser = async function(username, password) {
+        var duplicated;
+        try {
+            duplicated = await User.findOne({username: username})
+                                   .exec()
+                                   .then((user) => {
+                                       return user != null;
+                                   });
+            if (!duplicated) {
+                // let newUserId = String(Object.keys(this.user_list).length);
+                let hash = bcrypt.hashSync(password, 10);
+                let newUserData = {
+                    "username": username,
+                    "password": hash,
+                };
+                const user = new User(newUserData);
+                user.save();
+                return;  // if the function is executed normally
+            }
+        } catch (error) {
+            throw error;
         }
-        let newUserId = String(Object.keys(this.user_list).length);
-        let hash = bcrypt.hashSync(password, 10);
-        let newUserData = {
-            "id": newUserId,
-            "username": username,
-            "password": hash
+        throw 'duplicated user';
+    }
+    
+    this.setSelfIntroToUser = async function(userId, selfIntro) {
+        var user;
+        try {
+            user = await User.findById(userId)
+                             .exec()
+                             .then((user) => {
+                                 return user;
+                             });
+            if (user) {
+                user.selfIntro = selfIntro;
+                user.save();
+                return;
+            }
+        } catch (error) {
+            throw error;
         }
-        this.user_list[username] = newUserId;
-        this.accounts_info.push(newAccountInfo(newUserData));
-        synchronize(this.user_list, this.user_listPATH);
-        synchronize(this.accounts_info, this.accountsPATH);
+        throw "user not found";
+    }
+    
+    this.setHonorToUser = async function(userId, honor) {
+        var user;
+        try {
+            user = await User.findById(userId)
+                             .exec()
+                             .then((user) => {
+                                 return user;
+                             });
+            if (user) {
+                user.honor = honor;
+                let error = user.validateSync();
+                if (error) {
+                    throw error;
+                }
+                user.save();
+                return;
+            }
+        } catch (error) {
+            throw error;
+        }
+        throw "user not found";
+    }
+
+    this.setProPicToUser = async function(userId, proPicUrl) {
+        try {
+            let user = await User.findById(userId)
+                                 .exec()
+                                 .then((user) => {
+                                     return user;
+                                 });
+            if (user) {
+                user.proPic = proPicUrl;
+                user.save();
+                return;
+            }
+        } catch (error) {
+            throw error;
+        }
+        throw "user not found";
     }
 
     /**
@@ -64,144 +174,232 @@ module.exports = function() {
      * @returns user info with given id
      * @throws "user not found" exception
      */
-    this.getUserInfo = function(id) {
-        let account = this.accounts_info.find(account => account.id == id);
-        if (!account) {
-            throw "user not found";
+    this.getUserInfo = async function(id) {
+        try {
+            let user = await User.findById(id)
+                                 .exec()
+                                 .then((user) => {
+                                     return user;
+                                 })
+            if (user) {
+                let userInfo = {
+                    "id": user._id,
+                    "username": user.username,
+                    "selfIntro": user.selfIntro,
+                    "honor": user.honor,
+                    "proPic": user.proPic,
+                    "nFans": user.fans.length,
+                    "nFollowing": user.followedUsers.length,
+                    "nPosts": user.selfPosts.length,
+                };
+                return userInfo;
+            }
+        } catch (error) {
+            throw error;
         }
-        let userInfo = {
-            "id": account.id,
-            "username": account.username
-        };
-        return userInfo;
+        throw "user not found"
     }
 
     /**
      * @param {String} username 
      * @returns id of given username
      */
-    this.getIdbyUsername = function(username) {
-        if (!this.hasUser(username)) {
-            return "0";
-            // throw "user not found";
+    this.getIdbyUsername = async function(username) {
+        try {
+            let user = await User.findOne({ username: username })
+                                 .exec()
+                                 .then((user) => {
+                                     return user;
+                                 })
+            if (user) {
+                return user._id;
+            }
+        } catch (error) {
+            throw error;
         }
-        return this.user_list[username];
+        throw "user not found";
     }
 
     /**
      * To make an user to follow/unfollow another user
      * 
-     * @param {String} username 
-     * @param {String} target 
-     * @param {Boolean} isFollow 
-     * @throws "user not found", "target not found", "username cannot be target",
-     *         "target already followed" or "target already unfollowed" exceptions 
+     * @param {String} userId 
+     * @param {String} targetId
+     * @throws "user not found"
      */
-    this.setFollowRelation = function(username, target, isFollow) {
-        if (!this.hasUser(username)) {
-            throw "user not found";
-        }
-        if (!this.hasUser(target)) {
-            throw "target not found";
-        }
-        if (username == target) {
-            throw "username cannot be target";
-        }
-        let follower = this.accounts_info.find(account => account['username'] == username);
-        let followee = this.accounts_info.find(account => account['username'] == target);
-        if (isFollow) {
-            if (follower.followees.includes(followee.id)) {
-                throw "target already followed"
+    this.toggleFollowRelation = async function(userId, targetId) {
+        try {
+            let target = await User.findById(targetId)
+                                   .exec()
+                                   .then((target) => {
+                                       return target;
+                                   });
+            if (target) {
+                let user  = await User.findById(userId)
+                                      .exec()
+                                      .then((user) => {
+                                          return user;
+                                      });
+                if (user) {
+                    if (user.followedUsers.includes(target._id)) {
+                        // In this case it is going to unfollow
+                        user.followedUsers.pull(target._id);
+                        target.fans.pull(user._id);
+                    } else {
+                        // In this case it is going to follow
+                        user.followedUsers.push(target._id);
+                        target.fans.push(user._id);
+                    }
+                    user.save();
+                    target.save();
+                    return;
+                }
             }
-            follower.followees.push(followee.id);
-            followee.followers.push(follower.id);
-        } else {
-            if (!follower.followees.includes(followee.id)) {
-                throw "target already unfollowed"
-            }
-            follower.followees.splice(follower.followees.indexOf(followee.id), 1);
-            followee.followers.splice(followee.followers.indexOf(follower.id), 1);
+        } catch (error) {
+            throw error;
         }
-        synchronize(this.accounts_info, this.accountsPATH);
+        throw "user not found";
     }
 
     /**
-     * To make an user to follow the given post
+     * To make an user to follow/unfollow the given post
      * 
-     * @param {String} username 
+     * @param {String} userId 
      * @param {String} articleId 
      * @throw "user not found", "no such article" or "article already followed" exception
      */
-
-    //I change addFollowedPoststoUser into toggle... funq for easier management
-    //Mind that Line 147 used to be ...include, however it can be used on string only
-    //while follower.followedPosts is an obj.
-    this.toggleFollowedPostsToUser = function(username, articleId) {
-        if (!this.hasUser(username)) {
-            throw "user not found";
+    this.toggleFollowedPostsToUser = async function(userId, articleId) {
+        try {
+            let article = await this.articleManager.getArticleById(articleId)
+                                                   .then((article) => {
+                                                       return article;
+                                                   });
+            if (article) {
+                let user = await User.findById(userId)
+                                     .exec()
+                                     .then((user) => {
+                                         return user;
+                                     });
+                if (user) {
+                    console.log(user.username);
+                    if (user.followedPosts.includes(article._id)) {
+                        // In this case it is going to unfollow
+                        console.log('unfollow');
+                        user.followedPosts.pull(article._id);
+                        article.fans.pull(user._id);
+                    } else {
+                        // In this case it is going to follow
+                        console.log('follow');
+                        user.followedPosts.push(article._id);
+                        article.fans.push(user._id);
+                    }
+                    console.log(article._id);
+                    user.save();
+                    article.save();
+                    return;
+                }
+            }
+        } catch (error) {
+            throw error;
         }
-        if (!this.articleManager.hasArticle(articleId)) {
-            throw "no such article";
-        }
-        let follower = this.accounts_info.find(account => account['username'] == username);
-        if (follower.followedPosts.indexOf(articleId) > -1) {     
-            follower.followedPosts.splice(follower.followedPosts.indexOf(articleId), 1);
-            //throw "article already followed";
-        } else {
-            follower.followedPosts.push(articleId);
-        }
-        synchronize(this.accounts_info, this.accountsPATH);
+        throw "user not found"
     }
-    /**
-     * To make an user to unfollow the given post
-     * 
-     * @param {String} username 
-     * @param {String} articleId 
-     * @throw "user not found", "no such article" or "article already unfollowed" exception
-     */
-    /*
-    this.removeFollowedPostsFromUser = function(username, articleId) {
-        if (!this.hasUser(username)) {
-            throw "user not found";
+    
+    this.toggleLikedPostsToUser = async function(userId, articleId) {
+        try {
+            let article = await this.articleManager.getArticleById(articleId)
+                                                   .then((article) => {
+                                                       return article;
+                                                   });
+            if (article) {
+                let user = await User.findById(userId)
+                                     .exec()
+                                     .then((user) => {
+                                         return user;
+                                     });
+                if (user) {
+                    console.log(user.username);
+                    if (user.likedPosts.includes(article._id)) {
+                        // In this case it is going to unfollow
+                        console.log('dislike');
+                        user.likedPosts.pull(article._id);
+                        article.likes -= 1;
+                    } else {
+                        // In this case it is going to follow
+                        console.log('like');
+                        user.likedPosts.push(article._id);
+                        article.likes += 1;
+                    }
+                    console.log(article._id);
+                    user.save();
+                    article.save();
+                    return;
+                }
+            }
+        } catch (error) {
+            throw error;
         }
-        if (!this.articleManager.hasArticle(articleId)) {
-            throw "no such article";
-        }
-        let follower = this.accounts_info.find(account => account['username'] == username);
-        if (!follower.followedPosts.include(articleId)) {
-            throw "article already unfollowed";
-        }
-        follower.followedPosts.splice(follower.followedPosts.indexOf(articleId), 1);
-        synchronize(this.accounts_info, this.accountsPATH);
+        throw "user not found"
     }
-    */
 
     /**
-     * @param {String} username 
-     * @param {Object} article: {String} title, {String} body and {Array} wishes
+     * @param {String} userId 
+     * @param {Object} articleContent: {String} title, {String} body and {Array} wishes
      * @throws "user not found" exception
      * @return {Number} newPostId
      */
-    this.addPostsToAuthor = function(username, article) {
-        if (!this.hasUser(username)) {
-            throw "user not found";
+    this.addPostsToAuthor = async function(userId, articleContent) {
+        try {
+            let author = await User.findById(userId)
+                                   .exec()
+                                   .then((user) => {
+                                       return user;
+                                   });
+            if (author) {
+                let newPostId = this.articleManager.addArticle(author, articleContent)
+                author.selfPosts.push(newPostId);
+                author.save();
+                return newPostId;
+            }
+        } catch (error) {
+            throw error;
         }
-        let author = this.accounts_info.find(account => account['username'] == username);
-        let newPostId = this.articleManager.addArticle(author, article);
-        author.selfPosts.push(newPostId);
-        synchronize(this.accounts_info, this.accountsPATH);
-        return newPostId;
+        throw "user not found";
     }
 
     /**
      * @param {String} username 
-     * @returns all posts of user's followee or user following posts
+     * @returns all articleId of user's followedUsers and followedPosts
      * @throws "user not found" exception
      */
-    this.getFollowedPostsByUser = function(username) {
-        if (!this.hasUser(username)) {
-            throw "user not found";
+    this.getFollowedPostsByUser = async function(userId) {
+        try {
+            let user = await User.findById(userId)
+                                 .populate('followedUsers')
+                                 .exec()
+                                 .then((user) => {
+                                     return user;
+                                 });
+            if (user) {
+                let articleIds = [];
+                articleIds.push.apply(articleIds, user.followedPosts);
+                for (followedUser of user.followedUsers) {
+                    for (userPost of followedUser.selfPosts) {
+                        if (!articleIds.includes(userPost)) {
+                            articleIds.push(userPost);
+                        }
+                    }
+                }
+                return articleIds;
+            }
+        } catch (error) {
+            throw error;
         }
+        throw "user not found"; 
+        /*
+        if (!this.hasUser(username)) {
+            throw "user not fou  nd";
+        }                        
         let account = this.accounts_info.find(account => account.username == username);
         let posts = [];
         posts.push.apply(posts, account.followedPosts);
@@ -215,6 +413,7 @@ module.exports = function() {
             }
         }
         return posts;
+        */
     }
     
     /**
@@ -223,12 +422,27 @@ module.exports = function() {
      * @returns the user's post
      * @throws "user not found" exception
      */
-    this.getPostsByAuthor = function(username) {
+    this.getPostsByAuthor = async function(userId) {
+        try {
+            let author = await User.findById(userId)
+                                   .exec()
+                                   .then((user) => {
+                                       return user;
+                                   });
+            if (author) {
+                return author.selfPosts;
+            }
+        } catch (error) {
+            throw error;
+        }
+        throw "user not found";
+        /*
         if (!this.hasUser(username)) {
             throw "user not found";
         }
         let author = this.accounts_info.find(account => account.username == username);
         return author.selfPosts;
+        */
     }
 
     /**
@@ -245,26 +459,3 @@ module.exports = function() {
         this.articleManager.addCommentToArticle(author, articleId, commentStr);
     }
 };
-
-function newAccountInfo(newUserData) {
-    let template = {
-        "id": "",
-        "username": "",
-        "password": "",
-        "followers": [],
-        "followees": [],
-        "followedPosts": [],
-        "selfPosts": []
-    };
-    for (keys in newUserData) {
-        template[keys] = newUserData[keys];
-    }
-    return template;
-}
-
-function synchronize(obj, path) {
-    let data = JSON.stringify(obj, null, 4);
-    fs.writeFile(path, data, (err) => {
-        if (err) console.log(err);
-    });
-}

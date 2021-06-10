@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import {
   apiGetArticles,
+  apiGetArticleById,
   apiGetPublicInfo,
   apiLogout,
   apiTryLogin,
@@ -15,13 +16,19 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    article_data: {},
     global_articles: '',
     user_articles: '',
     followed_articles: undefined,
-    username: '',
+    user: {
+      name: undefined,
+      id: undefined,
+      pro_pic: undefined,
+    },
+    // username: '',
     is_login: false,
     links: global_links,
-    user_id: '0',
+    // user_id: '0',
     user_list: {},
   },
   mutations: {
@@ -37,32 +44,48 @@ export default new Vuex.Store({
 
     /**
      *
-     * @param {Object} payload {username, id}
+     * @param {Object} payload {id, data}
+     */
+    addArticle(state, payload) {
+      state.article_data[payload.id] = payload.data;
+    },
+
+    /**
+     *
+     * @param {Object} payload user
      */
     login(state, payload) {
       state.is_login = true;
-      state.username = payload.username;
-      state.user_id = payload.id;
+      state.user = {
+        id: payload.id,
+        name: payload.username,
+        honor: payload.honor,
+        selfIntro: payload.selfIntro,
+        pro_pic: payload.proPic,
+        nFans: payload.nFans,
+        nFollowing: payload.nFollowing,
+        nPosts: payload.nPosts,
+      };
       state.links = user_links;
       state.links.forEach((link) => {
-        if (link.to.params) link.to.params.username = payload;
+        if (link.to.params) link.to.params.username = payload.username;
       });
     },
     logout(state) {
       state.is_login = false;
-      state.username = '';
+      state.user.name = '';
       state.links = global_links;
     },
     setid(state, payload) {
-      state.user_id = payload;
+      state.user.id = payload;
     },
     /**
      *
      * @param {Object} payload { id , info}
      */
-    add_user(state, payload) {
-      state.user_list[payload.id] = payload.info;
-    },
+    // addUser(state, payload) {
+    //   state.user_list[payload.id] = payload.info;
+    // },
   },
   getters: {
     // hasFollowed(state, id) {
@@ -79,39 +102,42 @@ export default new Vuex.Store({
       await apiGetArticles()
         .then((res) => {
           context.commit('updateGlobalArticles', res.data);
+          context.state.global_articles.forEach((id) => {
+            context.dispatch('getArticle', id);
+          });
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    async getArticle(context, id) {
-      if (context.state.global_articles)
-        return context.state.global_articles[id];
-      else {
-        await context.dispatch('getGlobalArticles');
-        return context.state.global_articles[id];
-      }
+    async getArticle({ state, commit }, id) {
+      if (id in state.article_data) return state.article_data[id];
+
+      return apiGetArticleById(id).then((res) => {
+        commit('addArticle', { id, data: res.data });
+        return res.data;
+      });
     },
-    async getUser({ state, commit }, id) {
-      if (id in state.user_list) return state.user_list[id];
-      return await apiGetPublicInfo(id)
-        .then((res) => {
-          commit('add_user', { id, info: res.data });
-          return res.data;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
+    // async getUser({ state, commit }, id) {
+    //   if (id in state.user_list) return state.user_list[id];
+    //   return await apiGetPublicInfo(id)
+    //     .then((res) => {
+    //       commit('addUser', { id, info: res.data });
+    //       return res.data;
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // },
 
     /**
      *
      * @param {Boolean} forceUpdate
      * @returns
      */
-    async getUserArticles(context, forceUpdate) {
+    async getUserArticles(context, forceUpdate = false) {
       if (context.state.user_articles && !forceUpdate) return;
-      await apiGetUserPosts({ username: context.state.username })
+      await apiGetUserPosts({ username: context.state.user.name })
         .then((res) => {
           context.commit('updateUserArticles', res.data);
         })
@@ -128,7 +154,9 @@ export default new Vuex.Store({
     async tryLogin(context, payload) {
       return apiTryLogin(payload)
         .then((res) => {
-          context.commit('login', res.data);
+          apiGetPublicInfo(res.data.id).then((res) => {
+            context.commit('login', res.data);
+          });
           Vue.$cookies.set('login', payload.username);
 
           router.push({
@@ -152,7 +180,7 @@ export default new Vuex.Store({
     },
 
     async getUserFollowed(context) {
-      apiUserFollowedPosts({ username: context.state.username })
+      apiUserFollowedPosts({ username: context.state.user.name })
         .then((res) => {
           context.commit('updateUserFollowed', res.data);
         })
