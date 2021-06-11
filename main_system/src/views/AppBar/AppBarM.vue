@@ -18,6 +18,18 @@ v-app-bar.d-flex.justify-center.align-end(
           .text-center()
             h3.subtitle 願望清單
             span.subtitle wish list
+      
+      v-col.align-self-center(cols="2")
+        v-btn.ma-0.pa-1(
+          width="64"
+          height="64"
+          text
+          link
+          :to="{ name: 'Calendar' }"
+        )
+          .d-flex.flex-column.align-center
+            v-icon(large color="white") mdi-calendar-range
+            span.caption(style="color: white;") 行事曆
 
   //- v-app-bar-nav-icon(
 //- 
@@ -68,6 +80,9 @@ export default {
     Back() {
       this.$router.go(-1);
     },
+    goCalendar() {
+      this.$router.push({ name: 'Calendar' });
+    },
   },
 };
 </script>
@@ -84,5 +99,9 @@ export default {
 }
 h3.subtitle {
   font-size: 1.6rem;
+}
+.v-btn__content {
+  display: flex;
+  flex-direction: column;
 }
 </style>

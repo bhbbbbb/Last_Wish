@@ -156,9 +156,14 @@ export const home_routes = [
         });
     },
   },
+  // {
+  //   path: 'following',
+  //   name: 'Following',
+  //   component: () => import('@/views/Following'),
+  // },
   {
-    path: 'following',
-    name: 'Following',
-    component: () => import('@/views/Following'),
+    path: 'calendar',
+    name: 'Calendar',
+    component: () => import('@/views/Calendar'),
   },
 ];
