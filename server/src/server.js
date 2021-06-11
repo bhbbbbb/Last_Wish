@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const app = express();
 const fs = require('fs');
 var cors = require("cors");
 const port = 2222;
@@ -9,6 +8,7 @@ const https = require('https');
 const db_config = require('../db.config');
 
 app.use('/media', express.static('./data/uploads/'));
+const filePath = __dirname + '/data/uploads/';
 const corsOptions = {
     origin : [
         "http://localhost:8080", "http://luffy.ee.ncku.edu.tw:5000",
@@ -32,7 +32,7 @@ const db_url =
 mongoose.connect(db_url, {useNewUrlParser : true, useUnifiedTopology : true})
     .then(() => {
         const app = express();
-        app.use('/media', express.static('./data/uploads/'));
+        app.use('/media', express.static(filePath));
         app.use(cors(corsOptions));
         // app.use(cors());
 

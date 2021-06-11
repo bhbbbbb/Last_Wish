@@ -88,9 +88,6 @@ export default {
     }
   },
   methods: {
-    change({ coordinates, canvas }) {
-      console.log(coordinates, canvas);
-    },
     onChange({ coordinates, image }) {
       this.result = {
         coordinates,
@@ -157,14 +154,11 @@ export default {
           form.append('file', blob);
           // You can use axios, superagent and other libraries instead here
           apiUploadFiles(form).then((res) => {
-            console.log(res.status);
             this.$emit('get_img', res.data);
             var filePath = '/media/' + res.data;
-            console.log(filePath);
             if (res.status == 200) {
               apiSetProPic({ pro_pic_url: filePath }).then((res) => {
                 if (res.status == 200) {
-                  console.log(filePath);
                   this.$store.commit('updateProPic', filePath);
                   this.file = '';
                   this.reset();

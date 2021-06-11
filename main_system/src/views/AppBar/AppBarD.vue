@@ -7,7 +7,7 @@ v-app-bar(app flat)
     v-tab(
       v-for="(link, idx) in links"
       :key="idx"
-      :to="is_login ? {name: link.to.name, params: {username: username}} : link.to"
+      :to="is_login ? {name: link.to.name, params: {username: user.name}} : link.to"
     )
       | {{ link.text }}
 
@@ -30,7 +30,7 @@ export default {
     selected: 0,
   }),
   computed: {
-    ...mapState(['links', 'is_login', 'username']),
+    ...mapState(['links', 'is_login', 'user']),
   },
   methods: {
     logout() {
