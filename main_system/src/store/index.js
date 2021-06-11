@@ -41,6 +41,9 @@ export default new Vuex.Store({
     updateUserFollowed(state, payload) {
       state.followed_articles = payload;
     },
+    updateProPic(state, payload) {
+      state.user.pro_pic = payload;
+    },
 
     /**
      *

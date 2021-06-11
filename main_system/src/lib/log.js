@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import store from '@/store/index';
-import { apiWho } from '@/store/api';
+import { apiWho, apiGetPublicInfo } from '@/store/api';
 //import Vuex from 'vuex'
 
 /*********
@@ -17,7 +17,8 @@ export const isLogin = async () => {
       try {
         let who = await apiWho().then((res) => res.data);
         if (String(cookies_login) === String(who.username)) {
-          store.commit('login', who);
+          let info = await apiGetPublicInfo(who.id).then((res) => res.data);
+          store.commit('login', info);
           return true;
         }
       } catch (err) {

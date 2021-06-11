@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const app = express();
 const fs = require('fs');
 var cors = require("cors");
 const https_config = require('../https.config');
