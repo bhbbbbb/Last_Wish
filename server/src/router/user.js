@@ -72,27 +72,40 @@ const REGISTER = [
         body : {err_code : DUPLICATED_USER, err_msg : "duplicated user"}
     }
 ];
+
+const EMAIL_ERR = 1;
+const EMAIL_SENDER = [
+    {status : 200},
+    {status : 202, body : {err_code : EMAIL_ERR, err_msg : "email sent failed"}}
+];
+
 user.post('/register', (req, res) => {
     frontUrl = req.body.frontUrl;
     serverUrl = frontUrl.split(/(:[0-9])/)[0] + ':' + port;
     console.log(req.body);
     var addr = req.body.email;
-    mailManager.sendToken(addr, req.body.username, EMAIL_SECRET, serverUrl);
-    console.log(serverUrl);
-    /*
-        let trimmedUsername = req.body.username.trim();
-        let trimmedPassword = req.body.password.trim();
-        accountManager.addUser(trimmedUsername, trimmedPassword)
-            .then(() => {
-                let response = REGISTER[SUCCEED];
+
+    let trimmedUsername = req.body.username.trim();
+    let trimmedPassword = req.body.password.trim();
+    accountManager.addUser(trimmedUsername, trimmedPassword)
+        .then((id) => {
+            let response = REGISTER[SUCCEED];
+            console.log(id);
+            try{
+                mailManager.sendToken(addr, id, trimmedUsername, serverUrl, EMAIL_SECRET);
                 res.sendStatus(response.status);
-            })
-            .catch((err) => {
-                console.log(err);
-                let response = REGISTER[DUPLICATED_USER];
+                console.log(addr);
+            }catch(e){
+                console.log(e);
+                let response = EMAIL_SENDER[EMAIL_ERR];
                 res.status(response.status).json(response.body);
-            });
-            */
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            let response = REGISTER[DUPLICATED_USER];
+            res.status(response.status).json(response.body);
+        });
 });
 
 user.post('/set_self_intro', user_session,
@@ -292,13 +305,12 @@ user.get('/get_id_by_name', (req, res) => {
 
 user.get('/confirmation/:token', async (req, res) => {
     try {
-        const {user : username} = jwt.verify(req.params.token, EMAIL_SECRET);
-        console.log(username);
+        const {user : id} = jwt.verify(req.params.token, EMAIL_SECRET);
+        console.log(id);
         // models.User.update({confirmed : true}, {where : {id}});
     } catch (e) {
         res.send('error');
     }
-
     return res.redirect(frontUrl);
 });
 

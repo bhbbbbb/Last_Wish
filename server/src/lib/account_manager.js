@@ -101,7 +101,7 @@ module.exports = function() {
                 };
                 const user = new User(newUserData);
                 user.save();
-                return;  // if the function is executed normally
+                return user._id;  // if the function is executed normally
             }
         } catch (error) {
             throw error;

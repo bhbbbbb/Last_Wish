@@ -62,7 +62,7 @@ export default {
       username: '',
       password: '',
       password_confirm: '',
-      eamil: '',
+      email: '',
     },
     emailRules: [
       (v) => !!v || 'E-mail is required',

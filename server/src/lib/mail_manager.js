@@ -78,21 +78,21 @@ module.exports = function() {
      * @throws any error happened
      */
 
-    this.sendToken = (mailAddr, username, EMAIL_SECRET, serverUrl) => {
+    this.sendToken = (mailAddr, id, username, serverUrl, EMAIL_SECRET) => {
         jwt.sign(
             {
-                user : username,
+                user : id,
             },
             EMAIL_SECRET,
             {
-                expiresIn : '1d',
+                expiresIn : '30m',
             },
             (err, emailToken) => {
                 const url = serverUrl + `/user/confirmation/${emailToken}`;
                 var html =
                     `Please click this email to confirm your email:<br> <a href="${
                         url}">${url}</a>`;
-                var sub = username + ' 這是你的驗證資訊 from lernen';
+                var sub = username + ' 這是你的驗證資訊 from learnen';
                 var mailOptions = {
                     from : 'noreply',
                     to : mailAddr,
