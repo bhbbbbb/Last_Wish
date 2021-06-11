@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
   },
   proPic: {
     type: String,  // url to profile picture
-    default: 'pic source url',
+    default: "",
   },
   fans: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
   followedUsers: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
