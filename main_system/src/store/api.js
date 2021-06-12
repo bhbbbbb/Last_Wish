@@ -30,7 +30,27 @@ export const apiUploadFiles = (data) => uploadRequest.post('/uploadFile', data);
 // export const apiGetArticles = () => articleRequest.get('/');
 export const apiGetArticles = () =>
   new Promise((res) => {
-    res({ data: ['60c03edafd420b1c740ea78c'] });
+    res({
+      data: [
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+        '60c03edafd420b1c740ea78c',
+      ],
+    });
   });
 export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
 export const apiUploadComment = (data) =>

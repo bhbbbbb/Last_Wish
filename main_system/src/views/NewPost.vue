@@ -25,6 +25,7 @@ v-card.ma-0.pa-3(min-height="10vh" flat)
     @blur="removeHashTag"
     @click:prepend="focus()"
     @click:append-outer="addTag()"
+    @keydown.enter="addTag()"
     persistent-hint
     hint="TODO: add rule to check empty, repeat..."
   )
@@ -68,7 +69,6 @@ export default {
     show_info: false,
     info_type: 'success',
     infos: '',
-    checkbox: false,
     submit_buffer: false,
   }),
   computed: {
@@ -90,14 +90,6 @@ export default {
       this.tag_model = '#';
     },
     SubmitNewArticle() {
-      let now = new Date(Date.now());
-      now = now.toISOString().substring(0, 10);
-      this.new_article.wish = {
-        title: '開始這個願望',
-        time: now,
-      };
-      if (this.checkbox) this.new_article.from = '0';
-      else this.new_article.from = this.$store.state.user.id;
       if (!this.new_article.title || !this.new_article.body) {
         // todo : error
         this.Show_info('Blank data!', 'error');

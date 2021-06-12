@@ -8,16 +8,10 @@ export const user_routes = [
     // TODO : redirect un login visiter to public profile page
     beforeEnter(to, from, next) {
       if (store.state.is_login) {
-        if (store.state.user_articles) next();
+        if (store.state.user_articles.length) next();
         else {
-          store
-            .dispatch('getUserArticles')
-            .then(() => {
-              next();
-            })
-            .catch(() => {
-              next(false);
-            });
+          next();
+          store.dispatch('getUserArticles');
         }
       } else next('/articles');
     },

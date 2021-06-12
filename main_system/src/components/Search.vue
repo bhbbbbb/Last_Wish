@@ -1,5 +1,5 @@
 <template lang="pug">
-v-sheet.pt-3.sticky(flat style="margin: -5px -5px -5px -5px;")
+v-sheet.pt-3.sticky(flat style="margin: -5px -5px 5px -5px;")
   v-row.mb-2(no-gutters)
     v-menu(
       v-model="order"

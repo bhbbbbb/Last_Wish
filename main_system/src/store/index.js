@@ -17,8 +17,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     article_data: {},
-    global_articles: '',
-    user_articles: '',
+    global_articles: [],
+    user_articles: [],
     followed_articles: undefined,
     user: {
       name: undefined,
@@ -101,11 +101,11 @@ export default new Vuex.Store({
      * @returns
      */
     async getGlobalArticles(context, forceUpdate = false) {
-      if (context.state.global_articles && !forceUpdate) return;
-      await apiGetArticles()
+      if (context.state.global_articles.length && !forceUpdate) return;
+      apiGetArticles()
         .then((res) => {
           context.commit('updateGlobalArticles', res.data);
-          context.state.global_articles.forEach((id) => {
+          res.data.forEach((id) => {
             context.dispatch('getArticle', id);
           });
         })
@@ -141,13 +141,13 @@ export default new Vuex.Store({
      * @returns
      */
     async getUserArticles(context, forceUpdate = false) {
-      if (context.state.user_articles && !forceUpdate) return;
+      if (context.state.user_articles.length && !forceUpdate) return;
       await apiGetUserPosts()
         .then((res) => {
+          context.commit('updateUserArticles', res.data);
           res.data.forEach((id) => {
             context.dispatch('getArticle', id);
           });
-          context.commit('updateUserArticles', res.data);
         })
         .catch((err) => {
           console.log(err);

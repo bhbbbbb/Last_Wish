@@ -6,19 +6,23 @@ export const home_routes = [
     component: () => import('@/views/ArticleContainer'),
     beforeEnter(to, from, next) {
       // TODO : may need to update global_articles
-      if (store.state.global_articles) next();
-      else {
-        store
-          .dispatch('getGlobalArticles')
-          .then(() => {
-            // console.log(store.state.global_articles);
-            next();
-          })
-          .catch((err) => {
-            console.log(err);
-            next(false);
-          });
+      next();
+      if (store.state.global_articles.length === 0) {
+        // store.dispatch('getGlobalArticles');
       }
+      // if (store.state.global_articles) next();
+      // else {
+      //   store
+      //     .dispatch('getGlobalArticles')
+      //     .then(() => {
+      //       // console.log(store.state.global_articles);
+      //       next();
+      //     })
+      //     .catch((err) => {
+      //       console.log(err);
+      //       next(false);
+      //     });
+      // }
     },
     props: () => ({
       articles: store.state.global_articles,

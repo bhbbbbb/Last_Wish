@@ -4,9 +4,9 @@ v-card.my.pa-3(
     rounded="lg"
     :color="color"
     v-on="$listeners"
-    v-if="content"
+    :loading="Boolean(content) ? false : 'grey'"
   )
-  v-row(no-gutters="")
+  v-row(v-if="content" no-gutters="")
     v-col(cols="5")
       UserAvatar(:user="content.author")
       span.px-3()
@@ -16,16 +16,17 @@ v-card.my.pa-3(
     v-col.d-flex.justify-end.pl-2(cols="2")
       v-btn(icon)
         v-icon(style="transform: rotate(0.125turn);") mdi-link
-  v-row(no-gutters="")
+  v-row(v-if="content" no-gutters="")
     strong(style="white-space: nowrap; overflow: hidden;") {{ content.content.title }}
   v-row(
+    v-if="content"
     no-gutters
     style="height: 50px;"
   )
     p.ma-0(style="white-space: pre-wrap; overflow: hidden;height: 50px;") {{ content.content.body }}
-  v-row(no-gutters)
+  v-row(v-if="content" no-gutters)
     span.subtitle-2.text--disabled {{ content.content.milestones.length }} 個里程碑
-  v-row.align-center(no-gutters)
+  v-row.align-center(v-if="content" no-gutters)
     v-btn(icon)
       v-icon mdi-heart-outline
     span.subtitle-2.text--secondary 喜歡 {{ content.likes }}
@@ -39,7 +40,7 @@ v-card.my.pa-3(
 </template>
 
 <script>
-import formatDate from '@/lib/formatDate';
+import moment from 'moment';
 import color_list from '@/store/color_list';
 export default {
   name: 'ArticleCard',
@@ -58,7 +59,7 @@ export default {
   }),
   computed: {
     date() {
-      return formatDate(this.content.date);
+      return moment(this.content.date).format('M/D');
     },
   },
   watch: {
@@ -69,6 +70,7 @@ export default {
   created() {
     this.update();
   },
+  mounted() {},
   methods: {
     update() {
       this.color = color_list(this.id);

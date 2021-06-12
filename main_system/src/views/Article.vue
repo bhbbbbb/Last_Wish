@@ -75,7 +75,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
                   | {{ ms.title }}
               v-col.d-flex.justify-end.pr-4(cols="auto" slot="opposite")
                 span.subtitle-2.text--disabled(slot="opposite")
-                  | {{ formatDate(ms.estDate) }}
+                  | {{ moment(ms.estDate).format('M/D') }}
 
           v-timeline-item.align-center(
             small
@@ -115,7 +115,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
           :key="comment.id",
           :context="comment"
         )
-        NewComment(@update="updateComment")
+        NewComment(v-if="$store.state.is_login" @update="updateComment")
     v-overlay.align-start(:value="show_info", absolute="absolute", opacity="0")
       v-alert.mt-10(
         :value="show_info",
@@ -127,11 +127,10 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
 </template>
 
 <script>
-// import { mapState } from 'vuex'
+import moment from 'moment';
 import { apiUserFollowedPostToggle } from '@/store/api';
 import color_list from '@/store/color_list.js';
-import formatDate from '@/lib/formatDate';
-//var Article_id = '';
+// var Article_id = '';
 
 export default {
   name: 'Article',
@@ -164,7 +163,7 @@ export default {
   }),
   computed: {
     date() {
-      return formatDate(this.context.date);
+      return moment(this.context.date).format('M/D');
     },
   },
   created() {
@@ -184,7 +183,6 @@ export default {
   },
 
   methods: {
-    formatDate,
     Copy() {
       let ele = document.getElementById('url');
       ele.value = window.location.href;
@@ -258,6 +256,7 @@ export default {
         this.hasFollowed = !this.hasFollowed;
       });
     },
+    moment,
     color_list,
   },
 };

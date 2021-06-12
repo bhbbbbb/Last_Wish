@@ -39,14 +39,19 @@ export default {
   },
   data: () => ({}),
   computed: {},
-  created() {
-    // if (
-    //   this.$store.state.is_login &&
-    //   this.$store.state.followed_articles === undefined
-    // )
-    //   this.$store.dispatch('getUserFollowed');
+  watch: {
+    toUser() {
+      this.$store
+        .dispatch(this.toUser ? 'getUserArticles' : 'getGlobalArticles')
+        .then(() => {});
+    },
   },
-
+  created() {
+    this.$store
+      .dispatch(this.toUser ? 'getUserArticles' : 'getGlobalArticles')
+      .then(() => {});
+  },
+  mounted() {},
   methods: {
     ToInnerArticle(article_id) {
       let to_name = this.toUser ? 'UserArticle' : 'Article';
