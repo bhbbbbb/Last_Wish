@@ -4,6 +4,11 @@ const Article = require("./Article");
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
+  email: String,
+  verified:{
+    type: Boolean,
+    default: false
+  },
   honor: {
     type: String,
     enum: ['lv1', 'lv2', 'lv3', 'lv4', 'lv5', 'lv6', 'lv7', 'lv8'],

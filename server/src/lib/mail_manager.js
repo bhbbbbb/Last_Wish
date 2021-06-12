@@ -1,6 +1,6 @@
 var nodemailer = require('nodemailer');
 var mail_config = require('./mail_config');
-// const User = require('../models/User');
+const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 const transporter = nodemailer.createTransport({
@@ -13,22 +13,23 @@ const transporter = nodemailer.createTransport({
 var status;
 
 module.exports = function() {
-    // /**
-    //  * @param {Srting} mailAddr
-    //  * @returns if mailAddr is already in list
-    //  * @throws any error happened
-    //  */
-    // this.hasMailAddr = async function (mailAddr) {
-    //   try {
-    //     return await User.findOne({email: mailAddr})
-    //       .exec()
-    //       .then((addr) => {
-    //         return addr != null;
-    //       });
-    //   } catch (error) {
-    //     throw error;
-    //   }
-    // };
+    /**
+     * @param {Srting} mailAddr
+     * @returns if mailAddr is already in list
+     * @throws any error happened
+     */
+    this.hasMailAddr = async function (mailAddr) {
+      try {
+        return await User.findOne({email: mailAddr})
+          .exec()
+          .then((addr) => {
+            console.log(addr!= null);
+            return addr != null;
+          });
+      } catch (error) {
+        throw error;
+      }
+    };
 
     /**
      * @param {String} mailAddr
@@ -116,6 +117,30 @@ module.exports = function() {
             },
         );
     };
+
+    /**
+     * To Verified user's email
+     * @param {String} userId 
+     * @throws "user not found"
+     */
+     this.verified = async function(targetId) {
+        try {
+            let target = await User.findById(targetId)
+                                    .exec()
+                                    .then((target) => {
+                                        return target;
+                                    });
+            if(target){
+                target.verified = true;
+                target.save();
+                return;
+            }
+            }
+            catch (error) {
+                throw error;
+            }
+            throw "user not found";
+        }
 };
 
 /**
@@ -139,6 +164,6 @@ function isValidAddr(mailAddr) {
         /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
     // new RegExp(
     //  "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[A-Z]{2}|com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum)\b");
-    console.log(pattern.test(mailAddr.toLowerCase()));
+    //console.log(pattern.test(mailAddr.toLowerCase()));
     return pattern.test(mailAddr.toLowerCase());
 }

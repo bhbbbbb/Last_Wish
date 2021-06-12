@@ -79,7 +79,7 @@ module.exports = function() {
      * @param {String} password 
      * @throws "duplicated user" exception
      */
-    this.addUser = async function(username, password) {
+    this.addUser = async function(username, password, email) {
         var duplicated;
         try {
             duplicated = await User.findOne({username: username})
@@ -92,6 +92,7 @@ module.exports = function() {
                 let newUserData = {
                     "username": username,
                     "password": hash,
+                    "email": email,
                 };
                 const user = new User(newUserData);
                 user.save();

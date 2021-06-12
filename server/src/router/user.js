@@ -66,46 +66,74 @@ user.post('/try_login', user_session, (req, res) => {
 });
 
 const DUPLICATED_USER = 1;
+const DUPLICATED_EMAIL = 2;
+const INVALID_ADDR = 3;
+const EMAIL_ERR = 4;
 const REGISTER = [
-    {status : 200}, {
+    {status : 200}, 
+    {
         status : 201,
         body : {err_code : DUPLICATED_USER, err_msg : "duplicated user"}
-    }
+    },
+    {
+        status : 202, 
+        body : {err_code : DUPLICATED_EMAIL, err_msg : "duplicated email"}
+    },
+    {
+        status : 203,
+        body : {err_code : INVALID_ADDR, err_msg : "invalid email address"}
+    },
+    {
+        status : 204,
+        body : {err_code : EMAIL_ERR, err_msg : "email sent failed"}
+    },    
 ];
 
-const EMAIL_ERR = 1;
-const EMAIL_SENDER = [
-    {status : 200},
-    {status : 202, body : {err_code : EMAIL_ERR, err_msg : "email sent failed"}}
-];
+
 
 user.post('/register', (req, res) => {
     frontUrl = req.body.frontUrl;
     serverUrl = frontUrl.split(/(:[0-9])/)[0] + ':' + port;
     console.log(req.body);
-    var addr = req.body.email;
-
-    let trimmedUsername = req.body.username.trim();
-    let trimmedPassword = req.body.password.trim();
-    accountManager.addUser(trimmedUsername, trimmedPassword)
-        .then((id) => {
-            let response = REGISTER[SUCCEED];
-            console.log(id);
-            try{
-                mailManager.sendToken(addr, id, trimmedUsername, serverUrl, EMAIL_SECRET);
-                res.sendStatus(response.status);
-                console.log(addr);
-            }catch(e){
-                console.log(e);
-                let response = EMAIL_SENDER[EMAIL_ERR];
-                res.status(response.status).json(response.body);
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-            let response = REGISTER[DUPLICATED_USER];
+    var addr = req.body.email.toLowerCase();
+    if(!mailManager.isValidAddr(addr)){
+        let response = REGISTER[INVALID_ADDR];
+        res.status(response.status).json(response.body);
+        console.log(response.body);
+    }
+    else {
+        mailManager.hasMailAddr(addr).then((result)=>{
+            if(result){
+            console.log(mailManager.hasMailAddr(addr));
+            let response = REGISTER[DUPLICATED_EMAIL];
             res.status(response.status).json(response.body);
-        });
+            console.log(response.body);
+        }else{
+            let trimmedUsername = req.body.username.trim();
+            let trimmedPassword = req.body.password.trim();
+            accountManager.addUser(trimmedUsername, trimmedPassword, addr)
+                .then((id) => {
+                    let response = REGISTER[SUCCEED];
+                    console.log(id);
+                    try{
+                        mailManager.sendToken(addr, id, trimmedUsername, serverUrl, EMAIL_SECRET);
+                        res.sendStatus(response.status);
+                        console.log(addr);
+                    }catch(e){
+                        console.log(e);
+                        let response = REGISTER[EMAIL_ERR];
+                        res.status(response.status).json(response.body);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    let response = REGISTER[DUPLICATED_USER];
+                    res.status(response.status).json(response.body);
+                });
+    }
+    })
+    }
+
 });
 
 user.post('/set_self_intro', user_session, (req, res) => {
@@ -303,11 +331,17 @@ user.get('/confirmation/:token', async (req, res) => {
     try {
         const {user : id} = jwt.verify(req.params.token, EMAIL_SECRET);
         console.log(id);
+        mailManager.verified(id).then(()=>{
+            return res.redirect(frontUrl);
+        }
+        ).catch(e=>{
+        res.send('error');
+        console.log(e);
+        })
         // models.User.update({confirmed : true}, {where : {id}});
     } catch (e) {
         res.send('error');
     }
-    return res.redirect(frontUrl);
 });
 
 function genNonce(length) {
