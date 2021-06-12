@@ -114,7 +114,9 @@ export default new Vuex.Store({
         });
     },
     async getArticle({ state, commit }, id) {
-      if (id in state.article_data) return state.article_data[id];
+      if (id in state.article_data) {
+        return state.article_data[id];
+      }
 
       return apiGetArticleById(id).then((res) => {
         commit('addArticle', { id, data: res.data });
@@ -140,8 +142,11 @@ export default new Vuex.Store({
      */
     async getUserArticles(context, forceUpdate = false) {
       if (context.state.user_articles && !forceUpdate) return;
-      await apiGetUserPosts({ username: context.state.user.name })
+      await apiGetUserPosts()
         .then((res) => {
+          res.data.forEach((id) => {
+            context.dispatch('getArticle', id);
+          });
           context.commit('updateUserArticles', res.data);
         })
         .catch((err) => {

@@ -17,7 +17,7 @@ v-card.my.pa-3(
       v-btn(icon)
         v-icon(style="transform: rotate(0.125turn);") mdi-link
   v-row(no-gutters="")
-    strong {{ content.content.title }}
+    strong(style="white-space: nowrap; overflow: hidden;") {{ content.content.title }}
   v-row(
     no-gutters
     style="height: 50px;"
@@ -40,6 +40,7 @@ v-card.my.pa-3(
 
 <script>
 import formatDate from '@/lib/formatDate';
+import color_list from '@/store/color_list';
 export default {
   name: 'ArticleCard',
   components: {
@@ -50,25 +51,32 @@ export default {
       type: String,
       required: true,
     },
-    color: {
-      type: String,
-      default: '#F5F4F0',
-    },
   },
   data: () => ({
     content: undefined,
+    color: '#F5F4F0',
   }),
   computed: {
     date() {
       return formatDate(this.content.date);
     },
   },
-  created() {
-    this.$store.dispatch('getArticle', this.id).then((res) => {
-      this.content = res;
-    });
+  watch: {
+    id() {
+      this.update();
+    },
   },
-  methods: {},
+  created() {
+    this.update();
+  },
+  methods: {
+    update() {
+      this.color = color_list(this.id);
+      this.$store.dispatch('getArticle', this.id).then((res) => {
+        this.content = res;
+      });
+    },
+  },
 };
 </script>
 

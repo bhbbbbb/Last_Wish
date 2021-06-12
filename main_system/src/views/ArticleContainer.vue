@@ -54,7 +54,6 @@ export default {
         name: to_name,
         params: {
           id: article_id,
-          username: '123',
         },
       });
     },

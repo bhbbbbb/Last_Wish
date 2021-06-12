@@ -38,27 +38,20 @@ export const user_routes = [
     beforeEnter(to, from, next) {
       isLogin().then((res) => {
         if (res) {
-          if (!store.state.global_articles) {
-            store
-              .dispatch('getGlobalArticles')
-              .then(() => {
-                next();
-              })
-              .catch(() => {
-                next(false);
-              });
-          } else next();
+          store
+            .dispatch('getArticle', to.params.id)
+            .then(() => {
+              next();
+            })
+            .catch(() => {
+              next(false);
+            });
         } else next({ name: 'Article', params: { id: to.params.id } });
       });
     },
     props: (route) => {
-      let context = route.params.context
-        ? route.params.context
-        : store.state.global_articles[route.params.id];
       return {
-        id: Number(route.params.id),
-        context: context,
-        color: route.params.color,
+        id: route.params.id,
       };
     },
   },

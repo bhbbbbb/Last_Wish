@@ -35,8 +35,7 @@ export const apiGetArticles = () =>
 export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
 export const apiUploadComment = (data) =>
   articleRequest.post('/addcomment', data);
-export const apiGetUserPosts = (data) =>
-  articleRequest.get('/user_post', { params: data });
+export const apiGetUserPosts = () => articleRequest.get('/get_user_posts');
 export const apiUserFollowedPosts = (data) =>
   articleRequest.get('/followed_post', { params: data });
 export const apiUploadMilestone = (data) =>

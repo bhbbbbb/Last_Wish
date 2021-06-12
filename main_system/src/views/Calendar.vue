@@ -212,7 +212,7 @@ export default {
   mounted() {
     this.$refs.calendar.checkChange();
     this.mounted = true;
-    console.log(this.$refs.calendar);
+    // console.log(this.$refs.calendar);
     // this.title.year = $refs.calendar.times.today.year;
     // this.title.
   },

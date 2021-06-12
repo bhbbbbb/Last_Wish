@@ -3,7 +3,7 @@
     class="ma-0 pa-1"
     min-height="80vh"
     rounded="lg"
-    :color="color_list($route.params.id)"
+    color="transparent"
     width="100%"
     flat
   >
@@ -23,7 +23,7 @@
           </v-col>
           <v-col cols="auto" class="d-flex justify-end pr-4">
             <span class="subtitle-2 text--disabled">
-              {{ wish.time ? date_format(wish.time) : '' }}
+              {{ wish.estDate ? date_format(wish.estDate) : '' }}
             </span>
           </v-col>
         </v-row>
@@ -44,7 +44,7 @@
       <v-row>
         <v-col cols="12" class="d-flex justify-center">
           <v-date-picker
-            v-model="newMilestone.time"
+            v-model="newMilestone.estDate"
             :color="color_list(7)"
             :max="max"
           >
@@ -62,6 +62,7 @@
 <script>
 // import { apiUploadMilestone } from '@/store/api';
 import color_list from '@/store/color_list.js';
+import moment from 'moment';
 export default {
   name: 'NewMilestone',
   components: {},
@@ -78,28 +79,21 @@ export default {
   data: () => ({
     newMilestone: {
       title: undefined,
-      time: undefined,
+      estDate: undefined,
       body: undefined,
+      finished: false,
     },
     max: undefined,
   }),
   computed: {},
   created() {
     this.max = this.getISONow();
-    this.newMilestone.time = this.max;
+    this.newMilestone.estDate = this.max;
   },
 
   methods: {
     getISONow() {
-      let now = new Date(Date.now());
-      let M = now.getMonth() + 1;
-      let d = now.getDate();
-      // let time = now.toTimeString();
-      let str = `${now.getFullYear()}-${M < 10 ? '0' : ''}${M}-${
-        d < 10 ? '0' : ''
-      }${d}`;
-      // str = str + 'T' + time.substring(0, 8);
-      return str;
+      return moment().format('YYYY-MM-DD');
     },
     date_format(time) {
       let time_arr = time.split('-');
@@ -108,7 +102,7 @@ export default {
     color_list,
     submitMilestone() {
       // TODO : tell user error message
-      if (!this.newMilestone.time) return;
+      if (!this.newMilestone.estDate) return;
       if (!this.newMilestone.title.trim()) return;
 
       // apiUploadMilestone({
@@ -120,7 +114,7 @@ export default {
       let copy = JSON.parse(JSON.stringify(this.newMilestone));
       this.wishes.push(copy);
       this.newMilestone.title = undefined;
-      this.newMilestone.time = undefined;
+      this.newMilestone.estDate = undefined;
       this.newMilestone.body = undefined;
     },
   },
