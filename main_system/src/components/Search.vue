@@ -47,13 +47,15 @@ v-sheet.pt-3.sticky(flat style="margin: -5px -5px -5px -5px;")
       clearable
       @focus="mode_options_show = true"
       autocomplete="off"
+      hide-details
+      @blur="mode_options_show = false"
     )
       template(#append-outer)
         span.mt-1.d-flex.text-no-wrap 搜尋
 
   v-row.pb-1(
     no-gutters
-    style="width: 100%;margin-top: -40px;"
+    style="width: 100%;margin-top: -10px;"
     v-if="mode_options_show && search_box_show"
   )
     v-tabs(
