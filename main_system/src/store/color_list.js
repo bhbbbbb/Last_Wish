@@ -23,6 +23,8 @@ export const COLOR_LIST = [
 
 export default (idx) => COLOR_LIST[hashCode(idx) % COLOR_LIST.length];
 
+export const color_list_by_idx = (idx) => COLOR_LIST[idx % COLOR_LIST.length];
+
 function hashCode(str) {
   var hash = 0,
     i,
