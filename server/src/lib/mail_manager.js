@@ -91,8 +91,8 @@ module.exports = function() {
             (err, emailToken) => {
                 const url = serverUrl + `/user/confirmation/${emailToken}`;
                 var html =
-                    `Please click this email to confirm your email:<br> <a href="${
-                        url}">${url}</a>`;
+                    `Please click this link to confirm your email:<br> <a href="${
+                        url}">Click me</a>`;
                 var sub = username + ' 這是你的驗證資訊 from learnen';
                 var mailOptions = {
                     from : 'noreply',

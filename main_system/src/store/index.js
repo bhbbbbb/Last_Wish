@@ -157,6 +157,7 @@ export default new Vuex.Store({
     async tryLogin(context, payload) {
       return apiTryLogin(payload)
         .then((res) => {
+          if(res.status==200){
           apiGetPublicInfo(res.data.id).then((res) => {
             context.commit('login', res.data);
           });
@@ -167,6 +168,10 @@ export default new Vuex.Store({
             params: { links: context.state.user_links },
           });
           return;
+          }
+          else{
+            return res;
+          }
         })
         .catch((err) => {
           console.log(err);

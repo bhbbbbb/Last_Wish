@@ -65,6 +65,8 @@ module.exports = function() {
                 let result = {
                     correct: bcrypt.compareSync(password, user.password),
                     userId: user._id,
+                    verified: user.verified,
+                    email: user.email,
                 }
                 return result;
             }

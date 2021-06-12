@@ -1,20 +1,26 @@
+/*************** Call modules **********************/
 var express = require('express');
 var user = express.Router();
+var ip = require("ip");
 const request = require('request');
 const jwt_decode = require('jwt-decode');
 const jwt = require('jsonwebtoken');
+/*************** Call outer files *****************/
 const MailManager = require('../lib/mail_manager.js');
 var mailManager = new MailManager();
-let lineLoginStates = {};
 var AccountManager = require('../lib/account_manager.js');
 var accountManager = new AccountManager();
 var user_session = require('../lib/session.js');
-var serverUrl = '';
-var frontUrl = '';
 const https_config = require('../../https.config');
+/***************** Url Setting *******************/
+const prefix = 'http://'
 var port = https_config.port;
+var frontPort = 8080;
+const serverUrl = prefix + ip.address() + ':' + port;
+const frontUrl  = prefix + ip.address() + ':' + frontPort;
+/***************** Others *************************/
 const EMAIL_SECRET = 'df45ea4g684AgpfsdSDLK4W6sdfsdg54asd4fgsljopa'
-
+let lineLoginStates = {};
 // the following API is to test the db
 user.get('/get_all_users', user_session, (_req, res) => {
     accountManager.getAllUsers();
@@ -29,21 +35,31 @@ user.get('/clear_all_users', user_session, (_req, res) => {
 const SUCCEED = 0;
 const USER_NOT_FOUND = 1;
 const PASSWORD_INCORRECT = 2;
+const NO_VERIFIED = 3;
 const TRY_LOGIN = [
-    {status : 200}, {
+    {status : 200}, 
+    {
         status : 401,
         body : {err_code : USER_NOT_FOUND, err_msg : "user not found"}
     },
     {
         status : 401,
-        body :
-            {err_code : PASSWORD_INCORRECT, err_msg : "password is incorrect"}
+        body : {err_code : PASSWORD_INCORRECT, err_msg : "password is incorrect"}
+    },
+    {
+        status: 203,
+        body : {err_code: NO_VERIFIED, err_msg : "Please check the confirmation mail first"}
     }
 ];
 user.post('/try_login', user_session, (req, res) => {
+    //console.log(serverUrl);
     accountManager.checkPassword(req.body.username, req.body.password)
         .then((result) => {
-            if (result.correct) {
+            if(!result.verified){
+                mailManager.sendToken(result.email, result.userId, req.body.username, serverUrl, EMAIL_SECRET);
+                let response = TRY_LOGIN[NO_VERIFIED]
+                res.status(response.status).json(response.body);
+            }else if (result.correct) {
                 let response = TRY_LOGIN[SUCCEED]
                 req.session.username = req.body.username;
                 // notice thate 'id' cannot be set in session
@@ -92,8 +108,6 @@ const REGISTER = [
 
 
 user.post('/register', (req, res) => {
-    frontUrl = req.body.frontUrl;
-    serverUrl = frontUrl.split(/(:[0-9])/)[0] + ':' + port;
     console.log(req.body);
     var addr = req.body.email.toLowerCase();
     if(!mailManager.isValidAddr(addr)){
@@ -118,7 +132,7 @@ user.post('/register', (req, res) => {
                     try{
                         mailManager.sendToken(addr, id, trimmedUsername, serverUrl, EMAIL_SECRET);
                         res.sendStatus(response.status);
-                        console.log(addr);
+                        //console.log(addr);
                     }catch(e){
                         console.log(e);
                         let response = REGISTER[EMAIL_ERR];
@@ -330,17 +344,20 @@ user.get('/get_id_by_name', (req, res) => {
 user.get('/confirmation/:token', async (req, res) => {
     try {
         const {user : id} = jwt.verify(req.params.token, EMAIL_SECRET);
-        console.log(id);
+        if(id){
         mailManager.verified(id).then(()=>{
             return res.redirect(frontUrl);
         }
         ).catch(e=>{
-        res.send('error');
+        res.send('<p>Token expired</p>');
         console.log(e);
         })
+    }else{
+        res.send('<p>Token expired</p>');
+    }
         // models.User.update({confirmed : true}, {where : {id}});
     } catch (e) {
-        res.send('error');
+        res.send('<p>Token expired</p>');
     }
 });
 

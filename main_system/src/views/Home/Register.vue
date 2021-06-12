@@ -87,8 +87,6 @@ export default {
         this.rules.confirm_match(this.user.password_confirm) == true &&
         this.rules.regex(this.user.username) == true;
       if (status) {
-        let ele = window.location.href;
-        this.user.frontUrl = ele.split('register')[0];
         apiRegister(this.user)
           .then((res) => {
             if (res.status == 200) {
