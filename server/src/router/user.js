@@ -343,16 +343,16 @@ user.get('/get_id_by_name', (req, res) => {
 
 user.get('/confirmation/:token', async (req, res) => {
     try {
-        const {user : id} = jwt.verify(req.params.token, EMAIL_SECRET);
+        const {user : id,nonce:nonce} = jwt.verify(req.params.token, EMAIL_SECRET);
         if(id){
-        mailManager.verified(id).then(()=>{
+            mailManager.verified(id,nonce).then(()=>{
             return res.redirect(frontUrl);
         }
         ).catch(e=>{
         res.send('<p>Token expired</p>');
         console.log(e);
         })
-    }else{
+        }else{
         res.send('<p>Token expired</p>');
     }
         // models.User.update({confirmed : true}, {where : {id}});
