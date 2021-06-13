@@ -77,19 +77,6 @@ global.get('/get_article_by_id', (req, res) => {
         })
 });
 
-// global.post('/list_articles', user_session, (req, res) => {
-//     articleManager
-//         .getMultipleArticlesByIds(req.body.article_ids, req.body.options)
-//         .then((articles) => {
-//             res.status(200).json(articles);
-//         })
-//         .catch((error) => {
-//             console.log(error);
-//             res.sendStatus(400);
-//             res.status(400).json(error);
-//         });
-// });
-
 /**
  * @req req.query { user_id }
  */
@@ -114,7 +101,7 @@ global.get('/get_user_posts', user_session, (req, res) => {
  */
 global.get('/get_followed_posts', user_session, (req, res) => {
     accountManager
-        .getFollowedPostsByUser(req.query.user_id)
+        .getFollowedPostsByUser(req.session.user_id)
         .then((articleIds) => {
             articleManager
                 .sortArticleIdsByOptions(articleIds, req.query.options)
