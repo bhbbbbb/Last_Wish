@@ -33,7 +33,7 @@ export const user_routes = [
       isLogin().then((res) => {
         if (res) {
           store
-            .dispatch('getArticle', to.params.id)
+            .dispatch('getArticle', { id: to.params.id })
             .then(() => {
               next();
             })

@@ -21,3 +21,7 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+src/data/account.json
+src/data/articles.json
+src/data/user_list.json

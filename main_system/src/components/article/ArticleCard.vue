@@ -26,17 +26,8 @@ v-card.my.pa-3(
     p.ma-0(style="white-space: pre-wrap; overflow: hidden;height: 50px;") {{ content.content.body }}
   v-row(v-if="content" no-gutters)
     span.subtitle-2.text--disabled {{ content.content.milestones.length }} 個里程碑
-  v-row.align-center(v-if="content" no-gutters)
-    v-btn(icon)
-      v-icon mdi-heart-outline
-    span.subtitle-2.text--secondary 喜歡 {{ content.likes }}
-    v-btn(icon)
-      v-icon mdi-comment-processing-outline
-    span.subtitle-2.text--secondary 留言 {{ content.comments.length }}
-    v-btn(icon)
-      v-icon mdi-star-outline
-    span.subtitle-2.text--secondary 追蹤 {{ content.fans.length }}
-    
+  //--------- articleBtns 
+  ArticleBtns(v-if="content" :content="content")
 </template>
 
 <script>
@@ -46,6 +37,7 @@ export default {
   name: 'ArticleCard',
   components: {
     UserAvatar: () => import('@/components/UserAvatar'),
+    ArticleBtns: () => import('@/components/ArticleBtns'),
   },
   props: {
     id: {
@@ -74,7 +66,7 @@ export default {
   methods: {
     update() {
       this.color = color_list(this.id);
-      this.$store.dispatch('getArticle', this.id).then((res) => {
+      this.$store.dispatch('getArticle', { id: this.id }).then((res) => {
         this.content = res;
       });
     },

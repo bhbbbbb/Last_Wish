@@ -7,7 +7,7 @@ import {
   apiLogout,
   apiTryLogin,
   apiGetUserPosts,
-  apiUserFollowedPosts,
+  apiGetFollowedPosts,
 } from './api';
 // import { apiGetArticles } from './api.js'
 import router from '@/router/index';
@@ -19,16 +19,14 @@ export default new Vuex.Store({
     article_data: {},
     global_articles: [],
     user_articles: [],
-    followed_articles: undefined,
+    followed_articles: [],
     user: {
       name: undefined,
       id: undefined,
       pro_pic: undefined,
     },
-    // username: '',
     is_login: false,
     links: global_links,
-    // user_id: '0',
     user_list: {},
   },
   mutations: {
@@ -106,15 +104,21 @@ export default new Vuex.Store({
         .then((res) => {
           context.commit('updateGlobalArticles', res.data);
           res.data.forEach((id) => {
-            context.dispatch('getArticle', id);
+            context.dispatch('getArticle', { id });
           });
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    async getArticle({ state, commit }, id) {
-      if (id in state.article_data) {
+
+    /**
+     *
+     * @param {Object} payload { id, force_update = false }
+     * @returns
+     */
+    async getArticle({ state, commit }, { id, force_update }) {
+      if (!force_update && id in state.article_data) {
         return state.article_data[id];
       }
 
@@ -123,6 +127,7 @@ export default new Vuex.Store({
         return res.data;
       });
     },
+
     // async getUser({ state, commit }, id) {
     //   if (id in state.user_list) return state.user_list[id];
     //   return await apiGetPublicInfo(id)
@@ -142,11 +147,11 @@ export default new Vuex.Store({
      */
     async getUserArticles(context, forceUpdate = false) {
       if (context.state.user_articles.length && !forceUpdate) return;
-      await apiGetUserPosts()
+      await apiGetUserPosts(context.state.user.id)
         .then((res) => {
           context.commit('updateUserArticles', res.data);
           res.data.forEach((id) => {
-            context.dispatch('getArticle', id);
+            context.dispatch('getArticle', { id });
           });
         })
         .catch((err) => {
@@ -162,19 +167,18 @@ export default new Vuex.Store({
     async tryLogin(context, payload) {
       return apiTryLogin(payload)
         .then((res) => {
-          if(res.status==200){
-          apiGetPublicInfo(res.data.id).then((res) => {
-            context.commit('login', res.data);
-          });
-          Vue.$cookies.set('login', payload.username);
+          if (res.status == 200) {
+            apiGetPublicInfo(res.data.id).then((res) => {
+              context.commit('login', res.data);
+            });
+            Vue.$cookies.set('login', payload.username);
 
-          router.push({
-            name: 'Articles',
-            params: { links: context.state.user_links },
-          });
-          return;
-          }
-          else{
+            router.push({
+              name: 'Articles',
+              params: { links: context.state.user_links },
+            });
+            return;
+          } else {
             return res;
           }
         })
@@ -192,15 +196,29 @@ export default new Vuex.Store({
       return;
     },
 
-    async getUserFollowed(context) {
-      apiUserFollowedPosts({ username: context.state.user.name })
+    async getUserFollowed(context, force_update = false) {
+      if (context.state.followed_articles.length !== 0 && !force_update)
+        return context.state.followed_articles;
+      return apiGetFollowedPosts()
         .then((res) => {
           context.commit('updateUserFollowed', res.data);
+          res.data.forEach((id) => {
+            context.dispatch('getArticle', { id });
+          });
+          return res.data;
         })
         .catch((err) => {
           console.log(err);
+          return [];
         });
     },
+
+    // async getFollowState({ dispatch }, id) {
+    //   return dispatch('getUserFollowed').then((res) => {
+    //     let found = res.find(element => element === id)
+    //     return Boolean(found);
+    //   });
+    // }
   },
   modules: {},
 });

@@ -62,7 +62,7 @@ export const home_routes = [
     component: () => import('@/views/Article'),
     beforeEnter(to, from, next) {
       store
-        .dispatch('getArticle', to.params.id)
+        .dispatch('getArticle', { id: to.params.id })
         .then(() => {
           next();
         })
@@ -153,7 +153,7 @@ export const home_routes = [
     name: 'FollowArticle',
     component: () => import('@/views/FollowArticle'),
     beforeEnter(to, from, next) {
-      if (store.state.followed_articles) next();
+      if (store.state.followed_articles.length) next();
       else
         store.dispatch('getUserFollowed').then(() => {
           next();

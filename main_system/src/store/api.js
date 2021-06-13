@@ -27,41 +27,18 @@ const uploadRequest = axios.create({
 export const apiUploadFiles = (data) => uploadRequest.post('/uploadFile', data);
 
 /********************** Call article.js **********************/
-// export const apiGetArticles = () => articleRequest.get('/');
-export const apiGetArticles = () =>
-  new Promise((res) => {
-    res({
-      data: [
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-        '60c03edafd420b1c740ea78c',
-      ],
-    });
-  });
+export const apiGetArticles = () => articleRequest.get('/');
 export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
 export const apiUploadComment = (data) =>
   articleRequest.post('/addcomment', data);
-export const apiGetUserPosts = () => articleRequest.get('/get_user_posts');
-export const apiUserFollowedPosts = (data) =>
-  articleRequest.get('/followed_post', { params: data });
-export const apiUploadMilestone = (data) =>
-  articleRequest.post('/addMilestone', data);
-export const apiUserFollowedPostToggle = (data) =>
-  articleRequest.post('FollowedPostToggle', data);
+export const apiGetUserPosts = (user_id) =>
+  articleRequest.get('/get_user_posts', { params: { user_id } });
+
+export const apiGetFollowedPosts = () =>
+  articleRequest.get('/get_followed_posts');
+// export const apiUploadMilestone = (data) =>
+//   articleRequest.post('/addMilestone', data);
+
 export const apiUpdateArticle = (data) =>
   articleRequest.post('/editArticle', data);
 
@@ -76,6 +53,14 @@ export const apiRegister = (data) => userRequest.post('/register', data);
 export const apiWho = () => userRequest.get('/who');
 export const apiLogout = () => userRequest.get('/logout'); // clear the session on server
 export const apiSetProPic = (data) => userRequest.post('/set_pro_pic', data);
+
+/**
+ *
+ * @param {String} id
+ */
+export const apiToggleFollow = (id) =>
+  userRequest.post('/toggle_followed_post', { article_id: id });
+
 /**
  *
  * @param {String} username

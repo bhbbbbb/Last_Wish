@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  name: 'App',
+  name: 'FollowArticle',
   components: {
     ArticleContainer: () => import('@/views/ArticleContainer'),
   },

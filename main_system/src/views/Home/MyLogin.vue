@@ -63,9 +63,8 @@ export default {
         this.tryLogin({
           username: this.user.username,
           password: this.user.password,
-        }).then((res)=>{
-          if(res.status!=200)
-            this.Show_info(res.data.err_msg, 'error');
+        }).then((res) => {
+          if (res.status != 200) this.Show_info(res.data.err_msg, 'error');
         });
     },
 

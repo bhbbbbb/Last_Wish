@@ -87,11 +87,6 @@ export default {
   computed: {
     ...mapState(['links']),
   },
-  watch: {
-    tab_which(val) {
-      console.log(val);
-    },
-  },
   created() {
     //Myname = this.$store.username;
   },
