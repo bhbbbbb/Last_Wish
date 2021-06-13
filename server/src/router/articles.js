@@ -47,16 +47,16 @@ global.post('/delete', user_session, (req, res) => {
 });
 
 
-global.post('/add_comment', (req, res) => {
-    let newComent = articleManager.addCommentToArticle(req.body.author, req.body.article_id, req.body.comment);
-    res.json(newComent);
-});
+// global.post('/add_comment', (req, res) => {
+//     let newComent = articleManager.addCommentToArticle(req.body.author, req.body.article_id, req.body.comment);
+//     res.json(newComent);
+// });
 
-global.get('/', (_req, res) => {
+global.get('/', (req, res) => {
     articleManager
-        .getAllArticles()
-        .then((allArticles) => {
-            res.status(200).json(allArticles);
+        .getAllArticleIds(req.query.options)
+        .then((allArticleIds) => {
+            res.status(200).json(allArticleIds);
         })
         .catch((error) => {
             console.log(error);
@@ -77,18 +77,18 @@ global.get('/get_article_by_id', (req, res) => {
         })
 });
 
-global.post('/list_articles', user_session, (req, res) => {
-    articleManager
-        .getMultipleArticlesByIds(req.body.article_ids, req.body.options)
-        .then((articles) => {
-            res.status(200).json(articles);
-        })
-        .catch((error) => {
-            console.log(error);
-            res.sendStatus(400);
-            res.status(400).json(error);
-        });
-});
+// global.post('/list_articles', user_session, (req, res) => {
+//     articleManager
+//         .getMultipleArticlesByIds(req.body.article_ids, req.body.options)
+//         .then((articles) => {
+//             res.status(200).json(articles);
+//         })
+//         .catch((error) => {
+//             console.log(error);
+//             res.sendStatus(400);
+//             res.status(400).json(error);
+//         });
+// });
 
 /**
  * @req req.query { user_id }
@@ -97,7 +97,11 @@ global.get('/get_user_posts', user_session, (req, res) => {
     accountManager
         .getPostsByAuthor(req.query.user_id)
         .then((articleIds) => {
-            res.status(200).json(articleIds);
+            articleManager
+                .sortArticleIdsByOptions(articleIds, req.query.options)
+                .then((sortedArticleIds) => {
+                    res.status(200).json(sortedArticleIds);
+                });
         })
         .catch((error) => {
             console.log(error);
@@ -112,7 +116,11 @@ global.get('/get_followed_posts', user_session, (req, res) => {
     accountManager
         .getFollowedPostsByUser(req.query.user_id)
         .then((articleIds) => {
-            res.status(200).json(articleIds);
+            articleManager
+                .sortArticleIdsByOptions(articleIds, req.query.options)
+                .then((sortedArticleIds) => {
+                    res.status(200).json(sortedArticleIds);
+                });
         })
         .catch((error) => {
             console.log(error);

@@ -158,7 +158,7 @@ user.post('/set_self_intro', user_session, (req, res) => {
         .catch((error) => {
             console.log(error);
             res.status(400).json(error);
-        })
+        });
 });
 
 user.post('/set_honor', user_session, (req, res) => {
@@ -170,7 +170,7 @@ user.post('/set_honor', user_session, (req, res) => {
         .catch((error) => {
             console.log(error);
             res.status(400).json(error);
-        })
+        });
 });
 
 user.post('/set_pro_pic', user_session, (req, res) => {
@@ -182,9 +182,8 @@ user.post('/set_pro_pic', user_session, (req, res) => {
         .catch((error) => {
             console.log(error);
             res.status(400).json(error);
-        })
-
-          });
+        });
+});
 
 user.get('/who', user_session, (req, res) => {
     let u = req.session.username;
