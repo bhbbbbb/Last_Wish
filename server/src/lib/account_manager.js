@@ -11,6 +11,28 @@ module.exports = function() {
 
     /**
      * @param {String} username 
+     * @param {String} nonce
+     */
+    this.setNonceToUser = async function(username, nonce) {
+        try {
+            let user = await User.findOne({username: username})
+                                 .exec()
+                                 .then((user) => {
+                                     return user;
+                                 });
+            if (user) {
+                user.nonce = nonce;
+                user.save();
+                return;
+            }
+        } catch (error) {
+            throw error;
+        }
+        throw "user not found";
+    }
+
+    /**
+     * @param {String} username 
      * @returns if the user is in the list
      */
     this.hasUser = async function(username) {

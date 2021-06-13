@@ -1,5 +1,7 @@
 var nodemailer = require('nodemailer');
 var mail_config = require('./mail_config');
+const account_Manager = require('./account_manager.js');
+var account_manager = new account_Manager();
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
@@ -80,42 +82,50 @@ module.exports = function() {
      */
 
     this.sendToken = (mailAddr, id, username, serverUrl, EMAIL_SECRET) => {
-        jwt.sign(
-            {
-                user : id,
-            },
-            EMAIL_SECRET,
-            {
-                expiresIn : '30m',
-            },
-            (err, emailToken) => {
-                const url = serverUrl + `/user/confirmation/${emailToken}`;
-                var html =
-                    `Please click this link to confirm your email:<br> <a href="${
-                        url}">Click me</a>`;
-                var sub = username + ' 這是你的驗證資訊 from learnen';
-                var mailOptions = {
-                    from : 'noreply',
-                    to : mailAddr,
-                    subject : sub,
-                    html : html,
-                };
-                var status = 401;
-                try {
-                    transporter.sendMail(mailOptions, function(error, info) {
-                        if (error) {
-                            throw error;
-                        } else {
-                            console.log('Email sent: ' + info.response);
-                        }
-                    });
-                    status = 200;
-                } catch (e) {
-                    status = 401;
-                }
-                return {'token' : token, 'status' : status};
-            },
-        );
+        var nonce = genNonce(20+Date.now()%6);
+        console.log(nonce);
+        account_manager.setNonceToUser(username, nonce).then(()=>{
+            jwt.sign(
+                {
+                    user : id,
+                    nonce: nonce,   
+                },
+                EMAIL_SECRET,
+                {
+                    expiresIn : '30m',
+                },
+                (err, emailToken) => {
+                    const url = serverUrl + `/user/confirmation/${emailToken}`;
+                    var html =
+                        'Please click this link to confirm your email:<br><br>'+ `<a href="${
+                            url}">Click me</a>`;
+                    var sub = username + ' 這是你的驗證資訊 from learnen';
+                    var mailOptions = {
+                        from : 'noreply',
+                        to : mailAddr,
+                        subject : sub,
+                        html : html,
+                    };
+                    var status = 401;
+                    try {
+                        transporter.sendMail(mailOptions, function(error, info) {
+                            if (error) {
+                                throw error;
+                            } else {
+                                console.log('Email sent: ' + info.response);
+                            }
+                        });
+                        status = 200;
+                    } catch (e) {
+                        status = 401;
+                    }
+                    return {'token' : token, 'status' : status};
+                },
+            );
+
+        }).catch((e)=>{
+            console.log('This is caused by async but can be ignored:\n'+e);
+        });
     };
 
     /**
@@ -123,7 +133,7 @@ module.exports = function() {
      * @param {String} userId 
      * @throws "user not found"
      */
-     this.verified = async function(targetId) {
+     this.verified = async function(targetId, nonce) {
         try {
             let target = await User.findById(targetId)
                                     .exec()
@@ -131,9 +141,12 @@ module.exports = function() {
                                         return target;
                                     });
             if(target){
+                if(target.nonce == nonce){
                 target.verified = true;
                 target.save();
                 return;
+            }else
+                throw "nonce not match";
             }
             }
             catch (error) {
