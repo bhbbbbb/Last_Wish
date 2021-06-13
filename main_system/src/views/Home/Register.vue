@@ -1,44 +1,51 @@
 <template lang="pug">
-v-card(min-height="70vh" rounded="lg" flat)
+v-card(min-height='70vh', rounded='lg', flat)
   v-card-text.justify-center
     h2 your user name
     v-text-field(
-      v-model="user.username"
-      label=""
-      :rules="[rules.empty, rules.regex]"
-      autocomplete="off"
-      @blur="checkValid"
-      :error-messages="valid_message"
+      v-model='user.username',
+      label='',
+      :rules='[rules.empty, rules.regex]',
+      autocomplete='off',
+      @blur='checkValid',
+      :error-messages='valid_message'
     )
     br/
     h2 your password
     v-text-field(
-      v-model.lazy="user.password"
-      label=""
-      type="password"
-      :rules="[rules.empty, rules.regex]"
-      autocomplete="off"
+      v-model.lazy='user.password',
+      label='',
+      type='password',
+      :rules='[rules.empty, rules.regex]',
+      autocomplete='off'
     )
     br/
     h2 confirm your password
     v-text-field(
-      v-model.lazy="user.password_confirm"
-      label=""
-      type="password"
-      :rules="[rules.empty, rules.regex, rules.confirm_match]"
-      autocomplete="off"
+      v-model.lazy='user.password_confirm',
+      label='',
+      type='password',
+      :rules='[rules.empty, rules.regex, rules.confirm_match]',
+      autocomplete='off'
+    )
+    br/
+    h2 your email
+    v-text-field(
+      v-model='user.email',
+      label='',
+      :rules='emailRules',
+      autocomplete='off'
     )
 
     v-card-actions.justify-center
-      v-btn(@click="UplooadRegiser()") confirm
+      v-btn(@click='UploadRegister()') confirm
 
-  v-overlay.align-start(
-    :value="show_info"
-    absolute
-    opacity="0"
-  )                              
-    v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
-
+  v-overlay.align-start(:value='show_info', absolute, opacity='0') 
+    v-alert.mt-10(
+      :value='show_info',
+      :type='info_type',
+      transition='slide-x-transition'
+    ) {{ infos }}
 </template>
 
 <script>
@@ -55,7 +62,12 @@ export default {
       username: '',
       password: '',
       password_confirm: '',
+      email: '',
     },
+    emailRules: [
+      (v) => !!v || 'E-mail is required',
+      (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+    ],
     rules: {
       regex: (value) => {
         const pattern = /^[^\W_]+$/; // allow only word and digit
@@ -70,7 +82,7 @@ export default {
       value === this.user.password || 'password not matched';
   },
   methods: {
-    UplooadRegiser() {
+    UploadRegister() {
       var status =
         this.rules.confirm_match(this.user.password_confirm) == true &&
         this.rules.regex(this.user.username) == true;

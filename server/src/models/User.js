@@ -4,6 +4,15 @@ const Article = require("./Article");
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
+  email: String,
+  nonce: {
+    type: String,
+    default : ""
+  },
+  verified:{
+    type: Boolean,
+    default: false
+  },
   honor: {
     type: String,
     enum: ['lv1', 'lv2', 'lv3', 'lv4', 'lv5', 'lv6', 'lv7', 'lv8'],
@@ -15,7 +24,7 @@ const userSchema = new mongoose.Schema({
   },
   proPic: {
     type: String,  // url to profile picture
-    default: 'pic source url',
+    default: "",
   },
   fans: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
   followedUsers: [{ type: mongoose.Types.ObjectId, ref: 'User'}],

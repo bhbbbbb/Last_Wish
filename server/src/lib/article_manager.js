@@ -1,14 +1,12 @@
-const fs = require("fs");
-var d = new Date();
-var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-var today = `${month[d.getMonth()]}/${String(d.getDate())} ${days[d.getDay()]}`;
+// const fs = require("fs");
+// var d = new Date();
+// var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+// var today = `${month[d.getMonth()]}/${String(d.getDate())} ${days[d.getDay()]}`;
 const Article = require('../models/Article');
 const User = require("../models/User");
 
 module.exports = function() {
-    // this.articlePATH = __dirname + "/../data/articles.json";
-    // this.articles = require(this.articlePATH);
 
     /**
      * @param {String} articleId 
@@ -22,14 +20,8 @@ module.exports = function() {
                                     return article != null;
                                 });
         } catch (error) {
-            throw "db access failed";
+            throw error;
         }
-        /*
-        console.log(`has: ${articleId}`);
-        console.log(Number(articleId));
-        console.log(this.articles.length);
-        return Number(articleId) <= this.articles.length;
-        */
     }
 
     this.hasCommentInArticle = function(commentId, articleId) {
@@ -56,7 +48,6 @@ module.exports = function() {
             article.sortMilestonesAndSave();
             return article._id;
         } catch (error) {
-            console.log(error);
             throw error;
         }
     }
@@ -64,24 +55,41 @@ module.exports = function() {
     /**
      * @returns the json object containing all articles with frontend format
      */
-    this.getAllArticles = async function() {
+    this.getAllArticleIds = async function(options) {
         try {
-            let allArticles = [];
+            let allArticleIds = [];
             let rawArticles = await Article.find({})
                                            .populate('author')
                                            .then((allArticles) => {
                                                return allArticles;
                                            });
-            for (article of rawArticles) {
-                allArticles.push(article.toFrontendFormat());
+            if (options) {
+                if (options.includes('new2old')) {
+                    console.log('new2old');
+                    rawArticles.sort((a, b) => {
+                        return b.date - a.date;
+                    });
+                } else if (options.includes('old2new')) {
+                    console.log('old2new');
+                    rawArticles.sort((a, b) => {
+                        return a.date - b.date;
+                    });
+                }
+                if (options.includes('finished')) {
+                    rawArticles.sort((a, b) => {
+                        return a.finished - b.finished;
+                    });
+                }
             }
-            // add sorting mechanism
-            return allArticles;
+            for (article of rawArticles) {
+                allArticleIds.push(article._id);
+            }
+            return allArticleIds;
         } catch (error) {
-            throw "db access failed";
+            throw error;
         }
     }
-    
+
     this.rmArticleById = async function(articleId) {
         try {
             let deletedArticle = await Article.findByIdAndDelete(articleId)
@@ -111,6 +119,38 @@ module.exports = function() {
         }
         throw "no such article";
     }
+
+    this.sortArticleIdsByOptions = async function(articleIds, options) {
+        let articles = await Article.find({ '_id': { $in: articleIds } })
+                                    .exec()
+                                    .then((articles) => {
+                                        return articles;
+                                    });
+        if (options) {
+            if (options.includes('new2old')) {
+                console.log('new2old');
+                articles.sort((a, b) => {
+                    return b.date - a.date;
+                });
+            } else if (options.includes('old2new')) {
+                console.log('old2new');
+                articles.sort((a, b) => {
+                    return a.date - b.date;
+                });
+            }
+            if (options.includes('finished')) {
+                articles.sort((a, b) => {
+                    return a.finished - b.finished;
+                });
+            }
+        }
+        let sortedArticleIds = [];
+        for (article of articles) {
+            sortedArticleIds.push(article._id);
+        }
+        console.log(sortedArticleIds);
+        return sortedArticleIds;
+    }
     
     /**
      * 
@@ -131,22 +171,40 @@ module.exports = function() {
             }
         } catch (error) {
             console.log(error);
-            throw "db access failed";
+            throw error;
             
         }
         throw "no such article";
     }
     
-    this.getMultipleArticlesById = async function(articleIds, options) {
-        let articles = [];
-        for (articleId of articleIds) {
-            this.getFormatedArticleById(articleId)
-                .then((article) => {
-                    articles.push(article);
-                });
-        }
-        return articles;
-    }
+    // this.getMultipleArticlesByIds = async function(articleIds, options) {
+    //     let articles = [];
+    //     for (articleId of articleIds) {
+    //         await this.getFormatedArticleById(articleId)
+    //                   .then((article) => {
+    //                       articles.push(article);
+    //                   });
+    //     }
+    //     if (options.includes('new2old')) {
+    //         console.log('new2old');
+    //         articles.sort((a, b) => {
+    //             return b.date - a.date;
+    //         });
+    //     } else if (options.includes('old2new')) {
+    //         console.log('old2new');
+    //         articles.sort((a, b) => {
+    //             return a.date - b.date;
+    //         });
+    //     }
+        
+    //     if (options.includes('finished')) {
+    //         articles.sort((a, b) => {
+    //             return a.finished - b.finished;
+    //         });
+    //     }
+
+    //     return articles;
+    // }
 
     /**
      * 
@@ -167,12 +225,13 @@ module.exports = function() {
             }
         } catch (error) {
             console.log(error);
-            throw "db access failed";
+            throw error;
             
         }
         throw "no such article";
     }
 
+    // TODO: modify this
     /**
      * @param {Object} author 
      * @param {String} articleId 
@@ -180,23 +239,23 @@ module.exports = function() {
      * @throws "no such article" exception
      * @returns {Object} newComment
      */
-    this.addCommentToArticle = function(author, articleId, commentStr) {
-        if (!this.hasArticle(articleId)) {
-            throw "no such article";
-        }
-        let article = this.articles[Number(articleId)];
-        let newCommentId = String(article.comments.length);
-        let newCommentData = {
-            "id": newCommentId,
-            "date": today,
-            "body": commentStr,
-            "from": author.id
-        }
-        let newNewComment = newComment(newCommentData);
-        article.comments.push(newNewComment);
-        synchronize(this.articles, this.articlePATH);
-        return newNewComment;
-    }
+    // this.addCommentToArticle = function(author, articleId, commentStr) {
+    //     if (!this.hasArticle(articleId)) {
+    //         throw "no such article";
+    //     }
+    //     let article = this.articles[Number(articleId)];
+    //     let newCommentId = String(article.comments.length);
+    //     let newCommentData = {
+    //         "id": newCommentId,
+    //         "date": today,
+    //         "body": commentStr,
+    //         "from": author.id
+    //     }
+    //     let newNewComment = newComment(newCommentData);
+    //     article.comments.push(newNewComment);
+    //     synchronize(this.articles, this.articlePATH);
+    //     return newNewComment;
+    // }
 
     /**
      * Replace the body and title of an article
@@ -207,13 +266,13 @@ module.exports = function() {
      * 
      * @throws "no such article" exception
      */
-    this.replaceArticle = function(newArticle, articleId) {
-        if (!this.hasArticle(articleId)) {
-            throw "no such article";
-        } this.articles[Number(articleId)].title = newArticle.title;
-        this.articles[Number(articleId)].body = newArticle.body;
-        synchronize(this.articles, this.articlePATH);
-    }
+    // this.replaceArticle = function(newArticle, articleId) {
+    //     if (!this.hasArticle(articleId)) {
+    //         throw "no such article";
+    //     } this.articles[Number(articleId)].title = newArticle.title;
+    //     this.articles[Number(articleId)].body = newArticle.body;
+    //     synchronize(this.articles, this.articlePATH);
+    // }
 
     /**
      * Replace a comment body in an article
@@ -224,16 +283,16 @@ module.exports = function() {
      * 
      * @throws "no such article" exception
      */
-    this.replaceCommentOfArticle = function(newComment, articleId, commentId) {
-        if (!this.hasArticle(articleId)) {
-            throw "no such article";
-        }
-        if (!this.hasCommentInArticle(commentId, articleId)) {
-            throw "no such comment"
-        }
-        this.articles[Number(articleId)].comment[Number(commentId)].body = newComment;
-        synchronize(this.articles, this.articlePATH);
-    }
+    // this.replaceCommentOfArticle = function(newComment, articleId, commentId) {
+    //     if (!this.hasArticle(articleId)) {
+    //         throw "no such article";
+    //     }
+    //     if (!this.hasCommentInArticle(commentId, articleId)) {
+    //         throw "no such comment"
+    //     }
+    //     this.articles[Number(articleId)].comment[Number(commentId)].body = newComment;
+    //     synchronize(this.articles, this.articlePATH);
+    // }
 
     /**
      * Now the milestone has no id
@@ -243,22 +302,22 @@ module.exports = function() {
      * editing the article contaned in
      * each milestone
      */
-    this.addMilestoneToArticle = function(articleId, milestone) {
-        if (!this.hasArticle(articleId)) {
-            throw "no such article";
-        }
-        let article = this.articles[Number(articleId)];
-        let newMilestoneId = String(article.wishes.length);
-        let newMilestone = {
-            title: milestone.title,
-            body: milestone.body,
-            time: milestone.time,
-            id: newMilestoneId,
-        };
-        article.wishes.push(newMilestone);
-        synchronize(this.articles, this.articlePATH);
-        return newMilestone;
-    }
+    // this.addMilestoneToArticle = function(articleId, milestone) {
+    //     if (!this.hasArticle(articleId)) {
+    //         throw "no such article";
+    //     }
+    //     let article = this.articles[Number(articleId)];
+    //     let newMilestoneId = String(article.wishes.length);
+    //     let newMilestone = {
+    //         title: milestone.title,
+    //         body: milestone.body,
+    //         time: milestone.time,
+    //         id: newMilestoneId,
+    //     };
+    //     article.wishes.push(newMilestone);
+    //     synchronize(this.articles, this.articlePATH);
+    //     return newMilestone;
+    // }
 
     /**
      * 
@@ -267,61 +326,12 @@ module.exports = function() {
      * @returns choose = 2 : Month/Date
      * @returns choose else : Month/Date Day
      */
-    this.getToday = function(choose){
-        if (choose === 1)
-            return today.split('/')[0];             //return Month
-        else if (choose === 2)
-            return today.split(' ')[0];             //return Month/Date
-        else
-            return today;                           //return Month/Date Day
-    }
-}
-
-function newArticle(newArticleData) {
-    let template = {
-        "id": "",
-        "from": "",
-        "body": "",
-        "title": "",
-        "date": "",
-        "wishes": [],
-        "comments": []
-    };
-    for (keys in newArticleData) {
-        template[keys] = newArticleData[keys];
-    }
-    return template;
-}
-
-function newComment(newCommentData) {
-    let template = {
-        "id": "",
-        "date": "",
-        "body": "",
-        "from": ""
-    };
-    for (keys in newCommentData) {
-        template[keys] = newCommentData[keys];
-    }
-    return template;
-}
-
-function newMilestone(newMilestoneData) {
-    let template = {
-        "id": "",
-        "estDate": "",
-        "finishDate": "",
-        "isDoen": false
-    };
-    for (keys in newCommentData) {
-        template[keys] = newMilestoneData[keys];
-    }
-    return template;
-}
-
-function synchronize(obj, path) {
-    let data = JSON.stringify(obj, null, 4);
-    fs.writeFile(path, data, (err) => {
-        if (err) console.log(err);
-    });
+    // this.getToday = function(choose){
+    //     if (choose === 1)
+    //         return today.split('/')[0];             //return Month
+    //     else if (choose === 2)
+    //         return today.split(' ')[0];             //return Month/Date
+    //     else
+    //         return today;                           //return Month/Date Day
+    // }
 }
