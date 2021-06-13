@@ -32,7 +32,7 @@ export const user_links = [
   {
     text: 'follow',
     to: {
-      name: 'FollowArticle',
+      name: 'FollowArticles',
     },
     icon: 'mdi-bookmark',
   },

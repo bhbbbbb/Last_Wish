@@ -31,32 +31,26 @@ export default {
       required: true,
       type: Array,
     },
-    toUser: {
-      required: false,
-      type: Boolean,
-      default: false,
+    fetchAction: {
+      required: true,
+      type: String,
     },
   },
   data: () => ({}),
   computed: {},
   watch: {
-    toUser() {
-      this.$store
-        .dispatch(this.toUser ? 'getUserArticles' : 'getGlobalArticles')
-        .then(() => {});
+    fetchAction() {
+      this.$store.dispatch(this.fetchAction);
     },
   },
-  created() {
-    this.$store
-      .dispatch(this.toUser ? 'getUserArticles' : 'getGlobalArticles')
-      .then(() => {});
+  created() {},
+  mounted() {
+    this.$store.dispatch(this.fetchAction);
   },
-  mounted() {},
   methods: {
     ToInnerArticle(article_id) {
-      let to_name = this.toUser ? 'UserArticle' : 'Article';
       this.$router.push({
-        name: to_name,
+        name: 'Article',
         params: {
           id: article_id,
         },

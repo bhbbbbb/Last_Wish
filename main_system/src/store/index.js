@@ -212,13 +212,6 @@ export default new Vuex.Store({
           return [];
         });
     },
-
-    // async getFollowState({ dispatch }, id) {
-    //   return dispatch('getUserFollowed').then((res) => {
-    //     let found = res.find(element => element === id)
-    //     return Boolean(found);
-    //   });
-    // }
   },
   modules: {},
 });

@@ -26,6 +26,7 @@ export const home_routes = [
     },
     props: () => ({
       articles: store.state.global_articles,
+      fetchAction: 'getGlobalArticles',
     }),
   },
   {
@@ -150,14 +151,11 @@ export const home_routes = [
   },
   {
     path: 'follow_article',
-    name: 'FollowArticle',
-    component: () => import('@/views/FollowArticle'),
+    name: 'FollowArticles',
+    component: () => import('@/views/FollowArticles'),
     beforeEnter(to, from, next) {
-      if (store.state.followed_articles.length) next();
-      else
-        store.dispatch('getUserFollowed').then(() => {
-          next();
-        });
+      if (store.state.is_login) next();
+      else next('/');
     },
   },
   // {
