@@ -340,6 +340,10 @@ user.get('/get_id_by_name', (req, res) => {
             res.sendStatus(400);
         });
 });
+const LINK_EXPIRED='\
+<p>很抱歉，這個連結已經失效了</p><p>We\'re sorry, the link has expired.</p>\
+<a href='+frontUrl+'>回到首頁</a>\
+';
 
 user.get('/confirmation/:token', async (req, res) => {
     try {
@@ -349,15 +353,15 @@ user.get('/confirmation/:token', async (req, res) => {
             return res.redirect(frontUrl);
         }
         ).catch(e=>{
-        res.send('<p>Token expired</p>');
-        console.log(e);
+            res.send(LINK_EXPIRED);
+            console.log(e);
         })
         }else{
-        res.send('<p>Token expired</p>');
-    }
+            res.send(LINK_EXPIRED);
+        }
         // models.User.update({confirmed : true}, {where : {id}});
     } catch (e) {
-        res.send('<p>Token expired</p>');
+        res.send(LINK_EXPIRED);
     }
 });
 

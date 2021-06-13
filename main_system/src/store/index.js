@@ -157,19 +157,18 @@ export default new Vuex.Store({
     async tryLogin(context, payload) {
       return apiTryLogin(payload)
         .then((res) => {
-          if(res.status==200){
-          apiGetPublicInfo(res.data.id).then((res) => {
-            context.commit('login', res.data);
-          });
-          Vue.$cookies.set('login', payload.username);
+          if (res.status == 200) {
+            apiGetPublicInfo(res.data.id).then((res) => {
+              context.commit('login', res.data);
+            });
+            Vue.$cookies.set('login', payload.username);
 
-          router.push({
-            name: 'Articles',
-            params: { links: context.state.user_links },
-          });
-          return;
-          }
-          else{
+            router.push({
+              name: 'Articles',
+              params: { links: context.state.user_links },
+            });
+            return;
+          } else {
             return res;
           }
         })
