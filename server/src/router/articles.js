@@ -47,10 +47,11 @@ global.post('/delete', user_session, (req, res) => {
 });
 
 
-// global.post('/add_comment', (req, res) => {
-//     let newComent = articleManager.addCommentToArticle(req.body.author, req.body.article_id, req.body.comment);
-//     res.json(newComent);
-// });
+ global.post('/add_comment', async(req, res) => {
+     let newComent =await articleManager.addCommentToArticle(req.body.author, req.body.article_id, req.body.comment);
+     res.json(newComent);
+     console.log(newComent);
+ });
 
 global.get('/', (req, res) => {
     articleManager

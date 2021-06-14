@@ -1,8 +1,8 @@
 // const fs = require("fs");
-// var d = new Date();
-// var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-// var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-// var today = `${month[d.getMonth()]}/${String(d.getDate())} ${days[d.getDay()]}`;
+var d = new Date();
+var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var today = `${month[d.getMonth()]}/${String(d.getDate())} ${days[d.getDay()]}`;
 const Article = require('../models/Article');
 const User = require("../models/User");
 
@@ -239,6 +239,29 @@ module.exports = function() {
      * @throws "no such article" exception
      * @returns {Object} newComment
      */
+     this.addCommentToArticle = async function(author, articleId, commentStr){
+        try{
+            let article = await Article.findById(articleId);
+            if(article){
+                let newComment = {
+                    "author":author,
+                    "body":commentStr,
+                }
+                try{
+                const len = await article.comments.push(newComment);
+                const res = await article.save();
+                return res.comments[len-1].date;
+                }catch(e){
+                    console.log(e);
+                }
+            }
+        }catch(e){
+            throw "no such article";
+        }
+     }
+    
+
+
     // this.addCommentToArticle = function(author, articleId, commentStr) {
     //     if (!this.hasArticle(articleId)) {
     //         throw "no such article";
