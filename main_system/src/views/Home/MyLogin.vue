@@ -67,7 +67,7 @@ export default {
           username: this.user.username,
           password: this.user.password,
         }).then((res) => {
-          if (res.status != 200) this.Show_info(res.data.err_msg, 'error');
+          if (res.status != 200) this.Show_info(res.response.data.err_msg, 'error');
         });
     },
 
@@ -98,7 +98,7 @@ export default {
             if(res.status==200)
               this.Show_info('Email has been sent','success');
           }).catch((e)=>{
-              //console.log(rep);
+              console.log('QQ');
               this.Show_info(e.response.data.err_msg,'error');
           })
       }

@@ -50,39 +50,42 @@ const TRY_LOGIN = [
         body : { err_code : PASSWORD_INCORRECT, err_msg : "password is incorrect" }
     },
     {
-        status: 203,
+        status: 401,
         body : { err_code: NO_VERIFIED, err_msg : "Please check the confirmation mail first" }
     }
 ];
-user.post('/try_login', user_session, (req, res) => {
-    accountManager
-        .checkPassword(req.body.username, req.body.password)
-        .then((result) => {
-            if (!result.verified) {
-                // To avoid repeating sending the verification mail
-                // mailManager.sendToken(
-                //         result.email, result.userId, req.body.username, SERVER_URL, EMAIL_SECRET);
-                let response = TRY_LOGIN[NO_VERIFIED]
-                res.status(response.status).json(response.body);
-            } else if (result.correct) {
-                let response = TRY_LOGIN[SUCCEED]
-                req.session.username = req.body.username;
-                // notice thate 'id' cannot be set in session
-                req.session.user_id = result.userId;
-                res.status(response.status).json({
-                    username: req.body.username,
-                    id: req.session.user_id
-                });
-            } else {
-                response = TRY_LOGIN[PASSWORD_INCORRECT];
-                res.status(response.status).json(response.body);
-            }
-        })
-        .catch((error) => {
-            console.log(error);
+user.post('/try_login', user_session, async(req, res) => {
+    try{
+        const exist = await accountManager.hasUser(req.body.username);
+        const result = accountManager.checkPassword(req.body.username, req.body.password);
+        if(!exist){
             let response = TRY_LOGIN[USER_NOT_FOUND];
             res.status(response.status).json(response.body);
-        });
+        }
+        else if (!result.verified) {
+            // To avoid repeating sending the verification mail
+            // mailManager.sendToken(
+            //         result.email, result.userId, req.body.username, SERVER_URL, EMAIL_SECRET);
+            let response = TRY_LOGIN[NO_VERIFIED]
+            res.status(response.status).json(response.body);
+        } else if (result.correct) {
+            let response = TRY_LOGIN[SUCCEED]
+            req.session.username = req.body.username;
+            // notice thate 'id' cannot be set in session
+            req.session.user_id = result.userId;
+            res.status(response.status).json({
+                username: req.body.username,
+                id: req.session.user_id
+            });
+        } else {
+            response = TRY_LOGIN[PASSWORD_INCORRECT];
+            res.status(response.status).json(response.body);
+        }
+    }catch(error){
+        console.log(error);
+        res.status(500).json();
+    }
+
     return;
 });
 
