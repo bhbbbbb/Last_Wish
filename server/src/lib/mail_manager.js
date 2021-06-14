@@ -134,24 +134,20 @@ module.exports = function() {
      */
     this.verified = async function(targetId, nonce) {
         try {
-            let target = await User.findById(targetId)
-                                   .exec()
-                                   .then((target) => {
-                                       return target;
-                                   });
+            let target = await User.findById(targetId).exec();
             if (target) {
-                if (target.nonce == nonce) {
+                if (target.nonce === nonce) {
+                    console.log(nonce);
                     target.verified = true;
+                    target.nonce = '';
                     await target.save();
-                    return;
-                } else {
-                    throw "nonce not match";
+                    return true;
                 }
             }
+            return false;
         } catch (error) {
-            throw error;
+            return false;
         }
-        throw "user not found";
     }
 };
 

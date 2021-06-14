@@ -350,22 +350,17 @@ user.get('/confirmation/:token', async (req, res) => {
     try {
         const { user: id, nonce: nonce } = jwt.verify(req.params.token, EMAIL_SECRET);
         if (id) {
-            mailManager
-                .verified(id, nonce)
-                .then(() => {
-                    res.redirect(FRONT_URL);
-                }).catch(e=>{
-                    res.send(LINK_EXPIRED);
-                    console.log(e);
-                    })
-                }else{
-                    res.send(LINK_EXPIRED);
-                }  
-        // models.User.update({confirmed : true}, {where : {id}});
-                } catch (e) {
-                res.send(LINK_EXPIRED);
-                }
-        });
+            const result = await mailManager.verified(id, nonce);
+            if(result){
+                res.redirect(FRONT_URL);
+                return;
+            }
+        }
+            res.send(LINK_EXPIRED);
+        } catch (e) {
+            res.send(LINK_EXPIRED);
+        }
+});
 
 const VERIFIED = 2;
 const SEND_TOKEN = [
