@@ -1,7 +1,7 @@
 var nodemailer = require('nodemailer');
 var mail_config = require('./mail_config');
-const account_Manager = require('./account_manager.js');
-var account_manager = new account_Manager();
+const AccountManager = require('./account_manager.js');
+var accountManager = new AccountManager();
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
@@ -21,23 +21,21 @@ module.exports = function() {
      * @throws any error happened
      */
     this.hasMailAddr = async function (mailAddr) {
-      try {
-        return await User.findOne({email: mailAddr})
-          .exec()
-          .then((addr) => {
-            console.log(addr!= null);
-            return addr != null;
-          });
-      } catch (error) {
-        throw error;
-      }
+        try {
+            return await User.findOne({ email: mailAddr })
+                             .exec()
+                             .then((addr) => {
+                                 return addr != null;
+                             });
+        } catch (error) {
+            throw error;
+        }
     };
 
     /**
      * @param {String} mailAddr
      * @returns if mailAddr is a valid email address
      */
-
     this.isValidAddr = (mailAddr) => { return isValidAddr(mailAddr) };
 
     /**
@@ -47,13 +45,12 @@ module.exports = function() {
      * @returns 200/401 if mail was sent suc/fail
      * @throws any error happened
      */
-
     this.sendMails = (mailAddr, subject, bodyText) => {
         var mailOptions = {
-            from : 'noreply',
-            to : mailAddr,
-            subject : subject,
-            text : bodyText,
+            from: 'noreply',
+            to: mailAddr,
+            subject: subject,
+            text: bodyText,
         };
         var status = 401;
         try {
@@ -65,7 +62,7 @@ module.exports = function() {
                 }
             });
             status = 200;
-        } catch (e) {
+        } catch (error) {
             status = 401;
         }
         return status;
@@ -80,52 +77,53 @@ module.exports = function() {
      * @returns {object} token: token sent to newUser
      * @throws any error happened
      */
-
     this.sendToken = (mailAddr, id, username, serverUrl, EMAIL_SECRET) => {
-        var nonce = genNonce(20+Date.now()%6);
+        var nonce = genNonce(20 + Date.now() % 6);
         console.log(nonce);
-        account_manager.setNonceToUser(username, nonce).then(()=>{
-            jwt.sign(
-                {
-                    user : id,
-                    nonce: nonce,   
-                },
-                EMAIL_SECRET,
-                {
-                    expiresIn : '30m',
-                },
-                (err, emailToken) => {
-                    const url = serverUrl + `/user/confirmation/${emailToken}`;
-                    var html =
-                        'Please click this link to confirm your email:<br><br>'+ `<a href="${
-                            url}">Click me</a>`;
-                    var sub = username + ' 這是你的驗證資訊 from learnen';
-                    var mailOptions = {
-                        from : 'noreply',
-                        to : mailAddr,
-                        subject : sub,
-                        html : html,
-                    };
-                    var status = 401;
-                    try {
+        accountManager
+            .setNonceToUser(username, nonce)
+            .then(() => {
+                jwt.sign(
+                    {
+                        user : id,
+                        nonce: nonce,   
+                    },
+                    EMAIL_SECRET,
+                    {
+                        expiresIn : '30m',
+                    },
+                    (_err, emailToken) => {
+                        const url = serverUrl + `/user/confirmation/${emailToken}`;
+                        var html =
+                            'Please click this link to confirm your email:<br><br>' +
+                            `<a href="${url}">Click me</a>`;
+                        var sub = username + ' 這是你的驗證資訊 from learnen';
+                        var mailOptions = {
+                            from: 'noreply',
+                            to: mailAddr,
+                            subject: sub,
+                            html: html,
+                        };
+                        var status = 401;
                         transporter.sendMail(mailOptions, function(error, info) {
                             if (error) {
+                                status = 401;
                                 throw error;
                             } else {
                                 console.log('Email sent: ' + info.response);
+                                status = 200;
                             }
                         });
-                        status = 200;
-                    } catch (e) {
-                        status = 401;
+                        return {
+                            'token': token,
+                            'status': status
+                        };
                     }
-                    return {'token' : token, 'status' : status};
-                },
-            );
-
-        }).catch((e)=>{
-            console.log('This is caused by async but can be ignored:\n'+e);
-        });
+                );
+            })
+            .catch((error) => {
+                console.log('This is caused by async but can be ignored:\n' + error);
+            });
     };
 
     /**
@@ -133,27 +131,27 @@ module.exports = function() {
      * @param {String} userId 
      * @throws "user not found"
      */
-     this.verified = async function(targetId, nonce) {
+    this.verified = async function(targetId, nonce) {
         try {
             let target = await User.findById(targetId)
-                                    .exec()
-                                    .then((target) => {
-                                        return target;
-                                    });
-            if(target){
-                if(target.nonce == nonce){
-                target.verified = true;
-                target.save();
-                return;
-            }else
-                throw "nonce not match";
+                                   .exec()
+                                   .then((target) => {
+                                       return target;
+                                   });
+            if (target) {
+                if (target.nonce == nonce) {
+                    target.verified = true;
+                    await target.save();
+                    return;
+                } else {
+                    throw "nonce not match";
+                }
             }
-            }
-            catch (error) {
-                throw error;
-            }
-            throw "user not found";
+        } catch (error) {
+            throw error;
         }
+        throw "user not found";
+    }
 };
 
 /**

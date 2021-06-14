@@ -15,7 +15,7 @@ module.exports = function() {
      */
     this.setNonceToUser = async function(username, nonce) {
         try {
-            let user = await User.findOne({username: username})
+            let user = await User.findOne({ username: username })
                                  .exec()
                                  .then((user) => {
                                      return user;
@@ -41,7 +41,7 @@ module.exports = function() {
                              .exec()
                              .then((user) => {
                                  return user != null;
-                             })
+                             });
         } catch (error) {
             throw error;
         }
@@ -106,7 +106,7 @@ module.exports = function() {
     this.addUser = async function(username, password, email) {
         var duplicated;
         try {
-            duplicated = await User.findOne({username: username})
+            duplicated = await User.findOne({ username: username })
                                    .exec()
                                    .then((user) => {
                                        return user != null;
@@ -119,7 +119,7 @@ module.exports = function() {
                     "email": email,
                 };
                 const user = new User(newUserData);
-                user.save();
+                await user.save();
                 return user._id;  // if the function is executed normally
             }
         } catch (error) {
