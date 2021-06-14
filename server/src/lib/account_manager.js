@@ -72,7 +72,7 @@ module.exports = function() {
     /**
      * @param {String} username 
      * @returns if the user is verified
-     * @throws "user not found" exception
+     * @returns null if user not found;
      */
      this.checkVerified = async function(username) {
         try {
@@ -90,10 +90,10 @@ module.exports = function() {
                 };
                 return result;
             }
+            return null;
         } catch (error) {
-            throw error;
+            return null;
         }
-        throw "user not found";
     }
 
 
@@ -147,7 +147,7 @@ module.exports = function() {
                     "email": email,
                 };
                 const user = new User(newUserData);
-                user.save();
+                await user.save();
                 return user._id;  // if the function is executed normally
             }
         } catch (error) {

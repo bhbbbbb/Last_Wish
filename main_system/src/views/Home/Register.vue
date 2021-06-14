@@ -99,9 +99,10 @@ export default {
                 'Success registered\nPlease check your email box',
                 'success'
               );
-            } //else this.Show_info(res.data.err_msg, 'error');
+            } 
           })
           .catch((err) => {
+            this.Show_info(err.response.data.err_msg, 'error');
             console.log(err);
           });
       } else this.Show_info('Incorrect Register data', 'error');
