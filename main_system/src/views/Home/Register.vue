@@ -99,7 +99,7 @@ export default {
                 'Success registered\nPlease check your email box',
                 'success'
               );
-            } 
+            }
           })
           .catch((err) => {
             this.Show_info(err.response.data.err_msg, 'error');

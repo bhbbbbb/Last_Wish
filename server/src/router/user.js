@@ -28,10 +28,11 @@ user.get('/get_all_users', user_session, (_req, res) => {
     res.sendStatus(200);
 })
 
-user.get('/clear_all_users', user_session, (_req, res) => {
-    accountManager.clearAllUsers();
-    res.sendStatus(200);
-})
+//user.get('/clear_all_users', user_session, (_req, res) => {
+//user.get('/clear_all_users', user_session, (_req, res) => {
+//    accountManager.clearAllUsers();
+//    res.sendStatus(200);
+//})
 
 const SUCCEED = 0;
 const USER_NOT_FOUND = 1;
@@ -379,6 +380,8 @@ const SEND_TOKEN = [
         body : {err_code: EMAIL_ERR, err_msg : "Email send error occured"}
     },
 ];
+
+
 
 user.get('/send_token_mail', user_session, async(req, res) => {
         const result = await accountManager.checkVerified(req.query.username);

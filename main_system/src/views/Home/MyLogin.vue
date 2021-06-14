@@ -30,7 +30,7 @@ v-card.pa-0(rounded="lg" min-height="268" flat="flat")
 
 <script>
 import { mapActions } from 'vuex';
-import { apiLineLogin,apiSendTokenMail } from '@/store/api.js';
+import { apiLineLogin, apiSendTokenMail } from '@/store/api.js';
 export default {
   name: 'MyLogin',
   data: () => ({
@@ -67,7 +67,8 @@ export default {
           username: this.user.username,
           password: this.user.password,
         }).then((res) => {
-          if (res.status != 200) this.Show_info(res.response.data.err_msg, 'error');
+          if (res.status != 200)
+            this.Show_info(res.response.data.err_msg, 'error');
         });
     },
 
@@ -90,17 +91,19 @@ export default {
           console.log(err);
         });
     },
-    Send_mail(){
-      if(this.user.username.trim()=='')
-        this.Show_info('Required username','error');
-      else{
-            apiSendTokenMail(this.user.username.trim()).then((res)=>{
-            if(res.status==200)
-              this.Show_info('Email has been sent','success');
-          }).catch((e)=>{
-              console.log('QQ');
-              this.Show_info(e.response.data.err_msg,'error');
+    Send_mail() {
+      if (this.user.username.trim() == '')
+        this.Show_info('Required username', 'error');
+      else {
+        apiSendTokenMail(this.user.username.trim())
+          .then((res) => {
+            if (res.status == 200)
+              this.Show_info('Email has been sent', 'success');
           })
+          .catch((e) => {
+            console.log('QQ');
+            this.Show_info(e.response.data.err_msg, 'error');
+          });
       }
     },
     Show_info(Info, infoType) {

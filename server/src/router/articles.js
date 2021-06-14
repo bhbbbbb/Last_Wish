@@ -63,7 +63,14 @@ global.get('/', (req, res) => {
             res.status(400).json(error);
         })
 });
-
+global.get('/get_liked_posts', user_session, async(req, res)=>{
+    try{
+        const result = await accountManager.getUserLiked();
+        res.status(200).json(result);
+    }catch(e){
+        res.status(500).json();
+    }
+})
 global.get('/get_article_by_id', (req, res) => {
     articleManager
         .getFormatedArticleById(req.query.article_id)

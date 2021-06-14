@@ -8,7 +8,21 @@ module.exports = function() {
     this.findUserbyUsername = function(username) {
         return User.findOne({ username: username }).exec();
     }
-
+    /**
+     * @param {String} username 
+     * @returns user liked posts
+     */    
+    this.getUserLiked = async function(username) {
+        try{
+            let user = await User.findOne({ username: username }).exec();
+            if(user)
+                return user.likedPosts;
+            else
+                return null;
+        }catch(e){
+            return null;
+        }
+    }
     /**
      * @param {String} username 
      * @param {String} nonce
