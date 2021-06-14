@@ -1,5 +1,5 @@
 <template lang="pug">
-v-sheet.pt-3.sticky(flat style="margin: -5px -5px -5px -5px;")
+v-sheet.pt-3.sticky(flat style="margin: -5px -5px 5px -5px;")
   v-row.mb-2(no-gutters)
     v-menu(
       v-model="order"
@@ -36,7 +36,7 @@ v-sheet.pt-3.sticky(flat style="margin: -5px -5px -5px -5px;")
       fab
       elevation="0"
       x-small
-      @click="search_box_show = !search_box_show"
+      @click="toggleSearchBox"
     )
       v-icon(v-if="!search_box_show") mdi-magnify
       span(v-else) 取消
@@ -48,7 +48,6 @@ v-sheet.pt-3.sticky(flat style="margin: -5px -5px -5px -5px;")
       @focus="mode_options_show = true"
       autocomplete="off"
       hide-details
-      @blur="mode_options_show = false"
     )
       template(#append-outer)
         span.mt-1.d-flex.text-no-wrap 搜尋
@@ -90,7 +89,12 @@ export default {
   computed: {},
   created() {},
 
-  methods: {},
+  methods: {
+    toggleSearchBox() {
+      this.search_box_show = !this.search_box_show;
+      if (!this.search_box_show) this.mode_options_show = false;
+    },
+  },
 };
 </script>
 

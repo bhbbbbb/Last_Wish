@@ -31,30 +31,28 @@ export default {
       required: true,
       type: Array,
     },
-    toUser: {
-      required: false,
-      type: Boolean,
-      default: false,
+    fetchAction: {
+      required: true,
+      type: String,
     },
   },
   data: () => ({}),
   computed: {},
-  created() {
-    // if (
-    //   this.$store.state.is_login &&
-    //   this.$store.state.followed_articles === undefined
-    // )
-    //   this.$store.dispatch('getUserFollowed');
+  watch: {
+    fetchAction() {
+      this.$store.dispatch(this.fetchAction);
+    },
   },
-
+  created() {},
+  mounted() {
+    this.$store.dispatch(this.fetchAction);
+  },
   methods: {
     ToInnerArticle(article_id) {
-      let to_name = this.toUser ? 'UserArticle' : 'Article';
       this.$router.push({
-        name: to_name,
+        name: 'Article',
         params: {
           id: article_id,
-          username: '123',
         },
       });
     },

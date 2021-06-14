@@ -7,7 +7,7 @@ import {
   apiLogout,
   apiTryLogin,
   apiGetUserPosts,
-  apiUserFollowedPosts,
+  apiGetFollowedPosts,
 } from './api';
 // import { apiGetArticles } from './api.js'
 import router from '@/router/index';
@@ -17,18 +17,16 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     article_data: {},
-    global_articles: '',
-    user_articles: '',
-    followed_articles: undefined,
+    global_articles: [],
+    user_articles: [],
+    followed_articles: [],
     user: {
       name: undefined,
       id: undefined,
       pro_pic: undefined,
     },
-    // username: '',
     is_login: false,
     links: global_links,
-    // user_id: '0',
     user_list: {},
   },
   mutations: {
@@ -101,26 +99,35 @@ export default new Vuex.Store({
      * @returns
      */
     async getGlobalArticles(context, forceUpdate = false) {
-      if (context.state.global_articles && !forceUpdate) return;
-      await apiGetArticles()
+      if (context.state.global_articles.length && !forceUpdate) return;
+      apiGetArticles()
         .then((res) => {
           context.commit('updateGlobalArticles', res.data);
-          context.state.global_articles.forEach((id) => {
-            context.dispatch('getArticle', id);
+          res.data.forEach((id) => {
+            context.dispatch('getArticle', { id });
           });
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    async getArticle({ state, commit }, id) {
-      if (id in state.article_data) return state.article_data[id];
+
+    /**
+     *
+     * @param {Object} payload { id, force_update = false }
+     * @returns
+     */
+    async getArticle({ state, commit }, { id, force_update }) {
+      if (!force_update && id in state.article_data) {
+        return state.article_data[id];
+      }
 
       return apiGetArticleById(id).then((res) => {
         commit('addArticle', { id, data: res.data });
         return res.data;
       });
     },
+
     // async getUser({ state, commit }, id) {
     //   if (id in state.user_list) return state.user_list[id];
     //   return await apiGetPublicInfo(id)
@@ -139,10 +146,13 @@ export default new Vuex.Store({
      * @returns
      */
     async getUserArticles(context, forceUpdate = false) {
-      if (context.state.user_articles && !forceUpdate) return;
-      await apiGetUserPosts({ username: context.state.user.name })
+      if (context.state.user_articles.length && !forceUpdate) return;
+      await apiGetUserPosts(context.state.user.id)
         .then((res) => {
           context.commit('updateUserArticles', res.data);
+          res.data.forEach((id) => {
+            context.dispatch('getArticle', { id });
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -186,13 +196,20 @@ export default new Vuex.Store({
       return;
     },
 
-    async getUserFollowed(context) {
-      apiUserFollowedPosts({ username: context.state.user.name })
+    async getUserFollowed(context, force_update = false) {
+      if (context.state.followed_articles.length !== 0 && !force_update)
+        return context.state.followed_articles;
+      return apiGetFollowedPosts()
         .then((res) => {
           context.commit('updateUserFollowed', res.data);
+          res.data.forEach((id) => {
+            context.dispatch('getArticle', { id });
+          });
+          return res.data;
         })
         .catch((err) => {
           console.log(err);
+          return [];
         });
     },
   },

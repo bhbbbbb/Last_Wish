@@ -1,5 +1,5 @@
 <template lang="pug">
-v-app-bar.d-flex.align-center.flex-wrap.justify-start(
+v-app-bar(
   app
   flat
   prominent
@@ -7,11 +7,11 @@ v-app-bar.d-flex.align-center.flex-wrap.justify-start(
   height="180"
   extension-height="50"
 )
-  v-container.ma-0.fill-height(fluid style="width: 100vw")
+  v-sheet.pa-0.px-0.ma-0(style="width: 100vw" color="transparent")
     v-row.align-self-start(no-gutters)
       v-col(cols="6")
         v-icon(@click.stop="Back") mdi-chevron-left
-      v-col.d-flex.justify-end.pr-3(cols="6")
+      v-col.d-flex.justify-end.pr-0(cols="6")
         v-menu(offset-y)
           template(#activator="{ on, attrs }")
             v-btn(
@@ -25,45 +25,43 @@ v-app-bar.d-flex.align-center.flex-wrap.justify-start(
               v-list-item-title 設定自介
             v-list-item(@click="logout")
               v-list-item-title 登出
-    v-row.px-3.align-self-center.align-center(no-gutters)
+    v-row.px-3.align-center.align-start(no-gutters)
       v-col(cols="3")
         UserAvatar(:user="$store.state.user" large)
-        //- v-avatar.grey.lighten-3(size="100" color="red")
-        //-   img(:src="imgUrl" v-if="imgUrl")
-        //-   span(style="font-size:2rem" v-else) {{$store.state.user.name[0]}}
-      v-col.d-flex.flex-column.align-start(cols="7")
+      v-col.d-flex.flex-column.align-start(cols="7" offset="1")
         span(style="font-size:2rem") {{$store.state.user.name}}
         span(style="font-size:1rem") 簡單自介
-      v-col(cols="2")
-  template(v-slot:extension)
-    //- v-row.white.pa-0.ma-0(no-gutters)
-    //-   v-btn(
-    //-     text
-    //-   )
-    //-     span() 我的願望 (n)
-    //-     v-btn(text) 全部
 
-    //-   v-btn
-    v-tabs(hide-slider v-model="tab_which")
-      v-tab.px-2.tab.white(
+  //------------- extension --------------------
+  template(v-slot:extension)
+    v-btn-toggle(
+      v-model="tab_which"
+      active-class="active"
+      background-color="white"
+      borderless
+      mandatory
+      style="margin-bottom: -2px"
+    )
+      v-btn.px-2.tab.white(
         :ripple="false"
-        active-class="white"
         to="articles"
         key="articles"
+        depressed
       ) 
         span 我的願望 (n)
         v-btn.pa-0(text) 全部
           v-icon mdi-menu-down
-      v-tab.pa-0.white(
+      v-btn.pa-0(
         style="min-width: 3px;"
         :ripple="false"
       )
         v-divider(vertical)
-      v-tab.tab.white(
+      v-btn.tab.white(
         :ripple="false"
-        active-class="white"
+				active-class="active"
         to="honorRoll"
         key="honorRoll"
+        depressed
       ) 我的榮譽榜
 </template>
 
@@ -112,6 +110,7 @@ export default {
 <style scoped>
 .tab {
   width: 50vw;
+  opacity: 0.5 !important;
 }
 
 .v-tab:before {
@@ -121,5 +120,25 @@ export default {
 
 .v-application .primary--text {
   color: grey;
+}
+
+.v-btn:before {
+  background-color: transparent;
+}
+
+.theme--light.v-btn--active::before {
+  opacity: 0 !important;
+}
+
+.active {
+  background-color: white !important;
+  opacity: 1 !important;
+  /* font-size: 2rem !important; */
+}
+</style>
+<style>
+.v-toolbar__extension {
+  padding: 0 0 !important;
+  background-color: white !important;
 }
 </style>
