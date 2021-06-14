@@ -17,6 +17,9 @@ v-card.pa-0(rounded="lg" min-height="268" flat="flat")
       v-col(cols="12")
         .text-center
           v-btn(width="90%" @click="Dev()") Dev log in
+      v-col(cols="12")
+        .text-center
+          v-btn(width="90%" @click="Send_mail()") Resend comfirmation mail
       //v-col(cols="12")
       //  .text-center
       //    v-btn(width="90%" @click="Line()")
@@ -27,7 +30,7 @@ v-card.pa-0(rounded="lg" min-height="268" flat="flat")
 
 <script>
 import { mapActions } from 'vuex';
-import { apiLineLogin } from '@/store/api.js';
+import { apiLineLogin,apiSendTokenMail } from '@/store/api.js';
 export default {
   name: 'MyLogin',
   data: () => ({
@@ -86,6 +89,19 @@ export default {
           this.Show_info('Something went wrong', 'error');
           console.log(err);
         });
+    },
+    Send_mail(){
+      if(this.user.username.trim()=='')
+        this.Show_info('Required username','error');
+      else{
+            apiSendTokenMail(this.user.username.trim()).then((res)=>{
+            if(res.status==200)
+              this.Show_info('Email has been sent','success');
+          }).catch((e)=>{
+              //console.log(rep);
+              this.Show_info(e.response.data.err_msg,'error');
+          })
+      }
     },
     Show_info(Info, infoType) {
       /**

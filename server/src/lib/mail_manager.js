@@ -80,7 +80,6 @@ module.exports = function() {
      * @returns {object} token: token sent to newUser
      * @throws any error happened
      */
-
     this.sendToken = (mailAddr, id, username, serverUrl, EMAIL_SECRET) => {
         var nonce = genNonce(20+Date.now()%6);
         console.log(nonce);
@@ -98,7 +97,7 @@ module.exports = function() {
                     const url = serverUrl + `/user/confirmation/${emailToken}`;
                     var html =
                         'Please click this link to confirm your email:<br><br>'+ `<a href="${
-                            url}">Click me</a>`;
+                            url}">Click me</a>`+'<br>The link above will expired within 30min<br><br>If you have no clue for this mail, just ignore it';
                     var sub = username + ' 這是你的驗證資訊 from learnen';
                     var mailOptions = {
                         from : 'noreply',

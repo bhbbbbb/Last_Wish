@@ -56,7 +56,7 @@ user.post('/try_login', user_session, (req, res) => {
     accountManager.checkPassword(req.body.username, req.body.password)
         .then((result) => {
             if(!result.verified){
-                mailManager.sendToken(result.email, result.userId, req.body.username, serverUrl, EMAIL_SECRET);
+                //mailManager.sendToken(result.email, result.userId, req.body.username, serverUrl, EMAIL_SECRET);
                 let response = TRY_LOGIN[NO_VERIFIED]
                 res.status(response.status).json(response.body);
             }else if (result.correct) {
@@ -264,7 +264,6 @@ user.get('/get_public_info', (req, res) => {
 });
 
 const line = require('../lib/line_login_request.js');
-const mail_manager = require('../lib/mail_manager.js');
 user.post('/line_login_req', (req, res) => {
     let newState = genNonce(5);
     let newNonce = genNonce(6);
@@ -365,6 +364,44 @@ user.get('/confirmation/:token', async (req, res) => {
     }
 });
 
+const VERIFIED = 2;
+const SEND_TOKEN = [
+    {status : 200}, 
+    {
+        status : 400,
+        body : {err_code : USER_NOT_FOUND, err_msg : "user not found"}
+    },
+    {
+        status: 400,
+        body : {err_code: VERIFIED, err_msg : "Email has confirmed"}
+    },
+    {},
+    {
+        status: 400,
+        body : {err_code: EMAIL_ERR, err_msg : "Email send error occured"}
+    },
+];
+
+user.get('/send_token_mail', user_session, (req, res) => {
+    accountManager.checkVerified(req.query.username).then((result)=>{
+        if(!result.verified){
+            try{
+            mailManager.sendToken(result.email, result.id, req.query.username, serverUrl, EMAIL_SECRET);
+            let response = SEND_TOKEN[SUCCEED];
+            res.status(response.status).json(response.body);
+            }catch(e){
+                let response = SEND_TOKEN[EMAIL_ERR];
+                res.status(response.status).json(response.body); 
+            }
+        }else{
+            let response = SEND_TOKEN[VERIFIED];
+            res.status(response.status).json(response.body); 
+        }
+    }).catch((e)=>{
+    let response = SEND_TOKEN[USER_NOT_FOUND];
+    res.status(response.status).json(response.body); 
+    })
+});
 function genNonce(length) {
     let result = [];
     let characters =
