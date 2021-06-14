@@ -69,6 +69,34 @@ module.exports = function() {
                 console.log(res);
             });
     }
+    /**
+     * @param {String} username 
+     * @returns if the user is verified
+     * @returns null if user not found;
+     */
+     this.checkVerified = async function(username) {
+        try {
+            let user = await User.findOne({username: username})
+                                 .exec()
+                                 .then((user) => {
+                                     return user;
+                                 });
+            if (user) {
+                let result=
+                {
+                   verified: user.verified,
+                   email   : user.email,
+                   id: user._id,
+                };
+                return result;
+            }
+            return null;
+        } catch (error) {
+            return null;
+        }
+    }
+
+
 
     /**
      * @param {String} username 

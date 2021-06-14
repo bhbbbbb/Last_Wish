@@ -95,20 +95,20 @@ const REGISTER = [
         status : 200
     }, 
     {
-        status : 201,
-        body : { err_code : DUPLICATED_USER, err_msg : "duplicated user" }
+        status : 400,
+        body : {err_code : DUPLICATED_USER, err_msg : "duplicated user"}
     },
     {
-        status : 202, 
-        body : { err_code : DUPLICATED_EMAIL, err_msg : "duplicated email" }
+        status : 400, 
+        body : {err_code : DUPLICATED_EMAIL, err_msg : "duplicated email"}
     },
     {
-        status : 203,
-        body : { err_code : INVALID_ADDR, err_msg : "invalid email address" }
+        status : 400,
+        body : {err_code : INVALID_ADDR, err_msg : "invalid email address"}
     },
     {
-        status : 204,
-        body : { err_code : EMAIL_ERR, err_msg : "email sent failed" }
+        status : 500,
+        body : {err_code : EMAIL_ERR, err_msg : "email sent failed"}
     },    
 ];
 user.post('/register', async (req, res) => {
@@ -116,38 +116,37 @@ user.post('/register', async (req, res) => {
     if (!mailManager.isValidAddr(addr)) {
         let response = REGISTER[INVALID_ADDR];
         res.status(response.status).json(response.body);
-    } else {
-        let hasDuplicatedEmail = await mailManager.hasMailAddr(addr)
-                                                  .then((result) => {
-                                                      return result;
-                                                  });
-        if (hasDuplicatedEmail) {
-            let response = REGISTER[DUPLICATED_EMAIL];
-            res.status(response.status).json(response.body);
-        } else {
-            let trimmedUsername = req.body.username.trim();
-            let trimmedPassword = req.body.password.trim();
-            accountManager
-                .addUser(trimmedUsername, trimmedPassword, addr)
-                .then((id) => {
-                    let response = REGISTER[SUCCEED];
-                    try {
-                        mailManager.sendToken(addr, id, trimmedUsername, SERVER_URL, EMAIL_SECRET);
-                        res.sendStatus(response.status);
-                    } catch (error) {
-                        let response = REGISTER[EMAIL_ERR];
-                        res.status(response.status).json(response.body);
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
-                    let response = REGISTER[DUPLICATED_USER];
-                    res.status(response.status).json(response.body);
-                });
-        }
-        return;
+        console.log(response.body);
     }
-});
+    else {
+        let trimmedUsername = req.body.username.trim();
+        let trimmedPassword = req.body.password.trim();
+            const result = await mailManager.hasMailAddr(addr);
+            const invalid = await accountManager.hasUser(trimmedUsername);
+            if(result){
+                let response = REGISTER[DUPLICATED_EMAIL];
+                res.status(response.status).json(response.body);
+                console.log(response.body);
+            }else if(invalid){
+                let response = REGISTER[DUPLICATED_USER];
+                res.status(response.status).json(response.body);
+            }
+            else{
+                const id = await accountManager.addUser(trimmedUsername, trimmedPassword, addr);
+                let response = REGISTER[SUCCEED];
+                console.log(id);
+                try{
+                    mailManager.sendToken(addr, id, trimmedUsername, SERVER_URL, EMAIL_SECRET);
+                    res.sendStatus(response.status);
+                    //console.log(addr);
+                }catch(e){
+                    console.log(e);
+                    let response = REGISTER[EMAIL_ERR];
+                    res.status(response.status).json(response.body);
+                }
+            }
+        }
+    });
 
 user.post('/set_self_intro', user_session, (req, res) => {
     accountManager
@@ -259,7 +258,6 @@ user.get('/get_public_info', (req, res) => {
 });
 
 const line = require('../lib/line_login_request.js');
-const mail_manager = require('../lib/mail_manager.js');
 user.post('/line_login_req', (req, res) => {
     let newState = genNonce(5);
     let newNonce = genNonce(6);
@@ -339,7 +337,7 @@ user.get('/get_id_by_name', (req, res) => {
 });
 const LINK_EXPIRED='\
 <p>很抱歉，這個連結已經失效了</p><p>We\'re sorry, the link has expired.</p>\
-<a href='+frontUrl+'>回到首頁</a>\
+<a href='+FRONT_URL+'>回到首頁</a>\
 ';
 
 user.get('/confirmation/:token', async (req, res) => {
@@ -363,6 +361,45 @@ user.get('/confirmation/:token', async (req, res) => {
                 }
         });
 
+const VERIFIED = 2;
+const SEND_TOKEN = [
+    {status : 200}, 
+    {
+        status : 400,
+        body : {err_code : USER_NOT_FOUND, err_msg : "user not found"}
+    },
+    {
+        status: 400,
+        body : {err_code: VERIFIED, err_msg : "Email has confirmed"}
+    },
+    {},
+    {
+        status: 400,
+        body : {err_code: EMAIL_ERR, err_msg : "Email send error occured"}
+    },
+];
+
+user.get('/send_token_mail', user_session, async(req, res) => {
+        const result = await accountManager.checkVerified(req.query.username);
+        if(result == null){
+            let response = SEND_TOKEN[USER_NOT_FOUND];
+            res.status(response.status).json(response.body); 
+        }
+        else if(result.verified){
+            let response = SEND_TOKEN[VERIFIED];    //User is verified, no need to send mail again;
+            res.status(response.status).json(response.body); 
+            
+        }else{
+            try{
+                mailManager.sendToken(result.email, result.id, req.query.username, SERVER_URL, EMAIL_SECRET);
+                let response = SEND_TOKEN[SUCCEED];
+                res.status(response.status).json(response.body);
+            }catch(e){
+                let response = SEND_TOKEN[EMAIL_ERR];
+                res.status(response.status).json(response.body); 
+            }
+        }
+});
 function genNonce(length) {
     let result = [];
     let characters =
