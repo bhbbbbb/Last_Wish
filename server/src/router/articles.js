@@ -64,10 +64,14 @@ global.get('/', (req, res) => {
             res.status(400).json(error);
         })
 });
-global.get('/get_liked_posts', user_session, async(req, res)=>{
+global.get('/get_liked_posts', async(req, res)=>{
     try{
-        const result = await accountManager.getUserLiked();
-        res.status(200).json(result);
+        const result = await accountManager.getUserLiked(req.query.id);
+        console.log(result);
+        if(result)
+            res.status(200).json(result);
+        else
+            res.status(400).json();
     }catch(e){
         res.status(500).json();
     }

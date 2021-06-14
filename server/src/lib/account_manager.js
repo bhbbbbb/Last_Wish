@@ -12,9 +12,10 @@ module.exports = function() {
      * @param {String} username 
      * @returns user liked posts
      */    
-    this.getUserLiked = async function(username) {
+    this.getUserLiked = async function(user_id) {
         try{
-            let user = await User.findOne({ username: username }).exec();
+            let user = await User.findById(user_id).exec();
+            console.log(user);
             if(user)
                 return user.likedPosts;
             else
