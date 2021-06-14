@@ -56,30 +56,33 @@ const TRY_LOGIN = [
 ];
 user.post('/try_login', user_session, async(req, res) => {
     try{
+        console.log(req.body.username);
         const exist = await accountManager.hasUser(req.body.username);
-        const result = accountManager.checkPassword(req.body.username, req.body.password);
         if(!exist){
             let response = TRY_LOGIN[USER_NOT_FOUND];
             res.status(response.status).json(response.body);
         }
-        else if (!result.verified) {
-            // To avoid repeating sending the verification mail
-            // mailManager.sendToken(
-            //         result.email, result.userId, req.body.username, SERVER_URL, EMAIL_SECRET);
-            let response = TRY_LOGIN[NO_VERIFIED]
-            res.status(response.status).json(response.body);
-        } else if (result.correct) {
-            let response = TRY_LOGIN[SUCCEED]
-            req.session.username = req.body.username;
-            // notice thate 'id' cannot be set in session
-            req.session.user_id = result.userId;
-            res.status(response.status).json({
-                username: req.body.username,
-                id: req.session.user_id
-            });
-        } else {
-            response = TRY_LOGIN[PASSWORD_INCORRECT];
-            res.status(response.status).json(response.body);
+        else{ 
+            const result = await accountManager.checkPassword(req.body.username, req.body.password);
+            if (!result.verified) {
+                // To avoid repeating sending the verification mail
+                // mailManager.sendToken(
+                //         result.email, result.userId, req.body.username, SERVER_URL, EMAIL_SECRET);
+                let response = TRY_LOGIN[NO_VERIFIED]
+                res.status(response.status).json(response.body);
+            } else if (result.correct) {
+                let response = TRY_LOGIN[SUCCEED]
+                req.session.username = req.body.username;
+                // notice thate 'id' cannot be set in session
+                req.session.user_id = result.userId;
+                res.status(response.status).json({
+                    username: req.body.username,
+                    id: req.session.user_id
+                });
+            } else {
+                response = TRY_LOGIN[PASSWORD_INCORRECT];
+                res.status(response.status).json(response.body);
+            }
         }
     }catch(error){
         console.log(error);
