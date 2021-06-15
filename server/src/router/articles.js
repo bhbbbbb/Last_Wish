@@ -48,15 +48,26 @@ global.post('/delete', user_session, (req, res) => {
 
 
 global.post('/add_comment', async(req, res) => {
-    let newDate = await articleManager.addCommentToArticle(req.body.author, req.body.article_id, req.body.comment);
+    let author = req.body.author;
+    let articleId = req.body.article_id;
+    let comment = req.body.comment;
+    let newDate = await articleManager.addCommentToArticle(author , articleId, comment);
     res.status(200).json(newDate);
     console.log(newDate);
 });
 
 global.post('/edit_comment',async(req,res)=>{
-    console.log('QQ');
-    newDate = await articleManager.replaceCommentOfArticle(req.body.new_comment,req.body.article_id,req.body.comment_id);
-    res.status(200).json();
+    let newComment = req.body.new_comment;
+    let articleId = req.body.article_id;
+    let commentId = req.body.comment_id;
+    let userId = req.body.user_id;
+    try{
+    let newDate = await articleManager.replaceCommentOfArticle(newComment , articleId, commentId, userId);
+    res.status(200).json(newDate);
+    }catch(e){
+        console.log(e);
+        res.status(400).json();
+    }
 });
 
 

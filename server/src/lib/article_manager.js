@@ -305,26 +305,25 @@ module.exports = function() {
      * @param {String} commentId 
      * 
      * @throws "no such article" exception
+     * @throws "author not match" exception
+     * @throws "no such comment" exception
      */
-    this.replaceCommentOfArticle = async function(newComment, articleId, commentId){
-        console.log(commentId);
-        let result = await Article.findOne({
-           "_id": articleId,
-        },
-            {
-                comments:{
-                    "$elemMatch":{"_id": commentId}
-               }
-            },
-            {"comments":1}   //So we only get 1 comment obj instead of whole document
-        );
+    this.replaceCommentOfArticle = async function(newComment, articleId, commentId, userId){
+        let result = await Article.findById(articleId);
         if(result){
-        result.comments[0]['body']=newComment;  //Modified exist's comment
-        console.log(Date.now());
-        //result.comments[0]['date']=Date.now; //Throw type err
-        await result.save();
+            let comment = result.comments.id(commentId);
+            if(comment){
+                if(comment.author.id != userId){
+                    throw "author not match"
+                }
+                comment.body = newComment;
+                comment.date = Date.now();
+                await result.save();
+                return comment.date;
+            }
+            throw "no such comment"
         }
-        return;
+        throw "no such article"
     }
     // this.replaceCommentOfArticle = function(newComment, articleId, commentId) {
     //     if (!this.hasArticle(articleId)) {
