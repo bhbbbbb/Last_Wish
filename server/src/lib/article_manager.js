@@ -1,8 +1,8 @@
 // const fs = require("fs");
-var d = new Date();
-var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-var today = `${month[d.getMonth()]}/${String(d.getDate())} ${days[d.getDay()]}`;
+// var d = new Date();
+// var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+// var today = `${month[d.getMonth()]}/${String(d.getDate())} ${days[d.getDay()]}`;
 const Article = require('../models/Article');
 const User = require("../models/User");
 
@@ -306,6 +306,26 @@ module.exports = function() {
      * 
      * @throws "no such article" exception
      */
+    this.replaceCommentOfArticle = async function(newComment, articleId, commentId){
+        console.log(commentId);
+        let result = await Article.findOne({
+           "_id": articleId,
+        },
+            {
+                comments:{
+                    "$elemMatch":{"_id": commentId}
+               }
+            },
+            {"comments":1}   //So we only get 1 comment obj instead of whole document
+        );
+        if(result){
+        result.comments[0]['body']=newComment;  //Modified exist's comment
+        console.log(Date.now());
+        //result.comments[0]['date']=Date.now; //Throw type err
+        await result.save();
+        }
+        return;
+    }
     // this.replaceCommentOfArticle = function(newComment, articleId, commentId) {
     //     if (!this.hasArticle(articleId)) {
     //         throw "no such article";
