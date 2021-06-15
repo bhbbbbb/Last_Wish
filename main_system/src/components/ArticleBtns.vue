@@ -26,7 +26,7 @@ v-row.align-center(v-if="content" no-gutters)
 
 <script>
 import { apiToggleFollow } from '@/store/api';
-// import color_list from '@/store/color_list';
+// import color_list from '@/data/color_list';
 export default {
   name: 'ArticleBtns',
   components: {},
@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     getFollowState() {
-      const user_id = this.$store.state.user.id;
+      const user_id = this.$store.state.user.self.id;
       let found = this.content.fans.find((element) => element === user_id);
       this.followed = Boolean(found);
       this.followed_count = this.content.fans.length;

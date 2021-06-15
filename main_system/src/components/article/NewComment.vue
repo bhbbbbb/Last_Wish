@@ -2,10 +2,11 @@
 v-sheet.ma-1.pa-1.transparent.d-flex.align-center(
   flat
   min-height="48"
+  v-if="$store.state.is_login"
 )
   div
-  UserAvatar(:user="$store.state.user")
-  span.px-1.mx-2 {{ $store.state.user.name ? $store.state.user.name : "Anon."}}
+  UserAvatar(:user="$store.state.user.self")
+  span.px-1.mx-2 {{ $store.state.user.self.name }}
   v-text-field.my-0.mx-3.pa-1(
     style="transform: translateY(5px);"
     placeholder="comment here"
@@ -53,8 +54,8 @@ export default {
       if (!this.new_comment.trim()) return;
       apiUploadComment({
         author: {
-          name: this.$store.state.user.name,
-          id: this.$store.state.user.id,
+          name: this.$store.state.user.self.name,
+          id: this.$store.state.user.self.id,
         },
         article_id: this.$route.params.id,
         comment: this.new_comment,

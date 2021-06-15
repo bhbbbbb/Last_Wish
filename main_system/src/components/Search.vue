@@ -73,7 +73,7 @@ v-sheet.pt-3.sticky(flat style="margin: -5px -5px 5px -5px;")
 </template>
 
 <script>
-// import color_list from '@/store/color_list.js';
+// import color_list from '@/data/color_list';
 export default {
   name: 'Search',
 

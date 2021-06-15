@@ -5,17 +5,17 @@ export const home_routes = [
     name: 'Articles',
     component: () => import('@/views/ArticleContainer'),
     beforeEnter(to, from, next) {
-      // TODO : may need to update global_articles
+      // TODO : may need to update article.global
       next();
-      if (store.state.global_articles.length === 0) {
+      if (store.state.article.global.length === 0) {
         // store.dispatch('getGlobalArticles');
       }
-      // if (store.state.global_articles) next();
+      // if (store.state.article.global) next();
       // else {
       //   store
       //     .dispatch('getGlobalArticles')
       //     .then(() => {
-      //       // console.log(store.state.global_articles);
+      //       // console.log(store.state.article.global);
       //       next();
       //     })
       //     .catch((err) => {
@@ -25,7 +25,7 @@ export const home_routes = [
       // }
     },
     props: () => ({
-      articles: store.state.global_articles,
+      articles: store.state.article.global,
       fetchAction: 'getGlobalArticles',
     }),
   },
@@ -79,7 +79,7 @@ export const home_routes = [
     // props: (route) => {
     //   let context = route.params.context
     //     ? route.params.context
-    //     : store.state.global_articles[route.params.id];
+    //     : store.state.article.global[route.params.id];
     //   return {
     //     id: route.params.id,
     //     context: context,

@@ -19,7 +19,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
           v-list
             v-list-item(@click="Copy") 複製連結
             //- v-list-item(@click="Clone") 願望拷貝
-            v-list-item(@click="GoEdit" v-if="$store.state.user.id === content.author.id") 編輯內文
+            v-list-item(@click="GoEdit" v-if="$store.state.user.self.id === content.author.id") 編輯內文
     
     //------------ article link from -----------
     v-row(no-gutters)
@@ -53,7 +53,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
     v-row
       v-col.px-8
         //- v-timeline(
-        //-   v-if="$store.state.user.id === content.author.id && !newMilestone_show"
+        //-   v-if="$store.state.user.self.id === content.author.id && !newMilestone_show"
         //-   align-top
         //-   dense
         //- )
@@ -85,7 +85,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
             v-btn(@click="newMilestone_show = true") 點我新增里程碑
           
         NewMilestone(
-          v-if="$store.state.user.id === content.author.id && newMilestone_show"
+          v-if="$store.state.user.self.id === content.author.id && newMilestone_show"
           :id="id"
           :wishes="content.wishes"
         )
@@ -116,7 +116,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
 
 <script>
 import moment from 'moment';
-import color_list from '@/store/color_list.js';
+import color_list from '@/data/color_list';
 // var Article_id = '';
 
 export default {
@@ -154,16 +154,16 @@ export default {
     },
   },
   created() {
-    this.content = this.$store.state.article_data[this.id];
+    this.content = this.$store.state.article.data[this.id];
     // this.ThePost = JSON.parse(JSON.stringify(this.content));
     // this.ThePost.wishes = String(this.ThePost.wishes).replace(/,/g, '\n');
     //Article_id = this.id;
     // this.$store.dispatch('getUser', this.content.from).then((res) => {
     //   this.author = res;
     // });
-    // if (this.$store.state.followed_articles)
-    //   for (var i = 0; i < this.$store.state.followed_articles.length; i++)
-    //     if (this.$store.state.followed_articles[i].id == this.content.id) {
+    // if (this.$store.state.article.followed)
+    //   for (var i = 0; i < this.$store.state.article.followed.length; i++)
+    //     if (this.$store.state.article.followed[i].id == this.content.id) {
     //       this.hasFollowed = true;
     //       break;
     //     }

@@ -18,8 +18,8 @@ export default {
   }),
   computed: {},
   created() {
-    if (this.$store.state.global_articles)
-      this.articles = this.$store.state.global_articles;
+    if (this.$store.state.article.global)
+      this.articles = this.$store.state.article.global;
   },
 };
 </script>

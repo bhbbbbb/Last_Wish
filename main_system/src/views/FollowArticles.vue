@@ -26,7 +26,7 @@ export default {
   computed: {},
   created() {
     this.$store.dispatch('getUserFollowed').then(() => {
-      this.articles = this.$store.state.followed_articles;
+      this.articles = this.$store.state.article.followed;
     });
   },
 };

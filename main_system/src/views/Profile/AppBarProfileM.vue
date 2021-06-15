@@ -27,9 +27,9 @@ v-app-bar(
               v-list-item-title 登出
     v-row.px-3.align-center.align-start(no-gutters)
       v-col(cols="3")
-        UserAvatar(:user="$store.state.user" large)
+        UserAvatar(:user="$store.state.user.self" large)
       v-col.d-flex.flex-column.align-start(cols="7" offset="1")
-        span(style="font-size:2rem") {{$store.state.user.name}}
+        span(style="font-size:2rem") {{$store.state.user.self.name}}
         span(style="font-size:1rem") 簡單自介
 
   //------------- extension --------------------

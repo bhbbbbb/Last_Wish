@@ -32,7 +32,7 @@ v-card.my.pa-3(
 
 <script>
 import moment from 'moment';
-import color_list from '@/store/color_list';
+import color_list from '@/data/color_list';
 export default {
   name: 'ArticleCard',
   components: {

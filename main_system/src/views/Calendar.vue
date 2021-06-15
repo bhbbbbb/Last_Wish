@@ -164,7 +164,7 @@
 
 </template>
 <script>
-import { color_list_by_idx, COLOR_LIST } from '@/store/color_list';
+import { color_list_by_idx, COLOR_LIST } from '@/data/color_list';
 import moment from 'moment';
 export default {
   name: 'Calendar',

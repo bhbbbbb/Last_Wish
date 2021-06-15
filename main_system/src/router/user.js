@@ -8,7 +8,7 @@ export const user_routes = [
     // TODO : redirect un login visiter to public profile page
     beforeEnter(to, from, next) {
       if (store.state.is_login) {
-        if (store.state.user_articles.length) next();
+        if (store.state.article.user.length) next();
         else {
           next();
           // store.dispatch('getUserArticles');
@@ -16,7 +16,7 @@ export const user_routes = [
       } else next('/articles');
     },
     props: () => ({
-      articles: store.state.user_articles,
+      articles: store.state.article.user,
       fetchAction: 'getUserArticles',
     }),
   },

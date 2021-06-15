@@ -19,10 +19,11 @@ export const isLogin = async () => {
         if (String(cookies_login) === String(who.username)) {
           let info = await apiGetPublicInfo(who.id).then((res) => res.data);
           store.commit('login', info);
+          store.dispatch('setSelf', info);
           return true;
         }
-      } catch (err) {
-        console.log(err);
+      } catch {
+        // console.log(err);
         return false;
       }
     }

@@ -4,11 +4,11 @@ v-card.ma-1.pa-1.transparent.d-flex.align-center(
   flat
   min-height="48"
 )
-  UserAvatar(:user="context")
+  UserAvatar(:user="content")
   .px-1
   span {{ author.username }}
   .px-2
-  span {{ context.body }}
+  span {{ content.body }}
 </template>
 
 <script>
@@ -26,7 +26,7 @@ export default {
   }
   */
   props: {
-    context: {
+    content: {
       type: Object,
       required: true,
     },
@@ -35,7 +35,11 @@ export default {
     author: undefined,
   }),
 
-  created() {},
+  created() {
+    // this.$store.dispatch('getUser', this.content.author.id).then((res) => {
+    //   this.author = res;
+    // });
+  },
   methods: {},
 };
 </script>
