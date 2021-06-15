@@ -404,6 +404,42 @@ user.get('/send_token_mail', user_session, async(req, res) => {
             }
         }
 });
+
+
+
+
+user.post('/add_event_to_user', user_session, async(req,res)=>{
+    let newEvent = {
+        "name" : req.body.name,
+        "color": req.body.color,
+        "start": req.body.start,
+        "end": req.body.end,
+        "finished": req.body.finished
+    }
+    let userId =req.session.user_id;
+    try{
+        await accountManager.addEventToUser(newEvent,userId);
+        res.status(200).json();
+    }catch(e){
+        console.log(e);
+        res.status(400).json();
+    }
+
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function genNonce(length) {
     let result = [];
     let characters =

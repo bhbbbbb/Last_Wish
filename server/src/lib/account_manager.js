@@ -482,6 +482,36 @@ module.exports = function() {
         throw "user not found";
     }
 
+
+    /**
+     * Add event into user's event list
+     * @param {obj} event 
+     * @param {String} userId 
+     * @throws "user not found"
+     */
+
+    this.addEventToUser = async function(event, userId){
+        try{
+            let user = await User.findById(userId).exec();
+            if(user){
+                const len = user.events.push(event);
+                user.eventLists.push(user.events[len-1]._id);
+                await user.save();
+                return;
+            }
+        }catch(error){
+            throw error;
+        }
+        throw "user not found";
+    }
+
+
+
+
+
+
+
+
     /**
      * @param {String} username 
      * @param {String} articleId 

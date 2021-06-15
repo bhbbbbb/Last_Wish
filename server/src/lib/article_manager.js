@@ -299,11 +299,10 @@ module.exports = function() {
 
     /**
      * Replace a comment body in an article
-     * 
      * @param {Object} newComment 
      * @param {String} articleId 
      * @param {String} commentId 
-     * 
+     * @param {String} userId 
      * @throws "no such article" exception
      * @throws "author not match" exception
      * @throws "no such comment" exception
