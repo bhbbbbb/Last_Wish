@@ -416,7 +416,7 @@ user.post('/add_event_to_user', user_session, async(req,res)=>{
         "end": req.body.end,
         "finished": req.body.finished
     }
-    let userId =req.session.user_id;
+    let userId = req.session.user_id;
     try{
         await accountManager.addEventToUser(newEvent,userId);
         res.status(200).json();
@@ -428,7 +428,18 @@ user.post('/add_event_to_user', user_session, async(req,res)=>{
 })
 
 
-
+user.get('/get_liked_posts', user_session, async(req, res)=>{
+    try{
+        let userId = req.session.user_id;
+        const result = await accountManager.getUserLiked(userId);
+        if(result)
+            res.status(200).json(result);
+        else
+            res.status(400).json();
+    }catch(e){
+        res.status(500).json();
+    }
+})
 
 
 
