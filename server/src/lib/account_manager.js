@@ -487,14 +487,15 @@ module.exports = function() {
      * Add event into user's event list
      * @param {obj} event 
      * @param {String} userId 
-     * @throws "user not found"
+     * @throws "user not found" exception
      */
 
     this.addEventToUser = async function(event, userId){
         try{
             let user = await User.findById(userId).exec();
             if(user){
-                const len = user.events.push(event);
+                await user.events.push(event);
+                const len = user.events.length;
                 user.eventLists.push(user.events[len-1]._id);
                 await user.save();
                 return;
@@ -504,11 +505,45 @@ module.exports = function() {
         }
         throw "user not found";
     }
+    /**
+     * get event by userId and eventId
+     * @param {String} eventId 
+     * @param {String} userId 
+     * @throws "user not found" exception
+     * @throws "event not found" exception
+     * @returns event of eventId if event exist
+     */
+    this.getEventById = async function(eventId, userId){
+        try{
+            let user = await User.findById(userId);
+            if(!user)
+                throw "user not found";
+            let event = await user.events.id(eventId);
+            if(!event)
+                throw "event not found";
+            return event;
+        }catch(error){
+            throw(error);
+        }
+    }
 
 
-
-
-
+    /**
+     * get user event lists by userId
+     * @param {String} userId
+     * @throws "user not found" exception
+     * @retunrs eventList of user
+     */
+    this.getUserEvents = async function(userId){
+        try{
+           let user = await User.findById(userId);
+           if(!user)
+               throw "user not found";
+            return user.eventLists;
+        }catch(error){
+            throw error;
+        }
+    }
 
 
 
