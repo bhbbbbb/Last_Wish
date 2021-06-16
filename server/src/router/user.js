@@ -440,6 +440,26 @@ user.post('/get_event_by_id', user_session, async(req, res)=>{
 })
 
 
+user.post('/edit_event_by_id', user_session, async(req, res)=>{
+    let eventId = req.body.event_id;
+    let modifiedEvent = {
+        "name" : req.body.name,
+        "color": req.body.color,
+        "start": req.body.start,
+        "end": req.body.end,
+        "finished": req.body.finished
+    }
+    let userId = req.session.user_id;
+    try{
+       let result = await accountManager.editEventById(eventId, userId, modifiedEvent);
+       res.status(200).json(result);
+    }catch(error){
+        console.log(error);
+        res.status(400).json();
+    }
+})
+
+
 user.get('/get_event_lists', user_session, async(req, res)=>{
     let userId = req.session.user_id;
     try{

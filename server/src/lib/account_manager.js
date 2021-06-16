@@ -527,7 +527,30 @@ module.exports = function() {
         }
     }
 
-
+    /**
+     * replace existed event with modifiedEvent obj
+     * @param {String} eventId 
+     * @param {String} userId
+     * @param {obj} modifiedEvent
+     * @throws "user not found" exception
+     * @throws "event not found" exception
+     * @returns event of eventId if event exist
+     */
+     this.editEventById = async function(eventId, userId, modifiedEvent){
+        try{
+            let user = await User.findById(userId);
+            if(!user)
+                throw "user not found";
+            let event = await user.events.id(eventId);
+            if(!event)
+                throw "event not found";
+            await event.set(modifiedEvent);
+            await user.save()
+            return;
+        }catch(error){
+            throw(error);
+        }
+    }
     /**
      * get user event lists by userId
      * @param {String} userId
