@@ -287,21 +287,35 @@ module.exports = function() {
     // }
 
     /**
-     * Replace the body and title of an article
-     * 
-     * @param {Object} newComment 
-     * @param {String} articleId 
-     * @param {String} commentId 
-     * 
-     * @throws "no such article" exception
-     */
-    // this.replaceArticle = function(newArticle, articleId) {
-    //     if (!this.hasArticle(articleId)) {
-    //         throw "no such article";
-    //     } this.articles[Number(articleId)].title = newArticle.title;
-    //     this.articles[Number(articleId)].body = newArticle.body;
-    //     synchronize(this.articles, this.articlePATH);
-    // }
+    * Replace the body and title of an article
+    * 
+    * @param {Object} newComment 
+    * @param {String} articleId 
+    * @param {String} userId`
+    * @throws "no such article" exception
+    * @throws "not the author" exception
+    */
+    this.replaceArticle = async function(newArticle, articleId, userId) {
+        try{
+            console.log(articleId);
+            let article = await Article.findById(articleId);
+            if(!article)
+                throw "no such article";
+            if(userId != article.author)
+                throw "not the author"
+            article.title = newArticle.title;
+            article.body = newArticle.body;
+            article.date = Date.now();
+            await article.save();
+            return article.date;
+        }catch(e){
+            console.log(e);
+            throw e;
+        }
+
+            
+        //synchronize(this.articles, this.articlePATH);
+    }
 
     /**
      * Replace a comment body in an article
