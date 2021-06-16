@@ -47,10 +47,37 @@ global.post('/delete', user_session, (req, res) => {
 });
 
 
-// global.post('/add_comment', (req, res) => {
-//     let newComent = articleManager.addCommentToArticle(req.body.author, req.body.article_id, req.body.comment);
-//     res.json(newComent);
-// });
+global.post('/add_comment', user_session, async(req, res) => {
+    try{
+        let author = {
+            "name":req.session.username,
+            "id":req.session.user_id
+        }
+        let articleId = req.body.article_id;
+        let comment = req.body.comment;
+        let newDate = await articleManager.addCommentToArticle(author , articleId, comment);
+        res.status(200).json(newDate);
+        console.log(newDate);
+    }catch(error){
+        console.log(error);
+        res.status(400).json;
+    }
+});
+
+global.post('/edit_comment', user_session, async(req,res)=>{
+    let newComment = req.body.new_comment;
+    let articleId = req.body.article_id;
+    let commentId = req.body.comment_id;
+    let userId = req.session.user_id;
+    try{
+    let newDate = await articleManager.replaceCommentOfArticle(newComment , articleId, commentId, userId);
+    res.status(200).json(newDate);
+    }catch(e){
+        console.log(e);
+        res.status(400).json();
+    }
+});
+
 
 global.get('/', (req, res) => {
     articleManager
@@ -95,6 +122,27 @@ global.get('/get_user_posts', user_session, (req, res) => {
             res.status(400).json(error);
         });
 });
+
+/**
+ * @param article_id
+ */
+ global.post('/edit_article', user_session, async(req, res) => {
+    try {
+        let newArticle ={
+            "title":req.body.title,
+            "body":req.body.body,
+        }
+        let articleId = req.body.article_id;
+        let userId = req.session.user_id;
+        let newDate = 
+        await articleManager.replaceArticle(newArticle, articleId, userId);
+        res.status(200).json(newDate);
+    } catch (err) {
+        console.log(err);
+        res.status(400).json();
+        return;
+    }
+})
 
 /**
  * @req req.query { user_id }
@@ -148,32 +196,22 @@ global.post('/FollowedPostToggle', (req, res) => {
     return;
 })
 
-global.post('/editArticle', (req, res) => {
-    try {
-        articleManager.replaceArticle(req.body.newArticle, req.body.articleId);
-    } catch (err) {
-        console.log(err);
-        res.sendStatus(400);
-        return;
-    }
-    res.sendStatus(200);
-    return
-})
+
 
 // TODO:
 
-// editComment
-global.post('/editComment', (req, res) => {
-    try {
-        articleManager.replaceCommentOfArticle(req.body.newComment, req.body.articleId, req.body.commentId);
-    } catch (err) {
-        console.log(err);
-        res.sendStatus(400);
-        return;
-    }
-    res.sendStatus(200);
-    return
-})
-// editMileStone
+//// editComment
+//global.post('/editComment', (req, res) => {
+//    try {
+//        articleManager.replaceCommentOfArticle(req.body.newComment, req.body.articleId, req.body.commentId);
+//    } catch (err) {
+//        console.log(err);
+//        res.sendStatus(400);
+//        return;
+//    }
+//    res.sendStatus(200);
+//    return
+//})
+//// editMileStone
 
 module.exports = global;

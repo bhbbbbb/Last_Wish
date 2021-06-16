@@ -1,6 +1,16 @@
 const mongoose = require("mongoose");
 const Article = require("./Article");
-
+const colorValidator = (v) => {return (/^#([0-9a-fA-F]{3}){1,2}$/i).test(v);}
+const eventSchema = new mongoose.Schema({
+  name: String,
+  color: { 
+    type: String,
+    validate: colorValidator
+  },
+  start: Date,
+  end: Date,
+  finished: Boolean
+});
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
@@ -31,7 +41,9 @@ const userSchema = new mongoose.Schema({
   followedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   likedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article' }],
   selfPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
-  finishedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}]
+  finishedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
+  events:[eventSchema],
+  eventLists:[{type: mongoose.Types.ObjectId}],
 });
 
 userSchema.post('remove', (user) => {

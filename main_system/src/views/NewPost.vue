@@ -17,12 +17,15 @@ v-card.ma-0.pa-3(min-height="10vh" flat)
     solo
     flat
     autocomplete="off"
-    placeholder="add new tag here"
+    placeholder="#newtag"
     prepend-icon="mdi-plus"
     append-outer-icon="mdi-check"
     v-model="tag_model"
+    @focus="addHashTag"
+    @blur="removeHashTag"
     @click:prepend="focus()"
-    @click:append-outer="confirm()"
+    @click:append-outer="addTag()"
+    @keydown.enter="addTag()"
     persistent-hint
     hint="TODO: add rule to check empty, repeat..."
   )
@@ -36,7 +39,7 @@ v-card.ma-0.pa-3(min-height="10vh" flat)
     small
     dark
   ) {{ tag }} &nbsp;
-  NewMilestone(:wishes="new_article.wishes" :id="0")
+  NewMilestone(:wishes="new_article.milestones" :id="0")
   v-overlay.align-start(
     :value="show_info"
     absolute
@@ -59,15 +62,13 @@ export default {
     new_article: {
       title: '',
       body: '',
-      from: '',
-      wishes: [],
+      milestones: [],
       tags: [],
     },
-    tag_model: '#',
+    tag_model: '',
     show_info: false,
     info_type: 'success',
     infos: '',
-    checkbox: false,
     submit_buffer: false,
   }),
   computed: {
@@ -75,22 +76,20 @@ export default {
   },
   created() {},
   methods: {
+    addHashTag() {
+      if (!this.tag_model) this.tag_model = '#';
+    },
+    removeHashTag() {
+      if (this.tag_model === '#') this.tag_model = '';
+    },
     focus() {
       document.getElementById('tag-input').focus();
     },
-    confirm() {
+    addTag() {
       this.new_article.tags.push(this.tag_model);
       this.tag_model = '#';
     },
     SubmitNewArticle() {
-      let now = new Date(Date.now());
-      now = now.toISOString().substring(0, 10);
-      this.new_article.wish = {
-        title: '開始這個願望',
-        time: now,
-      };
-      if (this.checkbox) this.new_article.from = '0';
-      else this.new_article.from = this.$store.state.user.id;
       if (!this.new_article.title || !this.new_article.body) {
         // todo : error
         this.Show_info('Blank data!', 'error');
@@ -98,8 +97,7 @@ export default {
       }
       this.submit_buffer = true;
       apiUploadArticle({
-        username: this.checkbox ? 'Unknown' : this.$store.state.user.name,
-        article: this.new_article,
+        article_content: this.new_article,
       })
         .then((res) => {
           // TODO : insert new post locally

@@ -6,22 +6,27 @@ export const home_routes = [
     component: () => import('@/views/ArticleContainer'),
     beforeEnter(to, from, next) {
       // TODO : may need to update global_articles
-      if (store.state.global_articles) next();
-      else {
-        store
-          .dispatch('getGlobalArticles')
-          .then(() => {
-            // console.log(store.state.global_articles);
-            next();
-          })
-          .catch((err) => {
-            console.log(err);
-            next(false);
-          });
+      next();
+      if (store.state.global_articles.length === 0) {
+        // store.dispatch('getGlobalArticles');
       }
+      // if (store.state.global_articles) next();
+      // else {
+      //   store
+      //     .dispatch('getGlobalArticles')
+      //     .then(() => {
+      //       // console.log(store.state.global_articles);
+      //       next();
+      //     })
+      //     .catch((err) => {
+      //       console.log(err);
+      //       next(false);
+      //     });
+      // }
     },
     props: () => ({
       articles: store.state.global_articles,
+      fetchAction: 'getGlobalArticles',
     }),
   },
   {
@@ -58,7 +63,7 @@ export const home_routes = [
     component: () => import('@/views/Article'),
     beforeEnter(to, from, next) {
       store
-        .dispatch('getArticle', to.params.id)
+        .dispatch('getArticle', { id: to.params.id })
         .then(() => {
           next();
         })
@@ -146,14 +151,11 @@ export const home_routes = [
   },
   {
     path: 'follow_article',
-    name: 'FollowArticle',
-    component: () => import('@/views/FollowArticle'),
+    name: 'FollowArticles',
+    component: () => import('@/views/FollowArticles'),
     beforeEnter(to, from, next) {
-      if (store.state.followed_articles) next();
-      else
-        store.dispatch('getUserFollowed').then(() => {
-          next();
-        });
+      if (store.state.is_login) next();
+      else next('/');
     },
   },
   // {

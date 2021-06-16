@@ -7,6 +7,7 @@ const port = https_config.port;
 const https = require('https');
 const db_config = require('../db.config');
 const filePath = __dirname + '/data/uploads/';
+const ip = require('ip');
 const corsOptions = {
     origin : [
         "http://localhost:8080", "http://luffy.ee.ncku.edu.tw:5000",
@@ -59,7 +60,7 @@ mongoose.connect(db_url, {useNewUrlParser : true, useUnifiedTopology : true})
                 .listen(port, () => {console.log(`listen on port:${port}`)})
         } else {
             app.listen(port, () => {
-                console.log(`listening on port: ${port}, at ` + __dirname);
+                console.log(`listening on port: ${port}, at ` + __dirname + ` on ${ip.address()}`);
             })
         }
     });
