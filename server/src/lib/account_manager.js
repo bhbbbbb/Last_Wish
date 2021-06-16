@@ -8,7 +8,22 @@ module.exports = function() {
     this.findUserbyUsername = function(username) {
         return User.findOne({ username: username }).exec();
     }
-
+    /**
+     * @param {String} username 
+     * @returns user liked posts
+     */    
+    this.getUserLiked = async function(user_id) {
+        try{
+            let user = await User.findById(user_id).exec();
+            console.log(user);
+            if(user)
+                return user.likedPosts;
+            else
+                return null;
+        }catch(e){
+            return null;
+        }
+    }
     /**
      * @param {String} username 
      * @param {String} nonce
@@ -69,6 +84,34 @@ module.exports = function() {
                 console.log(res);
             });
     }
+    /**
+     * @param {String} username 
+     * @returns if the user is verified
+     * @returns null if user not found;
+     */
+     this.checkVerified = async function(username) {
+        try {
+            let user = await User.findOne({username: username})
+                                 .exec()
+                                 .then((user) => {
+                                     return user;
+                                 });
+            if (user) {
+                let result=
+                {
+                   verified: user.verified,
+                   email   : user.email,
+                   id: user._id,
+                };
+                return result;
+            }
+            return null;
+        } catch (error) {
+            return null;
+        }
+    }
+
+
 
     /**
      * @param {String} username 
@@ -438,6 +481,94 @@ module.exports = function() {
         }
         throw "user not found";
     }
+
+
+    /**
+     * Add event into user's event list
+     * @param {obj} event 
+     * @param {String} userId 
+     * @throws "user not found" exception
+     */
+
+    this.addEventToUser = async function(event, userId){
+        try{
+            let user = await User.findById(userId).exec();
+            if(user){
+                await user.events.push(event);
+                const len = user.events.length;
+                user.eventLists.push(user.events[len-1]._id);
+                await user.save();
+                return;
+            }
+        }catch(error){
+            throw error;
+        }
+        throw "user not found";
+    }
+    /**
+     * get event by userId and eventId
+     * @param {String} eventId 
+     * @param {String} userId 
+     * @throws "user not found" exception
+     * @throws "event not found" exception
+     * @returns event of eventId if event exist
+     */
+    this.getEventById = async function(eventId, userId){
+        try{
+            let user = await User.findById(userId);
+            if(!user)
+                throw "user not found";
+            let event = await user.events.id(eventId);
+            if(!event)
+                throw "event not found";
+            return event;
+        }catch(error){
+            throw(error);
+        }
+    }
+
+    /**
+     * replace existed event with modifiedEvent obj
+     * @param {String} eventId 
+     * @param {String} userId
+     * @param {obj} modifiedEvent
+     * @throws "user not found" exception
+     * @throws "event not found" exception
+     * @returns event of eventId if event exist
+     */
+     this.editEventById = async function(eventId, userId, modifiedEvent){
+        try{
+            let user = await User.findById(userId);
+            if(!user)
+                throw "user not found";
+            let event = await user.events.id(eventId);
+            if(!event)
+                throw "event not found";
+            await event.set(modifiedEvent);
+            await user.save()
+            return;
+        }catch(error){
+            throw(error);
+        }
+    }
+    /**
+     * get user event lists by userId
+     * @param {String} userId
+     * @throws "user not found" exception
+     * @retunrs eventList of user
+     */
+    this.getUserEvents = async function(userId){
+        try{
+           let user = await User.findById(userId);
+           if(!user)
+               throw "user not found";
+            return user.eventLists;
+        }catch(error){
+            throw error;
+        }
+    }
+
+
 
     /**
      * @param {String} username 

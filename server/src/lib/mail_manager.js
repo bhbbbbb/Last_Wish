@@ -80,31 +80,30 @@ module.exports = function() {
     this.sendToken = (mailAddr, id, username, serverUrl, EMAIL_SECRET) => {
         var nonce = genNonce(20 + Date.now() % 6);
         console.log(nonce);
-        accountManager
-            .setNonceToUser(username, nonce)
-            .then(() => {
+        accountManager.setNonceToUser(username, nonce).then(()=>{
                 jwt.sign(
-                    {
-                        user : id,
-                        nonce: nonce,   
-                    },
-                    EMAIL_SECRET,
-                    {
-                        expiresIn : '30m',
-                    },
-                    (_err, emailToken) => {
-                        const url = serverUrl + `/user/confirmation/${emailToken}`;
-                        var html =
-                            'Please click this link to confirm your email:<br><br>' +
-                            `<a href="${url}">Click me</a>`;
-                        var sub = username + ' 這是你的驗證資訊 from learnen';
-                        var mailOptions = {
-                            from: 'noreply',
-                            to: mailAddr,
-                            subject: sub,
-                            html: html,
-                        };
-                        var status = 401;
+                {
+                    user : id,
+                    nonce: nonce,   
+                },
+                EMAIL_SECRET,
+                {
+                    expiresIn : '30m',
+                },
+                (err, emailToken) => {
+                    const url = serverUrl + `/user/confirmation/${emailToken}`;
+                    var html =
+                        'Please click this link to confirm your email:<br><br>'+ `<a href="${
+                            url}">Click me</a>`+'<br>The link above will expired within 30min<br><br>If you have no clue of this mail, just ignore it';
+                    var sub = username + ' 這是你的驗證資訊 from learnen';
+                    var mailOptions = {
+                        from : 'noreply',
+                        to : mailAddr,
+                        subject : sub,
+                        html : html,
+                    };
+                    var status = 401;
+                    try {
                         transporter.sendMail(mailOptions, function(error, info) {
                             if (error) {
                                 status = 401;
@@ -118,8 +117,10 @@ module.exports = function() {
                             'token': token,
                             'status': status
                         };
+                    }catch(e){
+                        throw "Email sent failed"
                     }
-                );
+                });
             })
             .catch((error) => {
                 console.log('This is caused by async but can be ignored:\n' + error);
@@ -133,24 +134,20 @@ module.exports = function() {
      */
     this.verified = async function(targetId, nonce) {
         try {
-            let target = await User.findById(targetId)
-                                   .exec()
-                                   .then((target) => {
-                                       return target;
-                                   });
+            let target = await User.findById(targetId).exec();
             if (target) {
-                if (target.nonce == nonce) {
+                if (target.nonce === nonce) {
+                    console.log(nonce);
                     target.verified = true;
+                    target.nonce = '';
                     await target.save();
-                    return;
-                } else {
-                    throw "nonce not match";
+                    return true;
                 }
             }
+            return false;
         } catch (error) {
-            throw error;
+            return false;
         }
-        throw "user not found";
     }
 };
 

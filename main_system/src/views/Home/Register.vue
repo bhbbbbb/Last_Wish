@@ -44,6 +44,7 @@ v-card(min-height='70vh', rounded='lg', flat)
     v-alert.mt-10(
       :value='show_info',
       :type='info_type',
+      class="multi-line",
       transition='slide-x-transition'
     ) {{ infos }}
 </template>
@@ -90,14 +91,18 @@ export default {
         apiRegister(this.user)
           .then((res) => {
             if (res.status == 200) {
-              this.$store.dispatch('tryLogin', {
-                username: this.user.username,
-                password: this.user.password,
-              });
-              this.Show_info('Success registered', 'success');
-            } else this.Show_info(res.data.err_msg, 'error');
+              //this.$store.dispatch('tryLogin', {
+              //  username: this.user.username,
+              //  password: this.user.password,
+              //});
+              this.Show_info(
+                'Success registered\nPlease check your email box',
+                'success'
+              );
+            }
           })
           .catch((err) => {
+            this.Show_info(err.response.data.err_msg, 'error');
             console.log(err);
           });
       } else this.Show_info('Incorrect Register data', 'error');
@@ -106,7 +111,7 @@ export default {
       if (this.user.username)
         apiIsValid(this.user.username).then((res) => {
           console.log(res.data);
-          if (!res.data.isValid) this.valid_message = '使用者以重複';
+          if (res.data.isValid) this.valid_message = '使用者以重複';
           else this.valid_message = 'OK';
         });
     },
@@ -118,15 +123,20 @@ export default {
        *warning
        *error
        */
+      console.log(Info);
       this.infos = Info;
       this.info_type = infoType;
       this.show_info = true;
       setTimeout(() => {
         this.show_info = false;
-      }, 1000);
+      }, 1500);
     },
   },
 };
 </script>
 
-<style scoped lang=""></style>
+<style>
+.multi-line {
+  white-space: pre-line;
+}
+</style>

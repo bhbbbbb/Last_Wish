@@ -237,8 +237,37 @@ module.exports = function() {
      * @param {String} articleId 
      * @param {String} commentStr 
      * @throws "no such article" exception
-     * @returns {Object} newComment
+     * @throws "author is required" exception
+     * @returns date of newComment
      */
+     this.addCommentToArticle = async function(author, articleId, commentStr){
+        try{
+            let article = await Article.findById(articleId);
+            if(!article)
+                throw "no such article"
+            if(!author)
+                throw "author is required"
+                
+            let newComment = {
+                "author":author,
+                "body":commentStr,
+            }
+            try{
+                await article.comments.push(newComment);
+                let len = article.comments.length;
+                let res = await article.save();
+                return res.comments[len-1].date;
+            }catch(e){
+                console.log(e);
+                throw e;
+            }
+        }catch(e){
+            throw "no such article";
+        }
+     }
+    
+
+
     // this.addCommentToArticle = function(author, articleId, commentStr) {
     //     if (!this.hasArticle(articleId)) {
     //         throw "no such article";
@@ -258,31 +287,64 @@ module.exports = function() {
     // }
 
     /**
-     * Replace the body and title of an article
-     * 
-     * @param {Object} newComment 
-     * @param {String} articleId 
-     * @param {String} commentId 
-     * 
-     * @throws "no such article" exception
-     */
-    // this.replaceArticle = function(newArticle, articleId) {
-    //     if (!this.hasArticle(articleId)) {
-    //         throw "no such article";
-    //     } this.articles[Number(articleId)].title = newArticle.title;
-    //     this.articles[Number(articleId)].body = newArticle.body;
-    //     synchronize(this.articles, this.articlePATH);
-    // }
+    * Replace the body and title of an article
+    * 
+    * @param {Object} newComment 
+    * @param {String} articleId 
+    * @param {String} userId`
+    * @throws "no such article" exception
+    * @throws "not the author" exception
+    */
+    this.replaceArticle = async function(newArticle, articleId, userId) {
+        try{
+            console.log(articleId);
+            let article = await Article.findById(articleId);
+            if(!article)
+                throw "no such article";
+            if(userId != article.author)
+                throw "not the author"
+            article.title = newArticle.title;
+            article.body = newArticle.body;
+            article.date = Date.now();
+            await article.save();
+            return article.date;
+        }catch(e){
+            console.log(e);
+            throw e;
+        }
+
+            
+        //synchronize(this.articles, this.articlePATH);
+    }
 
     /**
      * Replace a comment body in an article
-     * 
      * @param {Object} newComment 
      * @param {String} articleId 
      * @param {String} commentId 
-     * 
+     * @param {String} userId 
      * @throws "no such article" exception
+     * @throws "author not match" exception
+     * @throws "no such comment" exception
+     * @returns last edit date of comment
      */
+    this.replaceCommentOfArticle = async function(newComment, articleId, commentId, userId){
+        let result = await Article.findById(articleId);
+        if(result){
+            let comment = result.comments.id(commentId);
+            if(comment){
+                if(comment.author.id != userId){
+                    throw "author not match"
+                }
+                comment.body = newComment;
+                comment.date = Date.now();
+                await result.save();
+                return comment.date;
+            }
+            throw "no such comment"
+        }
+        throw "no such article"
+    }
     // this.replaceCommentOfArticle = function(newComment, articleId, commentId) {
     //     if (!this.hasArticle(articleId)) {
     //         throw "no such article";

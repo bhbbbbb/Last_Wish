@@ -53,6 +53,8 @@ export const apiRegister = (data) => userRequest.post('/register', data);
 export const apiWho = () => userRequest.get('/who');
 export const apiLogout = () => userRequest.get('/logout'); // clear the session on server
 export const apiSetProPic = (data) => userRequest.post('/set_pro_pic', data);
+export const apiSendTokenMail = (data) =>
+  userRequest.get('/send_token_mail', { params: { username: data } });
 
 /**
  *
