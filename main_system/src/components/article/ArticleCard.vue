@@ -5,12 +5,14 @@ v-card.my.pa-3(
     :color="color"
     v-on="$listeners"
     :loading="Boolean(content) ? false : 'grey'"
+    :to="{ name: 'Article', params: { id }}"
   )
   v-row(v-if="content" no-gutters="")
-    v-col(cols="5")
+    v-col(cols="5" )
       UserAvatar(:user="content.author")
-      span.px-3()
-        | {{ content.author.name }}
+      NavLink(:to="`/${content.author.name}`")
+        span.px-3
+          | {{ content.author.name }}
     v-col(cols="5")
       span.subtitle-2.text--disabled {{ date }}
     v-col.d-flex.justify-end.pl-2(cols="2")
@@ -38,6 +40,7 @@ export default {
   components: {
     UserAvatar: () => import('@/components/UserAvatar'),
     ArticleBtns: () => import('@/components/ArticleBtns'),
+    NavLink: () => import('@/components/NavLink'),
   },
   props: {
     id: {

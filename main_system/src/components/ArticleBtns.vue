@@ -3,6 +3,7 @@ v-row.align-center(v-if="content" no-gutters)
 	v-col(cols="4")
 		v-btn(
 			icon
+      :disabled="!$store.state.is_login"
 		)
 			v-icon mdi-heart-outline
 		span.subtitle-2.text--secondary 喜歡 {{ content.likes }}
@@ -10,6 +11,7 @@ v-row.align-center(v-if="content" no-gutters)
 	v-col(cols="4")
 		v-btn(
 			icon
+      :disabled="!$store.state.is_login"
 		)
 			v-icon mdi-comment-processing-outline
 		span.subtitle-2.text--secondary 留言 {{ content.comments.length }}
@@ -17,7 +19,8 @@ v-row.align-center(v-if="content" no-gutters)
 	v-col(cols="4")
 		v-btn(
 			icon
-			@click.stop="follow"
+      :disabled="!$store.state.is_login"
+			@click.stop="$store.state.is_login && follow"
 			@mousedown.stop=""
 		)
 			v-icon {{ followed ? 'mdi-star' : 'mdi-star-outline' }}
@@ -51,6 +54,8 @@ export default {
       this.followed_count = this.content.fans.length;
     },
     follow() {
+      console.log(this.$store.state.is_login);
+      if (!this.$store.state.is_login) return;
       this.followed = !this.followed;
       if (this.followed) this.followed_count++;
       else this.followed_count--;

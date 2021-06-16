@@ -1,6 +1,6 @@
 <template lang="pug">
 v-sheet(rounded="lg")
-  Search()
+  Search(v-if="fetchAction !== 'getSelfArticles' && fetchAction !== 'getOthersArticles'")
   v-row(
     no-gutters
   )
@@ -12,7 +12,6 @@ v-sheet(rounded="lg")
       ArticleCard(
         :id="id"
         :color="color_list(idx)"
-        @click.stop="ToInnerArticle(id)"
       )
 
 </template>
@@ -35,28 +34,40 @@ export default {
       required: true,
       type: String,
     },
+    username: {
+      required: false,
+      type: String,
+      default: undefined,
+    },
   },
   data: () => ({}),
   computed: {},
   watch: {
     fetchAction() {
-      this.$store.dispatch(this.fetchAction);
+      this.fetchArticles();
     },
   },
   created() {},
   mounted() {
-    this.$store.dispatch(this.fetchAction);
+    this.fetchArticles();
   },
   methods: {
-    ToInnerArticle(article_id) {
-      this.$router.push({
-        name: 'Article',
-        params: {
-          id: article_id,
-        },
-      });
-    },
+    // ToInnerArticle(article_id) {
+    //   this.$router.push({
+    //     name: 'Article',
+    //     params: {
+    //       id: article_id,
+    //     },
+    //   });
+    // },
     color_list: color_list,
+    async fetchArticles() {
+      if (this.fetchAction === 'getOthersArticles') {
+        // let { id } = await this.$store.dispatch('getUserByName', this.username);
+        let id = this.$store.state.user.others.id;
+        this.$store.dispatch(this.fetchAction, id);
+      } else this.$store.dispatch(this.fetchAction);
+    },
   },
 };
 </script>

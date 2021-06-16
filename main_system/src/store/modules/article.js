@@ -1,23 +1,35 @@
 import {
   apiGetArticles,
   apiGetArticleById,
-  apiGetUserPosts,
   apiGetFollowedPosts,
+  apiGetUserPosts,
 } from '../api';
 
 export default {
   state: {
     data: {},
+    fetching: {},
     global: [],
-    user: [],
+    self: [],
+    others: [],
     followed: [],
   },
   mutations: {
+    /**
+     *
+     * @param {Object} payload {id, data}
+     */
+    addArticle(state, payload) {
+      state.data[payload.id] = payload.data;
+    },
     updateGlobalArticles(state, payload) {
       state.global = payload;
     },
-    updateUserArticles(state, payload) {
-      state.user = payload;
+    updateSelfArticles(state, payload) {
+      state.self = payload;
+    },
+    updateOthersArticles(state, payload) {
+      state.others = payload;
     },
     updateUserFollowed(state, payload) {
       state.followed = payload;
@@ -34,9 +46,6 @@ export default {
       apiGetArticles()
         .then((res) => {
           context.commit('updateGlobalArticles', res.data);
-          res.data.forEach((id) => {
-            context.dispatch('getArticle', { id });
-          });
         })
         .catch((err) => {
           console.log(err);
@@ -52,7 +61,6 @@ export default {
       if (!force_update && id in state.data) {
         return state.data[id];
       }
-
       return apiGetArticleById(id).then((res) => {
         commit('addArticle', { id, data: res.data });
         return res.data;
@@ -61,21 +69,37 @@ export default {
 
     /**
      *
-     * @param {Boolean} forceUpdate
+     * @param {String} user_id
      * @returns
      */
-    async getUserArticles(context, forceUpdate = false) {
-      if (context.rootState.user.length && !forceUpdate) return;
-      await apiGetUserPosts(context.rootState.user.self.id)
+    async getUserArticles(context, user_id) {
+      return await apiGetUserPosts(user_id)
         .then((res) => {
-          context.commit('updateUserArticles', res.data);
-          res.data.forEach((id) => {
-            context.dispatch('getArticle', { id });
-          });
+          return res.data;
         })
         .catch((err) => {
           console.log(err);
         });
+    },
+    /**
+     *
+     * @param {Boolean} forceUpdate
+     * @returns
+     */
+    async getSelfArticles(context, forceUpdate = false) {
+      if (context.state.self.length && !forceUpdate) return context.state.self;
+      await context
+        .dispatch('getUserArticles', context.rootState.user.self.id)
+        .then((res) => {
+          context.commit('updateSelfArticles', res);
+          return res;
+        });
+    },
+    async getOthersArticles(context, user_id) {
+      return await context.dispatch('getUserArticles', user_id).then((res) => {
+        context.commit('updateOthersArticles', res);
+        return res;
+      });
     },
     async getUserFollowed(context, force_update = false) {
       if (context.state.followed.length !== 0 && !force_update)
@@ -83,9 +107,6 @@ export default {
       return apiGetFollowedPosts()
         .then((res) => {
           context.commit('updateUserFollowed', res.data);
-          res.data.forEach((id) => {
-            context.dispatch('getArticle', { id });
-          });
           return res.data;
         })
         .catch((err) => {

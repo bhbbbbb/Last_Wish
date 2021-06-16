@@ -15,14 +15,6 @@ export default new Vuex.Store({
   mutations: {
     /**
      *
-     * @param {Object} payload {id, data}
-     */
-    addArticle(state, payload) {
-      state.article.data[payload.id] = payload.data;
-    },
-
-    /**
-     *
      * @param {Object} payload user
      */
     login(state, payload) {

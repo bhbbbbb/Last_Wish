@@ -111,7 +111,7 @@ export default {
           console.log(err);
         });
 
-      this.$store.dispatch('getUserArticles', true);
+      this.$store.dispatch('getSelfArticles', true);
     },
     Show_info(Info, infoType) {
       /**

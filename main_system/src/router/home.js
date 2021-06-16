@@ -4,26 +4,6 @@ export const home_routes = [
     path: 'articles',
     name: 'Articles',
     component: () => import('@/views/ArticleContainer'),
-    beforeEnter(to, from, next) {
-      // TODO : may need to update article.global
-      next();
-      if (store.state.article.global.length === 0) {
-        // store.dispatch('getGlobalArticles');
-      }
-      // if (store.state.article.global) next();
-      // else {
-      //   store
-      //     .dispatch('getGlobalArticles')
-      //     .then(() => {
-      //       // console.log(store.state.article.global);
-      //       next();
-      //     })
-      //     .catch((err) => {
-      //       console.log(err);
-      //       next(false);
-      //     });
-      // }
-    },
     props: () => ({
       articles: store.state.article.global,
       fetchAction: 'getGlobalArticles',
@@ -71,20 +51,7 @@ export const home_routes = [
           next(false);
         });
     },
-    props: (route) => {
-      return {
-        id: route.params.id,
-      };
-    },
-    // props: (route) => {
-    //   let context = route.params.context
-    //     ? route.params.context
-    //     : store.state.article.global[route.params.id];
-    //   return {
-    //     id: route.params.id,
-    //     context: context,
-    //   };
-    // },
+    props: true,
   },
   {
     path: 'article/:id/wish/:wish',

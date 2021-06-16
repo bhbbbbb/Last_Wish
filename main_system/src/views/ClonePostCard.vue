@@ -76,7 +76,7 @@ export default {
 
       apiGetUserPosts({ username: this.$store.state.user.self.name })
         .then((res) => {
-          this.$store.commit('updateUserArticles', res.data);
+          this.$store.commit('updateSelfArticles', res.data);
         })
         .catch((err) => {
           console.log(err);

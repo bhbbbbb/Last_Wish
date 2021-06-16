@@ -5,20 +5,19 @@ export const user_routes = [
     path: 'articles',
     name: 'UserArticles',
     component: () => import('@/views/ArticleContainer'),
-    // TODO : redirect un login visiter to public profile page
-    beforeEnter(to, from, next) {
-      if (store.state.is_login) {
-        if (store.state.article.user.length) next();
-        else {
-          next();
-          // store.dispatch('getUserArticles');
-        }
-      } else next('/articles');
+    props: (route) => {
+      if (store.state.user.self.name === route.params.username)
+        return {
+          articles: store.state.article.self,
+          fetchAction: 'getSelfArticles',
+        };
+      else
+        return {
+          articles: store.state.article.others,
+          fetchAction: 'getOthersArticles',
+          username: route.params.username,
+        };
     },
-    props: () => ({
-      articles: store.state.article.user,
-      fetchAction: 'getUserArticles',
-    }),
   },
   {
     path: 'honorRoll',

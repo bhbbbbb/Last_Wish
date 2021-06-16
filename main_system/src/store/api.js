@@ -46,8 +46,8 @@ export const apiGetArticleById = (id) =>
   articleRequest.get('/get_article_by_id', { params: { article_id: id } });
 
 /********************** Call user.js **********************/
-export const apiGetUserId = (data) =>
-  userRequest.get('/get_id_by_name', { params: data });
+export const apiGetUserId = (name) =>
+  userRequest.get('/get_id_by_name', { params: { name } });
 export const apiTryLogin = (data) => userRequest.post('/try_login', data);
 export const apiRegister = (data) => userRequest.post('/register', data);
 export const apiWho = () => userRequest.get('/who');

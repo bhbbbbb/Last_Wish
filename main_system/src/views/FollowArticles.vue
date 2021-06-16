@@ -1,6 +1,6 @@
 <template>
   <ArticleContainer
-    v-if="articles && articles.length"
+    v-if="!fetched || (articles && articles.length)"
     :articles="articles"
     fetch-action="getUserFollowed"
   />
@@ -21,12 +21,14 @@ export default {
     ArticleContainer: () => import('@/views/ArticleContainer'),
   },
   data: () => ({
-    articles: undefined,
+    articles: [],
+    fetched: false,
   }),
   computed: {},
   created() {
     this.$store.dispatch('getUserFollowed').then(() => {
       this.articles = this.$store.state.article.followed;
+      this.fetched = true;
     });
   },
 };

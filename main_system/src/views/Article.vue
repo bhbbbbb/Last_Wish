@@ -5,7 +5,8 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
       v-col.d-flex.justify-start.align-center(cols="6")
         //- v-icon(@click="followedToggle") {{ hasFollowed ? "mdi-star" : "mdi-star-outline" }}
         UserAvatar(:user="content.author")
-        span.py-3.mx-3.text-center.font-weight-bold {{ content.author.name }}
+        NavLink(:to="`/${content.author.name}`")
+          span.py-3.mx-3.text-center.font-weight-bold {{ content.author.name }}
         v-card-subtitle.mx-4.px-4.py-0 {{ date }}
       v-col.d-flex.justify-end(cols="6")
         v-menu(
@@ -127,6 +128,7 @@ export default {
     NewMilestone: () => import('@/views/NewMilestone'),
     UserAvatar: () => import('@/components/UserAvatar'),
     ArticleBtns: () => import('@/components/ArticleBtns'),
+    NavLink: () => import('@/components/NavLink'),
   },
   props: {
     id: {

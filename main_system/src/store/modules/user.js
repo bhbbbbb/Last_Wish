@@ -1,4 +1,4 @@
-import { apiGetPublicInfo } from '../api';
+import { apiGetPublicInfo, apiGetUserId } from '../api';
 export default {
   state: {
     data: {},
@@ -7,6 +7,8 @@ export default {
       name: undefined,
       pro_pic: undefined,
     },
+    // buffer
+    others: undefined,
   },
   mutations: {
     updateProPic(state, payload) {
@@ -33,6 +35,14 @@ export default {
     setSelf(state, id) {
       state.self = state.data[id];
     },
+
+    /**
+     * add new user to buffer (others)
+     * @param {Object} others
+     */
+    updateOthers(state, others) {
+      state.others = others;
+    },
   },
   actions: {
     setSelf({ commit }, payload) {
@@ -44,11 +54,17 @@ export default {
       return await apiGetPublicInfo(id)
         .then((res) => {
           commit('addUser', res.data);
-          return res.data;
+          return state.data[id];
         })
         .catch((err) => {
           console.error(err);
         });
+    },
+    async getOthersByName(context, name) {
+      let res = await apiGetUserId(name);
+      let user = await context.dispatch('getUser', res.data);
+      context.commit('updateOthers', user);
+      return user;
     },
   },
 };
