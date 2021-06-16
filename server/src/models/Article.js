@@ -2,10 +2,7 @@ const mongoose = require("mongoose");
 
 const commentSchema = new mongoose.Schema({
   body: String, 
-  author: { 
-    id:{type: mongoose.Types.ObjectId, ref: 'User' },
-    name:{type: String, dafault:''}
-  },
+  author: { type: mongoose.Types.ObjectId, ref: 'User' },
   date: {
     type: Date,
     default: Date.now

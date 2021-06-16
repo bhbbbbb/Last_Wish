@@ -289,7 +289,7 @@ module.exports = function() {
     /**
     * Replace the body and title of an article
     * 
-    * @param {Object} newComment 
+    * @param {Object} newArticle 
     * @param {String} articleId 
     * @param {String} userId`
     * @throws "no such article" exception
@@ -324,17 +324,17 @@ module.exports = function() {
      * @param {String} commentId 
      * @param {String} userId 
      * @throws "no such article" exception
-     * @throws "author not match" exception
+     * @throws "not the author" exception
      * @throws "no such comment" exception
      * @returns last edit date of comment
      */
     this.replaceCommentOfArticle = async function(newComment, articleId, commentId, userId){
         let result = await Article.findById(articleId);
         if(result){
-            let comment = result.comments.id(commentId);
+            let comment = await result.comments.id(commentId);
             if(comment){
-                if(comment.author.id != userId){
-                    throw "author not match"
+                if(comment.author != userId){
+                    throw "not the author"
                 }
                 comment.body = newComment;
                 comment.date = Date.now();
