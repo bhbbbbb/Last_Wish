@@ -47,20 +47,28 @@ global.post('/delete', user_session, (req, res) => {
 });
 
 
-global.post('/add_comment', async(req, res) => {
-    let author = req.body.author;
-    let articleId = req.body.article_id;
-    let comment = req.body.comment;
-    let newDate = await articleManager.addCommentToArticle(author , articleId, comment);
-    res.status(200).json(newDate);
-    console.log(newDate);
+global.post('/add_comment', user_session, async(req, res) => {
+    try{
+        let author = {
+            "name":req.session.username,
+            "id":req.session.user_id
+        }
+        let articleId = req.body.article_id;
+        let comment = req.body.comment;
+        let newDate = await articleManager.addCommentToArticle(author , articleId, comment);
+        res.status(200).json(newDate);
+        console.log(newDate);
+    }catch(error){
+        console.log(error);
+        res.status(400).json;
+    }
 });
 
-global.post('/edit_comment',async(req,res)=>{
+global.post('/edit_comment', user_session, async(req,res)=>{
     let newComment = req.body.new_comment;
     let articleId = req.body.article_id;
     let commentId = req.body.comment_id;
-    let userId = req.body.user_id;
+    let userId = req.session.user_id;
     try{
     let newDate = await articleManager.replaceCommentOfArticle(newComment , articleId, commentId, userId);
     res.status(200).json(newDate);

@@ -237,23 +237,29 @@ module.exports = function() {
      * @param {String} articleId 
      * @param {String} commentStr 
      * @throws "no such article" exception
-     * @returns {Object} newComment
+     * @throws "author is required" exception
+     * @returns date of newComment
      */
      this.addCommentToArticle = async function(author, articleId, commentStr){
         try{
             let article = await Article.findById(articleId);
-            if(article){
-                let newComment = {
-                    "author":author,
-                    "body":commentStr,
-                }
-                try{
-                const len = await article.comments.push(newComment);
-                const res = await article.save();
+            if(!article)
+                throw "no such article"
+            if(!author)
+                throw "author is required"
+                
+            let newComment = {
+                "author":author,
+                "body":commentStr,
+            }
+            try{
+                await article.comments.push(newComment);
+                let len = article.comments.length;
+                let res = await article.save();
                 return res.comments[len-1].date;
-                }catch(e){
-                    console.log(e);
-                }
+            }catch(e){
+                console.log(e);
+                throw e;
             }
         }catch(e){
             throw "no such article";
@@ -306,6 +312,7 @@ module.exports = function() {
      * @throws "no such article" exception
      * @throws "author not match" exception
      * @throws "no such comment" exception
+     * @returns last edit date of comment
      */
     this.replaceCommentOfArticle = async function(newComment, articleId, commentId, userId){
         let result = await Article.findById(articleId);
