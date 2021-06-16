@@ -7,7 +7,7 @@ router-link(
   v-hover(v-slot="{ hover }")
     a(
       :href="href"
-      :style="`text-decoration: ${hover ? 'underline' : 'none'}; color: black`"
+      :style="`text-decoration: ${hover && underline ? 'underline' : 'none'}; color: black`"
       disabled
       @click.stop="navigate"
       @mousedown.stop=""
@@ -23,6 +23,11 @@ export default {
     to: {
       type: [Object, String],
       required: true,
+    },
+    underline: {
+      type: Boolean,
+      required: false,
+      default: true,
     },
   },
   data: () => ({}),

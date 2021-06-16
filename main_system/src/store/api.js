@@ -85,6 +85,18 @@ export const apiIsValid = (data) =>
  * @returns {Object} id and username
  */
 export const apiGetPublicInfo = (id) =>
-  userRequest.get('get_public_info', { params: { id: id } });
+  userRequest.get('/get_public_info', { params: { id: id } });
 
 export const apiLineLogin = (data) => userRequest.post('/line_login_req', data);
+
+export const apiToggleLike = (article_id) =>
+  userRequest.post('/toggle_liked_post', { article_id });
+
+export const apiGetLikedPost = () => userRequest.get('/get_liked_posts');
+
+// ----------------- event -------------------------
+
+export const apiGetEvents = () => userRequest.get('/get_events');
+
+export const apiAddEvent = (event) =>
+  userRequest.post('/add_event_to_user', event);

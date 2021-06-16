@@ -3,16 +3,17 @@ import {
   apiGetArticleById,
   apiGetFollowedPosts,
   apiGetUserPosts,
+  apiGetLikedPost,
 } from '../api';
 
 export default {
   state: {
     data: {},
-    fetching: {},
     global: [],
     self: [],
     others: [],
     followed: [],
+    liked: {},
   },
   mutations: {
     /**
@@ -33,6 +34,19 @@ export default {
     },
     updateUserFollowed(state, payload) {
       state.followed = payload;
+    },
+    updateLikeArticles(state, payload) {
+      payload.forEach((id) => {
+        state.liked[id] = true;
+      });
+    },
+
+    /**
+     *
+     * @param {Object} { id, value }
+     */
+    setLiked(state, { id, value }) {
+      state.liked[id] = value;
     },
   },
   actions: {
@@ -111,6 +125,17 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          return [];
+        });
+    },
+    async fetchUserLiked(context) {
+      return apiGetLikedPost()
+        .then((res) => {
+          context.commit('updateLikeArticles', res.data);
+          return res.data;
+        })
+        .catch((err) => {
+          console.error(err);
           return [];
         });
     },

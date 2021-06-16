@@ -13,7 +13,7 @@ v-card.my.pa-3(
       NavLink(:to="`/${content.author.name}`")
         span.px-3
           | {{ content.author.name }}
-    v-col(cols="5")
+    v-col.d-flex.align-center(cols="5")
       span.subtitle-2.text--disabled {{ date }}
     v-col.d-flex.justify-end.pl-2(cols="2")
       v-btn(icon)

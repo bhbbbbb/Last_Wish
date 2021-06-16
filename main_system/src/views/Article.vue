@@ -71,12 +71,14 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
           )
             v-avatar(slot="icon", @click="GoWish(idx)")
             v-row(no-gutters="")
-              v-col.d-flex.flex-grow-1
-                span.d-flex.text-no-wrap(style="overflow-x: hidden")
-                  | {{ ms.title }}
-              v-col.d-flex.justify-end.pr-4(cols="auto" slot="opposite")
+              v-col.d-flex.justify-end.pr-4(cols="1" slot="opposite")
                 span.subtitle-2.text--disabled(slot="opposite")
                   | {{ moment(ms.estDate).format('M/D') }}
+              v-col.d-flex.flex-shrink-1(cols="auto")
+                span.d-flex.text-no-wrap(style="overflow-x: hidden")
+                  | {{ ms.title }}
+              v-col(offset="1")
+                v-icon(v-if="ms.finished" small) mdi-check-circle
 
           v-timeline-item.align-center(
             small

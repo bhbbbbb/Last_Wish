@@ -37,28 +37,34 @@ export default new Vuex.Store({
      *
      */
     async tryLogin(context, payload) {
-      return apiTryLogin(payload)
-        .then((res) => {
-          if (res.status == 200) {
-            apiGetPublicInfo(res.data.id).then((res) => {
-              context.commit('login', res.data);
-              context.dispatch('setSelf', res.data);
-            });
-            Vue.$cookies.set('login', payload.username);
-
-            router.push({
-              name: 'Articles',
-              params: { links: context.state.user_links },
-            });
-            return;
-          } else {
-            return res;
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          return err;
+      try {
+        let { data } = await apiTryLogin(payload);
+        await context.dispatch('login', data.id);
+        router.push({
+          name: 'Articles',
+          params: { links: context.state.user_links },
         });
+      } catch (err) {
+        console.error(err);
+        throw err;
+      }
+      return;
+    },
+
+    async login(context, id) {
+      try {
+        let { data } = await apiGetPublicInfo(id);
+        context.commit('login', data);
+        await Promise.all([
+          context.dispatch('setSelf', data),
+          context.dispatch('fetchUserLiked'),
+        ]);
+        Vue.$cookies.set('login', id);
+      } catch (err) {
+        console.error(err);
+        throw err;
+      }
+      return;
     },
 
     logout(context) {

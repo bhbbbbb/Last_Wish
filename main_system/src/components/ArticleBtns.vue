@@ -4,9 +4,12 @@ v-row.align-center(v-if="content" no-gutters)
 		v-btn(
 			icon
       :disabled="!$store.state.is_login"
+			@click.stop.prevent="like"
+			@mousedown.stop=""
+      @touchstart.stop=""
 		)
-			v-icon mdi-heart-outline
-		span.subtitle-2.text--secondary 喜歡 {{ content.likes }}
+			v-icon {{ liked ? 'mdi-heart' : 'mdi-heart-outline' }}
+		span.subtitle-2.text--secondary 喜歡 {{ liked_count }}
 		
 	v-col(cols="4")
 		v-btn(
@@ -20,15 +23,16 @@ v-row.align-center(v-if="content" no-gutters)
 		v-btn(
 			icon
       :disabled="!$store.state.is_login"
-			@click.stop="$store.state.is_login && follow"
+			@click.stop.prevent="follow"
 			@mousedown.stop=""
+      @touchstart.stop=""
 		)
 			v-icon {{ followed ? 'mdi-star' : 'mdi-star-outline' }}
 		span.subtitle-2.text--secondary 追蹤 {{ followed_count }}
 </template>
 
 <script>
-import { apiToggleFollow } from '@/store/api';
+import { apiToggleFollow, apiToggleLike } from '@/store/api';
 // import color_list from '@/data/color_list';
 export default {
   name: 'ArticleBtns',
@@ -42,9 +46,12 @@ export default {
   data: () => ({
     followed: false,
     followed_count: undefined,
+    liked: false,
+    liked_count: undefined,
   }),
   created() {
     this.getFollowState();
+    this.getLikeState();
   },
   methods: {
     getFollowState() {
@@ -54,7 +61,6 @@ export default {
       this.followed_count = this.content.fans.length;
     },
     follow() {
-      console.log(this.$store.state.is_login);
       if (!this.$store.state.is_login) return;
       this.followed = !this.followed;
       if (this.followed) this.followed_count++;
@@ -65,6 +71,21 @@ export default {
           .then(() => {
             this.$store.dispatch('getUserFollowed', true);
           });
+      });
+    },
+    getLikeState() {
+      this.liked = !!this.$store.state.article.liked[this.content.id];
+      this.liked_count = this.content.likes;
+    },
+    like() {
+      if (!this.$store.state.is_login) return;
+      this.liked = !this.liked;
+      if (this.liked) this.liked_count++;
+      else this.liked_count--;
+      apiToggleLike(this.content.id);
+      this.$store.commit('setLiked', {
+        id: this.content.id,
+        value: this.liked,
       });
     },
   },
