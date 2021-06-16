@@ -1,21 +1,28 @@
 <template lang="pug">
 v-card.ma-1.pa-1.transparent.d-flex.align-center(
-  v-if="author"
   flat
   min-height="48"
+  :loading="!author && 'grey'"
 )
-  UserAvatar(:user="content")
+  UserAvatar(v-if="author" :user="author")
   .px-1
-  span {{ author.username }}
-  .px-2
-  span {{ content.body }}
+  v-container.pa-0
+    v-row(no-gutters)
+      NavLink(v-if="author" :to="`/${author.name}`")
+        span {{ author.name }}
+      .px-2
+      span {{ content.body }}
+    v-row(no-gutters)
+      span.caption {{ date }}
 </template>
 
 <script>
+import moment from 'moment';
 export default {
   name: 'CommentCard',
   components: {
     UserAvatar: () => import('@/components/UserAvatar'),
+    NavLink: () => import('@/components/NavLink'),
   },
   /*
   comment = {
@@ -34,11 +41,16 @@ export default {
   data: () => ({
     author: undefined,
   }),
+  computed: {
+    date() {
+      return moment(this.content.date).fromNow();
+    },
+  },
 
-  created() {
-    // this.$store.dispatch('getUser', this.content.author.id).then((res) => {
-    //   this.author = res;
-    // });
+  mounted() {
+    this.$store.dispatch('getUser', this.content.author).then((res) => {
+      this.author = res;
+    });
   },
   methods: {},
 };

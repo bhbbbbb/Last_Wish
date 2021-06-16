@@ -81,6 +81,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
           v-timeline-item.align-center(
             small
             :color="color_list(7)"
+						v-if="$store.state.user.self.id === content.author.id && newMilestone_show"
           )
             v-icon(slot="icon" small color="white") mdi-plus
             v-btn(@click="newMilestone_show = true") 點我新增里程碑
@@ -98,13 +99,17 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
     v-row.mr-3.mt-5(no-gutters)
       v-col(cols="11" offset="1")
         v-divider
-        ArticleBtns(v-if="content" :content="content")
+        ArticleBtns(v-if="content" :key="content._id" :content="content")
         CommentCard(
-          v-for="comment in content.comments",
-          :key="comment.id",
+          v-for="(comment, idx) in content.comments",
+          :key="idx",
           :content="comment"
         )
-        NewComment(v-if="$store.state.is_login" @update="updateComment")
+        NewComment(
+          v-if="$store.state.is_login"
+          @update="updateComment"
+          :article-id="id"
+        )
     v-overlay.align-start(:value="show_info", absolute="absolute", opacity="0")
       v-alert.mt-10(
         :value="show_info",

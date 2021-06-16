@@ -29,8 +29,16 @@ export const apiUploadFiles = (data) => uploadRequest.post('/uploadFile', data);
 /********************** Call article.js **********************/
 export const apiGetArticles = () => articleRequest.get('/');
 export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
-export const apiUploadComment = (data) =>
-  articleRequest.post('/addcomment', data);
+
+/**
+ *
+ * @param {String} article_id
+ * @param {String} comment
+ * @returns
+ */
+export const apiAddComment = (article_id, comment) =>
+  articleRequest.post('/add_comment', { article_id, comment });
+
 export const apiGetUserPosts = (user_id) =>
   articleRequest.get('/get_user_posts', { params: { user_id } });
 

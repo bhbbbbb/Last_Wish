@@ -1,6 +1,6 @@
 <template lang="pug">
 v-sheet.pt-3.sticky(flat style="margin: -5px -5px 5px -5px;")
-  v-row.mb-2(no-gutters)
+  v-row.mb-2.pb-1(no-gutters)
     v-menu(
       v-model="order"
       close-on-content-click

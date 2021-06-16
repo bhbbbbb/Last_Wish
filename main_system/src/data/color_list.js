@@ -26,14 +26,12 @@ export default (idx) => COLOR_LIST[hashCode(idx) % COLOR_LIST.length];
 export const color_list_by_idx = (idx) => COLOR_LIST[idx % COLOR_LIST.length];
 
 function hashCode(str) {
-  var hash = 0,
-    i,
-    chr;
+  let hash = 0;
+
   if (str.length === 0) return hash;
-  for (i = 0; i < str.length; i++) {
-    chr = str.charCodeAt(i);
-    hash = (hash << 5) - hash + chr;
-    hash |= 0; // Convert to 32bit integer
+
+  for (let i = 0; i < str.length; i++) {
+    hash += str.charCodeAt(i);
   }
   return Math.abs(hash);
 }

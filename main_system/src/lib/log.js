@@ -23,7 +23,6 @@ export const isLogin = async () => {
           return true;
         }
       } catch {
-        // console.log(err);
         return false;
       }
     }
