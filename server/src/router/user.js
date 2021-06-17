@@ -427,11 +427,10 @@ user.post('/add_event_to_user', user_session, async(req,res)=>{
 
 })
 
-user.post('/get_event_by_id', user_session, async(req, res)=>{
-    let eventId = req.body.event_id;
+user.get('/get_events', user_session, async(req, res)=>{
     let userId = req.session.user_id;
     try{
-       let result = await accountManager.getEventById(eventId, userId);
+       let result = await accountManager.getUserEvent(userId);
        res.status(200).json(result);
     }catch(error){
         console.log(error);
@@ -460,17 +459,17 @@ user.post('/edit_event_by_id', user_session, async(req, res)=>{
 })
 
 
-user.get('/get_event_lists', user_session, async(req, res)=>{
-    let userId = req.session.user_id;
-    try{
-        let result = await accountManager.getUserEvents(userId);
-        res.status(200).json(result);
-    }catch(error){
-       console.log(error);
-       res.status(400).json();
-    }
-})
-
+//user.get('/get_event_lists', user_session, async(req, res)=>{
+//    let userId = req.session.user_id;
+//    try{
+//        let result = await accountManager.getUserEvents(userId);
+//        res.status(200).json(result);
+//    }catch(error){
+//       console.log(error);
+//       res.status(400).json();
+//    }
+//})
+//
 
 
 

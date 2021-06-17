@@ -49,10 +49,7 @@ global.post('/delete', user_session, (req, res) => {
 
 global.post('/add_comment', user_session, async(req, res) => {
     try{
-        let author = {
-            "name":req.session.username,
-            "id":req.session.user_id
-        }
+        let author = req.session.user_id;
         let articleId = req.body.article_id;
         let comment = req.body.comment;
         let newDate = await articleManager.addCommentToArticle(author , articleId, comment);
