@@ -58,18 +58,18 @@ module.exports = function() {
                                                return allArticles;
                                            });
             if (options) {
-                if (options.includes('new2old')) {
+                if (options.new2old) {
                     console.log('new2old');
                     rawArticles.sort((a, b) => {
                         return b.date - a.date;
                     });
-                } else if (options.includes('old2new')) {
+                } else if (options.old2new) {
                     console.log('old2new');
                     rawArticles.sort((a, b) => {
                         return a.date - b.date;
                     });
                 }
-                if (options.includes('finished')) {
+                if (options.finished) {
                     rawArticles.sort((a, b) => {
                         return a.finished - b.finished;
                     });
@@ -121,18 +121,18 @@ module.exports = function() {
                                         return articles;
                                     });
         if (options) {
-            if (options.includes('new2old')) {
+            if (options.new2old) {
                 console.log('new2old');
                 articles.sort((a, b) => {
                     return b.date - a.date;
                 });
-            } else if (options.includes('old2new')) {
+            } else if (options.old2new) {
                 console.log('old2new');
                 articles.sort((a, b) => {
                     return a.date - b.date;
                 });
             }
-            if (options.includes('finished')) {
+            if (options.finished) {
                 articles.sort((a, b) => {
                     return a.finished - b.finished;
                 });
@@ -252,7 +252,7 @@ module.exports = function() {
             article.date = Date.now();
             await article.save();
             return article.date;
-        } catch(e) {
+        } catch (e) {
             console.log(e);
             throw e;
         }

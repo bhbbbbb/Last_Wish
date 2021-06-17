@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema({
   likedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article' }],
   selfPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   finishedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
-  events:[eventSchema],
+  events: [eventSchema],
 });
 
 userSchema.post('remove', (user) => {
