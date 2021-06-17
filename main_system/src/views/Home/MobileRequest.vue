@@ -8,6 +8,10 @@
     <v-card-subtitle class="d-flex">
       Mac (請使用 google chrome) : (Fn+) F12 → Ctrl + Shift + m → 選擇 iPhone X
     </v-card-subtitle>
+    <v-card-subtitle class="d-flex">
+      或是用手機點選加入桌面書籤!!! ← 大推
+    </v-card-subtitle>
+    <br />
     <v-card-actions>
       <!-- <v-btn @click="Idontwant">我不依</v-btn> -->
     </v-card-actions>
