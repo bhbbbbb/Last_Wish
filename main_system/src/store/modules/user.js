@@ -24,6 +24,7 @@ export default {
         name: info.username,
         self_intro: info.selfIntro,
         honor: info.honor,
+        pro_pic: info.proPic,
         n_fans: info.nFans,
         n_following: info.nFollowing,
         n_posts: info.nPosts,
