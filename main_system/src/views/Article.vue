@@ -5,7 +5,8 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
       v-col.d-flex.justify-start.align-center(cols="6")
         //- v-icon(@click="followedToggle") {{ hasFollowed ? "mdi-star" : "mdi-star-outline" }}
         UserAvatar(:user="content.author")
-        span.py-3.mx-3.text-center.font-weight-bold {{ content.author.name }}
+        NavLink(:to="`/${content.author.name}`")
+          span.py-3.mx-3.text-center.font-weight-bold {{ content.author.name }}
         v-card-subtitle.mx-4.px-4.py-0 {{ date }}
       v-col.d-flex.justify-end(cols="6")
         v-menu(
@@ -19,7 +20,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
           v-list
             v-list-item(@click="Copy") 複製連結
             //- v-list-item(@click="Clone") 願望拷貝
-            v-list-item(@click="GoEdit" v-if="$store.state.user.id === content.author.id") 編輯內文
+            v-list-item(@click="GoEdit" v-if="$store.state.user.self.id === content.author.id") 編輯內文
     
     //------------ article link from -----------
     v-row(no-gutters)
@@ -53,7 +54,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
     v-row
       v-col.px-8
         //- v-timeline(
-        //-   v-if="$store.state.user.id === content.author.id && !newMilestone_show"
+        //-   v-if="$store.state.user.self.id === content.author.id && !newMilestone_show"
         //-   align-top
         //-   dense
         //- )
@@ -70,22 +71,25 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
           )
             v-avatar(slot="icon", @click="GoWish(idx)")
             v-row(no-gutters="")
-              v-col.d-flex.flex-grow-1
-                span.d-flex.text-no-wrap(style="overflow-x: hidden")
-                  | {{ ms.title }}
-              v-col.d-flex.justify-end.pr-4(cols="auto" slot="opposite")
+              v-col.d-flex.justify-end.pr-4(cols="1" slot="opposite")
                 span.subtitle-2.text--disabled(slot="opposite")
                   | {{ moment(ms.estDate).format('M/D') }}
+              v-col.d-flex.flex-shrink-1(cols="auto")
+                span.d-flex.text-no-wrap(style="overflow-x: hidden")
+                  | {{ ms.title }}
+              v-col(offset="1")
+                v-icon(v-if="ms.finished" small) mdi-check-circle
 
           v-timeline-item.align-center(
             small
             :color="color_list(7)"
+						v-if="$store.state.user.self.id === content.author.id && newMilestone_show"
           )
             v-icon(slot="icon" small color="white") mdi-plus
             v-btn(@click="newMilestone_show = true") 點我新增里程碑
           
         NewMilestone(
-          v-if="$store.state.user.id === content.author.id && newMilestone_show"
+          v-if="$store.state.user.self.id === content.author.id && newMilestone_show"
           :id="id"
           :wishes="content.wishes"
         )
@@ -97,13 +101,17 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
     v-row.mr-3.mt-5(no-gutters)
       v-col(cols="11" offset="1")
         v-divider
-        ArticleBtns(v-if="content" :content="content")
+        ArticleBtns(v-if="content" :key="content._id" :content="content")
         CommentCard(
-          v-for="comment in content.comments",
-          :key="comment.id",
+          v-for="(comment, idx) in content.comments",
+          :key="idx",
           :content="comment"
         )
-        NewComment(v-if="$store.state.is_login" @update="updateComment")
+        NewComment(
+          v-if="$store.state.is_login"
+          @update="updateComment"
+          :article-id="id"
+        )
     v-overlay.align-start(:value="show_info", absolute="absolute", opacity="0")
       v-alert.mt-10(
         :value="show_info",
@@ -116,7 +124,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
 
 <script>
 import moment from 'moment';
-import color_list from '@/store/color_list.js';
+import color_list from '@/data/color_list';
 // var Article_id = '';
 
 export default {
@@ -127,6 +135,7 @@ export default {
     NewMilestone: () => import('@/views/NewMilestone'),
     UserAvatar: () => import('@/components/UserAvatar'),
     ArticleBtns: () => import('@/components/ArticleBtns'),
+    NavLink: () => import('@/components/NavLink'),
   },
   props: {
     id: {
@@ -154,16 +163,16 @@ export default {
     },
   },
   created() {
-    this.content = this.$store.state.article_data[this.id];
+    this.content = this.$store.state.article.data[this.id];
     // this.ThePost = JSON.parse(JSON.stringify(this.content));
     // this.ThePost.wishes = String(this.ThePost.wishes).replace(/,/g, '\n');
     //Article_id = this.id;
     // this.$store.dispatch('getUser', this.content.from).then((res) => {
     //   this.author = res;
     // });
-    // if (this.$store.state.followed_articles)
-    //   for (var i = 0; i < this.$store.state.followed_articles.length; i++)
-    //     if (this.$store.state.followed_articles[i].id == this.content.id) {
+    // if (this.$store.state.article.followed)
+    //   for (var i = 0; i < this.$store.state.article.followed.length; i++)
+    //     if (this.$store.state.article.followed[i].id == this.content.id) {
     //       this.hasFollowed = true;
     //       break;
     //     }

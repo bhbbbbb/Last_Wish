@@ -2,10 +2,11 @@
 v-sheet.ma-1.pa-1.transparent.d-flex.align-center(
   flat
   min-height="48"
+  v-if="$store.state.is_login"
 )
   div
-  UserAvatar(:user="$store.state.user")
-  span.px-1.mx-2 {{ $store.state.user.name ? $store.state.user.name : "Anon."}}
+  UserAvatar(:user="$store.state.user.self")
+  span.px-1.mx-2 {{ $store.state.user.self.name }}
   v-text-field.my-0.mx-3.pa-1(
     style="transform: translateY(5px);"
     placeholder="comment here"
@@ -19,49 +20,37 @@ v-sheet.ma-1.pa-1.transparent.d-flex.align-center(
 </template>
 
 <script>
-import { apiUploadComment } from '@/store/api';
+import { apiAddComment } from '@/store/api';
+import moment from 'moment';
 export default {
   name: 'NewComment',
 
   components: {
     UserAvatar: () => import('@/components/UserAvatar'),
   },
-  /*
-  comment = {
-      "id": "1",
-      "date": "abc",
-      "body": "this is a comment",
-      "from": "0"
-  }
-  */
-  props: {},
+  props: {
+    articleId: {
+      required: true,
+      type: String,
+    },
+  },
   data: () => ({
     new_comment: undefined,
   }),
 
-  created() {
-    // this.getAuthor()
-    //   .then((res) => {
-    //     this.author = res.data;
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-  },
+  created() {},
   methods: {
     SubmitNewComment() {
       if (!this.new_comment.trim()) return;
-      apiUploadComment({
-        author: {
-          name: this.$store.state.user.name,
-          id: this.$store.state.user.id,
-        },
-        article_id: this.$route.params.id,
-        comment: this.new_comment,
-      }).then((res) => {
-        this.$emit('update', res.data);
-      });
+      apiAddComment(this.articleId, this.new_comment);
 
+      this.$emit('update', {
+        likes: 0,
+        _id: undefined,
+        author: this.$store.state.user.self.id,
+        body: this.new_comment,
+        date: moment(),
+      });
       this.new_comment = '';
     },
   },

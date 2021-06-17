@@ -61,7 +61,7 @@
 
 <script>
 // import { apiUploadMilestone } from '@/store/api';
-import color_list from '@/store/color_list.js';
+import color_list from '@/data/color_list';
 import moment from 'moment';
 export default {
   name: 'NewMilestone',
