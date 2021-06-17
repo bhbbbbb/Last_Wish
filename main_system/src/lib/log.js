@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import store from '@/store/index';
-import { apiWho, apiGetPublicInfo } from '@/store/api';
+import { apiWho } from '@/store/api';
 //import Vuex from 'vuex'
 
 /*********
@@ -13,18 +13,16 @@ export const isLogin = async () => {
     return true;
   } else if (Vue.$cookies.isKey('login')) {
     let cookies_login = Vue.$cookies.get('login');
-    if (cookies_login) {
-      try {
-        let who = await apiWho().then((res) => res.data);
-        if (String(cookies_login) === String(who.username)) {
-          let info = await apiGetPublicInfo(who.id).then((res) => res.data);
-          store.commit('login', info);
-          return true;
-        }
-      } catch (err) {
-        console.log(err);
-        return false;
+    if (!cookies_login) return false;
+
+    try {
+      let { id } = await apiWho().then((res) => res.data);
+      if (cookies_login === id) {
+        await store.dispatch('login', id);
+        return true;
       }
+    } catch {
+      return false;
     }
   }
 

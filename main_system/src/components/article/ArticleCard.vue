@@ -5,13 +5,15 @@ v-card.my.pa-3(
     :color="color"
     v-on="$listeners"
     :loading="Boolean(content) ? false : 'grey'"
+    :to="{ name: 'Article', params: { id }}"
   )
   v-row(v-if="content" no-gutters="")
-    v-col(cols="5")
+    v-col(cols="5" )
       UserAvatar(:user="content.author")
-      span.px-3()
-        | {{ content.author.name }}
-    v-col(cols="5")
+      NavLink(:to="`/${content.author.name}`")
+        span.px-3
+          | {{ content.author.name }}
+    v-col.d-flex.align-center(cols="5")
       span.subtitle-2.text--disabled {{ date }}
     v-col.d-flex.justify-end.pl-2(cols="2")
       v-btn(icon)
@@ -32,12 +34,13 @@ v-card.my.pa-3(
 
 <script>
 import moment from 'moment';
-import color_list from '@/store/color_list';
+import color_list from '@/data/color_list';
 export default {
   name: 'ArticleCard',
   components: {
     UserAvatar: () => import('@/components/UserAvatar'),
     ArticleBtns: () => import('@/components/ArticleBtns'),
+    NavLink: () => import('@/components/NavLink'),
   },
   props: {
     id: {

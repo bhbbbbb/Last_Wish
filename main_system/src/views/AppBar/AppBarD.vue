@@ -5,9 +5,9 @@ v-app-bar(app flat)
     centered="" color="grey darken-1"
   )
     v-tab(
-      v-for="(link, idx) in links"
+      v-for="(link, idx) in $store.links"
       :key="idx"
-      :to="is_login ? {name: link.to.name, params: {username: user.name}} : link.to"
+      :to="$store.is_login ? {name: link.to.name, params: {username: $store.user.self.name}} : link.to"
     )
       | {{ link.text }}
 
@@ -20,7 +20,6 @@ v-app-bar(app flat)
 </template>
 
 <script>
-import { mapState } from 'vuex';
 export default {
   name: 'AppBarD',
   components: {},
@@ -29,9 +28,6 @@ export default {
     drawer: false,
     selected: 0,
   }),
-  computed: {
-    ...mapState(['links', 'is_login', 'user']),
-  },
   methods: {
     logout() {
       this.$store.dispatch('logout');

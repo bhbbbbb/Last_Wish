@@ -1,6 +1,6 @@
 <template lang="pug">
 v-sheet.pt-3.sticky(flat style="margin: -5px -5px 5px -5px;")
-  v-row.mb-2(no-gutters)
+  v-row.mb-2.pb-1(no-gutters)
     v-menu(
       v-model="order"
       close-on-content-click
@@ -73,7 +73,7 @@ v-sheet.pt-3.sticky(flat style="margin: -5px -5px 5px -5px;")
 </template>
 
 <script>
-// import color_list from '@/store/color_list.js';
+// import color_list from '@/data/color_list';
 export default {
   name: 'Search',
 
