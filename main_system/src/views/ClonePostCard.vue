@@ -51,14 +51,14 @@ export default {
     SubmitNewArticle() {
       this.newArticle.wishes = this.newArticle.wishes.split('\n');
       if (this.checkbox) this.newArticle.from = '0';
-      else this.newArticle.from = this.$store.state.user_id;
+      else this.newArticle.from = this.$store.state.user.self.id;
       if (!this.newArticle.title || !this.newArticle.body) {
         // todo : error
         this.Show_info('Blank data!', 'error');
         return;
       }
       apiUploadArticle({
-        username: this.checkbox ? 'Unknown' : this.$store.state.username,
+        username: this.checkbox ? 'Unknown' : this.$store.state.user.self.name,
         article: this.newArticle,
       })
         .then((res) => {
@@ -74,9 +74,9 @@ export default {
           console.log(err);
         });
 
-      apiGetUserPosts({ username: this.$store.state.username })
+      apiGetUserPosts({ username: this.$store.state.user.self.name })
         .then((res) => {
-          this.$store.commit('updateUserArticles', res.data);
+          this.$store.commit('updateSelfArticles', res.data);
         })
         .catch((err) => {
           console.log(err);

@@ -1,5 +1,9 @@
 <template>
-  <ArticleContainer v-if="articles && articles.length" :articles="articles" />
+  <ArticleContainer
+    v-if="!fetched || (articles && articles.length)"
+    :articles="articles"
+    fetch-action="getUserFollowed"
+  />
   <v-card v-else flat>
     <v-card-title class="justify-center">
       <h4>還沒有關注的文章，去世界文章看看吧</h4>
@@ -12,16 +16,20 @@
 
 <script>
 export default {
-  name: 'App',
+  name: 'FollowArticles',
   components: {
     ArticleContainer: () => import('@/views/ArticleContainer'),
   },
   data: () => ({
-    articles: undefined,
+    articles: [],
+    fetched: false,
   }),
   computed: {},
   created() {
-    this.articles = this.$store.state.followed_articles;
+    this.$store.dispatch('getUserFollowed').then(() => {
+      this.articles = this.$store.state.article.followed;
+      this.fetched = true;
+    });
   },
 };
 </script>

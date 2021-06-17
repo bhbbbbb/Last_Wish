@@ -1,9 +1,13 @@
 <template lang="pug">
-v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width="100%")
+v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width="100%" v-if="content")
   v-container      
     v-row(no-gutters="no-gutters")
-      v-col.d-flex.justify-start(cols="6")
-        v-icon(@click="followedToggle") {{ hasFollowed ? "mdi-star" : "mdi-star-outline" }}
+      v-col.d-flex.justify-start.align-center(cols="6")
+        //- v-icon(@click="followedToggle") {{ hasFollowed ? "mdi-star" : "mdi-star-outline" }}
+        UserAvatar(:user="content.author")
+        NavLink(:to="`/${content.author.name}`")
+          span.py-3.mx-3.text-center.font-weight-bold {{ content.author.name }}
+        v-card-subtitle.mx-4.px-4.py-0 {{ date }}
       v-col.d-flex.justify-end(cols="6")
         v-menu(
           offset-y,
@@ -16,61 +20,58 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
           v-list
             v-list-item(@click="Copy") 複製連結
             //- v-list-item(@click="Clone") 願望拷貝
-            v-list-item(@click="GoEdit" v-if="$store.state.user_id === author.id") 編輯內文
-    v-row(no-gutters="no-gutters")
-      v-col.d-flex.flex-column.flex-shrink-1.align-center.ma-0(cols="4")
-        v-avatar.grey.lighten-1(size="64")
-        span.py-3.text-center {{ author.username }}
-      v-col.d-flex.justify-center.align-center(cols="8")
-        h3 {{ context.title }}
-    v-row(no-gutters="no-gutters")
-      v-col.my-0(cols="12")
-        v-divider
-      v-col.py-2.my-0(cols="auto")
-        v-card-subtitle.ma-0.px-4.py-0 {{ context.date }}
+            v-list-item(@click="GoEdit" v-if="$store.state.user.self.id === content.author.id") 編輯內文
+    
+    //------------ article link from -----------
+    v-row(no-gutters)
+      v-col(cols="6" offset="1")
+        span.caption() 文章引用自 xxxxx
+
+
+    //------------ title -----------
+    v-row.my-3(no-gutters)
+      v-col.d-flex.align-center(cols="10" offset="1")
+        h3 {{ content.content.title }}
+    
+    //------------ body -------------
+    v-row(no-gutters)
+      v-col(cols="10" offset="1")
+        p.pre {{ content.content.body }}
+
+
+    //------------ tags -------------
+    v-row(no-gutters)
+      v-col(cols="10" offset="1")
+        v-chip.mr-2(
+          v-for="(tag, idx) in content.content.tags"
+          :key="idx"
+          color="#9BA2AA"
+          small
+          dark
+        ) {{ tag }}
+
+    //----------- milestone -----------------
     v-row
       v-col.px-8
-        v-timeline(
-          align-top
-          dense
-        )
-          v-timeline-item(
-            v-for="(wish, idx) in context.wishes"
-            small
-            :color="color_list(7)"
-            :key="idx"
-          )
-            v-avatar(slot="icon", @click="GoWish(idx)")
-            v-row(no-gutters="")
-              v-col.d-flex.flex-grow-1
-                span.d-flex.text-no-wrap(style="overflow-x: hidden")
-                  | {{ wish.title ? wish.title : wish }}
-              v-col.d-flex.justify-end.pr-4(cols="auto" slot="opposite")
-                span.subtitle-2.text--disabled(slot="opposite")
-                  | {{ wish.time ? date_format(wish.time) : "" }}
-            //- span.d-flex.text-no-wrap(
-            //-   @click="GoWish(idx)" 
-            //-   style="overflow-x: hidden;"
-            //- ) {{ wish.title ? wish.title : wish }}
+        Milestones(:content="content.content.milestones" :author-id="content.author.id")
 
-          v-timeline-item.align-center(
-            v-if="$store.state.user_id === author.id"
-            small
-            :color="color_list(7)"
-          )
-            v-icon(slot="icon" small color="white" @click="GoNewMilestone") mdi-plus
-            v-btn(@click="GoNewMilestone") 點我新增里程碑
-            //- v-text-field.ma-0.pa-1(placeholder="新增里程碑" v-model="newMilestone" @keydown.enter="submitMilestone")
-        br
-        p.pre {{ context.body }}
-        br
+
+        //------------------ end milestone ---------------
+
+    v-row.mr-3.mt-5(no-gutters)
+      v-col(cols="11" offset="1")
+        v-divider
+        ArticleBtns(v-if="content" :key="content._id" :content="content")
         CommentCard(
-          v-for="comment in context.comments",
-          :key="comment.id",
-          :context="comment"
+          v-for="(comment, idx) in content.comments",
+          :key="idx",
+          :content="comment"
         )
-        NewComment(@update="updateComment")
-
+        NewComment(
+          v-if="$store.state.is_login"
+          @update="updateComment"
+          :article-id="id"
+        )
     v-overlay.align-start(:value="show_info", absolute="absolute", opacity="0")
       v-alert.mt-10(
         :value="show_info",
@@ -82,24 +83,24 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
 </template>
 
 <script>
-// import { mapState } from 'vuex'
-import { apiUserFollowedPostToggle } from '@/store/api';
-import color_list from '@/store/color_list.js';
-//var Article_id = '';
+import moment from 'moment';
+import color_list from '@/data/color_list';
+// var Article_id = '';
 
 export default {
   name: 'Article',
   components: {
     CommentCard: () => import('@/components/article/CommentCard'),
     NewComment: () => import('@/components/article/NewComment'),
+    NewMilestone: () => import('@/views/NewMilestone'),
+    UserAvatar: () => import('@/components/UserAvatar'),
+    ArticleBtns: () => import('@/components/ArticleBtns'),
+    NavLink: () => import('@/components/NavLink'),
+    Milestones: () => import('@/components/Milestones'),
   },
   props: {
     id: {
-      type: Number,
-      required: true,
-    },
-    context: {
-      type: Object,
+      type: String,
       required: true,
     },
     // color: {
@@ -108,40 +109,37 @@ export default {
     // },
   },
   data: () => ({
-    author: {
-      id: '',
-      username: '',
-    },
+    newMilestone_show: false,
     show_info: false,
     info_type: 'success',
     infos: '',
     ThePost: [],
     NP: false,
     // newMilestone: '',
-    hasFollowed: false,
+    content: undefined,
   }),
-  computed: {},
+  computed: {
+    date() {
+      return moment(this.content.date).format('M/D');
+    },
+  },
   created() {
-    this.ThePost = JSON.parse(JSON.stringify(this.context));
-    this.ThePost.wishes = String(this.ThePost.wishes).replace(/,/g, '\n');
+    this.content = this.$store.state.article.data[this.id];
+    // this.ThePost = JSON.parse(JSON.stringify(this.content));
+    // this.ThePost.wishes = String(this.ThePost.wishes).replace(/,/g, '\n');
     //Article_id = this.id;
-    this.$store.dispatch('getUser', this.context.from).then((res) => {
-      this.author = res;
-    });
-
-    if (this.$store.state.followed_articles)
-      for (var i = 0; i < this.$store.state.followed_articles.length; i++)
-        if (this.$store.state.followed_articles[i].id == this.context.id) {
-          this.hasFollowed = true;
-          break;
-        }
+    // this.$store.dispatch('getUser', this.content.from).then((res) => {
+    //   this.author = res;
+    // });
+    // if (this.$store.state.article.followed)
+    //   for (var i = 0; i < this.$store.state.article.followed.length; i++)
+    //     if (this.$store.state.article.followed[i].id == this.content.id) {
+    //       this.hasFollowed = true;
+    //       break;
+    //     }
   },
 
   methods: {
-    date_format(time) {
-      let time_arr = time.split('-');
-      return time_arr[1] + '/' + time_arr[2];
-    },
     Copy() {
       let ele = document.getElementById('url');
       ele.value = window.location.href;
@@ -178,8 +176,8 @@ export default {
         name: 'Wish',
         params: {
           id: this.id,
-          wish: this.context.wishes[idx],
-          context: this.context.wishes[idx],
+          wish: this.content.wishes[idx],
+          content: this.content.wishes[idx],
           // color: this.color,
         },
       });
@@ -189,32 +187,28 @@ export default {
         name: 'ArticleEdit',
         params: {
           id: this.id,
-          author: this.author,
-          context: this.context,
+          author: this.content.author,
+          content: this.content,
         },
       });
     },
-    GoNewMilestone() {
-      this.$router.push({
-        name: 'NewMilestone',
-        params: {
-          id: this.id,
-          wishes: this.context.wishes,
-        },
-      });
-    },
+    // GoNewMilestone() {
+    //   this.$router.push({
+    //     name: 'NewMilestone',
+    //     params: {
+    //       id: this.id,
+    //       wishes: this.content.wishes,
+    //     },
+    //   });
+    // },
     updateComment(newComment) {
-      this.context.comments.push(newComment);
+      this.content.comments.push(newComment);
     },
-    followedToggle() {
-      apiUserFollowedPostToggle({
-        username: this.$store.state.username,
-        articleId: String(this.id),
-      }).then(() => {
-        this.$store.dispatch('getUserFollowed');
-        this.hasFollowed = !this.hasFollowed;
-      });
+    updateMilestone(value) {
+      this.content.content.milestones.push(this.value);
+      console.log(value);
     },
+    moment,
     color_list,
   },
 };
@@ -223,5 +217,11 @@ export default {
 <style>
 .pre {
   white-space: pre-wrap;
+}
+</style>
+
+<style scpoed>
+.v-timeline-item {
+  padding-bottom: 16px !important;
 }
 </style>

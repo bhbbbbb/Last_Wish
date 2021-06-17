@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card.ma-0.pa-3(min-height="10vh" rounded="lg" elevation="5")
+v-card.ma-0.pa-3(min-height="10vh" flat)
   v-text-field.ma-0.pa-1(
     placeholder="Title here"
     v-model="new_article.title"
@@ -11,6 +11,36 @@ v-card.ma-0.pa-3(min-height="10vh" rounded="lg" elevation="5")
     placeholder="body here"
     v-model="new_article.body"
   )
+  v-text-field(
+    style="font-weight: bold;"
+    id="tag-input"
+    solo
+    flat
+    autocomplete="off"
+    placeholder="#newtag"
+    prepend-icon="mdi-plus-circle-outline"
+    append-outer-icon="mdi-check"
+    v-model="tag_model"
+    @focus="addHashTag"
+    @blur="removeHashTag"
+    @click:prepend="focus()"
+    @click:append-outer="addTag()"
+    @keydown.enter="addTag()"
+    persistent-hint
+    hint="TODO: add rule to check empty, repeat..."
+  )
+  v-chip.ma-1(
+    v-for="(tag, idx) in new_article.tags"
+    :key="idx"
+    close
+    close-icon="mdi-close"
+    close-label="刪除"
+    color="#9BA2AA"
+    small
+    dark
+    @click:close="removeTag(idx)"
+  ) {{ tag }} &nbsp;
+  Milestones(:content="new_article.milestones" :author-id="$store.state.user.self.id")
   v-overlay.align-start(
     :value="show_info"
     absolute
@@ -19,7 +49,6 @@ v-card.ma-0.pa-3(min-height="10vh" rounded="lg" elevation="5")
     v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
   v-card-actions.justify-center
     v-btn(@click="SubmitNewArticle()" :disabled="submit_buffer") submit
-  v-checkbox(v-model='checkbox' label='匿名')
 </template>
 
 <script>
@@ -27,17 +56,20 @@ import { mapState } from 'vuex';
 import { apiUploadArticle } from '@/store/api';
 export default {
   name: 'NewPost',
+  components: {
+    Milestones: () => import('@/components/Milestones'),
+  },
   data: () => ({
     new_article: {
       title: '',
       body: '',
-      from: '',
-      wish: '',
+      milestones: [],
+      tags: [],
     },
+    tag_model: '',
     show_info: false,
     info_type: 'success',
     infos: '',
-    checkbox: false,
     submit_buffer: false,
   }),
   computed: {
@@ -45,15 +77,23 @@ export default {
   },
   created() {},
   methods: {
+    addHashTag() {
+      if (!this.tag_model) this.tag_model = '#';
+    },
+    removeHashTag() {
+      if (this.tag_model === '#') this.tag_model = '';
+    },
+    focus() {
+      document.getElementById('tag-input').focus();
+    },
+    addTag() {
+      this.new_article.tags.push(this.tag_model);
+      this.tag_model = '#';
+    },
+    removeTag(idx) {
+      this.new_article.tags.splice(idx, 1);
+    },
     SubmitNewArticle() {
-      let now = new Date(Date.now());
-      now = now.toISOString().substring(0, 10);
-      this.new_article.wish = {
-        title: '開始這個願望',
-        time: now,
-      };
-      if (this.checkbox) this.new_article.from = '0';
-      else this.new_article.from = this.$store.state.user_id;
       if (!this.new_article.title || !this.new_article.body) {
         // todo : error
         this.Show_info('Blank data!', 'error');
@@ -61,8 +101,7 @@ export default {
       }
       this.submit_buffer = true;
       apiUploadArticle({
-        username: this.checkbox ? 'Unknown' : this.$store.state.username,
-        article: this.new_article,
+        article_content: this.new_article,
       })
         .then((res) => {
           // TODO : insert new post locally
@@ -76,7 +115,7 @@ export default {
           console.log(err);
         });
 
-      this.$store.dispatch('getUserArticles', true);
+      this.$store.dispatch('getSelfArticles', true);
     },
     Show_info(Info, infoType) {
       /**
@@ -96,3 +135,7 @@ export default {
   },
 };
 </script>
+
+<style lang="sass" scoped>
+$chip-close-size: 12px
+</style>

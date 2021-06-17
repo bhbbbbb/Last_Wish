@@ -1,119 +1,122 @@
-<template>
-  <v-card
-    class="ma-0 pa-1"
-    min-height="80vh"
-    rounded="lg"
-    :color="color_list($route.params.id)"
-    width="100%"
-  >
-    <v-timeline align-top dense>
-      <v-timeline-item
-        v-for="(wish, idx) in wishes"
-        :key="idx"
-        small
-        :color="color_list(7)"
-      >
-        <v-avatar slot="icon" />
-        <v-row no-gutters>
-          <v-col class="d-flex flex-grow-1">
-            <span class="d-flex text-no-wrap" style="overflow-x: hidden">
-              {{ wish.title ? wish.title : wish }}
-            </span>
-          </v-col>
-          <v-col cols="auto" class="d-flex justify-end pr-4">
-            <span class="subtitle-2 text--disabled">
-              {{ wish.time ? date_format(wish.time) : '' }}
-            </span>
-          </v-col>
-        </v-row>
-      </v-timeline-item>
+<template lang="pug">
+v-timeline-item.align-center(small :color="color_list(7)" style="padding-top: 12px")
+  v-icon(slot="icon" small color="white")  mdi-plus 
 
-      <v-timeline-item
-        class="align-center"
-        small
-        :color="color_list(7)"
-        style="padding-top: 12px"
-      >
-        <v-icon slot="icon" small color="white"> mdi-plus </v-icon>
-        <v-text-field v-model.lazy="newMilestone.title" class="pr-5">
-        </v-text-field>
-      </v-timeline-item>
-    </v-timeline>
-    <v-card-actions class="justify-center">
-      <v-row>
-        <v-col cols="12" class="d-flex justify-center">
-          <v-date-picker
-            v-model="newMilestone.time"
-            :color="color_list(7)"
-            :max="max"
-          >
-          </v-date-picker>
-        </v-col>
-        <v-col cols="12" class="d-flex justify-center">
-          <v-btn @click="submitMilestone"> submit </v-btn>
-        </v-col>
-      </v-row>
-    </v-card-actions>
-  </v-card>
+  v-row(no-gutters)
+    v-col.d-flex.justify-end.align-center.ml-5(cols="1")
+      v-menu(
+        v-model="menu"
+        :close-on-content-click="false"
+        transition="scale-transition"
+        min-width="auto"
+        offset-y
+      )
+        template(#activator="{ on, attrs }")
+          v-btn.pa-0(
+            text
+            v-on="on"
+            v-bind="attrs"
+          )
+            span.subtitle-2.text--disabled() {{ date_modified ? selected_date : '選擇日期' }}
+            v-icon(small) mdi-chevron-down
+
+        v-date-picker(
+          no-title
+          v-model="newMilestone.estDate"
+          :color="color_list(7)"
+          @change="date_modified = true"
+        )
+
+    v-col.flex-shrink-1(cols="8" offset="1")
+      v-text-field(
+        v-model="title"
+        append-icon="mdi-check"
+        @click:append="submit"
+        @keydown.enter="submit"
+        :error-messages="err_msg"
+        placeholder="新增里程碑"
+      )
+  //- v-row
+  //-   v-col.d-flex.justify-center(cols="12")
+  //-     v-date-picker(v-model="newMilestone.estDate" :color="color_list(7)" :max="max")
+  //-   v-col.d-flex.justify-center(cols="12")
+  //-     v-btn(@click="submitMilestone")  submit 
+  slot(:newmilestone="newMilestone")
 </template>
 
 <script>
-import { apiUploadMilestone } from '@/store/api';
-import color_list from '@/store/color_list.js';
+// import { apiUploadMilestone } from '@/store/api';
+import color_list from '@/data/color_list';
+import moment from 'moment';
 export default {
   name: 'NewMilestone',
   components: {},
-  props: {
-    id: {
-      type: Number,
-      required: true,
-    },
-    wishes: {
-      type: Array,
-      required: true,
-    },
-  },
+  props: {},
   data: () => ({
     newMilestone: {
       title: undefined,
-      time: undefined,
+      estDate: undefined,
       body: undefined,
+      finished: false,
     },
+    title: undefined,
     max: undefined,
+    calendar_show: false,
+    menu: false,
+    date_modified: false,
+    err_msg: undefined,
   }),
-  computed: {},
+  computed: {
+    selected_date() {
+      return moment(this.newMilestone.estDate).format('M/D');
+    },
+  },
+  watch: {
+    title() {
+      this.err_msg = undefined;
+    },
+  },
   created() {
-    let now = new Date(Date.now());
-    this.max = now.toISOString().substring(0, 10);
+    this.max = this.getISONow();
+    this.newMilestone.estDate = this.max;
   },
 
   methods: {
+    getISONow() {
+      return moment().format('YYYY-MM-DD');
+    },
     date_format(time) {
       let time_arr = time.split('-');
       return time_arr[1] + '/' + time_arr[2];
     },
     color_list,
-    submitMilestone() {
+    moment,
+    submit() {
       // TODO : tell user error message
-      if (!this.newMilestone.time) return;
-      if (!this.newMilestone.title.trim()) return;
+      if (!this.date_modified) {
+        this.err_msg = '請選擇日期';
+        return;
+      }
+      if (!this.title || !this.title.trim()) {
+        this.err_msg = '不得為空';
+        return;
+      }
 
-      apiUploadMilestone({
-        article_id: String(this.id),
-        newMilestone: this.newMilestone,
-      }).then(({ data }) => {
-        this.wishes.push(data);
-      });
+      this.newMilestone.title = this.title;
+      let copy = JSON.parse(JSON.stringify(this.newMilestone));
+      this.$emit('created', copy);
       this.newMilestone.title = undefined;
-      this.newMilestone.time = undefined;
+      this.newMilestone.estDate = undefined;
       this.newMilestone.body = undefined;
+      this.title = undefined;
+      this.date_modified = false;
     },
   },
 };
 </script>
 
 <style scpoed>
-.v-timeline-item {
+/* .v-timeline-item {
   padding-bottom: 12px !important;
-}
+} */
 </style>

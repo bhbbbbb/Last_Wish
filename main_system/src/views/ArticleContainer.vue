@@ -1,73 +1,73 @@
 <template lang="pug">
-v-sheet.d-flex.flex-wrap.flex-column-reverse(rounded="lg")
-  v-col.ma-0.pa-0(
-    v-if="articles"
-    cols="12"
-    v-for="(article, idx) in articles",
-    :key="idx"
+v-sheet(rounded="lg")
+  Search(v-if="fetchAction !== 'getSelfArticles' && fetchAction !== 'getOthersArticles'")
+  v-row(
+    no-gutters
   )
-    ArticleCard(
-      :content="article"
-      :color="color_list(article.id)"
-      @click.stop="ToInnerArticle(article.id, idx)"
+    v-col.ma-0.pa-0(
+      cols="12"
+      v-for="(id, idx) in articles",
+      :key="idx"
     )
-
-  //- v-col(
-  //-   v-if="is_login"
-  //-   cols="12"
-  //-   order-sm="first"
-  //-   :class="$vuetify.breakpoint.mobile ? 'fixed-bottom' : ''"
-  //- )
-  //-   NewPost/
+      ArticleCard(
+        :id="id"
+        :color="color_list(idx)"
+      )
 
 </template>
 
 <script>
-import color_list from '@/store/color_list.js';
+import color_list from '@/data/color_list';
 export default {
   name: 'ArticleContainer',
 
   components: {
     ArticleCard: () => import('@/components/article/ArticleCard.vue'),
-    // RecordCard: () => import('@/components/RecordCard'),
-    // NewPost: () => import('@/components/NewPost'),
-    // NewRecord: () => import('@/components/NewRecord'),
+    Search: () => import('@/components/Search'),
   },
   props: {
     articles: {
       required: true,
       type: Array,
     },
-    toUser: {
+    fetchAction: {
+      required: true,
+      type: String,
+    },
+    username: {
       required: false,
-      type: Boolean,
-      default: false,
+      type: String,
+      default: undefined,
     },
   },
   data: () => ({}),
-  computed: {
-    // ...mapState(['articles', 'is_login']),
-  },
-  created() {
-    if (
-      this.$store.state.is_login &&
-      this.$store.state.followed_articles === undefined
-    )
-      this.$store.dispatch('getUserFollowed');
-  },
-
-  methods: {
-    ToInnerArticle(article_id, idx) {
-      let to_name = this.toUser ? 'UserArticle' : 'Article';
-      this.$router.push({
-        name: to_name,
-        params: {
-          id: article_id,
-          context: this.articles[idx],
-        },
-      });
+  computed: {},
+  watch: {
+    fetchAction() {
+      this.fetchArticles();
     },
+  },
+  created() {},
+  mounted() {
+    this.fetchArticles();
+  },
+  methods: {
+    // ToInnerArticle(article_id) {
+    //   this.$router.push({
+    //     name: 'Article',
+    //     params: {
+    //       id: article_id,
+    //     },
+    //   });
+    // },
     color_list: color_list,
+    async fetchArticles() {
+      if (this.fetchAction === 'getOthersArticles') {
+        // let { id } = await this.$store.dispatch('getUserByName', this.username);
+        let id = this.$store.state.user.others.id;
+        this.$store.dispatch(this.fetchAction, id);
+      } else this.$store.dispatch(this.fetchAction);
+    },
   },
 };
 </script>
@@ -75,5 +75,6 @@ export default {
 <style lang="sass" scoped>
 .fixed-bottom
   position: sticky
-  bottom: 0
+  top: 110px
+  z-index: 1000
 </style>

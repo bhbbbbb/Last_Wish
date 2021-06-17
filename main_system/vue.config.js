@@ -5,4 +5,7 @@ module.exports = {
   },
   transpileDependencies: ['vuetify'],
   productionSourceMap: false,
+  pwa: {
+    name: '願望清單',
+  },
 };

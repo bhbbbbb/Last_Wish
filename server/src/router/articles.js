@@ -1,21 +1,10 @@
-const articlePATH = __dirname + "/../data/articles.json";
-const accountsPATH = __dirname + "/../data/accounts.json";
 var express = require('express');
 var global = express.Router();
 var user_session = require('../lib/session.js');
-// const { stringify } = require('querystring');
-// var articles = require(articlePATH);
-// var accounts = require(accountsPATH);
-// The line above can be replaced with
 var AccountManager = require('../lib/account_manager.js');
 var accountManager = new AccountManager();
 var ArticleManager = require('../lib/article_manager.js');
 var articleManager = new ArticleManager();
-// to handle issues that is to do with user
-// also I wrote a new class to handle articles: article_manager
-// it would be more elegant to utilize the class 
-// but maybe update later today
-
 
 const SUCCEED = 0;
 const USER_NOT_FOUND = 1;
@@ -31,121 +20,195 @@ const INSERT = [
         }
     }
 ]
-global.post('/insert', (req, res) => {
-    var response, newPostId;
-    try {
-        newPostId = accountManager.addPostsToAuthor(req.body.username, req.body.article);
-    } catch (error) {
+global.post('/insert', user_session, (req, res) => {
+    accountManager
+        .addPostsToAuthor(req.session.user_id, req.body.article_content)
+        .then((newPostId) => {
+            let response = INSERT[SUCCEED];
+            res.status(response.status).json(newPostId);
+        })
+        .catch((error) => {
+            console.log(error);
+            let response = INSERT[USER_NOT_FOUND];
+            res.status(response.status).json(response.body);
+        })
+});
+
+global.post('/delete', user_session, (req, res) => {
+    articleManager
+        .rmArticleById(req.body.article_id)
+        .then(() => {
+            res.sendStatus(200);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.status(400).json(error);
+        });
+});
+
+
+global.post('/add_comment', user_session, async(req, res) => {
+    try{
+        let author = req.session.user_id;
+        let articleId = req.body.article_id;
+        let comment = req.body.comment;
+        let newDate = await articleManager.addCommentToArticle(author , articleId, comment);
+        res.status(200).json(newDate);
+        console.log(newDate);
+    }catch(error){
         console.log(error);
-        response = INSERT[USER_NOT_FOUND];
-        res.status(response.status).json(response.body);
-        return;
+        res.status(400).json;
     }
-    response = INSERT[SUCCEED];
-    res.status(response.status).json(newPostId);
-    return;
 });
 
-
-global.post('/addcomment', (req, res) => {
-    let newComent = articleManager.addCommentToArticle(req.body.author, req.body.article_id, req.body.comment);
-    res.json(newComent);
+global.post('/edit_comment', user_session, async(req,res)=>{
+    let newComment = req.body.new_comment;
+    let articleId = req.body.article_id;
+    let commentId = req.body.comment_id;
+    let userId = req.session.user_id;
+    try{
+    let newDate = await articleManager.replaceCommentOfArticle(newComment , articleId, commentId, userId);
+    res.status(200).json(newDate);
+    }catch(e){
+        console.log(e);
+        res.status(400).json();
+    }
 });
+
 
 global.get('/', (req, res) => {
-    res.json(articleManager.getAllArticles());
+    articleManager
+        .getAllArticleIds(req.query.options)
+        .then((allArticleIds) => {
+            res.status(200).json(allArticleIds);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.status(400).json(error);
+        })
 });
 
-const BAD_REQUEST = 1;
-const USER_POST = [
-    {
-        status: 200
-    },
-    {
-        status: 400,  // bad request
-        body: {
-            err_code: BAD_REQUEST,
-            err_msg: ""
-        }
-    },
-]
+global.get('/get_article_by_id', (req, res) => {
+    articleManager
+        .getFormatedArticleById(req.query.article_id)
+        .then((article) => {
+            res.status(200)
+               .json(article);
+        })
+        .catch((error) => {
+            console.log(error);
+            res.status(400).json(error);
+        })
+});
 
 /**
- * @req req.query { username }
+ * @req req.query { user_id }
  */
-global.get('/user_post', user_session, (req, res) => {
-    var response;
-    if (req.query.username != req.session.username) {
-        res.sendStatus(401);
-        return;
-    }
-    let posts = [];
-    try {
-        accountManager.getPostsByAuthor(req.query.username).forEach(articleId => {
-            posts.push(articleManager.getArticleById(articleId));
+global.get('/get_user_posts', user_session, (req, res) => {
+    accountManager
+        .getPostsByAuthor(req.query.user_id)
+        .then((articleIds) => {
+            articleManager
+                .sortArticleIdsByOptions(articleIds, req.query.options)
+                .then((sortedArticleIds) => {
+                    res.status(200).json(sortedArticleIds);
+                });
+        })
+        .catch((error) => {
+            console.log(error);
+            res.status(400).json(error);
         });
-    } catch (error) {
-        response = USER_POST[BAD_REQUEST];
-        res.status(response.status).json(response.body);
-        return;
-    }
-    response = USER_POST[SUCCEED];
-    res.status(response.status).json(posts);
-    return;
 });
 
-const FOLLOWED_POST = [
-    {
-        status: 200
-    },
-    {
-        status: 400,  // bad request
-        body: {
-            err_code: BAD_REQUEST,
-            err_msg: ""
-        }
-    }
-]
-global.get('/followed_post', (req, res) => {
-    var response;
-    let posts = [];
+/**
+ * @param article_id
+ */
+ global.post('/edit_article', user_session, async(req, res) => {
     try {
-        accountManager.getFollowedPostsByUser(req.query.username).forEach(articleId => {
-            posts.push(articleManager.getArticleById(articleId));
-        });
-    } catch (error) {
-        response = FOLLOWED_POST[USER_NOT_FOUND];
-        response.body.err_msg = error;
-        res.status(response.status).json(response.body);
+        let newArticle ={
+            "title":req.body.title,
+            "body":req.body.body,
+        }
+        let articleId = req.body.article_id;
+        let userId = req.session.user_id;
+        let newDate = 
+        await articleManager.replaceArticle(newArticle, articleId, userId);
+        res.status(200).json(newDate);
+    } catch (err) {
+        console.log(err);
+        res.status(400).json();
         return;
     }
-    response = FOLLOWED_POST[SUCCEED];
-    res.status(response.status).json(posts);
-    return;
+})
+
+/**
+ * @req req.query { user_id }
+ */
+global.get('/get_followed_posts', user_session, (req, res) => {
+    accountManager
+        .getFollowedPostsByUser(req.session.user_id)
+        .then((articleIds) => {
+            articleManager
+                .sortArticleIdsByOptions(articleIds, req.query.options)
+                .then((sortedArticleIds) => {
+                    res.status(200).json(sortedArticleIds);
+                });
+        })
+        .catch((error) => {
+            console.log(error);
+            res.sendStatus(400);
+            res.status(400).json(error);
+        });
 });
+
+// the code below is not working for now
+//============================================================================//
 
 /**
  * @param {Number} req.body.article_id
  * @param {Object} req.body.newMilestone { title, body, time }
  */
-global.post('/addMilestone',(req,res)=>{
-    let newMilestone = articleManager.addMilestoneToArticle(req.body.article_id,req.body.newMilestone);
-    res.json(newMilestone);
+global.post('/addMilestone', (req, res) => {
+    var newMilestone;
+    try {
+        newMilestone = articleManager.addMilestoneToArticle(req.body.article_id, req.body.newMilestone);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(400);
+        return;
+    }
+    res.status(200).json(newMilestone);
+    return;
 })
 
-global.post('/FollowedPostToggle',(req,res)=>{
-    try{
-    accountManager.toggleFollowedPostsToUser(req.body.username,req.body.articleId);
-    }catch(err){
+global.post('/FollowedPostToggle', (req, res) => {
+    try {
+        accountManager.toggleFollowedPostsToUser(req.body.username, req.body.articleId);
+    } catch (err) {
         console.log(err);
+        res.sendStatus(400);
+        return;
     }
     res.sendStatus(200);
-})
-global.post('/editArticle',(req,res)=>{
-    articleManager.replaceArticle(req.body.newArticle,req.body.articleId);
-    res.sendStatus(200);
+    return;
 })
 
 
+
+// TODO:
+
+//// editComment
+//global.post('/editComment', (req, res) => {
+//    try {
+//        articleManager.replaceCommentOfArticle(req.body.newComment, req.body.articleId, req.body.commentId);
+//    } catch (err) {
+//        console.log(err);
+//        res.sendStatus(400);
+//        return;
+//    }
+//    res.sendStatus(200);
+//    return
+//})
+//// editMileStone
 
 module.exports = global;
