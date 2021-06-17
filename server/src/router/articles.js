@@ -161,6 +161,11 @@ global.get('/get_followed_posts', user_session, (req, res) => {
         });
 });
 
+global.post('/search', user_session, async(req, res) => {
+    await articleManager.findArticle(req.body.keyWords);
+    res.status(200).json();
+})
+
 // the code below is not working for now
 //============================================================================//
 

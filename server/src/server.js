@@ -17,6 +17,12 @@ const corsOptions = {
     allowedHeaders : [ "Content-Type", "Authorization" ],
     credentials : true
 };
+const mongooseOptions = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+  };
 
 // if using luffy:
 // const db_url =
@@ -26,9 +32,11 @@ const corsOptions = {
 // make sure that you have added your computer's ip to the DB's ip access list
 const db_url =
     'mongodb://yuyu:isengineer@cluster0-shard-00-00.jhbg0.mongodb.net:27017,cluster0-shard-00-01.jhbg0.mongodb.net:27017,cluster0-shard-00-02.jhbg0.mongodb.net:27017/test?ssl=true&replicaSet=atlas-qfbkre-shard-0&authSource=admin&retryWrites=true&w=majority';
+const db_url2 = 
+    'mongodb://yuyu:isengineer@cluster0-shard-00-00.jhbg0.mongodb.net:27017,cluster0-shard-00-01.jhbg0.mongodb.net:27017,cluster0-shard-00-02.jhbg0.mongodb.net:27017/test_for_fuzzy?ssl=true&replicaSet=atlas-qfbkre-shard-0&authSource=admin&retryWrites=true&w=majority';
 
 // do the shit only when db is connected
-mongoose.connect(db_url, {useNewUrlParser : true, useUnifiedTopology : true})
+mongoose.connect(db_url2, mongooseOptions)
     .then(() => {
         const app = express();
         app.use('/media', express.static(filePath));

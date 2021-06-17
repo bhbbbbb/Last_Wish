@@ -5,7 +5,7 @@
 // var today = `${month[d.getMonth()]}/${String(d.getDate())} ${days[d.getDay()]}`;
 const Article = require('../models/Article');
 const User = require("../models/User");
-
+var notUpdated = true;
 module.exports = function() {
 
     /**
@@ -381,6 +381,24 @@ module.exports = function() {
     //     return newMilestone;
     // }
 
+    this.findArticle = async function(keyWords){
+        try{
+            if(notUpdated){
+                await updateFuzzy(Article, ['title']);  
+                //Actually we only need to update for first time then we can use fuzzy to access
+                //old data even if we restart the server
+                console.log('Updating fuzzy index...');
+            }
+            console.log(keyWords);
+            res = await Article.fuzzySearch(keyWords);
+            //res2 = await Article.findById('60c03edafd420b1c740ea78c');
+            console.log(res);
+            //console.log(res2);
+        }catch(e){
+            console.log(e);
+        }
+    }
+
     /**
      * 
      * @param {Number} choose 
@@ -397,3 +415,30 @@ module.exports = function() {
     //         return today;                           //return Month/Date Day
     // }
 }
+
+
+/**
+ * Use to implement fuzzy_search ref for old data
+ */
+const updateFuzzy = async (Model, attrs) => {
+    for await (const doc of Model.find()) {
+      if (attrs && attrs.length) {
+        // eslint-disable-next-line no-loop-func
+        const obj = attrs.reduce((acc, attr) => ({ ...acc, [attr]: doc[attr] }), {})
+        await Model.findByIdAndUpdate(doc._id, obj) // No need to exec here, because of await
+      }
+    }
+  }
+
+/**
+ * Use to wipe out all ref caused by fuzzy_search
+ */
+const disposeFuzzy = async (Model, attrs) => {
+    for await (const doc of Model.find()) {
+      if (attrs && attrs.length) {
+        // eslint-disable-next-line no-loop-func
+        const $unset = attrs.reduce((acc, attr) => ({ ...acc, [`${attr}_fuzzy`]: 1 }), {});
+        await Model.findByIdAndUpdate(doc._id, { $unset }, { new: true, strict: false }); // No need to exec here, because of await
+      }
+    }
+  }
