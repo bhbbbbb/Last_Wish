@@ -11,7 +11,7 @@ v-card.ma-1.pa-1.transparent.d-flex.align-center(
       NavLink(v-if="author" :to="`/${author.name}`")
         span {{ author.name }}
       .px-2
-      span {{ content.body }}
+      span(style="overflow-x: hidden;") {{ content.body }}
     v-row(no-gutters)
       span.caption {{ date }}
 </template>

@@ -53,47 +53,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
     //----------- milestone -----------------
     v-row
       v-col.px-8
-        //- v-timeline(
-        //-   v-if="$store.state.user.self.id === content.author.id && !newMilestone_show"
-        //-   align-top
-        //-   dense
-        //- )
-        v-timeline(
-          v-if="!newMilestone_show"
-          align-top
-          dense
-        )
-          v-timeline-item(
-            v-for="ms in content.content.milestones"
-            small
-            :color="ms.finished ? '#9BA2AA' : '#C4C4C4'"
-            :key="ms._id"
-          )
-            v-avatar(slot="icon", @click="GoWish(idx)")
-            v-row(no-gutters="")
-              v-col.d-flex.justify-end.pr-4(cols="1" slot="opposite")
-                span.subtitle-2.text--disabled(slot="opposite")
-                  | {{ moment(ms.estDate).format('M/D') }}
-              v-col.d-flex.flex-shrink-1(cols="auto")
-                span.d-flex.text-no-wrap(style="overflow-x: hidden")
-                  | {{ ms.title }}
-              v-col(offset="1")
-                v-icon(v-if="ms.finished" small) mdi-check-circle
-
-          v-timeline-item.align-center(
-            small
-            :color="color_list(7)"
-						v-if="$store.state.user.self.id === content.author.id && newMilestone_show"
-          )
-            v-icon(slot="icon" small color="white") mdi-plus
-            v-btn(@click="newMilestone_show = true") 點我新增里程碑
-          
-        NewMilestone(
-          v-if="$store.state.user.self.id === content.author.id && newMilestone_show"
-          :id="id"
-          :wishes="content.wishes"
-        )
-          template(v-slot="newMilestone")
+        Milestones(:content="content.content.milestones" :author-id="content.author.id")
 
 
         //------------------ end milestone ---------------
@@ -136,6 +96,7 @@ export default {
     UserAvatar: () => import('@/components/UserAvatar'),
     ArticleBtns: () => import('@/components/ArticleBtns'),
     NavLink: () => import('@/components/NavLink'),
+    Milestones: () => import('@/components/Milestones'),
   },
   props: {
     id: {
@@ -243,6 +204,10 @@ export default {
     updateComment(newComment) {
       this.content.comments.push(newComment);
     },
+    updateMilestone(value) {
+      this.content.content.milestones.push(this.value);
+      console.log(value);
+    },
     moment,
     color_list,
   },
@@ -252,5 +217,11 @@ export default {
 <style>
 .pre {
   white-space: pre-wrap;
+}
+</style>
+
+<style scpoed>
+.v-timeline-item {
+  padding-bottom: 16px !important;
 }
 </style>
