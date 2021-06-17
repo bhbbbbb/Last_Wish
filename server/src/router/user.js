@@ -128,32 +128,32 @@ user.post('/register', async (req, res) => {
     else {
         let trimmedUsername = req.body.username.trim();
         let trimmedPassword = req.body.password.trim();
-            const result = await mailManager.hasMailAddr(addr);
-            const invalid = await accountManager.hasUser(trimmedUsername);
-            if(result){
-                let response = REGISTER[DUPLICATED_EMAIL];
+        const result = await mailManager.hasMailAddr(addr);
+        const invalid = await accountManager.hasUser(trimmedUsername);
+        if(result){
+            let response = REGISTER[DUPLICATED_EMAIL];
+            res.status(response.status).json(response.body);
+            console.log(response.body);
+        }else if(invalid){
+            let response = REGISTER[DUPLICATED_USER];
+            res.status(response.status).json(response.body);
+        }
+        else{
+            const id = await accountManager.addUser(trimmedUsername, trimmedPassword, addr);
+            let response = REGISTER[SUCCEED];
+            console.log(id);
+            try{
+                mailManager.sendToken(addr, id, trimmedUsername, SERVER_URL, EMAIL_SECRET);
+                res.sendStatus(response.status);
+                //console.log(addr);
+            }catch(e){
+                console.log(e);
+                let response = REGISTER[EMAIL_ERR];
                 res.status(response.status).json(response.body);
-                console.log(response.body);
-            }else if(invalid){
-                let response = REGISTER[DUPLICATED_USER];
-                res.status(response.status).json(response.body);
-            }
-            else{
-                const id = await accountManager.addUser(trimmedUsername, trimmedPassword, addr);
-                let response = REGISTER[SUCCEED];
-                console.log(id);
-                try{
-                    mailManager.sendToken(addr, id, trimmedUsername, SERVER_URL, EMAIL_SECRET);
-                    res.sendStatus(response.status);
-                    //console.log(addr);
-                }catch(e){
-                    console.log(e);
-                    let response = REGISTER[EMAIL_ERR];
-                    res.status(response.status).json(response.body);
-                }
             }
         }
-    });
+    }
+});
 
 user.post('/set_self_intro', user_session, (req, res) => {
     accountManager

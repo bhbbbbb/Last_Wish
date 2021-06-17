@@ -144,9 +144,6 @@ global.get('/get_user_posts', user_session, (req, res) => {
     }
 })
 
-/**
- * @req req.query { user_id }
- */
 global.get('/get_followed_posts', user_session, (req, res) => {
     accountManager
         .getFollowedPostsByUser(req.session.user_id)
