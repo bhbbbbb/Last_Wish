@@ -77,8 +77,12 @@ global.post('/edit_comment', user_session, async (req, res) => {
 
 
 global.get('/', (req, res) => {
+    let options = {
+        new2old: req.query.new2old === 'true',
+        finished: req.query.finished === 'true'
+    };
     articleManager
-        .getAllArticleIds(req.query.options)
+        .getAllArticleIds(options)
         .then((allArticleIds) => {
             res.status(200).json(allArticleIds);
         })
@@ -105,11 +109,15 @@ global.get('/get_article_by_id', (req, res) => {
  * @req req.query { user_id }
  */
 global.get('/get_user_posts', user_session, (req, res) => {
+    let options = {
+        new2old: req.query.new2old === 'true',
+        finished: req.query.finished === 'true'
+    };
     accountManager
         .getPostsByAuthor(req.query.user_id)
         .then((articleIds) => {
             articleManager
-                .sortArticleIdsByOptions(articleIds, req.query.options)
+                .sortArticleIdsByOptions(articleIds, options)
                 .then((sortedArticleIds) => {
                     res.status(200).json(sortedArticleIds);
                 });
@@ -141,11 +149,15 @@ global.get('/get_user_posts', user_session, (req, res) => {
 });
 
 global.get('/get_followed_posts', user_session, (req, res) => {
+    let options = {
+        new2old: req.query.new2old == 'true',
+        finished: req.query.finished == 'true'
+    };
     accountManager
         .getFollowedPostsByUser(req.session.user_id)
         .then((articleIds) => {
             articleManager
-                .sortArticleIdsByOptions(articleIds, req.query.options)
+                .sortArticleIdsByOptions(articleIds, options)
                 .then((sortedArticleIds) => {
                     res.status(200).json(sortedArticleIds);
                 });

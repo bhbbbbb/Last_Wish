@@ -63,7 +63,7 @@ module.exports = function() {
                     rawArticles.sort((a, b) => {
                         return b.date - a.date;
                     });
-                } else if (options.old2new) {
+                } else {
                     console.log('old2new');
                     rawArticles.sort((a, b) => {
                         return a.date - b.date;
@@ -126,7 +126,7 @@ module.exports = function() {
                 articles.sort((a, b) => {
                     return b.date - a.date;
                 });
-            } else if (options.old2new) {
+            } else {
                 console.log('old2new');
                 articles.sort((a, b) => {
                     return a.date - b.date;
