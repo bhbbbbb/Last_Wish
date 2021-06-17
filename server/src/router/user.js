@@ -26,13 +26,7 @@ let lineLoginStates = {};
 user.get('/get_all_users', user_session, (_req, res) => {
     accountManager.getAllUsers();
     res.sendStatus(200);
-})
-
-//user.get('/clear_all_users', user_session, (_req, res) => {
-//user.get('/clear_all_users', user_session, (_req, res) => {
-//    accountManager.clearAllUsers();
-//    res.sendStatus(200);
-//})
+});
 
 const SUCCEED = 0;
 const USER_NOT_FOUND = 1;
@@ -40,41 +34,36 @@ const PASSWORD_INCORRECT = 2;
 const NO_VERIFIED = 3;
 const TRY_LOGIN = [
     {
-        status : 200
+        status: 200
     }, 
     {
-        status : 401,
-        body : { err_code : USER_NOT_FOUND, err_msg : "user not found" }
-    },
-    {
-        status : 401,
-        body : { err_code : PASSWORD_INCORRECT, err_msg : "password is incorrect" }
+        status: 401,
+        body: { err_code: USER_NOT_FOUND, err_msg: "user not found" }
     },
     {
         status: 401,
-        body : { err_code: NO_VERIFIED, err_msg : "Please check the confirmation mail first" }
+        body: { err_code: PASSWORD_INCORRECT, err_msg: "password is incorrect" }
+    },
+    {
+        status: 401,
+        body: { err_code: NO_VERIFIED, err_msg: "Please check the confirmation mail first" }
     }
 ];
-user.post('/try_login', user_session, async(req, res) => {
-    try{
+user.post('/try_login', user_session, async (req, res) => {
+    try {
         console.log(req.body.username);
         const exist = await accountManager.hasUser(req.body.username);
-        if(!exist){
+        if (!exist) {
             let response = TRY_LOGIN[USER_NOT_FOUND];
             res.status(response.status).json(response.body);
-        }
-        else{ 
+        } else { 
             const result = await accountManager.checkPassword(req.body.username, req.body.password);
             if (!result.verified) {
-                // To avoid repeating sending the verification mail
-                // mailManager.sendToken(
-                //         result.email, result.userId, req.body.username, SERVER_URL, EMAIL_SECRET);
                 let response = TRY_LOGIN[NO_VERIFIED]
                 res.status(response.status).json(response.body);
             } else if (result.correct) {
                 let response = TRY_LOGIN[SUCCEED]
                 req.session.username = req.body.username;
-                // notice thate 'id' cannot be set in session
                 req.session.user_id = result.userId;
                 res.status(response.status).json({
                     username: req.body.username,
@@ -85,11 +74,10 @@ user.post('/try_login', user_session, async(req, res) => {
                 res.status(response.status).json(response.body);
             }
         }
-    }catch(error){
+    } catch (error) {
         console.log(error);
-        res.status(500).json();
+        res.sendStatus(500);
     }
-
     return;
 });
 
@@ -99,23 +87,23 @@ const INVALID_ADDR = 3;
 const EMAIL_ERR = 4;
 const REGISTER = [
     {
-        status : 200
+        status: 200
     }, 
     {
-        status : 400,
-        body : {err_code : DUPLICATED_USER, err_msg : "duplicated user"}
+        status: 400,
+        body: { err_code: DUPLICATED_USER, err_msg: "duplicated user"}
     },
     {
-        status : 400, 
-        body : {err_code : DUPLICATED_EMAIL, err_msg : "duplicated email"}
+        status: 400, 
+        body: { err_code: DUPLICATED_EMAIL, err_msg: "duplicated email"}
     },
     {
-        status : 400,
-        body : {err_code : INVALID_ADDR, err_msg : "invalid email address"}
+        status: 400,
+        body: { err_code: INVALID_ADDR, err_msg: "invalid email address"}
     },
     {
-        status : 500,
-        body : {err_code : EMAIL_ERR, err_msg : "email sent failed"}
+        status: 500,
+        body: { err_code: EMAIL_ERR, err_msg: "email sent failed"}
     },    
 ];
 user.post('/register', async (req, res) => {
@@ -124,29 +112,26 @@ user.post('/register', async (req, res) => {
         let response = REGISTER[INVALID_ADDR];
         res.status(response.status).json(response.body);
         console.log(response.body);
-    }
-    else {
+    } else {
         let trimmedUsername = req.body.username.trim();
         let trimmedPassword = req.body.password.trim();
         const result = await mailManager.hasMailAddr(addr);
         const invalid = await accountManager.hasUser(trimmedUsername);
-        if(result){
+        if (result) {
             let response = REGISTER[DUPLICATED_EMAIL];
             res.status(response.status).json(response.body);
             console.log(response.body);
-        }else if(invalid){
+        } else if (invalid) {
             let response = REGISTER[DUPLICATED_USER];
             res.status(response.status).json(response.body);
-        }
-        else{
+        } else {
             const id = await accountManager.addUser(trimmedUsername, trimmedPassword, addr);
             let response = REGISTER[SUCCEED];
             console.log(id);
-            try{
+            try {
                 mailManager.sendToken(addr, id, trimmedUsername, SERVER_URL, EMAIL_SECRET);
                 res.sendStatus(response.status);
-                //console.log(addr);
-            }catch(e){
+            } catch (e) {
                 console.log(e);
                 let response = REGISTER[EMAIL_ERR];
                 res.status(response.status).json(response.body);
@@ -194,7 +179,7 @@ user.post('/set_pro_pic', user_session, (req, res) => {
 user.get('/who', user_session, (req, res) => {
     let u = req.session.username;
     if (u)
-        res.send({username : u, id : req.session.user_id});
+        res.send({ username: u, id: req.session.user_id });
     else
         res.sendStatus(401);
 });
@@ -208,7 +193,7 @@ user.post('/toggle_followed_user', user_session, (req, res) => {
         .catch((error) => {
             console.log(error);
             res.status(400).json(error);
-        })
+        });
 });
 
 user.post('/toggle_followed_post', user_session, (req, res) => {
@@ -220,7 +205,7 @@ user.post('/toggle_followed_post', user_session, (req, res) => {
         .catch((error) => {
             console.log(error);
             res.status(400).json(error);
-        })
+        });
 });
 
 user.post('/toggle_liked_post', user_session, (req, res) => {
@@ -232,27 +217,29 @@ user.post('/toggle_liked_post', user_session, (req, res) => {
         .catch((error) => {
             console.log(error);
             res.status(400).json(error);
-        })
+        });
 });
 
 user.get('/logout', user_session, (req, res) => {
     req.session.destroy();
     res.sendStatus(200);
-})
+});
 
 const GET_PUBLIC_INFO = [
-    {status : 200},
     {
-        status : 400, // bad request
-        body : {
-            err_code : USER_NOT_FOUND,
-            err_msg : "there is no user with such id"
+        status : 200
+    },
+    {
+        status: 400, // bad request
+        body: {
+            err_code: USER_NOT_FOUND,
+            err_msg: "there is no user with such id"
         }
     }
 ];
-// retrieve public info of a username by its user's ID
 user.get('/get_public_info', (req, res) => {
-    accountManager.getUserInfo(req.query.id)
+    accountManager
+        .getUserInfo(req.query.id)
         .then((userInfo) => {
             let response = GET_PUBLIC_INFO[SUCCEED];
             res.status(response.status).json(userInfo);
@@ -280,7 +267,9 @@ user.post('/line_login_req', (req, res) => {
 
 user.get('/is_valid_username', user_session, (req, res) => {
     accountManager.hasUser(req.query.username)
-        .then((exist) => { res.send(!exist); })
+        .then((exist) => {
+            res.send(!exist); 
+        })
         .catch((error) => {
             console.log(error);
             res.sendStatus(400);
@@ -352,112 +341,104 @@ user.get('/confirmation/:token', async (req, res) => {
         const { user: id, nonce: nonce } = jwt.verify(req.params.token, EMAIL_SECRET);
         if (id) {
             const result = await mailManager.verified(id, nonce);
-            if(result){
+            if (result) {
                 res.redirect(FRONT_URL);
                 return;
             }
         }
-            res.send(LINK_EXPIRED);
-        } catch (e) {
-            res.send(LINK_EXPIRED);
-        }
+        res.send(LINK_EXPIRED);
+    } catch (e) {
+        res.send(LINK_EXPIRED);
+    }
 });
 
 const VERIFIED = 2;
 const SEND_TOKEN = [
-    {status : 200}, 
     {
-        status : 400,
-        body : {err_code : USER_NOT_FOUND, err_msg : "user not found"}
+        status: 200
+    }, 
+    {
+        status: 400,
+        body: { err_code: USER_NOT_FOUND, err_msg: "user not found" }
     },
     {
         status: 400,
-        body : {err_code: VERIFIED, err_msg : "Email has confirmed"}
+        body: { err_code: VERIFIED, err_msg: "Email has confirmed" }
     },
     {},
     {
         status: 400,
-        body : {err_code: EMAIL_ERR, err_msg : "Email send error occured"}
+        body: { err_code: EMAIL_ERR, err_msg: "Email send error occured" }
     },
 ];
-
-
-
-user.get('/send_token_mail', user_session, async(req, res) => {
-        const result = await accountManager.checkVerified(req.query.username);
-        if(result == null){
-            let response = SEND_TOKEN[USER_NOT_FOUND];
+user.get('/send_token_mail', user_session, async (req, res) => {
+    const result = await accountManager.checkVerified(req.query.username);
+    if (result == null) {
+        let response = SEND_TOKEN[USER_NOT_FOUND];
+        res.status(response.status).json(response.body); 
+    } else if (result.verified) {
+        let response = SEND_TOKEN[VERIFIED];    //User is verified, no need to send mail again;
+        res.status(response.status).json(response.body); 
+        
+    } else {
+        try {
+            mailManager.sendToken(result.email, result.id, req.query.username, SERVER_URL, EMAIL_SECRET);
+            let response = SEND_TOKEN[SUCCEED];
+            res.status(response.status).json(response.body);
+        } catch(e) {
+            let response = SEND_TOKEN[EMAIL_ERR];
             res.status(response.status).json(response.body); 
         }
-        else if(result.verified){
-            let response = SEND_TOKEN[VERIFIED];    //User is verified, no need to send mail again;
-            res.status(response.status).json(response.body); 
-            
-        }else{
-            try{
-                mailManager.sendToken(result.email, result.id, req.query.username, SERVER_URL, EMAIL_SECRET);
-                let response = SEND_TOKEN[SUCCEED];
-                res.status(response.status).json(response.body);
-            }catch(e){
-                let response = SEND_TOKEN[EMAIL_ERR];
-                res.status(response.status).json(response.body); 
-            }
-        }
+    }
 });
 
-
-
-
-user.post('/add_event_to_user', user_session, async(req,res)=>{
+user.post('/add_event_to_user', user_session, async (req, res) => {
     let newEvent = {
-        "name" : req.body.name,
+        "name": req.body.name,
         "color": req.body.color,
         "start": req.body.start,
         "end": req.body.end,
         "finished": req.body.finished
-    }
+    };
     let userId = req.session.user_id;
-    try{
-        await accountManager.addEventToUser(newEvent,userId);
-        res.status(200).json();
-    }catch(e){
+    try {
+        await accountManager.addEventToUser(newEvent, userId);
+        res.sendStatus(200);
+    } catch (e) {
         console.log(e);
-        res.status(400).json();
+        res.sendStatus(400);
     }
+});
 
-})
-
-user.get('/get_events', user_session, async(req, res)=>{
+user.get('/get_events', user_session, async (req, res) => {
     let userId = req.session.user_id;
-    try{
+    try {
        let result = await accountManager.getUserEvent(userId);
        res.status(200).json(result);
-    }catch(error){
+    } catch (error) {
         console.log(error);
-        res.status(400).json();
+        res.sendStatus(400);
     }
-})
+});
 
-
-user.post('/edit_event_by_id', user_session, async(req, res)=>{
+user.post('/edit_event_by_id', user_session, async (req, res) => {
     let eventId = req.body.event_id;
     let modifiedEvent = {
-        "name" : req.body.name,
+        "name": req.body.name,
         "color": req.body.color,
         "start": req.body.start,
         "end": req.body.end,
         "finished": req.body.finished
-    }
+    };
     let userId = req.session.user_id;
-    try{
+    try {
        let result = await accountManager.editEventById(eventId, userId, modifiedEvent);
        res.status(200).json(result);
-    }catch(error){
+    } catch (error) {
         console.log(error);
-        res.status(400).json();
+        res.sendStatus(400);
     }
-})
-
+});
 
 //user.get('/get_event_lists', user_session, async(req, res)=>{
 //    let userId = req.session.user_id;
@@ -471,25 +452,18 @@ user.post('/edit_event_by_id', user_session, async(req, res)=>{
 //})
 //
 
-
-
-
-
-
-user.get('/get_liked_posts', user_session, async(req, res)=>{
-    try{
+user.get('/get_liked_posts', user_session, async (req, res) => {
+    try {
         let userId = req.session.user_id;
         const result = await accountManager.getUserLiked(userId);
-        if(result)
+        if (result)
             res.status(200).json(result);
         else
-            res.status(400).json();
-    }catch(e){
-        res.status(500).json();
+            res.sendStatus(400);
+    } catch (e) {
+        res.sendStatus(500);
     }
-})
-
-
+});
 
 function genNonce(length) {
     let result = [];

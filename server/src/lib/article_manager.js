@@ -1,8 +1,3 @@
-// const fs = require("fs");
-// var d = new Date();
-// var month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-// var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-// var today = `${month[d.getMonth()]}/${String(d.getDate())} ${days[d.getDay()]}`;
 const Article = require('../models/Article');
 const User = require("../models/User");
 
@@ -24,9 +19,9 @@ module.exports = function() {
         }
     }
 
-    this.hasCommentInArticle = function(commentId, articleId) {
-        return Number(commentId) <= this.articles[Number(articleId)].comments.length
-    }
+    // this.hasCommentInArticle = function(commentId, articleId) {
+    //     return Number(commentId) <= this.articles[Number(articleId)].comments.length
+    // }
 
     /**
      * @param {Object} author the account info of the author
@@ -59,7 +54,6 @@ module.exports = function() {
         try {
             let allArticleIds = [];
             let rawArticles = await Article.find({})
-                                           .populate('author')
                                            .then((allArticles) => {
                                                return allArticles;
                                            });
@@ -93,10 +87,10 @@ module.exports = function() {
     this.rmArticleById = async function(articleId) {
         try {
             let deletedArticle = await Article.findByIdAndDelete(articleId)
-                         .exec()
-                         .then((deletedArticle) => {
-                             return deletedArticle;
-                         });
+                                              .exec()
+                                              .then((deletedArticle) => {
+                                                  return deletedArticle;
+                                              });
             if (deletedArticle) {
                 for (fan of deletedArticle.fans) {
                     console.log(fan);
@@ -177,35 +171,6 @@ module.exports = function() {
         throw "no such article";
     }
     
-    // this.getMultipleArticlesByIds = async function(articleIds, options) {
-    //     let articles = [];
-    //     for (articleId of articleIds) {
-    //         await this.getFormatedArticleById(articleId)
-    //                   .then((article) => {
-    //                       articles.push(article);
-    //                   });
-    //     }
-    //     if (options.includes('new2old')) {
-    //         console.log('new2old');
-    //         articles.sort((a, b) => {
-    //             return b.date - a.date;
-    //         });
-    //     } else if (options.includes('old2new')) {
-    //         console.log('old2new');
-    //         articles.sort((a, b) => {
-    //             return a.date - b.date;
-    //         });
-    //     }
-        
-    //     if (options.includes('finished')) {
-    //         articles.sort((a, b) => {
-    //             return a.finished - b.finished;
-    //         });
-    //     }
-
-    //     return articles;
-    // }
-
     /**
      * 
      * @param {String} articleId 
@@ -226,7 +191,6 @@ module.exports = function() {
         } catch (error) {
             console.log(error);
             throw error;
-            
         }
         throw "no such article";
     }
@@ -240,51 +204,31 @@ module.exports = function() {
      * @throws "author is required" exception
      * @returns date of newComment
      */
-     this.addCommentToArticle = async function(author, articleId, commentStr){
-        try{
+     this.addCommentToArticle = async function(author, articleId, commentStr) {
+        try {
             let article = await Article.findById(articleId);
-            if(!article)
-                throw "no such article"
-            if(!author)
-                throw "author is required"
+            if (!article)
+                throw "no such article";
+            if (!author)
+                throw "author is required";
                 
             let newComment = {
-                "author":author,
-                "body":commentStr,
-            }
-            try{
+                "author": author,
+                "body": commentStr,
+            };
+            try {
                 await article.comments.push(newComment);
                 let len = article.comments.length;
                 let res = await article.save();
-                return res.comments[len-1].date;
-            }catch(e){
+                return res.comments[len - 1].date;
+            } catch(e) {
                 console.log(e);
                 throw e;
             }
-        }catch(e){
+        } catch (e) {
             throw "no such article";
         }
      }
-    
-
-
-    // this.addCommentToArticle = function(author, articleId, commentStr) {
-    //     if (!this.hasArticle(articleId)) {
-    //         throw "no such article";
-    //     }
-    //     let article = this.articles[Number(articleId)];
-    //     let newCommentId = String(article.comments.length);
-    //     let newCommentData = {
-    //         "id": newCommentId,
-    //         "date": today,
-    //         "body": commentStr,
-    //         "from": author.id
-    //     }
-    //     let newNewComment = newComment(newCommentData);
-    //     article.comments.push(newNewComment);
-    //     synchronize(this.articles, this.articlePATH);
-    //     return newNewComment;
-    // }
 
     /**
     * Replace the body and title of an article
@@ -296,25 +240,22 @@ module.exports = function() {
     * @throws "not the author" exception
     */
     this.replaceArticle = async function(newArticle, articleId, userId) {
-        try{
+        try {
             console.log(articleId);
             let article = await Article.findById(articleId);
-            if(!article)
+            if (!article)
                 throw "no such article";
-            if(userId != article.author)
-                throw "not the author"
+            if (userId != article.author)
+                throw "not the author";
             article.title = newArticle.title;
             article.body = newArticle.body;
             article.date = Date.now();
             await article.save();
             return article.date;
-        }catch(e){
+        } catch(e) {
             console.log(e);
             throw e;
         }
-
-            
-        //synchronize(this.articles, this.articlePATH);
     }
 
     /**
@@ -328,33 +269,23 @@ module.exports = function() {
      * @throws "no such comment" exception
      * @returns last edit date of comment
      */
-    this.replaceCommentOfArticle = async function(newComment, articleId, commentId, userId){
+    this.replaceCommentOfArticle = async function(newComment, articleId, commentId, userId) {
         let result = await Article.findById(articleId);
-        if(result){
+        if (result) {
             let comment = await result.comments.id(commentId);
-            if(comment){
-                if(comment.author != userId){
-                    throw "not the author"
+            if (comment) {
+                if (comment.author != userId) {
+                    throw "not the author";
                 }
                 comment.body = newComment;
                 comment.date = Date.now();
                 await result.save();
                 return comment.date;
             }
-            throw "no such comment"
+            throw "no such comment";
         }
-        throw "no such article"
+        throw "no such article";
     }
-    // this.replaceCommentOfArticle = function(newComment, articleId, commentId) {
-    //     if (!this.hasArticle(articleId)) {
-    //         throw "no such article";
-    //     }
-    //     if (!this.hasCommentInArticle(commentId, articleId)) {
-    //         throw "no such comment"
-    //     }
-    //     this.articles[Number(articleId)].comment[Number(commentId)].body = newComment;
-    //     synchronize(this.articles, this.articlePATH);
-    // }
 
     /**
      * Now the milestone has no id
@@ -379,21 +310,5 @@ module.exports = function() {
     //     article.wishes.push(newMilestone);
     //     synchronize(this.articles, this.articlePATH);
     //     return newMilestone;
-    // }
-
-    /**
-     * 
-     * @param {Number} choose 
-     * @returns choose = 1 : Month
-     * @returns choose = 2 : Month/Date
-     * @returns choose else : Month/Date Day
-     */
-    // this.getToday = function(choose){
-    //     if (choose === 1)
-    //         return today.split('/')[0];             //return Month
-    //     else if (choose === 2)
-    //         return today.split(' ')[0];             //return Month/Date
-    //     else
-    //         return today;                           //return Month/Date Day
     // }
 }
