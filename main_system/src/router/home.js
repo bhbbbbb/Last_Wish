@@ -115,6 +115,9 @@ export const home_routes = [
       if (store.state.is_login) next();
       else next('/articles');
     },
+    meta: {
+      keepAlive: true,
+    },
   },
   {
     path: 'follow_article',
