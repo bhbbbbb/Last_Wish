@@ -25,3 +25,5 @@ pnpm-debug.log*
 src/data/account.json
 src/data/articles.json
 src/data/user_list.json
+
+src/data/uploads
