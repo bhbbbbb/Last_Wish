@@ -34,7 +34,7 @@ export default {
   },
   methods: {
     parse() {
-      const pattern = /@(\w+)/;
+      const pattern = /\W+@(\w+)/;
       while (this.input) {
         let found = this.input.match(pattern);
         if (!found) break;
