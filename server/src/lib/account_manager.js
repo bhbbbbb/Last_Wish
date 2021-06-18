@@ -12,15 +12,15 @@ module.exports = function() {
      * @param {String} username 
      * @returns user liked posts
      */    
-    this.getUserLiked = async function(user_id) {
-        try{
-            let user = await User.findById(user_id).exec();
+    this.getUserLiked = async function(userId) {
+        try {
+            let user = await User.findById(userId).exec();
             console.log(user);
-            if(user)
+            if (user)
                 return user.likedPosts;
             else
                 return null;
-        }catch(e){
+        } catch(e) {
             return null;
         }
     }
@@ -91,16 +91,15 @@ module.exports = function() {
      */
      this.checkVerified = async function(username) {
         try {
-            let user = await User.findOne({username: username})
+            let user = await User.findOne({ username: username })
                                  .exec()
                                  .then((user) => {
                                      return user;
                                  });
             if (user) {
-                let result=
-                {
+                let result = {
                    verified: user.verified,
-                   email   : user.email,
+                   email: user.email,
                    id: user._id,
                 };
                 return result;
@@ -242,7 +241,7 @@ module.exports = function() {
                                  .exec()
                                  .then((user) => {
                                      return user;
-                                 })
+                                 });
             if (user) {
                 let userInfo = {
                     "id": user._id,
@@ -418,7 +417,7 @@ module.exports = function() {
                                        return user;
                                    });
             if (author) {
-                let newPostId = this.articleManager.addArticle(author, articleContent)
+                let newPostId = this.articleManager.addArticle(author, articleContent);
                 author.selfPosts.push(newPostId);
                 author.save();
                 return newPostId;
@@ -482,7 +481,6 @@ module.exports = function() {
         throw "user not found";
     }
 
-
     /**
      * Add event into user's event list
      * @param {obj} event 
@@ -490,15 +488,15 @@ module.exports = function() {
      * @throws "user not found" exception
      */
 
-    this.addEventToUser = async function(event, userId){
-        try{
+    this.addEventToUser = async function(event, userId) {
+        try {
             let user = await User.findById(userId).exec();
-            if(user){
+            if (user) {
                 await user.events.push(event);
                 await user.save();
                 return;
             }
-        }catch(error){
+        } catch (error){
             throw error;
         }
         throw "user not found";
@@ -508,13 +506,13 @@ module.exports = function() {
      * @param {String} userId 
      * @throws "user not found" exception
      */
-    this.getUserEvent = async function(userId){
-        try{
+    this.getUserEvent = async function(userId) {
+        try {
             let user = await User.findById(userId);
-            if(!user)
+            if (!user)
                 throw "user not found";
             return user.events;
-        }catch(error){
+        } catch(error) {
             throw(error);
         }
     }
@@ -528,18 +526,18 @@ module.exports = function() {
      * @throws "event not found" exception
      * @returns event of eventId if event exist
      */
-     this.editEventById = async function(eventId, userId, modifiedEvent){
-        try{
+     this.editEventById = async function(eventId, userId, modifiedEvent) {
+        try {
             let user = await User.findById(userId);
-            if(!user)
+            if (!user)
                 throw "user not found";
             let event = await user.events.id(eventId);
-            if(!event)
+            if (!event)
                 throw "event not found";
             await event.set(modifiedEvent);
             await user.save()
             return;
-        }catch(error){
+        } catch(error) {
             throw(error);
         }
     }

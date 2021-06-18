@@ -67,5 +67,9 @@ export default {
       context.commit('updateOthers', user);
       return user;
     },
+    updateProPic({ commit }, payload) {
+      commit('updateProPic', payload);
+      commit('updateSelfArticlesProPic', payload);
+    },
   },
 };

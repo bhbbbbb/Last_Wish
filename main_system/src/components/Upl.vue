@@ -159,9 +159,15 @@ export default {
             if (res.status == 200) {
               apiSetProPic({ pro_pic_url: filePath }).then((res) => {
                 if (res.status == 200) {
-                  this.$store.commit('updateProPic', filePath);
+                  this.$store.dispatch('updateProPic', filePath);
                   this.file = '';
                   this.reset();
+                  this.$router.push({
+                    name: 'UserArticles',
+                    params: {
+                      username: this.$store.state.user.self.name,
+                    },
+                  });
                 }
               });
             }

@@ -40,6 +40,11 @@ export default {
         state.liked[id] = true;
       });
     },
+    updateSelfArticlesProPic(state, payload) {
+      state.self.forEach((id) => {
+        state.data[id].author.pro_pic = payload;
+      });
+    },
 
     /**
      *

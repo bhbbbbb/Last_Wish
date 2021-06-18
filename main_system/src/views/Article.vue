@@ -36,7 +36,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
     //------------ body -------------
     v-row(no-gutters)
       v-col(cols="10" offset="1")
-        p.pre {{ content.content.body }}
+        Body.pre(:content="content.content.body")
 
 
     //------------ tags -------------
@@ -96,6 +96,7 @@ export default {
     UserAvatar: () => import('@/components/UserAvatar'),
     ArticleBtns: () => import('@/components/ArticleBtns'),
     NavLink: () => import('@/components/NavLink'),
+    Body: () => import('@/components/Body'),
     Milestones: () => import('@/components/Milestones'),
   },
   props: {

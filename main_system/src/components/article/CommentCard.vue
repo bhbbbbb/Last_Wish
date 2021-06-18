@@ -11,7 +11,7 @@ v-card.ma-1.pa-1.transparent.d-flex.align-center(
       NavLink(v-if="author" :to="`/${author.name}`")
         span {{ author.name }}
       .px-2
-      span(style="overflow-x: hidden;") {{ content.body }}
+      Body(style="overflow-x: hidden;" :content="content.body")
     v-row(no-gutters)
       span.caption {{ date }}
 </template>
@@ -23,6 +23,7 @@ export default {
   components: {
     UserAvatar: () => import('@/components/UserAvatar'),
     NavLink: () => import('@/components/NavLink'),
+    Body: () => import('@/components/Body'),
   },
   /*
   comment = {
