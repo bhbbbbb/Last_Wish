@@ -95,9 +95,10 @@ module.exports = function() {
                     var html =
                         'Please click this link to confirm your email:<br><br>'+ `<a href="${
                             url}">Click me</a>`+'<br>The link above will expired within 30min<br><br>If you have no clue of this mail, just ignore it';
-                    var sub = username + ' 這是你的驗證資訊 from learnen';
+                    var sub = username + ' 這是你的驗證資訊 from lernen';
                     var mailOptions = {
-                        from : 'noreply',
+                        from : 'noreply <no-reply@lernen.com>',
+                        replyTo:'no-reply@lernen.com',
                         to : mailAddr,
                         subject : sub,
                         html : html,
