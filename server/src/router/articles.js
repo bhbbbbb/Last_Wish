@@ -169,4 +169,15 @@ global.get('/get_followed_posts', user_session, (req, res) => {
         });
 });
 
+global.get('/visit',async(req, res) => {
+    articleId = req.query.article_id;
+    try {
+        await articleManager.addVisited(articleId);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+    }
+    res.status(200).json();
+})
+
 module.exports = global;

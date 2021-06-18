@@ -48,6 +48,10 @@ const articleSchema = new mongoose.Schema({
   },
   comments: [commentSchema],
   fans: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
+  visited:{
+    type: Number,
+    default : 0,
+  }
 });
 
 // this is not stable maybe need revising

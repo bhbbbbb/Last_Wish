@@ -287,6 +287,24 @@ module.exports = function() {
         throw "no such article";
     }
 
+
+    /**
+     * @parma articleId
+     * @throw "no such article"
+     */
+    this.addVisited = async function(articleId){
+        try {
+            article = await Article.findById(articleId);
+            if(!article)
+                throw "no such article"
+            article.visited++;
+            await article.save();
+            return;
+        } catch (error) {
+            throw error;            
+        }
+    }
+
     /**
      * Now the milestone has no id
      * However we need to add an id
