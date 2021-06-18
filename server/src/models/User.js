@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const Article = require("./Article");
+const Notify = require("./Notify");
+
 const colorValidator = (v) => {
   return (/^#([0-9a-fA-F]{3}){1,2}$/i).test(v);
 }
@@ -47,6 +49,7 @@ const userSchema = new mongoose.Schema({
   selfPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   finishedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   events: [eventSchema],
+  checkedNotifies: [{ type: mongoose.Types.ObjectId, ref: 'Notify'}],
 });
 
 userSchema.post('remove', (user) => {
