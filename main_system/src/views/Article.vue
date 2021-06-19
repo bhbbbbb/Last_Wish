@@ -79,7 +79,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
         transition="slide-x-transition"
       ) {{ infos }}
   
-  input#url(style="position: absolute; opacity: 0")
+  input#url(style="position: absolute; opacity: 0" disabled)
 </template>
 
 <script>

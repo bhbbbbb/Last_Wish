@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card.ma-1.pa-1.transparent.d-flex.align-center(
+v-card.unselectable.mx-1.pa-1.my-2.transparent.d-flex.align-center(
   flat
   min-height="48"
   :loading="!author && 'grey'"
@@ -11,7 +11,7 @@ v-card.ma-1.pa-1.transparent.d-flex.align-center(
       NavLink(v-if="author" :to="`/${author.name}`")
         span {{ author.name }}
       .px-2
-      Body(style="overflow-x: hidden;" :content="content.body")
+      Body.mb-0(style="overflow-x: hidden;" :content="content.body")
     v-row(no-gutters)
       span.caption {{ date }}
 </template>
@@ -53,12 +53,22 @@ export default {
       this.author = res;
     });
   },
-  methods: {},
+  methods: {
+    test() {
+      setTimeout(() => {
+        console.log('1234');
+        alert(this.content._id);
+      }, 1000);
+    },
+  },
 };
 </script>
 
 <style>
 .pre {
   white-space: pre-wrap;
+}
+.unselectable {
+  user-select: none;
 }
 </style>
