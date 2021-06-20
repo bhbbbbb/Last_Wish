@@ -102,7 +102,7 @@ export default {
 
   color: #888888;
 }
-.text-nowrap {
+/* .text-nowrap {
   white-space: nowrap;
-}
+} */
 </style>

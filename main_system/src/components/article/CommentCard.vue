@@ -49,7 +49,7 @@ export default {
   },
 
   mounted() {
-    this.$store.dispatch('getUser', this.content.author).then((res) => {
+    this.$store.dispatch('user/getUser', this.content.author).then((res) => {
       this.author = res;
     });
   },
@@ -65,9 +65,6 @@ export default {
 </script>
 
 <style>
-.pre {
-  white-space: pre-wrap;
-}
 .unselectable {
   user-select: none;
 }

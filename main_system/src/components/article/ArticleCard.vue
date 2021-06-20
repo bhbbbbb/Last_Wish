@@ -83,9 +83,6 @@ export default {
 </script>
 
 <style scoped>
-.pre {
-  white-space: pre-wrap;
-}
 .my {
   margin-top: 6px;
   margin-bottom: 6px;

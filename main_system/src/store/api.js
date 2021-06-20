@@ -1,9 +1,7 @@
 import axios from 'axios';
-const proURL = 'https://luffy.ee.ncku.edu.tw:2222';
-const devURL = '';
-// const devURL = 'http://192.168.0.3:2222';
-
-export const baseURL = process.env.NODE_ENV === 'development' ? devURL : proURL;
+import config from '../../config';
+// export const baseURL = process.env.NODE_ENV === 'development' ? devURL : proURL;
+export const baseURL = config.backendUrl;
 
 const articleRequest = axios.create({
   baseURL: baseURL + '/articles',

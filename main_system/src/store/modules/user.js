@@ -1,7 +1,9 @@
-import { apiGetPublicInfo, apiGetUserId } from '../api';
+import { apiGetPublicInfo, apiGetUserId, apiGetEvents } from '../api';
 export default {
+  namespaced: true,
   state: {
     data: {},
+    fetching: {},
     self: {
       id: undefined,
       name: undefined,
@@ -9,6 +11,7 @@ export default {
     },
     // buffer
     others: undefined,
+    events: [],
   },
   mutations: {
     updateProPic(state, payload) {
@@ -44,6 +47,30 @@ export default {
     updateOthers(state, others) {
       state.others = others;
     },
+
+    /**
+     *
+     * @param {Object} { id, promise }
+     */
+    startFetching(state, { id, promise }) {
+      state.fetching[id] = promise;
+    },
+
+    /**
+     *
+     * @param {String} id
+     */
+    endFetching(state, id) {
+      state.fetching[id] = undefined;
+    },
+
+    updateEvents(state, data) {
+      data.forEach((event) => {
+        event.start = new Date(event.start);
+        event.end = new Date(event.end);
+      });
+      state.events = data;
+    },
   },
   actions: {
     setSelf({ commit }, payload) {
@@ -52,14 +79,21 @@ export default {
     },
     async getUser({ state, commit }, id) {
       if (id in state.data) return state.data[id];
-      return await apiGetPublicInfo(id)
+
+      if (state.fetching[id]) return state.fetching[id];
+
+      let res = apiGetPublicInfo(id)
         .then((res) => {
           commit('addUser', res.data);
+          commit('endFetching', id);
           return state.data[id];
         })
         .catch((err) => {
           console.error(err);
         });
+
+      commit('startFetching', { id, promise: res });
+      return res;
     },
     async getOthersByName(context, name) {
       let res = await apiGetUserId(name);
@@ -70,6 +104,18 @@ export default {
     updateProPic({ commit }, payload) {
       commit('updateProPic', payload);
       commit('updateSelfArticlesProPic', payload);
+    },
+    async getEvents(context, force_update) {
+      if (context.state.events.length && !force_update)
+        return context.state.events;
+
+      try {
+        let { data } = await apiGetEvents();
+        context.commit('updateEvents', data);
+        return context.state.events;
+      } catch (err) {
+        console.error(err);
+      }
     },
   },
 };

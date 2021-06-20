@@ -9,6 +9,7 @@ import {
 export default {
   state: {
     data: {},
+    fetching: {},
     global: [],
     self: [],
     others: [],
