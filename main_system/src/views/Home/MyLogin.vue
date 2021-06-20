@@ -1,6 +1,7 @@
 <template lang="pug">
 v-card.pa-0(rounded="lg" min-height="268" flat="flat")
   v-card-text
+      
     h2 Log In
     br
     v-text-field(v-model="user.username" label="username" outlined="outlined" :rules="[rules.empty, rules.regex]")
@@ -17,15 +18,20 @@ v-card.pa-0(rounded="lg" min-height="268" flat="flat")
       v-col(cols="12")
         .text-center
           v-btn(width="90%" @click="Dev()") Dev log in
-      v-col(cols="12")
-        .text-center
-          v-btn(width="90%" @click="Send_mail()") Resend comfirmation mail
+      //v-col(cols="12")
+      //  .text-center
+      //    v-btn(width="90%" @click="Send_mail()") Resend comfirmation mail
       //v-col(cols="12")
       //  .text-center
       //    v-btn(width="90%" @click="Line()")
       //      | LINE log in
-  v-overlay.align-start(:value="show_info" absolute="absolute" opacity="0")                              
-    v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
+  //v-overlay.align-start(:value="show_info" absolute="absolute" opacity="0")                              
+  v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
+    v-col(cols="10" v-if="unVerified")
+      v-btn(width="100%" @click="Send_mail()" ) Resend mail
+    v-col(cols="10")
+      v-btn(width="100%" @click="show_info = false" ) OK
+
 </template>
 
 <script>
@@ -50,6 +56,7 @@ export default {
     show_info: false,
     info_type: 'success',
     infos: '',
+    unVerified: false,
   }),
   methods: {
     //tryLogin
@@ -66,10 +73,14 @@ export default {
         this.tryLogin({
           username: this.user.username,
           password: this.user.password,
-        }).then((res) => {
-          if (res.status != 200)
-            this.Show_info(res.response.data.err_msg, 'error');
-        });
+        })
+          .then(() => {})
+          .catch((e) => {
+            console.log('QQ');
+            this.Show_info(e.response.data.err_msg, 'error');
+            if (e.response.data.err_code == 3) this.unVerified = true;
+            else this.unVerified = false;
+          });
     },
 
     Dev() {
@@ -117,9 +128,9 @@ export default {
       this.infos = Info;
       this.info_type = infoType;
       this.show_info = true;
-      setTimeout(() => {
-        this.show_info = false;
-      }, 1500);
+    },
+    Not_show() {
+      this.show_info = false;
     },
   },
 };

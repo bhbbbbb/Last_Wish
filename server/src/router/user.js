@@ -46,7 +46,7 @@ const TRY_LOGIN = [
     },
     {
         status: 401,
-        body: { err_code: NO_VERIFIED, err_msg: "Please check the confirmation mail first" }
+        body: { err_code: NO_VERIFIED, err_msg: "Check confirm mail first" }
     }
 ];
 user.post('/try_login', user_session, async (req, res) => {
