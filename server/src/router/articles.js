@@ -19,7 +19,7 @@ const INSERT = [
             err_msg: "user not found"
         }
     }
-]
+];
 global.post('/insert', user_session, (req, res) => {
     accountManager
         .addPostsToAuthor(req.session.user_id, req.body.article_content)
@@ -47,29 +47,29 @@ global.post('/delete', user_session, (req, res) => {
 });
 
 
-global.post('/add_comment', user_session, async(req, res) => {
-    try{
+global.post('/add_comment', user_session, async (req, res) => {
+    try {
         let author = req.session.user_id;
         let articleId = req.body.article_id;
         let comment = req.body.comment;
         let newDate = await articleManager.addCommentToArticle(author , articleId, comment);
         res.status(200).json(newDate);
         console.log(newDate);
-    }catch(error){
+    } catch (error) {
         console.log(error);
         res.status(400).json;
     }
 });
 
-global.post('/edit_comment', user_session, async(req,res)=>{
+global.post('/edit_comment', user_session, async (req, res) => {
     let newComment = req.body.new_comment;
     let articleId = req.body.article_id;
     let commentId = req.body.comment_id;
     let userId = req.session.user_id;
-    try{
-    let newDate = await articleManager.replaceCommentOfArticle(newComment , articleId, commentId, userId);
-    res.status(200).json(newDate);
-    }catch(e){
+    try {
+        let newDate = await articleManager.replaceCommentOfArticle(newComment , articleId, commentId, userId);
+        res.status(200).json(newDate);
+    } catch (e) {
         console.log(e);
         res.status(400).json();
     }
@@ -77,15 +77,19 @@ global.post('/edit_comment', user_session, async(req,res)=>{
 
 
 global.get('/', (req, res) => {
+    let options = {
+        new2old: req.query.new2old === 'true',
+        finished: req.query.finished === 'true'
+    };
     articleManager
-        .getAllArticleIds(req.query.options)
+        .getAllArticleIds(options)
         .then((allArticleIds) => {
             res.status(200).json(allArticleIds);
         })
         .catch((error) => {
             console.log(error);
             res.status(400).json(error);
-        })
+        });
 });
 
 global.get('/get_article_by_id', (req, res) => {
@@ -98,18 +102,22 @@ global.get('/get_article_by_id', (req, res) => {
         .catch((error) => {
             console.log(error);
             res.status(400).json(error);
-        })
+        });
 });
 
 /**
  * @req req.query { user_id }
  */
 global.get('/get_user_posts', user_session, (req, res) => {
+    let options = {
+        new2old: req.query.new2old === 'true',
+        finished: req.query.finished === 'true'
+    };
     accountManager
         .getPostsByAuthor(req.query.user_id)
         .then((articleIds) => {
             articleManager
-                .sortArticleIdsByOptions(articleIds, req.query.options)
+                .sortArticleIdsByOptions(articleIds, options)
                 .then((sortedArticleIds) => {
                     res.status(200).json(sortedArticleIds);
                 });
@@ -123,33 +131,33 @@ global.get('/get_user_posts', user_session, (req, res) => {
 /**
  * @param article_id
  */
- global.post('/edit_article', user_session, async(req, res) => {
+ global.post('/edit_article', user_session, async (req, res) => {
     try {
-        let newArticle ={
-            "title":req.body.title,
-            "body":req.body.body,
-        }
+        let newArticle = {
+            "title": req.body.newArticle.title,
+            "body": req.body.newArticle.body,
+        };
         let articleId = req.body.article_id;
         let userId = req.session.user_id;
-        let newDate = 
-        await articleManager.replaceArticle(newArticle, articleId, userId);
+        let newDate = await articleManager.replaceArticle(newArticle, articleId, userId);
         res.status(200).json(newDate);
     } catch (err) {
         console.log(err);
-        res.status(400).json();
+        res.sendStatus(400);
         return;
     }
-})
+});
 
-/**
- * @req req.query { user_id }
- */
 global.get('/get_followed_posts', user_session, (req, res) => {
+    let options = {
+        new2old: req.query.new2old == 'true',
+        finished: req.query.finished == 'true'
+    };
     accountManager
         .getFollowedPostsByUser(req.session.user_id)
         .then((articleIds) => {
             articleManager
-                .sortArticleIdsByOptions(articleIds, req.query.options)
+                .sortArticleIdsByOptions(articleIds, options)
                 .then((sortedArticleIds) => {
                     res.status(200).json(sortedArticleIds);
                 });
@@ -160,55 +168,5 @@ global.get('/get_followed_posts', user_session, (req, res) => {
             res.status(400).json(error);
         });
 });
-
-// the code below is not working for now
-//============================================================================//
-
-/**
- * @param {Number} req.body.article_id
- * @param {Object} req.body.newMilestone { title, body, time }
- */
-global.post('/addMilestone', (req, res) => {
-    var newMilestone;
-    try {
-        newMilestone = articleManager.addMilestoneToArticle(req.body.article_id, req.body.newMilestone);
-    } catch (err) {
-        console.log(err);
-        res.sendStatus(400);
-        return;
-    }
-    res.status(200).json(newMilestone);
-    return;
-})
-
-global.post('/FollowedPostToggle', (req, res) => {
-    try {
-        accountManager.toggleFollowedPostsToUser(req.body.username, req.body.articleId);
-    } catch (err) {
-        console.log(err);
-        res.sendStatus(400);
-        return;
-    }
-    res.sendStatus(200);
-    return;
-})
-
-
-
-// TODO:
-
-//// editComment
-//global.post('/editComment', (req, res) => {
-//    try {
-//        articleManager.replaceCommentOfArticle(req.body.newComment, req.body.articleId, req.body.commentId);
-//    } catch (err) {
-//        console.log(err);
-//        res.sendStatus(400);
-//        return;
-//    }
-//    res.sendStatus(200);
-//    return
-//})
-//// editMileStone
 
 module.exports = global;

@@ -1,32 +1,40 @@
 <template lang="pug">
 v-row.align-center(v-if="content" no-gutters)
-	v-col(cols="4")
-		v-btn(
-			icon
-		)
-			v-icon mdi-heart-outline
-		span.subtitle-2.text--secondary 喜歡 {{ content.likes }}
-		
-	v-col(cols="4")
-		v-btn(
-			icon
-		)
-			v-icon mdi-comment-processing-outline
-		span.subtitle-2.text--secondary 留言 {{ content.comments.length }}
+  v-col(cols="4")
+    v-btn(
+      icon
+      :disabled="!$store.state.is_login"
+      @click.stop.prevent="like"
+      @mousedown.stop=""
+      @touchstart.stop=""
+    )
+      v-icon {{ liked ? 'mdi-heart' : 'mdi-heart-outline' }}
+    span.subtitle-2.text--secondary 喜歡 {{ liked_count }}
+    
+  v-col(cols="4")
+    v-btn(
+      icon
+      :disabled="!$store.state.is_login"
+    )
+      //- v-icon mdi-comment-processing-outline
+      v-icon far fa-comment
+    span.subtitle-2.text--secondary 留言 {{ content.comments.length }}
 
-	v-col(cols="4")
-		v-btn(
-			icon
-			@click.stop="follow"
-			@mousedown.stop=""
-		)
-			v-icon {{ followed ? 'mdi-star' : 'mdi-star-outline' }}
-		span.subtitle-2.text--secondary 追蹤 {{ followed_count }}
+  v-col(cols="4")
+    v-btn(
+      icon
+      :disabled="!$store.state.is_login"
+      @click.stop.prevent="follow"
+      @mousedown.stop=""
+      @touchstart.stop=""
+    )
+      v-icon {{ followed ? 'mdi-star' : 'mdi-star-outline' }}
+    span.subtitle-2.text--secondary 追蹤 {{ followed_count }}
 </template>
 
 <script>
-import { apiToggleFollow } from '@/store/api';
-// import color_list from '@/store/color_list';
+import { apiToggleFollow, apiToggleLike } from '@/store/api';
+// import color_list from '@/data/color_list';
 export default {
   name: 'ArticleBtns',
   components: {},
@@ -39,18 +47,22 @@ export default {
   data: () => ({
     followed: false,
     followed_count: undefined,
+    liked: false,
+    liked_count: undefined,
   }),
   created() {
     this.getFollowState();
+    this.getLikeState();
   },
   methods: {
     getFollowState() {
-      const user_id = this.$store.state.user.id;
+      const user_id = this.$store.state.user.self.id;
       let found = this.content.fans.find((element) => element === user_id);
       this.followed = Boolean(found);
       this.followed_count = this.content.fans.length;
     },
     follow() {
+      if (!this.$store.state.is_login) return;
       this.followed = !this.followed;
       if (this.followed) this.followed_count++;
       else this.followed_count--;
@@ -60,6 +72,21 @@ export default {
           .then(() => {
             this.$store.dispatch('getUserFollowed', true);
           });
+      });
+    },
+    getLikeState() {
+      this.liked = !!this.$store.state.article.liked[this.content.id];
+      this.liked_count = this.content.likes;
+    },
+    like() {
+      if (!this.$store.state.is_login) return;
+      this.liked = !this.liked;
+      if (this.liked) this.liked_count++;
+      else this.liked_count--;
+      apiToggleLike(this.content.id);
+      this.$store.commit('setLiked', {
+        id: this.content.id,
+        value: this.liked,
       });
     },
   },

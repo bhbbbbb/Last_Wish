@@ -5,6 +5,8 @@ import { isLogin } from '@/lib/log';
 // import store from '../store';
 import { home_routes } from './home';
 import { user_routes } from './user';
+import store from '../store';
+// import store from '../store';
 Vue.use(VueRouter);
 
 const routes = [
@@ -27,16 +29,18 @@ const routes = [
       Main: () => import('@/views/Home/Home'),
       Footer: () => import('@/views/Footer/FooterWrap'),
     },
-    // beforeEnter: (to, from, next) => {
-    //   isLogin().then(res => {
-    //     if (res) next();
-    //     else next({name: 'Articles'});
-    //   }).catch(() => {
-    //     next(false);
-    //   })
-    // },
+    beforeEnter(to, from, next) {
+      if (store.state.user.self.name !== to.params.username)
+        store.dispatch('getOthersByName', to.params.username).then(() => {
+          next();
+        });
+      else next();
+    },
     redirect: { name: 'UserArticles' },
     children: user_routes,
+    props: {
+      AppBar: true,
+    },
   },
 ];
 

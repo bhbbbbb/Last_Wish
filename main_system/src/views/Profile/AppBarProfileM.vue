@@ -11,7 +11,7 @@ v-app-bar(
     v-row.align-self-start(no-gutters)
       v-col(cols="6")
         v-icon(@click.stop="Back") mdi-chevron-left
-      v-col.d-flex.justify-end.pr-0(cols="6")
+      v-col.d-flex.justify-end.pr-0(cols="6" v-if="username === $store.state.user.self.name")
         v-menu(offset-y)
           template(#activator="{ on, attrs }")
             v-btn(
@@ -23,13 +23,17 @@ v-app-bar(
           v-list
             v-list-item
               v-list-item-title 設定自介
+            v-list-item(
+              to="upl"
+            )
+              v-list-item-title 設定頭貼
             v-list-item(@click="logout")
               v-list-item-title 登出
-    v-row.px-3.align-center.align-start(no-gutters)
+    v-row.px-3.align-center.align-start(no-gutters v-if="user")
       v-col(cols="3")
-        UserAvatar(:user="$store.state.user" large)
+        UserAvatar(:user="user" large)
       v-col.d-flex.flex-column.align-start(cols="7" offset="1")
-        span(style="font-size:2rem") {{$store.state.user.name}}
+        span(style="font-size:2rem") {{ user.name }}
         span(style="font-size:1rem") 簡單自介
 
   //------------- extension --------------------
@@ -73,22 +77,25 @@ export default {
     UserAvatar: () => import('@/components/UserAvatar'),
   },
   props: {
-    // links: {
-    //   required: true,
-    //   type: Array
-    // },
+    username: {
+      required: true,
+      type: String,
+    },
   },
   data: () => ({
     drawer: false,
     selected: 0,
     tab_which: 'articles',
     imgUrl: '',
+    user: undefined,
   }),
   computed: {
     ...mapState(['links']),
   },
   created() {
-    //Myname = this.$store.username;
+    if (this.$store.state.user.self.name === this.username)
+      this.user = this.$store.state.user.self;
+    else this.user = this.$store.state.user.others;
   },
   methods: {
     Back() {

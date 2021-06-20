@@ -35,7 +35,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)")
 
 <script>
 import { apiUpdateArticle } from '@/store/api.js';
-import color_list from '@/store/color_list.js';
+import color_list from '@/data/color_list';
 export default {
   name: 'Article',
   components: {},

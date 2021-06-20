@@ -27,10 +27,19 @@ const uploadRequest = axios.create({
 export const apiUploadFiles = (data) => uploadRequest.post('/uploadFile', data);
 
 /********************** Call article.js **********************/
-export const apiGetArticles = () => articleRequest.get('/');
+export const apiGetArticles = () =>
+  articleRequest.get('/', { params: { new2old: true } });
 export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
-export const apiUploadComment = (data) =>
-  articleRequest.post('/addcomment', data);
+
+/**
+ *
+ * @param {String} article_id
+ * @param {String} comment
+ * @returns
+ */
+export const apiAddComment = (article_id, comment) =>
+  articleRequest.post('/add_comment', { article_id, comment });
+
 export const apiGetUserPosts = (user_id) =>
   articleRequest.get('/get_user_posts', { params: { user_id } });
 
@@ -46,8 +55,8 @@ export const apiGetArticleById = (id) =>
   articleRequest.get('/get_article_by_id', { params: { article_id: id } });
 
 /********************** Call user.js **********************/
-export const apiGetUserId = (data) =>
-  userRequest.get('/get_id_by_name', { params: data });
+export const apiGetUserId = (name) =>
+  userRequest.get('/get_id_by_name', { params: { name } });
 export const apiTryLogin = (data) => userRequest.post('/try_login', data);
 export const apiRegister = (data) => userRequest.post('/register', data);
 export const apiWho = () => userRequest.get('/who');
@@ -77,6 +86,18 @@ export const apiIsValid = (data) =>
  * @returns {Object} id and username
  */
 export const apiGetPublicInfo = (id) =>
-  userRequest.get('get_public_info', { params: { id: id } });
+  userRequest.get('/get_public_info', { params: { id: id } });
 
 export const apiLineLogin = (data) => userRequest.post('/line_login_req', data);
+
+export const apiToggleLike = (article_id) =>
+  userRequest.post('/toggle_liked_post', { article_id });
+
+export const apiGetLikedPost = () => userRequest.get('/get_liked_posts');
+
+// ----------------- event -------------------------
+
+export const apiGetEvents = () => userRequest.get('/get_events');
+
+export const apiAddEvent = (event) =>
+  userRequest.post('/add_event_to_user', event);
