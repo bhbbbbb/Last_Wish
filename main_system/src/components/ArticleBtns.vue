@@ -1,34 +1,35 @@
 <template lang="pug">
 v-row.align-center(v-if="content" no-gutters)
-	v-col(cols="4")
-		v-btn(
-			icon
+  v-col(cols="4")
+    v-btn(
+      icon
       :disabled="!$store.state.is_login"
-			@click.stop.prevent="like"
-			@mousedown.stop=""
+      @click.stop.prevent="like"
+      @mousedown.stop=""
       @touchstart.stop=""
-		)
-			v-icon {{ liked ? 'mdi-heart' : 'mdi-heart-outline' }}
-		span.subtitle-2.text--secondary 喜歡 {{ liked_count }}
-		
-	v-col(cols="4")
-		v-btn(
-			icon
+    )
+      v-icon {{ liked ? 'mdi-heart' : 'mdi-heart-outline' }}
+    span.subtitle-2.text--secondary 喜歡 {{ liked_count }}
+    
+  v-col(cols="4")
+    v-btn(
+      icon
       :disabled="!$store.state.is_login"
-		)
-			v-icon mdi-comment-processing-outline
-		span.subtitle-2.text--secondary 留言 {{ content.comments.length }}
+    )
+      //- v-icon mdi-comment-processing-outline
+      v-icon far fa-comment
+    span.subtitle-2.text--secondary 留言 {{ content.comments.length }}
 
-	v-col(cols="4")
-		v-btn(
-			icon
+  v-col(cols="4")
+    v-btn(
+      icon
       :disabled="!$store.state.is_login"
-			@click.stop.prevent="follow"
-			@mousedown.stop=""
+      @click.stop.prevent="follow"
+      @mousedown.stop=""
       @touchstart.stop=""
-		)
-			v-icon {{ followed ? 'mdi-star' : 'mdi-star-outline' }}
-		span.subtitle-2.text--secondary 追蹤 {{ followed_count }}
+    )
+      v-icon {{ followed ? 'mdi-star' : 'mdi-star-outline' }}
+    span.subtitle-2.text--secondary 追蹤 {{ followed_count }}
 </template>
 
 <script>

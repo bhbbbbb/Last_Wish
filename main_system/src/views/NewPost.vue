@@ -18,7 +18,7 @@ v-card.ma-0.pa-3(min-height="10vh" flat)
     flat
     autocomplete="off"
     placeholder="#newtag"
-    prepend-icon="mdi-plus"
+    prepend-icon="mdi-plus-circle-outline"
     append-outer-icon="mdi-check"
     v-model="tag_model"
     @focus="addHashTag"
@@ -38,8 +38,9 @@ v-card.ma-0.pa-3(min-height="10vh" flat)
     color="#9BA2AA"
     small
     dark
+    @click:close="removeTag(idx)"
   ) {{ tag }} &nbsp;
-  NewMilestone(:wishes="new_article.milestones" :id="0")
+  Milestones(:content="new_article.milestones" :author-id="$store.state.user.self.id")
   v-overlay.align-start(
     :value="show_info"
     absolute
@@ -56,7 +57,7 @@ import { apiUploadArticle } from '@/store/api';
 export default {
   name: 'NewPost',
   components: {
-    NewMilestone: () => import('@/views/NewMilestone'),
+    Milestones: () => import('@/components/Milestones'),
   },
   data: () => ({
     new_article: {
@@ -88,6 +89,9 @@ export default {
     addTag() {
       this.new_article.tags.push(this.tag_model);
       this.tag_model = '#';
+    },
+    removeTag(idx) {
+      this.new_article.tags.splice(idx, 1);
     },
     SubmitNewArticle() {
       if (!this.new_article.title || !this.new_article.body) {

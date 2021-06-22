@@ -27,7 +27,8 @@ const uploadRequest = axios.create({
 export const apiUploadFiles = (data) => uploadRequest.post('/uploadFile', data);
 
 /********************** Call article.js **********************/
-export const apiGetArticles = () => articleRequest.get('/');
+export const apiGetArticles = () =>
+  articleRequest.get('/', { params: { new2old: true } });
 export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
 
 /**

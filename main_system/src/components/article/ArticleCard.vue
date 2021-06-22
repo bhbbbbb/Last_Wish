@@ -25,7 +25,11 @@ v-card.my.pa-3(
     no-gutters
     style="height: 50px;"
   )
-    p.ma-0(style="white-space: pre-wrap; overflow: hidden;height: 50px;") {{ content.content.body }}
+    //- p.ma-0(style="white-space: pre-wrap; overflow: hidden;height: 50px;") {{ content.content.body }}
+    Body.ma-0(
+      style="white-space: pre-wrap; overflow: hidden;height: 50px;"
+      :content="content.content.body"
+    )
   v-row(v-if="content" no-gutters)
     span.subtitle-2.text--disabled {{ content.content.milestones.length }} 個里程碑
   //--------- articleBtns 
@@ -41,6 +45,7 @@ export default {
     UserAvatar: () => import('@/components/UserAvatar'),
     ArticleBtns: () => import('@/components/ArticleBtns'),
     NavLink: () => import('@/components/NavLink'),
+    Body: () => import('@/components/Body'),
   },
   props: {
     id: {
