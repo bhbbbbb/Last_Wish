@@ -134,7 +134,7 @@
             v-model="color_pick"
           )
             v-btn(
-              v-for="(color, idx) in COLOR_LIST"
+              v-for="(color, idx) in EVENT_COLOR_LIST"
               :key="idx"
               fab
               elevation="0"
@@ -165,7 +165,8 @@
 
 </template>
 <script>
-import { color_list_by_idx, COLOR_LIST } from '@/data/color_list';
+// import { color_list_by_idx, COLOR_LIST } from '@/data/color_list';
+import { COLOR_LIST, EVENT_COLOR_LIST } from '@/data/color_list';
 import moment from 'moment';
 export default {
   name: 'Calendar',
@@ -176,6 +177,7 @@ export default {
       month: '',
     },
     COLOR_LIST,
+    EVENT_COLOR_LIST,
     model: '',
     mounted: false,
     events: [],
@@ -195,27 +197,27 @@ export default {
     adding: false,
   }),
   created() {
-    let event = {
-      name: 'guitar',
-      color: color_list_by_idx(0),
-      start: new Date('2021-06-11T13:00:00'),
-      end: new Date('2021-06-11T18:00:00'),
-    };
-    this.events.push(event);
-    let event2 = {
-      name: '背英文單字',
-      color: color_list_by_idx(8),
-      start: new Date('2021-06-22T13:00:00'),
-      end: new Date('2021-06-22T16:00:00'),
-    };
-    this.events.push(event2);
+    this.$store.dispatch('user/getEvents').then((res) => {
+      this.events = res;
+      // let event = {
+      //   name: 'guitar',
+      //   color: color_list_by_idx(0),
+      //   start: new Date('2021-06-11T13:00:00'),
+      //   end: new Date('2021-06-11T18:00:00'),
+      // };
+      // this.events.push(event);
+      // let event2 = {
+      //   name: '背英文單字',
+      //   color: color_list_by_idx(8),
+      //   start: new Date('2021-06-22T13:00:00'),
+      //   end: new Date('2021-06-22T16:00:00'),
+      // };
+      // this.events.push(event2);
+    });
   },
   mounted() {
     this.$refs.calendar.checkChange();
     this.mounted = true;
-    // console.log(this.$refs.calendar);
-    // this.title.year = $refs.calendar.times.today.year;
-    // this.title.
   },
   methods: {
     updateChange({ start }) {
@@ -242,7 +244,7 @@ export default {
     addNewEvent() {
       if (!this.new_event.name) throw 'name is blank';
       this.new_event.color = COLOR_LIST[this.color_pick];
-      this.events.push(this.new_event);
+      this.$store.dispatch('user/addEvent', this.new_event);
       this.new_event = {};
       this.color_pick = 0;
       this.start_pick = '00:00';

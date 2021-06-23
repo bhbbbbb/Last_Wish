@@ -53,6 +53,7 @@ export default {
      */
     setLiked(state, { id, value }) {
       state.liked[id] = value;
+      state.data[id].likes += value ? 1 : -1;
     },
   },
   actions: {

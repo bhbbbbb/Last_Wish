@@ -1,4 +1,9 @@
-import { apiGetPublicInfo, apiGetUserId, apiGetEvents } from '../api';
+import {
+  apiGetPublicInfo,
+  apiGetUserId,
+  apiGetEvents,
+  apiAddEvent,
+} from '../api';
 export default {
   namespaced: true,
   state: {
@@ -71,6 +76,9 @@ export default {
       });
       state.events = data;
     },
+    addEvent(state, event) {
+      state.events.push(event);
+    },
   },
   actions: {
     setSelf({ commit }, payload) {
@@ -105,6 +113,7 @@ export default {
       commit('updateProPic', payload);
       commit('updateSelfArticlesProPic', payload);
     },
+
     async getEvents(context, force_update) {
       if (context.state.events.length && !force_update)
         return context.state.events;
@@ -116,6 +125,16 @@ export default {
       } catch (err) {
         console.error(err);
       }
+    },
+    /**
+     *
+     * @param {Obj} event
+     */
+    async addEvent(context, event) {
+      apiAddEvent(event).catch((err) => {
+        console.error(err);
+      });
+      context.commit('addEvent', event);
     },
   },
 };
