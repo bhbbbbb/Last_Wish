@@ -47,7 +47,8 @@ module.exports = function() {
      */
     this.sendMails = (mailAddr, subject, bodyText) => {
         var mailOptions = {
-            from: 'noreply',
+            from : 'lernen <no-reply@lernen.com>',
+            replyTo:'no-reply@lernen.com',
             to: mailAddr,
             subject: subject,
             text: bodyText,
@@ -97,7 +98,7 @@ module.exports = function() {
                             url}">Click me</a>`+'<br>The link above will expired within 30min<br><br>If you have no clue of this mail, just ignore it';
                     var sub = username + ' 這是你的驗證資訊 from lernen';
                     var mailOptions = {
-                        from : 'noreply <no-reply@lernen.com>',
+                        from : 'lernen confirm mail <no-reply@lernen.com>',
                         replyTo:'no-reply@lernen.com',
                         to : mailAddr,
                         subject : sub,
