@@ -35,14 +35,32 @@ global.post('/insert', user_session, (req, res) => {
 });
 
 global.post('/delete', user_session, (req, res) => {
-    articleManager
-        .rmArticleById(req.body.article_id)
-        .then(() => {
-            res.sendStatus(200);
+    accountManager
+        .getPostsByAuthor(req.session.user_id)
+        .then((posts) => {
+            console.log(`The user: ${req.session.user_id} has \n${posts}\nposts`);
+            console.log(posts.includes(req.body.article_id));
+            if (posts.includes(req.body.article_id)) {
+                articleManager
+                    .rmArticleById(req.body.article_id)
+                    .then(() => {
+                        res.sendStatus(200);
+                        return;
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        res.status(400).json(error);
+                        return;
+                    });
+            } else {
+                res.status(400).json("not user post");
+                return;
+            }
         })
         .catch((error) => {
             console.log(error);
             res.status(400).json(error);
+            return;
         });
 });
 
