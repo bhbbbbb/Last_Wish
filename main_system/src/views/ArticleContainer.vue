@@ -4,8 +4,10 @@ v-sheet(rounded="lg")
   v-row(
     no-gutters
   )
-    v-col.ma-0.pa-0(
+    v-col.ma-0.pa-0.pa-sm-2.pm-md-2(
       cols="12"
+      sm="6"
+      lg="4"
       v-for="(id, idx) in articles",
       :key="idx"
     )

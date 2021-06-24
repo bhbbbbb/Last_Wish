@@ -1,3 +1,18 @@
+export default (idx) => COLOR_LIST[hashCode(idx) % COLOR_LIST.length];
+
+export const color_list_by_idx = (idx) => COLOR_LIST[idx % COLOR_LIST.length];
+
+function hashCode(str) {
+  let hash = 0;
+
+  if (str.length === 0) return hash;
+
+  for (let i = 0; i < str.length; i++) {
+    hash += str.charCodeAt(i);
+  }
+  return Math.abs(hash);
+}
+
 export const COLOR_LIST = [
   '#d9c4bd',
   '#f5f4f0',
@@ -21,17 +36,13 @@ export const COLOR_LIST = [
   '#d8dad9',
 ];
 
-export default (idx) => COLOR_LIST[hashCode(idx) % COLOR_LIST.length];
-
-export const color_list_by_idx = (idx) => COLOR_LIST[idx % COLOR_LIST.length];
-
-function hashCode(str) {
-  let hash = 0;
-
-  if (str.length === 0) return hash;
-
-  for (let i = 0; i < str.length; i++) {
-    hash += str.charCodeAt(i);
-  }
-  return Math.abs(hash);
-}
+export const EVENT_COLOR_LIST = [
+  '#D6C5BE',
+  '#CED3CD',
+  '#F2E6DA',
+  '#E5DCD3',
+  '#CCCCCA',
+  '#D1D7D7',
+  '#9BA2AA',
+  '#E8E5E0',
+];

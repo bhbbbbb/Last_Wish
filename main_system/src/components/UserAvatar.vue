@@ -11,12 +11,12 @@ router-link(
       @mousedown.stop=""
       @touchstart.stop=""
     )
-      img(:src="baseURL + user.pro_pic" v-if="user.pro_pic" @error="hasError")
+      img(:src="baseURL + user.pro_pic" v-if="user.pro_pic && !error" @error="error = true")
       span(:style="`font-size:${large ? 2 : 1.5}rem`" v-else) {{ user.name.charAt(0) }}
 </template>
 
 <script>
-import { baseURL } from '@/store/api';
+import config from '@/../config';
 export default {
   name: 'UserAvatar',
   props: {
@@ -30,14 +30,11 @@ export default {
     },
   },
   data: () => ({
-    baseURL,
+    baseURL: config.imageUrl,
+    error: false,
   }),
   created() {},
-  methods: {
-    hasError() {
-      this.user.pro_pic = '';
-    },
-  },
+  methods: {},
 };
 </script>
 

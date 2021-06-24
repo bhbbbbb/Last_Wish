@@ -36,7 +36,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
     //------------ body -------------
     v-row(no-gutters)
       v-col(cols="10" offset="1")
-        p.pre {{ content.content.body }}
+        Body.text-pre-wrap(:content="content.content.body")
 
 
     //------------ tags -------------
@@ -53,47 +53,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
     //----------- milestone -----------------
     v-row
       v-col.px-8
-        //- v-timeline(
-        //-   v-if="$store.state.user.self.id === content.author.id && !newMilestone_show"
-        //-   align-top
-        //-   dense
-        //- )
-        v-timeline(
-          v-if="!newMilestone_show"
-          align-top
-          dense
-        )
-          v-timeline-item(
-            v-for="ms in content.content.milestones"
-            small
-            :color="ms.finished ? '#9BA2AA' : '#C4C4C4'"
-            :key="ms._id"
-          )
-            v-avatar(slot="icon", @click="GoWish(idx)")
-            v-row(no-gutters="")
-              v-col.d-flex.justify-end.pr-4(cols="1" slot="opposite")
-                span.subtitle-2.text--disabled(slot="opposite")
-                  | {{ moment(ms.estDate).format('M/D') }}
-              v-col.d-flex.flex-shrink-1(cols="auto")
-                span.d-flex.text-no-wrap(style="overflow-x: hidden")
-                  | {{ ms.title }}
-              v-col(offset="1")
-                v-icon(v-if="ms.finished" small) mdi-check-circle
-
-          v-timeline-item.align-center(
-            small
-            :color="color_list(7)"
-						v-if="$store.state.user.self.id === content.author.id && newMilestone_show"
-          )
-            v-icon(slot="icon" small color="white") mdi-plus
-            v-btn(@click="newMilestone_show = true") 點我新增里程碑
-          
-        NewMilestone(
-          v-if="$store.state.user.self.id === content.author.id && newMilestone_show"
-          :id="id"
-          :wishes="content.wishes"
-        )
-          template(v-slot="newMilestone")
+        Milestones(:content="content.content.milestones" :author-id="content.author.id")
 
 
         //------------------ end milestone ---------------
@@ -119,7 +79,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
         transition="slide-x-transition"
       ) {{ infos }}
   
-  input#url(style="position: absolute; opacity: 0")
+  input#url(style="position: absolute; opacity: 0" disabled)
 </template>
 
 <script>
@@ -136,16 +96,14 @@ export default {
     UserAvatar: () => import('@/components/UserAvatar'),
     ArticleBtns: () => import('@/components/ArticleBtns'),
     NavLink: () => import('@/components/NavLink'),
+    Body: () => import('@/components/Body'),
+    Milestones: () => import('@/components/Milestones'),
   },
   props: {
     id: {
       type: String,
       required: true,
     },
-    // color: {
-    //   type: String,
-    //   default: '#F5F4F0',
-    // },
   },
   data: () => ({
     newMilestone_show: false,
@@ -154,7 +112,6 @@ export default {
     infos: '',
     ThePost: [],
     NP: false,
-    // newMilestone: '',
     content: undefined,
   }),
   computed: {
@@ -164,18 +121,6 @@ export default {
   },
   created() {
     this.content = this.$store.state.article.data[this.id];
-    // this.ThePost = JSON.parse(JSON.stringify(this.content));
-    // this.ThePost.wishes = String(this.ThePost.wishes).replace(/,/g, '\n');
-    //Article_id = this.id;
-    // this.$store.dispatch('getUser', this.content.from).then((res) => {
-    //   this.author = res;
-    // });
-    // if (this.$store.state.article.followed)
-    //   for (var i = 0; i < this.$store.state.article.followed.length; i++)
-    //     if (this.$store.state.article.followed[i].id == this.content.id) {
-    //       this.hasFollowed = true;
-    //       break;
-    //     }
   },
 
   methods: {
@@ -243,14 +188,18 @@ export default {
     updateComment(newComment) {
       this.content.comments.push(newComment);
     },
+    updateMilestone(value) {
+      this.content.content.milestones.push(this.value);
+      console.log(value);
+    },
     moment,
     color_list,
   },
 };
 </script>
 
-<style>
-.pre {
-  white-space: pre-wrap;
+<style scpoed>
+.v-timeline-item {
+  padding-bottom: 16px !important;
 }
 </style>

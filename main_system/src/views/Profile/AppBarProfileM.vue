@@ -23,6 +23,10 @@ v-app-bar(
           v-list
             v-list-item
               v-list-item-title 設定自介
+            v-list-item(
+              to="upl"
+            )
+              v-list-item-title 設定頭貼
             v-list-item(@click="logout")
               v-list-item-title 登出
     v-row.px-3.align-center.align-start(no-gutters v-if="user")

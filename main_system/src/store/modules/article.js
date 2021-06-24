@@ -9,6 +9,7 @@ import {
 export default {
   state: {
     data: {},
+    fetching: {},
     global: [],
     self: [],
     others: [],
@@ -40,6 +41,11 @@ export default {
         state.liked[id] = true;
       });
     },
+    updateSelfArticlesProPic(state, payload) {
+      state.self.forEach((id) => {
+        state.data[id].author.pro_pic = payload;
+      });
+    },
 
     /**
      *
@@ -47,6 +53,7 @@ export default {
      */
     setLiked(state, { id, value }) {
       state.liked[id] = value;
+      state.data[id].likes += value ? 1 : -1;
     },
   },
   actions: {

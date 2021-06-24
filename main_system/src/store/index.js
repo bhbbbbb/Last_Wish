@@ -8,6 +8,7 @@ import article from './modules/article';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+  strict: process.env.NODE_ENV !== 'production',
   state: {
     is_login: false,
     links: global_links,
@@ -56,7 +57,7 @@ export default new Vuex.Store({
         let { data } = await apiGetPublicInfo(id);
         context.commit('login', data);
         await Promise.all([
-          context.dispatch('setSelf', data),
+          context.dispatch('user/setSelf', data),
           context.dispatch('fetchUserLiked'),
         ]);
         Vue.$cookies.set('login', id);

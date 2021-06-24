@@ -52,5 +52,9 @@ export const user_routes = [
     path: 'upl',
     name: 'Upl',
     component: () => import('@/components/Upl'),
+    beforeEnter(to, from, next) {
+      if (store.state.is_login) next();
+      else next('/login');
+    },
   },
 ];

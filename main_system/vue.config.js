@@ -7,5 +7,6 @@ module.exports = {
   productionSourceMap: false,
   pwa: {
     name: '願望清單',
+    // appleMobileWebAppStatusBarStyle: 'black-translucent',
   },
 };

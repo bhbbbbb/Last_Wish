@@ -7,13 +7,13 @@ v-card.my.pa-3(
     :loading="Boolean(content) ? false : 'grey'"
     :to="{ name: 'Article', params: { id }}"
   )
-  v-row(v-if="content" no-gutters="")
-    v-col(cols="5" )
+  v-row(v-if="content" no-gutters)
+    v-col.d-flex.flex-sm-grow-1.flex-nowrap.align-center(cols="5")
       UserAvatar(:user="content.author")
       NavLink(:to="`/${content.author.name}`")
         span.px-3
           | {{ content.author.name }}
-    v-col.d-flex.align-center(cols="5")
+    v-col.d-flex.align-center.flex-sm-shrink-1(cols="5")
       span.subtitle-2.text--disabled {{ date }}
     v-col.d-flex.justify-end.pl-2(cols="2")
       v-btn(icon)
@@ -25,7 +25,11 @@ v-card.my.pa-3(
     no-gutters
     style="height: 50px;"
   )
-    p.ma-0(style="white-space: pre-wrap; overflow: hidden;height: 50px;") {{ content.content.body }}
+    //- p.ma-0(style="white-space: pre-wrap; overflow: hidden;height: 50px;") {{ content.content.body }}
+    Body.ma-0(
+      style="white-space: pre-wrap; overflow: hidden;height: 50px;"
+      :content="content.content.body"
+    )
   v-row(v-if="content" no-gutters)
     span.subtitle-2.text--disabled {{ content.content.milestones.length }} 個里程碑
   //--------- articleBtns 
@@ -41,6 +45,7 @@ export default {
     UserAvatar: () => import('@/components/UserAvatar'),
     ArticleBtns: () => import('@/components/ArticleBtns'),
     NavLink: () => import('@/components/NavLink'),
+    Body: () => import('@/components/Body'),
   },
   props: {
     id: {
@@ -78,9 +83,6 @@ export default {
 </script>
 
 <style scoped>
-.pre {
-  white-space: pre-wrap;
-}
 .my {
   margin-top: 6px;
   margin-bottom: 6px;
