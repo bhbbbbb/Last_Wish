@@ -159,6 +159,7 @@ global.get('/get_user_posts', user_session, (req, res) => {
         let userId = req.session.user_id;
         let newDate = await articleManager.replaceArticle(newArticle, articleId, userId);
         res.status(200).json(newDate);
+        return;
     } catch (err) {
         console.log(err);
         res.sendStatus(400);
