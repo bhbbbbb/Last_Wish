@@ -4,6 +4,7 @@ import {
   apiGetFollowedPosts,
   apiGetUserPosts,
   apiGetLikedPost,
+  apiDeleteArticle,
 } from '../api';
 
 export default {
@@ -45,6 +46,14 @@ export default {
       state.self.forEach((id) => {
         state.data[id].author.pro_pic = payload;
       });
+    },
+    deleteArticle(state, id) {
+      state.data[id] = false;
+      let idx = state.self.findIndex((_id) => _id === id);
+      if (idx !== -1) state.self.splice(idx, 1);
+
+      idx = state.global.findIndex((_id) => _id === id);
+      if (idx !== -1) state.global.splice(idx, 1);
     },
 
     /**
@@ -145,6 +154,10 @@ export default {
           console.error(err);
           return [];
         });
+    },
+    deleteArticle(context, id) {
+      context.commit('deleteArticle', id);
+      apiDeleteArticle(id).catch((err) => console.error(err));
     },
   },
 };

@@ -20,7 +20,29 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
           v-list
             v-list-item(@click="Copy") 複製連結
             //- v-list-item(@click="Clone") 願望拷貝
-            v-list-item(@click="GoEdit" v-if="$store.state.user.self.id === content.author.id") 編輯內文
+            v-list-item(
+              @click="GoEdit"
+              v-if="$store.state.user.self.id === content.author.id"
+            ) 編輯內文
+            v-divider.mx-2(
+              v-if="$store.state.user.self.id === content.author.id"
+            )
+
+            //- v-dialog
+            Confirm(
+              @confirm="deletePost"
+              width="320"
+              v-if="$store.state.user.self.id === content.author.id"
+            )
+              span 讓口卡獸把這篇文章吃掉嗎？
+              template(#activator="{ on, attrs }")
+                v-list-item(
+                  style="color: red"
+                  v-on="on"
+                  v-bind="attrs"
+                ) 
+                  v-list-item-title(style="color: red") 刪除文章
+              
     
     //------------ article link from -----------
     v-row(no-gutters)
@@ -56,8 +78,8 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
         Milestones(:content="content.content.milestones" :author-id="content.author.id")
 
 
-        //------------------ end milestone ---------------
 
+    //----------- comment -----------------
     v-row.mr-3.mt-5(no-gutters)
       v-col(cols="11" offset="1")
         v-divider
@@ -98,6 +120,7 @@ export default {
     NavLink: () => import('@/components/NavLink'),
     Body: () => import('@/components/Body'),
     Milestones: () => import('@/components/Milestones'),
+    Confirm: () => import('@/components/Confirm'),
   },
   props: {
     id: {
@@ -194,6 +217,11 @@ export default {
     },
     moment,
     color_list,
+    deletePost() {
+      this.$store.dispatch('deleteArticle', this.id);
+      console.log(this.$router);
+      this.$router.replace('/');
+    },
   },
 };
 </script>

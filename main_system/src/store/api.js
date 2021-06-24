@@ -52,6 +52,9 @@ export const apiUpdateArticle = (data) =>
 export const apiGetArticleById = (id) =>
   articleRequest.get('/get_article_by_id', { params: { article_id: id } });
 
+export const apiDeleteArticle = (id) =>
+  articleRequest.post('/delete', { article_id: id });
+
 /********************** Call user.js **********************/
 export const apiGetUserId = (name) =>
   userRequest.get('/get_id_by_name', { params: { name } });
