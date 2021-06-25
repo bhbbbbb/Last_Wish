@@ -26,8 +26,7 @@ v-card.ma-0.pa-3(min-height="10vh" flat)
     @click:prepend="focus()"
     @click:append-outer="addTag()"
     @keydown.enter="addTag()"
-    persistent-hint
-    hint="TODO: add rule to check empty, repeat..."
+    :error-messages="err_msg"
   )
   v-chip.ma-1(
     v-for="(tag, idx) in new_article.tags"
@@ -67,6 +66,7 @@ export default {
       tags: [],
     },
     tag_model: '',
+    err_msg: undefined,
     show_info: false,
     info_type: 'success',
     infos: '',
@@ -74,6 +74,15 @@ export default {
   }),
   computed: {
     ...mapState(['articles']),
+  },
+  watch: {
+    tag_model(new_val, val) {
+      if (new_val.length <= val.length || new_val.length <= 2) return;
+      if (new_val && new_val.charAt(new_val.length - 1) === ' ') {
+        this.tag_model = this.tag_model.substring(0, new_val.length - 1);
+        this.addTag();
+      }
+    },
   },
   created() {},
   methods: {
@@ -87,6 +96,11 @@ export default {
       document.getElementById('tag-input').focus();
     },
     addTag() {
+      const no_ws = /\s/g;
+      if (no_ws.test(this.tag_model)) {
+        this.err_msg = 'contain illegal character';
+        return;
+      }
       this.new_article.tags.push(this.tag_model);
       this.tag_model = '#';
     },
