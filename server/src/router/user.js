@@ -407,6 +407,10 @@ user.post('/reset_pass', user_session, async(req, res) => {
         let pass = req.body.new_pass;
         let hash = await accountManager.hashPass(pass);
         let user = await accountManager.findUserById(userId);
+        if(!pass || !user){
+            res.sendStatus(400);
+            return;
+        }
         await mailManager.sendResetPass(user.email, userId, user.username, SERVER_URL, EMAIL_SECRET, hash);
         res.sendStatus(200);
     } catch (error) {
@@ -415,7 +419,38 @@ user.post('/reset_pass', user_session, async(req, res) => {
     }
 })
 
-
+user.post('/reset_email', user_session, async(req, res) => {
+    try {
+        userId = req.session.user_id;
+        let email = req.body.new_email;
+        let pass = req.body.password;
+        let check1 = await mailManager.hasMailAddr(email);
+        let check2 = mailManager.isValidAddr(email);
+        if(check1){
+            let response = REGISTER[DUPLICATED_EMAIL];
+            res.status(response.status).json(response.body);
+            return;
+        }else if(!check2){
+            let response = REGISTER[INVALID_ADDR];
+            res.status(response.status).json(response.body);
+            return;
+        }else{
+            let correct = await accountManager.setEmailToUser(userId, pass, email);
+            if(correct)
+                res.sendStatus(200);
+            else{
+                let response = {
+                    err_code : 4,
+                    err_msg : "Wrong password"
+                }
+                res.status(400).json(response);
+            }
+        }
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(400);
+    }
+})
 
 // function genNonce(length) {
 //     let result = [];

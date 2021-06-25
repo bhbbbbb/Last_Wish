@@ -501,6 +501,20 @@ module.exports = function() {
             throw(error);
         }
     }
+
+
+    this.setEmailToUser = async function(userId, password, email){
+        let user = await User.findById(userId);
+        if(!user)
+            throw "user not found"
+        let correct = bcrypt.compareSync(password, user.password)
+        if(correct){
+            user.email = email
+            await user.save();
+        }
+        return correct;
+    }
+
 //    /**
 //     * get user event lists by userId
 //     * @param {String} userId
