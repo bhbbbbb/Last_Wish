@@ -8,11 +8,7 @@ module.exports = function() {
      * @returns if there is an article with such id
      */
     this.hasArticle = async function(articleId) {
-        try {
-            return await Article.fineOne({ _id: articleId}) != null;
-        } catch (error) {
-            throw error;
-        }
+        return await Article.fineOne({ _id: articleId}) != null;
     }
 
     /**
@@ -20,83 +16,71 @@ module.exports = function() {
      * @param {Object} articleContent = {body, title, [tags], [milestones]}
      * @returns {String} the new article id
      */
-    this.addArticle = function(author, articleContent) {
-        try {
-            let newArticleData = {
-                title: articleContent.title,
-                body: articleContent.body,
-                author: author._id,
-                tags: articleContent.tags,
-            };
-            const article = new Article(newArticleData);
-            for (newMilestoneData of articleContent.milestones) {
-                article.milestones.push(newMilestoneData);
-            }
-            article.sortMilestonesAndSave();
-            return article._id;
-        } catch (error) {
-            throw error;
+    this.addArticle = async function(author, articleContent) {
+        let newArticleData = {
+            title: articleContent.title,
+            body: articleContent.body,
+            author: author._id,
+            tags: articleContent.tags,
+        };
+        const article = new Article(newArticleData);
+        for (newMilestoneData of articleContent.milestones) {
+            article.milestones.push(newMilestoneData);
         }
+        await article.sortMilestonesAndSave();
+        return article._id;
     }
 
     /**
      * @returns the json object containing all articles with frontend format
      */
     this.getAllArticleIds = async function(options) {
-        try {
-            let allArticleIds = [];
-            let rawArticles = await Article.find({});
-            if (options) {
-                if (options.new2old) {
-                    console.log('new2old');
-                    rawArticles.sort((a, b) => {
-                        return b.date - a.date;
-                    });
-                } else {
-                    console.log('old2new');
-                    rawArticles.sort((a, b) => {
-                        return a.date - b.date;
-                    });
-                }
-                if (options.finished) {
-                    rawArticles.sort((a, b) => {
-                        return a.finished - b.finished;
-                    });
-                }
+        let allArticleIds = [];
+        let rawArticles = await Article.find({});
+        if (options) {
+            if (options.new2old) {
+                console.log('new2old');
+                rawArticles.sort((a, b) => {
+                    return b.date - a.date;
+                });
+            } else {
+                console.log('old2new');
+                rawArticles.sort((a, b) => {
+                    return a.date - b.date;
+                });
             }
-            for (article of rawArticles) {
-                allArticleIds.push(article._id);
+            if (options.finished) {
+                rawArticles.sort((a, b) => {
+                    return a.finished - b.finished;
+                });
             }
-            return allArticleIds;
-        } catch (error) {
-            throw error;
         }
+        for (article of rawArticles) {
+            allArticleIds.push(article._id);
+        }
+        return allArticleIds;
     }
 
     this.rmArticleById = async function(articleId) {
-        try {
-            let deletedArticle = await Article.findByIdAndDelete(articleId);
-            if (deletedArticle) {
-                for (fan of deletedArticle.fans) {
-                    console.log(fan);
-                    User.findByIdAndUpdate(fan, {
-                        $pullAll: {
-                            followedPosts: [deletedArticle._id]
-                        }
-                    }).exec();
-                }
-                User.findByIdAndUpdate(deletedArticle.author, {
+        let deletedArticle = await Article.findByIdAndDelete(articleId);
+        if (deletedArticle) {
+            for (fan of deletedArticle.fans) {
+                console.log(fan);
+                User.findByIdAndUpdate(fan, {
                     $pullAll: {
-                        selfPosts: [deletedArticle._id]
+                        followedPosts: [deletedArticle._id]
                     }
                 }).exec();
-                return deletedArticle
             }
-        } catch (error) {
-            console.log(error);
-            throw error;
+            User.findByIdAndUpdate(deletedArticle.author, {
+                $pullAll: {
+                    selfPosts: [deletedArticle._id]
+                }
+            }).exec();
+            return deletedArticle
+        } else {
+            throw "no such article";
         }
-        throw "no such article";
     }
 
     this.sortArticleIdsByOptions = async function(articleIds, options) {
@@ -134,18 +118,13 @@ module.exports = function() {
      * @trhows "no such article" exception
      */
     this.getArticleById = async function(articleId) {
-        try {
-            let article = await Article.findById(articleId)
-                                       .populate('author')
-            if (article) {
-                return article;
-            }
-        } catch (error) {
-            console.log(error);
-            throw error;
-            
+        let article = await Article.findById(articleId)
+                                   .populate('author')
+        if (article) {
+            return article;
+        } else {
+            throw "no such article";
         }
-        throw "no such article";
     }
     
     /**
@@ -155,16 +134,11 @@ module.exports = function() {
      * @trhows "no such article" exception
      */
     this.getFormatedArticleById = async function(articleId) {
-        try {
-            let article = await Article.findById(articleId)
-                                       .populate('author');
-            if (article) {
-                return article.toFrontendFormat();
-            }
-        } catch (error) {
-            console.log(error);
-            throw error;
-        }
+        let article = await Article.findById(articleId)
+                                   .populate('author');
+        if (article) {
+            return article.toFrontendFormat();
+        } else 
         throw "no such article";
     }
 
@@ -178,29 +152,20 @@ module.exports = function() {
      * @returns date of newComment
      */
      this.addCommentToArticle = async function(author, articleId, commentStr) {
-        try {
-            let article = await Article.findById(articleId);
-            if (!article)
-                throw "no such article";
-            if (!author)
-                throw "author is required";
-                
-            let newComment = {
-                "author": author,
-                "body": commentStr,
-            };
-            try {
-                await article.comments.push(newComment);
-                let len = article.comments.length;
-                let res = await article.save();
-                return res.comments[len - 1].date;
-            } catch(e) {
-                console.log(e);
-                throw e;
-            }
-        } catch (e) {
+        let article = await Article.findById(articleId);
+        if (!article)
             throw "no such article";
-        }
+        if (!author)
+            throw "author is required";
+            
+        let newComment = {
+            "author": author,
+            "body": commentStr,
+        };
+        await article.comments.push(newComment);
+        let len = article.comments.length;
+        let res = await article.save();
+        return res.comments[len - 1].date;
      }
 
     /**
@@ -213,22 +178,19 @@ module.exports = function() {
     * @throws "not the author" exception
     */
     this.replaceArticle = async function(newArticle, articleId, userId) {
-        try {
-            console.log(articleId);
-            let article = await Article.findById(articleId);
-            if (!article)
-                throw "no such article";
-            if (userId != article.author)
-                throw "not the author";
+        console.log(articleId);
+        let article = await Article.findById(articleId);
+        if (!article)
+            throw "no such article";
+        if (userId != article.author)
+            throw "not the author";
+        if (newArticle.title)
             article.title = newArticle.title;
+        if (newArticle.body)
             article.body = newArticle.body;
-            article.date = Date.now();
-            await article.save();
-            return article.date;
-        } catch (e) {
-            console.log(e);
-            throw e;
-        }
+        article.date = Date.now();
+        await article.save();
+        return article.date;
     }
 
     /**
@@ -266,23 +228,19 @@ module.exports = function() {
      * @throw "no such article"
      */
     this.addVisited = async function(articleId){
-        try {
-            let article = await Article.findById(articleId);
-            if (!article)
-                throw "no such article"
-            article.visited++;
-            await article.save();
-            return;
-        } catch (error) {
-            throw error;            
-        }
+        let article = await Article.findById(articleId);
+        if (!article)
+            throw "no such article"
+        article.visited++;
+        await article.save();
+        return;
     }
 
     this.addMilestoneToArticle = async function(articleId, milestone) {
         let article = await Article.findById(articleId);
         if (article) {
             article.milestones.push(milestone);
-            article.sortMilestonesAndSave();
+            await article.sortMilestonesAndSave();
         } else {
             throw "no such artcle";
         }
