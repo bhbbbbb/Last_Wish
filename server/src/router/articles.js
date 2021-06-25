@@ -93,6 +93,63 @@ global.post('/edit_comment', user_session, async (req, res) => {
     }
 });
 
+global.post('/add_milestone', user_session, async (req, res) => {
+    try {
+        let posts = await accountManager.getPostsByAuthor(req.session.user_id);
+        if (posts.includes(req.body.article_id)) {
+            await articleManager.addMilestoneToArticle(req.body.article_id, req.body.milestone);
+            res.sendStatus(200);
+            return;
+        } else {
+            res.status(400).json("not the author");
+            return;
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+    }
+});
+
+global.post('/edit_milestone', user_session, async (req, res) => {
+    try {
+        let posts = await accountManager.getPostsByAuthor(req.session.user_id);
+        if (posts.includes(req.body.article_id)) {
+            await articleManager.replaceMilestoneOfArticle(
+                req.body.new_milestone,
+                req.body.article_id,
+                req.body.milestone_id
+            );
+            res.sendStatus(200);
+            return;
+        } else {
+            res.status(400).json("not the author");
+            return;
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+    }
+});
+
+global.post('/toggle_finished_milestone', user_session, async (req, res) => {
+    try {
+        let posts = await accountManager.getPostsByAuthor(req.session.user_id);
+        if (posts.includes(req.body.article_id)) {
+            await articleManager.toggleFinishedMilestoneOfArticle(
+                req.body.article_id,
+                req.body.milestone_id
+            );
+            res.sendStatus(200);
+            return;
+        } else {
+            res.status(400).json("not the author");
+            return;
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+    }
+});
 
 global.get('/', (req, res) => {
     let options = {
