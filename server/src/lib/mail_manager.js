@@ -22,11 +22,7 @@ module.exports = function() {
      */
     this.hasMailAddr = async function (mailAddr) {
         try {
-            return await User.findOne({ email: mailAddr })
-                             .exec()
-                             .then((addr) => {
-                                 return addr != null;
-                             });
+            return await User.findOne({ email: mailAddr }) != null;                 
         } catch (error) {
             throw error;
         }
@@ -78,55 +74,52 @@ module.exports = function() {
      * @returns {object} token: token sent to newUser
      * @throws any error happened
      */
-    this.sendToken = (mailAddr, id, username, serverUrl, EMAIL_SECRET) => {
+    this.sendToken = async(mailAddr, id, username, serverUrl, EMAIL_SECRET) => {
         var nonce = genNonce(20 + Date.now() % 6);
         console.log(nonce);
-        accountManager.setNonceToUser(username, nonce).then(()=>{
-                jwt.sign(
-                {
-                    user : id,
-                    nonce: nonce,   
-                },
-                EMAIL_SECRET,
-                {
-                    expiresIn : '30m',
-                },
-                (err, emailToken) => {
-                    const url = serverUrl + `/user/confirmation/${emailToken}`;
-                    var html =
-                        'Please click this link to confirm your email:<br><br>'+ `<a href="${
-                            url}">Click me</a>`+'<br>The link above will expired within 30min<br><br>If you have no clue of this mail, just ignore it';
-                    var sub = username + ' 這是你的驗證資訊 from lernen';
-                    var mailOptions = {
-                        from : 'lernen confirm mail <no-reply@lernen.com>',
-                        replyTo:'no-reply@lernen.com',
-                        to : mailAddr,
-                        subject : sub,
-                        html : html,
+        await accountManager.setNonceToUser(username, nonce);
+        jwt.sign(
+            {
+                user : id,
+                nonce: nonce,   
+            },
+            EMAIL_SECRET,
+            {
+                expiresIn : '30m',
+            },
+            (err, emailToken) => {
+                const url = serverUrl + `/user/confirmation/${emailToken}`;
+                var html =
+                    'Please click this link to confirm your email:<br><br>'+ `<a href="${
+                        url}">Click me</a>`+'<br>The link above will expired within 30min<br><br>If you have no clue of this mail, just ignore it';
+                var sub = username + ' 這是你的驗證資訊 from lernen';
+                var mailOptions = {
+                    from : 'lernen confirm mail <no-reply@lernen.com>',
+                    replyTo:'no-reply@lernen.com',
+                    to : mailAddr,
+                    subject : sub,
+                    html : html,
+                };
+                var status = 401;
+                try {
+                    transporter.sendMail(mailOptions, function(error, info) {
+                        if (error) {
+                            status = 401;
+                            throw error;
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                            status = 200;
+                        }
+                    });
+                    return {
+                        'token': token,
+                        'status': status
                     };
-                    var status = 401;
-                    try {
-                        transporter.sendMail(mailOptions, function(error, info) {
-                            if (error) {
-                                status = 401;
-                                throw error;
-                            } else {
-                                console.log('Email sent: ' + info.response);
-                                status = 200;
-                            }
-                        });
-                        return {
-                            'token': token,
-                            'status': status
-                        };
-                    }catch(e){
-                        throw "Email sent failed"
-                    }
-                });
-            })
-            .catch((error) => {
-                console.log('This is caused by async but can be ignored:\n' + error);
+                } catch(e) {
+                    throw "Email sent failed"
+                }
             });
+ 
     };
 
     /**
