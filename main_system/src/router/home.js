@@ -30,12 +30,7 @@ export const home_routes = [
   {
     path: 'reset',
     name: 'Reset',
-    component: () => import('@/views/Home/Register'),
-    beforeEnter(to, from, next) {
-      console.log(to.query.token);
-      if (to.query.token) next();
-      else next(false);
-    },
+    component: () => import('@/views/Reset'),
   },
   {
     path: 'article/:id',
