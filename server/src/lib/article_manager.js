@@ -63,24 +63,22 @@ module.exports = function() {
 
     this.rmArticleById = async function(articleId) {
         let deletedArticle = await Article.findByIdAndDelete(articleId);
-        if (deletedArticle) {
-            for (fan of deletedArticle.fans) {
-                console.log(fan);
-                User.findByIdAndUpdate(fan, {
-                    $pullAll: {
-                        followedPosts: [deletedArticle._id]
-                    }
-                }).exec();
-            }
-            User.findByIdAndUpdate(deletedArticle.author, {
+        if (!deletedArticle)
+            throw "no such article";
+        for (fan of deletedArticle.fans) {
+            console.log(fan);
+            User.findByIdAndUpdate(fan, {
                 $pullAll: {
-                    selfPosts: [deletedArticle._id]
+                    followedPosts: [deletedArticle._id]
                 }
             }).exec();
-            return deletedArticle
-        } else {
-            throw "no such article";
         }
+        User.findByIdAndUpdate(deletedArticle.author, {
+            $pullAll: {
+                selfPosts: [deletedArticle._id]
+            }
+        }).exec();
+        return deletedArticle
     }
 
     this.sortArticleIdsByOptions = async function(articleIds, options) {
@@ -120,11 +118,9 @@ module.exports = function() {
     this.getArticleById = async function(articleId) {
         let article = await Article.findById(articleId)
                                    .populate('author')
-        if (article) {
-            return article;
-        } else {
+        if (!article)
             throw "no such article";
-        }
+        return article;
     }
     
     /**
@@ -136,10 +132,9 @@ module.exports = function() {
     this.getFormatedArticleById = async function(articleId) {
         let article = await Article.findById(articleId)
                                    .populate('author');
-        if (article) {
-            return article.toFrontendFormat();
-        } else 
-        throw "no such article";
+        if (!article)
+            throw "no such article";
+        return article.toFrontendFormat();
     }
 
     // TODO: modify this
@@ -205,21 +200,18 @@ module.exports = function() {
      * @returns last edit date of comment
      */
     this.replaceCommentOfArticle = async function(newComment, articleId, commentId, userId) {
-        let result = await Article.findById(articleId);
-        if (result) {
-            let comment = await result.comments.id(commentId);
-            if (comment) {
-                if (comment.author != userId) {
-                    throw "not the author";
-                }
-                comment.body = newComment;
-                comment.date = Date.now();
-                await result.save();
-                return comment.date;
-            }
+        let article = await Article.findById(articleId);
+        if (!article)
+            throw "no such article";
+        let comment = await article.comments.id(commentId);
+        if (!comment)
             throw "no such comment";
-        }
-        throw "no such article";
+        if (comment.author != userId)
+            throw "not the author";
+        comment.body = newComment;
+        comment.date = Date.now();
+        await article.save();
+        return comment.date;
     }
 
 
@@ -238,44 +230,34 @@ module.exports = function() {
 
     this.addMilestoneToArticle = async function(articleId, milestone) {
         let article = await Article.findById(articleId);
-        if (article) {
-            article.milestones.push(milestone);
-            await article.sortMilestonesAndSave();
-        } else {
+        if (!article)
             throw "no such artcle";
-        }
+        article.milestones.push(milestone);
+        await article.sortMilestonesAndSave();
     }
     
     this.replaceMilestoneOfArticle = async function(newMilestone, articleId, milestoneId) {
         let article = await Article.findById(articleId);
-        if (article) {
-            let milestone = article.milestones.id(milestoneId);
-            if (milestone) {
-                milestone.title = newMilestone.title;
-                milestone.body = newMilestone.body;
-                milestone.estDate = newMilestone.estDate;
-                milestone.finished = newMilestone.finished;
-                await article.sortMilestonesAndSave();
-            } else {
-                throw "no such milestone"
-            }
-        } else {
+        if (!article)
             throw "no such aritcle";
-        }
+        let milestone = article.milestones.id(milestoneId);
+        if (!milestone)
+            throw "no such milestone"
+        milestone.title = newMilestone.title;
+        milestone.body = newMilestone.body;
+        milestone.estDate = newMilestone.estDate;
+        milestone.finished = newMilestone.finished;
+        await article.sortMilestonesAndSave();
     }
     
     this.toggleFinishedMilestoneOfArticle = async function(articleId, milestoneId) {
         let article = await Article.findById(articleId);
-        if (article) {
-            let milestone = article.milestones.id(milestoneId);
-            if (milestone) {
-                milestone.finished = !milestone.finished;
-                await article.sortMilestonesAndSave();
-            } else {
-                throw "no such milestone"
-            }
-        } else {
+        if (!article)
             throw "no such aritcle";
-        }
+        let milestone = article.milestones.id(milestoneId);
+        if (!milestone)
+            throw "no such milestone"
+        milestone.finished = !milestone.finished;
+        await article.sortMilestonesAndSave();
     }
 }
