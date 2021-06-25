@@ -59,7 +59,7 @@ module.exports = function() {
                     transporter.sendMail(mailOptions, function(error, info) {
                         if (error) {
                             status = 401;
-                            throw error;
+                            console.log(error);
                         } else {
                             console.log('Email sent: ' + info.response);
                             status = 200;
@@ -113,7 +113,7 @@ module.exports = function() {
         try {
             transporter.sendMail(mailOptions, function(error, info) {
                 if (error) {
-                    throw error;
+                    console.log(error);
                 } else {
                     console.log('Email sent: ' + info.response);
                 }
@@ -166,7 +166,7 @@ module.exports = function() {
                     transporter.sendMail(mailOptions, function(error, info) {
                         if (error) {
                             status = 401;
-                            throw error;
+                            console.log(error);
                         } else {
                             console.log('Email sent: ' + info.response);
                             status = 200;
