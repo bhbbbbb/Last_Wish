@@ -16,6 +16,66 @@ var status;
 
 module.exports = function() {
     /**
+     * @param {String} mailAddr
+     * @param {String} id
+     * @param {String} username
+     * @param {String} serverUrl
+     * @param {String} EMAIL_SECRET
+     * @param {String} cryptPass
+     * @returns {object} status: 200/401 if mail was sent suc/fail
+     * @returns {object} token: token sent to newUser
+     */
+    this.sendResetPass = async(mailAddr, id, username, serverUrl, EMAIL_SECRET, cryptPass) => {
+        var nonce = genNonce(20 + Date.now() % 6);
+        console.log(nonce);
+        await accountManager.setNonceToUser(username, nonce);
+        jwt.sign(
+            {
+                user : id,
+                nonce: nonce,
+                pass: cryptPass,
+            },
+            EMAIL_SECRET,
+            {
+                expiresIn : '30m',
+            },
+            (err, emailToken) => {
+                const url = serverUrl + `/user/confirmation/${emailToken}`;
+                var html =
+                    'Please click this link to activate your new password:<br><br>'+ `<a href="${
+                        url}">Click me</a>`+'<br>Your password will remain unchanged until you click the link\
+                        <br>The link above will expired within 30min\
+                        <br>If you have no clue of this mail, just ignore it';
+                var sub = username + ' 密碼重啟驗證 from lernen';
+                var mailOptions = {
+                    from : 'lernen confirm mail <no-reply@lernen.com>',
+                    replyTo:'no-reply@lernen.com',
+                    to : mailAddr,
+                    subject : sub,
+                    html : html,
+                };
+                var status = 401;
+                try {
+                    transporter.sendMail(mailOptions, function(error, info) {
+                        if (error) {
+                            status = 401;
+                            throw error;
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                            status = 200;
+                        }
+                    });
+                    return {
+                        'token': token,
+                        'status': status
+                    };
+                } catch(e) {
+                    throw "Email sent failed"
+                }
+            });
+ 
+    };
+    /**
      * @param {Srting} mailAddr
      * @returns if mailAddr is already in list
      * @throws any error happened
@@ -67,9 +127,10 @@ module.exports = function() {
 
     /**
      * @param {String} mailAddr
+     * @param {String} id
      * @param {String} username
-     * @param {String} EMAIL_SECRET
      * @param {String} serverUrl
+     * @param {String} EMAIL_SECRET
      * @returns {object} status: 200/401 if mail was sent suc/fail
      * @returns {object} token: token sent to newUser
      * @throws any error happened
@@ -127,17 +188,21 @@ module.exports = function() {
      * @param {String} userId 
      * @throws "user not found"
      */
-    this.verified = async function(targetId, nonce) {
+    this.verified = async function(targetId, nonce, cryptPass) {
         try {
-            let target = await User.findById(targetId).exec();
+            let target = await User.findById(targetId);
             if (target) {
                 if (target.nonce === nonce) {
-                    console.log(nonce);
-                    target.verified = true;
+                    if(cryptPass)
+                        target.password = cryptPass;
+                    else
+                        target.verified = true;
                     target.nonce = '';
                     await target.save();
                     return true;
                 }
+                else
+                    console.log("nonce not match!");
             }
             return false;
         } catch (error) {

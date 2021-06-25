@@ -225,6 +225,7 @@ user.get('/logout', user_session, (req, res) => {
     res.sendStatus(200);
 });
 
+
 const GET_PUBLIC_INFO = [
     {
         status : 200
@@ -279,9 +280,9 @@ const LINK_EXPIRED='\
 
 user.get('/confirmation/:token', async (req, res) => {
     try {
-        const { user: id, nonce: nonce } = jwt.verify(req.params.token, EMAIL_SECRET);
+        const { user: id, nonce: nonce, pass: cryptPass} = jwt.verify(req.params.token, EMAIL_SECRET);
         if (id) {
-            const result = await mailManager.verified(id, nonce);
+            const result = await mailManager.verified(id, nonce, cryptPass);
             if (result) {
                 res.redirect(FRONT_URL);
                 return;
@@ -292,6 +293,12 @@ user.get('/confirmation/:token', async (req, res) => {
         res.send(LINK_EXPIRED);
     }
 });
+
+
+
+
+
+
 
 const VERIFIED = 2;
 const SEND_TOKEN = [
@@ -393,6 +400,22 @@ user.get('/get_liked_posts', user_session, async (req, res) => {
         res.sendStatus(500);
     }
 });
+
+user.post('/reset_pass', user_session, async(req, res) => {
+    try {
+        userId = req.session.user_id;
+        let pass = req.body.new_pass;
+        let hash = await accountManager.hashPass(pass);
+        let user = await accountManager.findUserById(userId);
+        await mailManager.sendResetPass(user.email, userId, user.username, SERVER_URL, EMAIL_SECRET, hash);
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(400);
+    }
+})
+
+
 
 // function genNonce(length) {
 //     let result = [];

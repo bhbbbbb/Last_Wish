@@ -465,7 +465,18 @@ module.exports = function() {
             throw(error);
         }
     }
+    /**
+     * 
+     * @param {String} password 
+     * @returns hased_pass
+     */
+    this.hashPass = async(password) => {
+        return await bcrypt.hashSync(password, 10);
+    }
 
+    this.findUserById = async(id) => {
+        return await User.findById(id);
+    }
     /**
      * replace existed event with modifiedEvent obj
      * @param {String} eventId 
