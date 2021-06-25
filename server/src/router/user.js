@@ -401,17 +401,22 @@ user.get('/get_liked_posts', user_session, async (req, res) => {
     }
 });
 
-user.post('/reset_pass', user_session, async(req, res) => {
+user.post('/reset_pass', user_session,async(req, res) => {
     try {
-        userId = req.session.user_id;
+        let userId = req.session.user_id;
+        let username = req.body.username;
         let pass = req.body.new_pass;
-        let hash = await accountManager.hashPass(pass);
-        let user = await accountManager.findUserById(userId);
+        let user = [];
+        if(!userId)
+            user = await accountManager.findUserbyUsername(username);
+        else
+            user = await accountManager.findUserById(userId);
         if(!pass || !user){
             res.sendStatus(400);
             return;
         }
-        await mailManager.sendResetPass(user.email, userId, user.username, SERVER_URL, EMAIL_SECRET, hash);
+        let hash = await accountManager.hashPass(pass);
+        await mailManager.sendResetPass(user.email, user._id, user.username, SERVER_URL, EMAIL_SECRET, hash);
         res.sendStatus(200);
     } catch (error) {
         console.log(error);

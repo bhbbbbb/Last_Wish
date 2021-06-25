@@ -5,8 +5,8 @@ var ArticleManager = require('./article_manager.js');
 module.exports = function() {
     this.articleManager = new ArticleManager();
 
-    this.findUserbyUsername = function(username) {
-        return User.findOne({ username: username }).exec();
+    this.findUserbyUsername = async function(username) {
+        return await User.findOne({ username: username });
     }
 
     /**
