@@ -27,6 +27,7 @@ v-card.ma-0.pa-3(min-height="10vh" flat)
     @click:append-outer="addTag()"
     @keydown.enter="addTag()"
     :error-messages="err_msg"
+    :rules="[valid, repeated]"
   )
   v-chip.ma-1(
     v-for="(tag, idx) in new_article.tags"
@@ -77,6 +78,7 @@ export default {
   },
   watch: {
     tag_model(new_val, val) {
+      this.err_msg = undefined;
       if (new_val.length <= val.length || new_val.length <= 2) return;
       if (new_val && new_val.charAt(new_val.length - 1) === ' ') {
         this.tag_model = this.tag_model.substring(0, new_val.length - 1);
@@ -96,9 +98,17 @@ export default {
       document.getElementById('tag-input').focus();
     },
     addTag() {
-      const no_ws = /\s/g;
-      if (no_ws.test(this.tag_model)) {
-        this.err_msg = 'contain illegal character';
+      let valid = this.valid(this.tag_model);
+      if (valid !== true) {
+        this.err_msg = valid;
+        return;
+      }
+      valid = this.repeated(this.tag_model);
+      if (valid !== true) {
+        this.err_msg = valid;
+        return;
+      } else if (this.tag_model.length < 2) {
+        this.err_msg = 'cannot be empty';
         return;
       }
       this.new_article.tags.push(this.tag_model);
@@ -106,6 +116,14 @@ export default {
     },
     removeTag(idx) {
       this.new_article.tags.splice(idx, 1);
+    },
+    valid(val) {
+      const pattern = /^#\w+$/g;
+      if (val.length <= 1) return true;
+      return pattern.test(val) || 'contain illegal charactersss';
+    },
+    repeated(val) {
+      return !this.new_article.tags.includes(val) || `${val} already exists`;
     },
     SubmitNewArticle() {
       if (!this.new_article.title || !this.new_article.body) {
