@@ -1,46 +1,6 @@
 <template lang="pug">
 v-card.ma-0.pa-3(min-height="10vh" flat)
-  v-text-field.ma-0.pa-1(
-    placeholder="Title here"
-    v-model="new_article.title"
-  )
-  v-textarea.ma-0.pa-0(
-    solo
-    auto-grow
-    hint="Tell me about your wish"
-    placeholder="body here"
-    v-model="new_article.body"
-  )
-  v-text-field(
-    style="font-weight: bold;"
-    id="tag-input"
-    solo
-    flat
-    autocomplete="off"
-    placeholder="#newtag"
-    prepend-icon="mdi-plus-circle-outline"
-    append-outer-icon="mdi-check"
-    v-model="tag_model"
-    @focus="addHashTag"
-    @blur="removeHashTag"
-    @click:prepend="focus()"
-    @click:append-outer="addTag()"
-    @keydown.enter="addTag()"
-    :error-messages="err_msg"
-    :rules="[valid, repeated]"
-  )
-  v-chip.ma-1(
-    v-for="(tag, idx) in new_article.tags"
-    :key="idx"
-    close
-    close-icon="mdi-close"
-    close-label="刪除"
-    color="#9BA2AA"
-    small
-    dark
-    @click:close="removeTag(idx)"
-  ) {{ tag }} &nbsp;
-  Milestones(:content="new_article.milestones" :author-id="$store.state.user.self.id")
+  EditCard(:article="new_article")
   v-overlay.align-start(
     :value="show_info"
     absolute
@@ -52,12 +12,11 @@ v-card.ma-0.pa-3(min-height="10vh" flat)
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import { apiUploadArticle } from '@/store/api';
 export default {
   name: 'NewPost',
   components: {
-    Milestones: () => import('@/components/Milestones'),
+    EditCard: () => import('@/components/EditCard'),
   },
   data: () => ({
     new_article: {
@@ -66,65 +25,14 @@ export default {
       milestones: [],
       tags: [],
     },
-    tag_model: '',
-    err_msg: undefined,
     show_info: false,
     info_type: 'success',
     infos: '',
     submit_buffer: false,
   }),
-  computed: {
-    ...mapState(['articles']),
-  },
-  watch: {
-    tag_model(new_val, val) {
-      this.err_msg = undefined;
-      if (new_val.length <= val.length || new_val.length <= 2) return;
-      if (new_val && new_val.charAt(new_val.length - 1) === ' ') {
-        this.tag_model = this.tag_model.substring(0, new_val.length - 1);
-        this.addTag();
-      }
-    },
-  },
+  computed: {},
   created() {},
   methods: {
-    addHashTag() {
-      if (!this.tag_model) this.tag_model = '#';
-    },
-    removeHashTag() {
-      if (this.tag_model === '#') this.tag_model = '';
-    },
-    focus() {
-      document.getElementById('tag-input').focus();
-    },
-    addTag() {
-      let valid = this.valid(this.tag_model);
-      if (valid !== true) {
-        this.err_msg = valid;
-        return;
-      }
-      valid = this.repeated(this.tag_model);
-      if (valid !== true) {
-        this.err_msg = valid;
-        return;
-      } else if (this.tag_model.length < 2) {
-        this.err_msg = 'cannot be empty';
-        return;
-      }
-      this.new_article.tags.push(this.tag_model);
-      this.tag_model = '#';
-    },
-    removeTag(idx) {
-      this.new_article.tags.splice(idx, 1);
-    },
-    valid(val) {
-      const pattern = /^#\w+$/g;
-      if (val.length <= 1) return true;
-      return pattern.test(val) || 'contain illegal charactersss';
-    },
-    repeated(val) {
-      return !this.new_article.tags.includes(val) || `${val} already exists`;
-    },
     SubmitNewArticle() {
       if (!this.new_article.title || !this.new_article.body) {
         // todo : error
@@ -167,7 +75,3 @@ export default {
   },
 };
 </script>
-
-<style lang="sass" scoped>
-$chip-close-size: 12px
-</style>

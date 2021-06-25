@@ -3,27 +3,37 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
   v-container      
     v-row(no-gutters="no-gutters")
       v-col.d-flex.justify-start.align-center(cols="6")
-        //- v-icon(@click="followedToggle") {{ hasFollowed ? "mdi-star" : "mdi-star-outline" }}
         UserAvatar(:user="content.author")
         NavLink(:to="`/${content.author.name}`")
           span.py-3.mx-3.text-center.font-weight-bold {{ content.author.name }}
         v-card-subtitle.mx-4.px-4.py-0 {{ date }}
       v-col.d-flex.justify-end(cols="6")
+        v-tooltip(bottom v-if="editing")
+          template(#activator="{ on, attrs }")
+            v-btn.align-self-end(
+              icon
+              @click="toggleEdit"
+              v-on="on"
+              v-bind="attrs"
+            )
+              v-icon mdi-check
+          span 結束編輯
         v-menu(
+          v-else
           offset-y,
           close-on-content-click="close-on-content-click",
           nudge-left="50"
         )
           template(v-slot:activator="{ on, attrs }")
-            v-btn.align-self-end(icon="icon", v-bind="attrs", v-on="on")
+            v-btn.align-self-end(icon, v-bind="attrs", v-on="on")
               v-icon mdi-dots-horizontal
           v-list
             v-list-item(@click="Copy") 複製連結
             //- v-list-item(@click="Clone") 願望拷貝
             v-list-item(
-              @click="GoEdit"
+              @click="toggleEdit"
               v-if="$store.state.user.self.id === content.author.id"
-            ) 編輯內文
+            ) {{ editing ? '取消編輯' : '編輯內文' }}
             v-divider.mx-2(
               v-if="$store.state.user.self.id === content.author.id"
             )
@@ -50,32 +60,35 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
         span.caption() 文章引用自 xxxxx
 
 
-    //------------ title -----------
-    v-row.my-3(no-gutters)
-      v-col.d-flex.align-center(cols="10" offset="1")
-        h3 {{ content.content.title }}
-    
-    //------------ body -------------
     v-row(no-gutters)
       v-col(cols="10" offset="1")
-        Body.text-pre-wrap(:content="content.content.body")
+        
+        //-- #edit
+        EditCard.mt-3(v-if="editing" :article="content.content")
+
+        v-card.pa-0.ma-0.transparent(flat v-else)
+          //------------ #title -----------
+          v-row.my-3(no-gutters)
+            h3 {{ content.content.title }}
+          
+          //------------ #body -------------
+          v-row(no-gutters)
+            Body.text-pre-wrap(:content="content.content.body")
 
 
-    //------------ tags -------------
-    v-row(no-gutters)
-      v-col(cols="10" offset="1")
-        v-chip.mr-2(
-          v-for="(tag, idx) in content.content.tags"
-          :key="idx"
-          color="#9BA2AA"
-          small
-          dark
-        ) {{ tag }}
+          //------------ #tags -------------
+          v-row(no-gutters)
+            v-chip.mr-2.my-1(
+              v-for="(tag, idx) in content.content.tags"
+              :key="idx"
+              color="#9BA2AA"
+              small
+              dark
+            ) {{ tag }}
 
-    //----------- milestone -----------------
-    v-row
-      v-col.px-8
-        Milestones(:content="content.content.milestones" :author-id="content.author.id")
+          //----------- #milestone -----------------
+          v-row
+            Milestones(:content="content.content.milestones" :author-id="content.author.id")
 
 
 
@@ -107,6 +120,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
 <script>
 import moment from 'moment';
 import color_list from '@/data/color_list';
+import { apiEditArticle } from '@/store/api';
 // var Article_id = '';
 
 export default {
@@ -121,6 +135,7 @@ export default {
     Body: () => import('@/components/Body'),
     Milestones: () => import('@/components/Milestones'),
     Confirm: () => import('@/components/Confirm'),
+    EditCard: () => import('@/components/EditCard'),
   },
   props: {
     id: {
@@ -136,6 +151,7 @@ export default {
     ThePost: [],
     NP: false,
     content: undefined,
+    editing: false,
   }),
   computed: {
     date() {
@@ -169,26 +185,26 @@ export default {
         this.show_info = false;
       }, 1000);
     },
-    Clone() {
-      this.$router.push({
-        name: 'ArticleClone',
-        params: {
-          id: this.id,
-          newArticle: this.ThePost,
-        },
-      });
-    },
-    GoWish(idx) {
-      this.$router.push({
-        name: 'Wish',
-        params: {
-          id: this.id,
-          wish: this.content.wishes[idx],
-          content: this.content.wishes[idx],
-          // color: this.color,
-        },
-      });
-    },
+    // Clone() {
+    //   this.$router.push({
+    //     name: 'ArticleClone',
+    //     params: {
+    //       id: this.id,
+    //       newArticle: this.ThePost,
+    //     },
+    //   });
+    // },
+    // GoWish(idx) {
+    //   this.$router.push({
+    //     name: 'Wish',
+    //     params: {
+    //       id: this.id,
+    //       wish: this.content.wishes[idx],
+    //       content: this.content.wishes[idx],
+    //       // color: this.color,
+    //     },
+    //   });
+    // },
     GoEdit() {
       this.$router.push({
         name: 'ArticleEdit',
@@ -199,27 +215,23 @@ export default {
         },
       });
     },
-    // GoNewMilestone() {
-    //   this.$router.push({
-    //     name: 'NewMilestone',
-    //     params: {
-    //       id: this.id,
-    //       wishes: this.content.wishes,
-    //     },
-    //   });
-    // },
+    toggleEdit() {
+      this.editing = !this.editing;
+      if (!this.editing) {
+        // end editing
+        this.submitEdit();
+      }
+    },
+    submitEdit() {
+      apiEditArticle(this.content.id, this.content.content);
+    },
     updateComment(newComment) {
       this.content.comments.push(newComment);
-    },
-    updateMilestone(value) {
-      this.content.content.milestones.push(this.value);
-      console.log(value);
     },
     moment,
     color_list,
     deletePost() {
       this.$store.dispatch('deleteArticle', this.id);
-      console.log(this.$router);
       this.$router.replace('/');
     },
   },

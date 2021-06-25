@@ -43,17 +43,36 @@ export const apiGetUserPosts = (user_id) =>
 
 export const apiGetFollowedPosts = () =>
   articleRequest.get('/get_followed_posts');
-// export const apiUploadMilestone = (data) =>
-//   articleRequest.post('/addMilestone', data);
 
-export const apiUpdateArticle = (data) =>
-  articleRequest.post('/editArticle', data);
+export const apiEditArticle = (id, new_article) =>
+  articleRequest.post('/edit_article', {
+    article_id: id,
+    newArticle: new_article,
+  });
 
 export const apiGetArticleById = (id) =>
   articleRequest.get('/get_article_by_id', { params: { article_id: id } });
 
 export const apiDeleteArticle = (id) =>
   articleRequest.post('/delete', { article_id: id });
+
+/********************** milestone #milestone #ms  ********************/
+
+export const apiToggleMsFinished = (article_id, milestone_id) =>
+  articleRequest.post('/toggle_finished_milestone', {
+    article_id,
+    milestone_id,
+  });
+
+export const apiEditMilestone = (article_id, milestone_id, new_milestone) =>
+  articleRequest.post('/edit_milestone', {
+    article_id,
+    milestone_id,
+    new_milestone,
+  });
+
+export const apiAddMilestone = (article_id, milestone) =>
+  articleRequest.post('/add_milestone', { article_id, milestone });
 
 /********************** Call user.js **********************/
 export const apiGetUserId = (name) =>
