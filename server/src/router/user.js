@@ -46,7 +46,7 @@ const TRY_LOGIN = [
     },
     {
         status: 401,
-        body: { err_code: NO_VERIFIED, err_msg: "Please check the confirmation mail first" }
+        body: { err_code: NO_VERIFIED, err_msg: "Check confirm mail first" }
     }
 ];
 user.post('/try_login', user_session, async (req, res) => {
@@ -251,20 +251,6 @@ user.get('/get_public_info', (req, res) => {
         });
 });
 
-const line = require('../lib/line_login_request.js');
-user.post('/line_login_req', (req, res) => {
-    let newState = genNonce(5);
-    let newNonce = genNonce(6);
-    let req_body = {
-        redirect_uri : 'http://localhost:2222/user/resolve_line_login',
-        state : newState,
-        nonce : newNonce
-    };
-    let stateInfo = {nonce : newNonce, succeed : false};
-    lineLoginStates[newState] = stateInfo;
-    res.send(line.getLineLoginUrl(req_body));
-});
-
 user.get('/is_valid_username', user_session, (req, res) => {
     accountManager.hasUser(req.query.username)
         .then((exist) => {
@@ -274,51 +260,6 @@ user.get('/is_valid_username', user_session, (req, res) => {
             console.log(error);
             res.sendStatus(400);
         });
-});
-
-user.get('/resolve_line_login', (req, res) => {
-    console.log(`code = ${req.query.code}`);
-    console.log(`state = ${req.query.state}`);
-
-    // security check
-    if (!(req.query.state in lineLoginStates)) {
-        // the request is not from a trusted domain
-        // i.e., not recorded by the server
-        return;
-    }
-    let options = {
-        uri : "https://api.line.me/oauth2/v2.1/token",
-        headers : {"Content-Type" : "application/x-www-form-urlencoded"},
-        form : {
-            "grant_type" : "authorization_code",
-            "code" : req.query.code,
-            "redirect_uri" : "http://localhost:2222/user/resolve_line_login",
-            "client_id" : "1655882165",
-            "client_secret" : "1d00fc1036dc3bddeed14772501d8d52"
-        },
-        method : "POST",
-    };
-    request(options, (err, res) => {
-        if (err) {
-            console.log(err);
-            return;
-        }
-        let idToken = JSON.parse(res.body).id_token;
-        let info = jwt_decode(idToken);
-        console.log(info);
-        if (info.nonce != lineLoginStates[req.query.state].nonce) {
-            // abort the procedure due to the high risk of being replay attacked
-            return;
-        }
-        if (accountManager.hasUser(info.name)) {
-            // TODO: do the login for the old user
-            console.log("old user");
-            return;
-        }
-        accountManager.addUser(info.name, info.sub);
-        lineLoginStates.state = true;
-    });
-    res.send("<script>window.close();</script>");
 });
 
 user.get('/get_id_by_name', (req, res) => {
@@ -440,18 +381,6 @@ user.post('/edit_event_by_id', user_session, async (req, res) => {
     }
 });
 
-//user.get('/get_event_lists', user_session, async(req, res)=>{
-//    let userId = req.session.user_id;
-//    try{
-//        let result = await accountManager.getUserEvents(userId);
-//        res.status(200).json(result);
-//    }catch(error){
-//       console.log(error);
-//       res.status(400).json();
-//    }
-//})
-//
-
 user.get('/get_liked_posts', user_session, async (req, res) => {
     try {
         let userId = req.session.user_id;
@@ -465,16 +394,16 @@ user.get('/get_liked_posts', user_session, async (req, res) => {
     }
 });
 
-function genNonce(length) {
-    let result = [];
-    let characters =
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-        result.push(
-            characters.charAt(Math.floor(Math.random() * charactersLength)));
-    }
-    return result.join('');
-}
+// function genNonce(length) {
+//     let result = [];
+//     let characters =
+//         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+//     let charactersLength = characters.length;
+//     for (var i = 0; i < length; i++) {
+//         result.push(
+//             characters.charAt(Math.floor(Math.random() * charactersLength)));
+//     }
+//     return result.join('');
+// }
 
 module.exports = user;

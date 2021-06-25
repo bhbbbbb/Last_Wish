@@ -36,7 +36,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
     //------------ body -------------
     v-row(no-gutters)
       v-col(cols="10" offset="1")
-        Body.pre(:content="content.content.body")
+        Body.text-pre-wrap(:content="content.content.body")
 
 
     //------------ tags -------------
@@ -79,7 +79,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
         transition="slide-x-transition"
       ) {{ infos }}
   
-  input#url(style="position: absolute; opacity: 0")
+  input#url(style="position: absolute; opacity: 0" disabled)
 </template>
 
 <script>
@@ -104,10 +104,6 @@ export default {
       type: String,
       required: true,
     },
-    // color: {
-    //   type: String,
-    //   default: '#F5F4F0',
-    // },
   },
   data: () => ({
     newMilestone_show: false,
@@ -116,7 +112,6 @@ export default {
     infos: '',
     ThePost: [],
     NP: false,
-    // newMilestone: '',
     content: undefined,
   }),
   computed: {
@@ -126,18 +121,6 @@ export default {
   },
   created() {
     this.content = this.$store.state.article.data[this.id];
-    // this.ThePost = JSON.parse(JSON.stringify(this.content));
-    // this.ThePost.wishes = String(this.ThePost.wishes).replace(/,/g, '\n');
-    //Article_id = this.id;
-    // this.$store.dispatch('getUser', this.content.from).then((res) => {
-    //   this.author = res;
-    // });
-    // if (this.$store.state.article.followed)
-    //   for (var i = 0; i < this.$store.state.article.followed.length; i++)
-    //     if (this.$store.state.article.followed[i].id == this.content.id) {
-    //       this.hasFollowed = true;
-    //       break;
-    //     }
   },
 
   methods: {
@@ -214,12 +197,6 @@ export default {
   },
 };
 </script>
-
-<style>
-.pre {
-  white-space: pre-wrap;
-}
-</style>
 
 <style scpoed>
 .v-timeline-item {

@@ -31,7 +31,7 @@ const routes = [
     },
     beforeEnter(to, from, next) {
       if (store.state.user.self.name !== to.params.username)
-        store.dispatch('getOthersByName', to.params.username).then(() => {
+        store.dispatch('user/getOthersByName', to.params.username).then(() => {
           next();
         });
       else next();
@@ -40,6 +40,26 @@ const routes = [
     children: user_routes,
     props: {
       AppBar: true,
+    },
+  },
+  {
+    path: '/frame/article/:id',
+    name: 'FrameArticle',
+    components: {
+      Main: () => import('@/views/Article'),
+    },
+    beforeEnter(to, from, next) {
+      store
+        .dispatch('getArticle', { id: to.params.id })
+        .then(() => {
+          next();
+        })
+        .catch(() => {
+          next(false);
+        });
+    },
+    props: {
+      Main: true,
     },
   },
 ];

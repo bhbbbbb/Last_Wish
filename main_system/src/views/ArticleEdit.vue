@@ -71,9 +71,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.pre {
-  white-space: pre-wrap;
-}
-</style>

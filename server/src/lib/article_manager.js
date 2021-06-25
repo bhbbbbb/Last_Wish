@@ -9,19 +9,11 @@ module.exports = function() {
      */
     this.hasArticle = async function(articleId) {
         try {
-            return await Article.fineOne({ _id: articleId})
-                                .exec()
-                                .then((article) => {
-                                    return article != null;
-                                });
+            return await Article.fineOne({ _id: articleId}) != null;
         } catch (error) {
             throw error;
         }
     }
-
-    // this.hasCommentInArticle = function(commentId, articleId) {
-    //     return Number(commentId) <= this.articles[Number(articleId)].comments.length
-    // }
 
     /**
      * @param {Object} author the account info of the author
@@ -53,10 +45,7 @@ module.exports = function() {
     this.getAllArticleIds = async function(options) {
         try {
             let allArticleIds = [];
-            let rawArticles = await Article.find({})
-                                           .then((allArticles) => {
-                                               return allArticles;
-                                           });
+            let rawArticles = await Article.find({});
             if (options) {
                 if (options.new2old) {
                     console.log('new2old');
@@ -86,11 +75,7 @@ module.exports = function() {
 
     this.rmArticleById = async function(articleId) {
         try {
-            let deletedArticle = await Article.findByIdAndDelete(articleId)
-                                              .exec()
-                                              .then((deletedArticle) => {
-                                                  return deletedArticle;
-                                              });
+            let deletedArticle = await Article.findByIdAndDelete(articleId);
             if (deletedArticle) {
                 for (fan of deletedArticle.fans) {
                     console.log(fan);
@@ -115,11 +100,7 @@ module.exports = function() {
     }
 
     this.sortArticleIdsByOptions = async function(articleIds, options) {
-        let articles = await Article.find({ '_id': { $in: articleIds } })
-                                    .exec()
-                                    .then((articles) => {
-                                        return articles;
-                                    });
+        let articles = await Article.find({ '_id': { $in: articleIds } });
         if (options) {
             if (options.new2old) {
                 console.log('new2old');
@@ -154,12 +135,8 @@ module.exports = function() {
      */
     this.getArticleById = async function(articleId) {
         try {
-            let article = Article.findById(articleId)
-                                 .populate('author')
-                                 .exec()
-                                 .then((article) => {
-                                     return article;
-                                 });
+            let article = await Article.findById(articleId)
+                                       .populate('author')
             if (article) {
                 return article;
             }
@@ -179,14 +156,10 @@ module.exports = function() {
      */
     this.getFormatedArticleById = async function(articleId) {
         try {
-            let article = Article.findById(articleId)
-                                 .populate('author')
-                                 .exec()
-                                 .then((article) => {
-                                     return article.toFrontendFormat();
-                                 });
+            let article = await Article.findById(articleId)
+                                       .populate('author');
             if (article) {
-                return article;
+                return article.toFrontendFormat();
             }
         } catch (error) {
             console.log(error);
@@ -287,28 +260,64 @@ module.exports = function() {
         throw "no such article";
     }
 
+
     /**
-     * Now the milestone has no id
-     * However we need to add an id
-     * later for better management
-     * such as editing milestone or
-     * editing the article contaned in
-     * each milestone
+     * @parma articleId
+     * @throw "no such article"
      */
-    // this.addMilestoneToArticle = function(articleId, milestone) {
-    //     if (!this.hasArticle(articleId)) {
-    //         throw "no such article";
-    //     }
-    //     let article = this.articles[Number(articleId)];
-    //     let newMilestoneId = String(article.wishes.length);
-    //     let newMilestone = {
-    //         title: milestone.title,
-    //         body: milestone.body,
-    //         time: milestone.time,
-    //         id: newMilestoneId,
-    //     };
-    //     article.wishes.push(newMilestone);
-    //     synchronize(this.articles, this.articlePATH);
-    //     return newMilestone;
-    // }
+    this.addVisited = async function(articleId){
+        try {
+            let article = await Article.findById(articleId);
+            if (!article)
+                throw "no such article"
+            article.visited++;
+            await article.save();
+            return;
+        } catch (error) {
+            throw error;            
+        }
+    }
+
+    this.addMilestoneToArticle = async function(articleId, milestone) {
+        let article = await Article.findById(articleId);
+        if (article) {
+            article.milestones.push(milestone);
+            article.sortMilestonesAndSave();
+        } else {
+            throw "no such artcle";
+        }
+    }
+    
+    this.replaceMilestoneOfArticle = async function(newMilestone, articleId, milestoneId) {
+        let article = await Article.findById(articleId);
+        if (article) {
+            let milestone = article.milestones.id(milestoneId);
+            if (milestone) {
+                milestone.title = newMilestone.title;
+                milestone.body = newMilestone.body;
+                milestone.estDate = newMilestone.estDate;
+                milestone.finished = newMilestone.finished;
+                await article.sortMilestonesAndSave();
+            } else {
+                throw "no such milestone"
+            }
+        } else {
+            throw "no such aritcle";
+        }
+    }
+    
+    this.toggleFinishedMilestoneOfArticle = async function(articleId, milestoneId) {
+        let article = await Article.findById(articleId);
+        if (article) {
+            let milestone = article.milestones.id(milestoneId);
+            if (milestone) {
+                milestone.finished = !milestone.finished;
+                await article.sortMilestonesAndSave();
+            } else {
+                throw "no such milestone"
+            }
+        } else {
+            throw "no such aritcle";
+        }
+    }
 }

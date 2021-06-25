@@ -1,6 +1,6 @@
 <template lang="pug">
 v-row.align-center(v-if="content" no-gutters)
-  v-col(cols="4")
+  v-col.d-flex.flex-nowrap.align-center(cols="4")
     v-btn(
       icon
       :disabled="!$store.state.is_login"
@@ -9,18 +9,18 @@ v-row.align-center(v-if="content" no-gutters)
       @touchstart.stop=""
     )
       v-icon {{ liked ? 'mdi-heart' : 'mdi-heart-outline' }}
-    span.subtitle-2.text--secondary 喜歡 {{ liked_count }}
+    span.subtitle-2.text--secondary.text-nowrap 喜歡 {{ liked_count }}
     
-  v-col(cols="4")
+  v-col.d-flex.flex-nowrap.align-center(cols="4")
     v-btn(
       icon
       :disabled="!$store.state.is_login"
     )
       //- v-icon mdi-comment-processing-outline
       v-icon far fa-comment
-    span.subtitle-2.text--secondary 留言 {{ content.comments.length }}
+    span.subtitle-2.text--secondary.text-nowrap 留言 {{ content.comments.length }}
 
-  v-col(cols="4")
+  v-col.d-flex.flex-nowrap.align-center(cols="4")
     v-btn(
       icon
       :disabled="!$store.state.is_login"
@@ -29,7 +29,7 @@ v-row.align-center(v-if="content" no-gutters)
       @touchstart.stop=""
     )
       v-icon {{ followed ? 'mdi-star' : 'mdi-star-outline' }}
-    span.subtitle-2.text--secondary 追蹤 {{ followed_count }}
+    span.subtitle-2.text--secondary.text-nowrap 追蹤 {{ followed_count }}
 </template>
 
 <script>
@@ -102,4 +102,7 @@ export default {
 
   color: #888888;
 }
+/* .text-nowrap {
+  white-space: nowrap;
+} */
 </style>
