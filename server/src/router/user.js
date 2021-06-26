@@ -89,19 +89,19 @@ const REGISTER = [
     }, 
     {
         status: 400,
-        body: { err_code: DUPLICATED_USER, err_msg: "duplicated user"}
+        body: { err_code: DUPLICATED_USER, err_msg: "duplicated user" }
     },
     {
         status: 400, 
-        body: { err_code: DUPLICATED_EMAIL, err_msg: "duplicated email"}
+        body: { err_code: DUPLICATED_EMAIL, err_msg: "duplicated email" }
     },
     {
         status: 400,
-        body: { err_code: INVALID_ADDR, err_msg: "invalid email address"}
+        body: { err_code: INVALID_ADDR, err_msg: "invalid email address" }
     },
     {
         status: 500,
-        body: { err_code: EMAIL_ERR, err_msg: "email sent failed"}
+        body: { err_code: EMAIL_ERR, err_msg: "email sent failed" }
     },    
 ];
 user.post('/register', async (req, res) => {
