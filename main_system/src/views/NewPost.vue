@@ -1,14 +1,21 @@
 <template lang="pug">
-v-card.ma-0.pa-3(min-height="10vh" flat)
-  EditCard(:article="new_article")
+v-card.ma-1.pa-0(min-height="10vh" flat)
+  v-row(no-gutters style="width: 100%;")
+    v-sheet(color="#E1E3E5" width="100%")
+      v-row(no-gutters style="color: #9BA2AA")
+        v-col(cols="2")
+          v-btn(text to="/") 取消
+        v-col.d-flex.align-center.justify-center(cols="8")
+          span.text-body-2() 新增計畫
+        v-col.d-flex.justify-end(cols="2")
+          v-btn(text @click="SubmitNewArticle") 發佈
+  EditCard.mx-6.mt-3(:article="new_article")
   v-overlay.align-start(
     :value="show_info"
     absolute
     opacity="0"
   )                              
     v-alert.mt-10(:value="show_info" :type="info_type" transition="slide-x-transition") {{infos}}
-  v-card-actions.justify-center
-    v-btn(@click="SubmitNewArticle()" :disabled="submit_buffer") submit
 </template>
 
 <script>

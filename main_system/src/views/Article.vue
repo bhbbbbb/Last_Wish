@@ -1,5 +1,5 @@
 <template lang="pug">
-v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width="100%" v-if="article")
+v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)" min-width="90%" v-if="article")
   v-container      
     v-row(no-gutters="no-gutters")
       v-col.d-flex.justify-start.align-center(cols="6")

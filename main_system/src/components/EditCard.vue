@@ -6,6 +6,7 @@ v-card.ma-0.pa-0.transparent(min-height="10vh" flat)
     v-text-field.ma-0.pa-0(
       placeholder="Title here"
       v-model="article.title"
+      autocomplete="off"
     )
 
   //- #body

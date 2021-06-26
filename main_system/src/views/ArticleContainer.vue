@@ -1,5 +1,5 @@
 <template lang="pug">
-v-sheet(rounded="lg")
+v-sheet.m-view(rounded="lg")
   Search(v-if="fetchAction !== 'getSelfArticles' && fetchAction !== 'getOthersArticles'")
   v-row(
     no-gutters
