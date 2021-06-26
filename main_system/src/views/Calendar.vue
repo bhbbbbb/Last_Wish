@@ -63,8 +63,9 @@
           icon
           outlined
           x-small
+          @click="toggleFinish(idx)"
         )
-          //- v-icon(small) mdi-circle
+          v-icon(small v-show="$store.getters['user/is_finished'](idx)") mdi-circle
         span.ml-2.subtitle-2 完成
     v-row(no-gutters)
       v-col(cols="2")
@@ -195,6 +196,9 @@ export default {
       }
       let tem = moment(event.start).format('YYYY-MM-DD');
       return tem === this.selected_date;
+    },
+    toggleFinish(idx) {
+      this.$store.dispatch('user/toggleEventFinish', idx);
     },
   },
 };
