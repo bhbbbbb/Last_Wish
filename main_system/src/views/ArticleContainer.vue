@@ -10,6 +10,7 @@ v-sheet(rounded="lg")
       lg="4"
       v-for="(id, idx) in articles",
       :key="idx"
+      v-if="$store.state.article.data[id] !== false"
     )
       ArticleCard(
         :id="id"

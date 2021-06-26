@@ -1,38 +1,56 @@
 <template lang="pug">
 v-timeline(
-	align-top
-	dense
-	style="margin-left: -20px"
+  dense
+  style="margin-left: -20px"
+  align-top
 )
-	v-timeline-item(
-		v-for="(ms, idx) in content"
-		small
-		:color="ms.finished ? '#9BA2AA' : '#C4C4C4'"
-		:key="idx"
-	)
-		v-avatar(slot="icon", @click="gowish(idx)")
-		v-row(no-gutters="")
-			v-col.d-flex.justify-end.pr-4(cols="1")
-				span.subtitle-2.text--disabled()
-					| {{ moment(ms.estDate).format('M/D') }}
-			v-col.d-flex.flex-shrink-1(cols="auto")
-				span.d-flex.text-no-wrap(style="overflow-x: hidden")
-					| {{ ms.title }}
-			v-col(offset="1")
-				v-icon(v-if="ms.finished" small) mdi-check-circle
+  v-timeline-item(
+    v-for="(ms, idx) in content"
+    small
+    :color="ms.finished ? '#9BA2AA' : '#C4C4C4'"
+    :key="idx"
+  )
+    template(#icon)
+      v-hover(v-slot="{ hover }")
+        v-avatar(
+          size="28"
+          @click="finish(idx)"
+        )
+          v-icon(
+            v-if="check_display({ idx, hover })"
+            small
+          ) mdi-check
+    v-row(no-gutters)
+      v-col.d-flex.justify-end.pr-4(cols="1")
+        v-tooltip(right open-delay="300")
+          template(#activator="{ on, attrs }")
+            span.subtitle-2.text--disabled(v-on="on" v-bind="attrs")
+              | {{ moment(ms.estDate).format('M/D') }}
+          span {{ moment(ms.estDate).format('YYYY/MM/DD') }}
+      v-col.d-flex.flex-shrink-1(cols="10")
+        span.d-flex.text-no-wrap(style="overflow-x: hidden")
+          | {{ ms.title }}
+      v-col.d-flex.align-self-start(cols="1")
+        v-btn(icon small @click="del(idx)")
+          v-icon(
+            v-if="editable"
+            small
+          ) mdi-close
+      //- v-col(offset="1")
+      //-   v-icon(v-if="ms.finished" small) mdi-check-circle
 
-	v-timeline-item.align-center(
-		small
-		:color="color_list(7)"
-		v-if="$store.state.user.self.id === authorId && !newMilestone_show"
-	)
-		v-icon(slot="icon" small color="white") mdi-plus
-		v-btn(@click="newMilestone_show = true") 點我新增里程碑
-	
-	NewMilestone(
-		v-if="$store.state.user.self.id === authorId && newMilestone_show"
-		@created="updateMilestone"
-	)
+  v-timeline-item.align-center(
+    small
+    :color="color_list(7)"
+    v-if="$store.state.user.self.id === authorId && !newMilestone_show"
+  )
+    v-icon(slot="icon" small color="white") mdi-plus
+    v-btn(@click="newMilestone_show = true") 點我新增里程碑
+  
+  NewMilestone(
+    v-if="$store.state.user.self.id === authorId && newMilestone_show"
+    @created="updateMilestone"
+  )
 </template>
 
 <script>
@@ -53,15 +71,45 @@ export default {
       type: String,
       required: true,
     },
+    editable: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => ({
     newMilestone_show: true,
   }),
+  computed: {},
   created() {},
 
   methods: {
     updateMilestone(value) {
-      this.content.push(value);
+      let new_date_value = new Date(value.estDate);
+      let insert_idx = 0;
+      for (let i = this.content.length - 1; i >= 0; i--) {
+        let date = this.content[i].estDate;
+        if (typeof date === typeof 'string') {
+          this.content[i].estDate = new Date(date);
+          date = this.content[i].estDate;
+        }
+        if (date.valueOf() <= new_date_value) {
+          insert_idx = i + 1;
+          break;
+        }
+      }
+      this.content.splice(insert_idx, 0, value);
+      // this.$emit('update:new', value);
+    },
+    del(idx) {
+      this.content.splice(idx, 1);
+    },
+    finish(idx) {
+      this.content[idx].finished = !this.content[idx].finished;
+    },
+    check_display({ idx, hover }) {
+      let self = this.content[idx].finished || hover;
+      let others = this.content[idx].finished;
+      return this.$store.state.user.self.id === this.authorId ? self : others;
     },
     moment,
     color_list,

@@ -1,46 +1,6 @@
 <template lang="pug">
 v-card.ma-0.pa-3(min-height="10vh" flat)
-  v-text-field.ma-0.pa-1(
-    placeholder="Title here"
-    v-model="new_article.title"
-  )
-  v-textarea.ma-0.pa-0(
-    solo
-    auto-grow
-    hint="Tell me about your wish"
-    placeholder="body here"
-    v-model="new_article.body"
-  )
-  v-text-field(
-    style="font-weight: bold;"
-    id="tag-input"
-    solo
-    flat
-    autocomplete="off"
-    placeholder="#newtag"
-    prepend-icon="mdi-plus-circle-outline"
-    append-outer-icon="mdi-check"
-    v-model="tag_model"
-    @focus="addHashTag"
-    @blur="removeHashTag"
-    @click:prepend="focus()"
-    @click:append-outer="addTag()"
-    @keydown.enter="addTag()"
-    persistent-hint
-    hint="TODO: add rule to check empty, repeat..."
-  )
-  v-chip.ma-1(
-    v-for="(tag, idx) in new_article.tags"
-    :key="idx"
-    close
-    close-icon="mdi-close"
-    close-label="刪除"
-    color="#9BA2AA"
-    small
-    dark
-    @click:close="removeTag(idx)"
-  ) {{ tag }} &nbsp;
-  Milestones(:content="new_article.milestones" :author-id="$store.state.user.self.id")
+  EditCard(:article="new_article")
   v-overlay.align-start(
     :value="show_info"
     absolute
@@ -52,12 +12,11 @@ v-card.ma-0.pa-3(min-height="10vh" flat)
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import { apiUploadArticle } from '@/store/api';
 export default {
   name: 'NewPost',
   components: {
-    Milestones: () => import('@/components/Milestones'),
+    EditCard: () => import('@/components/EditCard'),
   },
   data: () => ({
     new_article: {
@@ -66,33 +25,14 @@ export default {
       milestones: [],
       tags: [],
     },
-    tag_model: '',
     show_info: false,
     info_type: 'success',
     infos: '',
     submit_buffer: false,
   }),
-  computed: {
-    ...mapState(['articles']),
-  },
+  computed: {},
   created() {},
   methods: {
-    addHashTag() {
-      if (!this.tag_model) this.tag_model = '#';
-    },
-    removeHashTag() {
-      if (this.tag_model === '#') this.tag_model = '';
-    },
-    focus() {
-      document.getElementById('tag-input').focus();
-    },
-    addTag() {
-      this.new_article.tags.push(this.tag_model);
-      this.tag_model = '#';
-    },
-    removeTag(idx) {
-      this.new_article.tags.splice(idx, 1);
-    },
     SubmitNewArticle() {
       if (!this.new_article.title || !this.new_article.body) {
         // todo : error
@@ -135,7 +75,3 @@ export default {
   },
 };
 </script>
-
-<style lang="sass" scoped>
-$chip-close-size: 12px
-</style>
