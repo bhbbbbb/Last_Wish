@@ -6,9 +6,8 @@ v-dialog(
 )
 	template(#activator="{ on, attrs }")
 		slot(name="activator" :on="on" :attrs="attrs")
-	v-card(flat)
-		v-card-title
-			slot
+	v-card.pa-3(flat)
+		slot
 		
 		v-card-actions.justify-space-around
 			v-btn(
