@@ -95,7 +95,6 @@ global.post('/add_comment', user_session, async (req, res) => {
         let comment = req.body.comment;
         let newDate = await articleManager.addCommentToArticle(author , articleId, comment);
         res.status(200).json(newDate);
-        console.log(newDate);
         return;
     } catch (error) {
         console.log(error);
@@ -277,7 +276,7 @@ global.get('/get_user_posts', user_session, async (req, res) => {
         return;
     } catch (error) {
         console.log(error);
-        res.sendStatus(400);
+        res.status(400).json(error);
         return;
     }
 });

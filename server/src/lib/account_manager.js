@@ -16,7 +16,6 @@ module.exports = function() {
     this.getUserLiked = async function(userId) {
         // try {
             let user = await User.findById(userId); //.exec();
-            console.log(user);
             if (user)
                 return user.likedPosts;
             else
@@ -133,11 +132,11 @@ module.exports = function() {
     this.addUser = async function(username, password, email) {
         var duplicated;
         // try {
-            duplicated = await User.findOne({ username: username })
-                                   .exec()
-                                   .then((user) => {
-                                       return user != null;
-                                   });
+            duplicated = await User.findOne({ username: username }) != null;
+                                //    .exec()
+                                //    .then((user) => {
+                                //        return user != null;
+                                //    });
             if (!duplicated) {
                 let hash = bcrypt.hashSync(password, 10);
                 let newUserData = {
@@ -159,10 +158,10 @@ module.exports = function() {
         var user;
         // try {
             user = await User.findById(userId)
-                             .exec()
-                             .then((user) => {
-                                 return user;
-                             });
+                            //  .exec()
+                            //  .then((user) => {
+                            //      return user;
+                            //  });
             if (user) {
                 user.selfIntro = selfIntro;
                 user.save();
@@ -240,7 +239,6 @@ module.exports = function() {
      */
     this.getIdByUsername = async function(username) {
         // try {
-            console.log('username:', username);
             let user = await User.findOne({ username: username });
             if (user) {
                 return user._id;
@@ -297,19 +295,15 @@ module.exports = function() {
             if (article) {
                 let user = await User.findById(userId);
                 if (user) {
-                    console.log(user.username);
                     if (user.followedPosts.includes(article._id)) {
                         // In this case it is going to unfollow
-                        console.log('unfollow');
                         user.followedPosts.pull(article._id);
                         article.fans.pull(user._id);
                     } else {
                         // In this case it is going to follow
-                        console.log('follow');
                         user.followedPosts.push(article._id);
                         article.fans.push(user._id);
                     }
-                    console.log(article._id);
                     user.save();
                     article.save();
                     return;
@@ -327,19 +321,15 @@ module.exports = function() {
             if (article) {
                 let user = await User.findById(userId);
                 if (user) {
-                    console.log(user.username);
                     if (user.likedPosts.includes(article._id)) {
                         // In this case it is going to like
-                        console.log('dislike');
                         user.likedPosts.pull(article._id);
                         article.likes -= 1;
                     } else {
                         // In this case it is going to dislike
-                        console.log('like');
                         user.likedPosts.push(article._id);
                         article.likes += 1;
                     }
-                    console.log(article._id);
                     user.save();
                     article.save();
                     return;

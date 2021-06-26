@@ -50,7 +50,6 @@ const TRY_LOGIN = [
 ];
 user.post('/try_login', user_session, async (req, res) => {
     try {
-        console.log(req.body.username);
         const exist = await accountManager.hasUser(req.body.username);
         if (!exist) {
             let response = TRY_LOGIN[USER_NOT_FOUND];
@@ -110,7 +109,6 @@ user.post('/register', async (req, res) => {
     if (!mailManager.isValidAddr(addr)) {
         let response = REGISTER[INVALID_ADDR];
         res.status(response.status).json(response.body);
-        console.log(response.body);
     } else {
         let trimmedUsername = req.body.username.trim();
         let trimmedPassword = req.body.password.trim();
@@ -119,14 +117,12 @@ user.post('/register', async (req, res) => {
         if (result) {
             let response = REGISTER[DUPLICATED_EMAIL];
             res.status(response.status).json(response.body);
-            console.log(response.body);
         } else if (invalid) {
             let response = REGISTER[DUPLICATED_USER];
             res.status(response.status).json(response.body);
         } else {
             const id = await accountManager.addUser(trimmedUsername, trimmedPassword, addr);
             let response = REGISTER[SUCCEED];
-            console.log(id);
             try {
                 mailManager.sendToken(addr, id, trimmedUsername, SERVER_URL, EMAIL_SECRET);
                 res.sendStatus(response.status);

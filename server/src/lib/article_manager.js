@@ -39,12 +39,10 @@ module.exports = function() {
         let rawArticles = await Article.find({});
         if (options) {
             if (options.new2old) {
-                console.log('new2old');
                 rawArticles.sort((a, b) => {
                     return b.date - a.date;
                 });
             } else {
-                console.log('old2new');
                 rawArticles.sort((a, b) => {
                     return a.date - b.date;
                 });
@@ -66,7 +64,6 @@ module.exports = function() {
         if (!deletedArticle)
             throw "no such article";
         for (fan of deletedArticle.fans) {
-            console.log(fan);
             User.findByIdAndUpdate(fan, {
                 $pullAll: {
                     followedPosts: [deletedArticle._id]
@@ -85,12 +82,10 @@ module.exports = function() {
         let articles = await Article.find({ '_id': { $in: articleIds } });
         if (options) {
             if (options.new2old) {
-                console.log('new2old');
                 articles.sort((a, b) => {
                     return b.date - a.date;
                 });
             } else {
-                console.log('old2new');
                 articles.sort((a, b) => {
                     return a.date - b.date;
                 });
@@ -105,7 +100,6 @@ module.exports = function() {
         for (article of articles) {
             sortedArticleIds.push(article._id);
         }
-        console.log(sortedArticleIds);
         return sortedArticleIds;
     }
     
@@ -173,7 +167,6 @@ module.exports = function() {
     * @throws "not the author" exception
     */
     this.replaceArticle = async function(newArticle, articleId, userId) {
-        console.log(articleId);
         let article = await Article.findById(articleId);
         if (!article)
             throw "no such article";
