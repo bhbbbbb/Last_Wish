@@ -250,20 +250,24 @@ module.exports = function() {
         }
     }
     
-    this.toggleLikedPostsToUser = async function(userId, articleId) {
+    this.setLikedPostsToUser = async function(userId, articleId, set) {
         let article = await this.articleManager.getArticleById(articleId);
         if (article) {
             let user = await User.findById(userId);
             if (!user)
                 throw "user not found"
             if (user.likedPosts.includes(article._id)) {
-                // In this case it is going to like
-                user.likedPosts.pull(article._id);
-                article.likes -= 1;
-            } else {
                 // In this case it is going to dislike
-                user.likedPosts.push(article._id);
-                article.likes += 1;
+                if (!set) {
+                    user.likedPosts.pull(article._id);
+                    article.likes -= 1;
+                }
+            } else {
+                // In this case it is going to like
+                if (set) {
+                    user.likedPosts.push(article._id);
+                    article.likes += 1;
+                }
             }
             user.save();
             article.save();
