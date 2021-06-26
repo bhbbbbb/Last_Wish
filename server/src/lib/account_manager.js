@@ -198,24 +198,14 @@ module.exports = function() {
         let user  = await User.findById(userId);
         if (!user)
             throw "user not found";
-        // if (user.followedUsers.includes(target._id)) {
-        //     // In this case it is going to unfollow
-        //     user.followedUsers.pull(target._id);
-        //     target.fans.pull(user._id);
-        // } else {
-        //     // In this case it is going to follow
-        //     user.followedUsers.push(target._id);
-        //     target.fans.push(user._id);
-        // }
-        
-        if (set) {
-            // In this case it is going to follow
-            user.followedUsers.push(target._id);
-            target.fans.push(user._id);
-        } else {
+        if (user.followedUsers.includes(target._id)) {
             // In this case it is going to unfollow
             user.followedUsers.pull(target._id);
             target.fans.pull(user._id);
+        } else {
+            // In this case it is going to follow
+            user.followedUsers.push(target._id);
+            target.fans.push(user._id);
         }
         user.save();
         target.save();
@@ -229,7 +219,7 @@ module.exports = function() {
      * @param {String} articleId 
      * @throw "user not found"
      */
-    this.toggleFollowedPostsToUser = async function(userId, articleId) {
+    this.setFollowedPostsToUser = async function(userId, articleId) {
         let article = await this.articleManager.getArticleById(articleId);
         if (article) {
             let user = await User.findById(userId);
@@ -237,12 +227,16 @@ module.exports = function() {
                 throw "user not found"
             if (user.followedPosts.includes(article._id)) {
                 // In this case it is going to unfollow
-                user.followedPosts.pull(article._id);
-                article.fans.pull(user._id);
+                if (!set) {
+                    user.followedPosts.pull(article._id);
+                    article.fans.pull(user._id);
+                }
             } else {
                 // In this case it is going to follow
-                user.followedPosts.push(article._id);
-                article.fans.push(user._id);
+                if (set) {
+                    user.followedPosts.push(article._id);
+                    article.fans.push(user._id);
+                }
             }
             user.save();
             article.save();

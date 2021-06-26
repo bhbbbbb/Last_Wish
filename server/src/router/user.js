@@ -251,7 +251,7 @@ user.post('/set_liked_post', user_session, async (req, res) => {
     //     });
     try {
         let set = req.body.set == "true";
-        await accountManager.toggleLikedPostsToUser(req.session.user_id, req.body.article_id, set);
+        await accountManager.setLikedPostsToUser(req.session.user_id, req.body.article_id, set);
         res.sendStatus(200);
     } catch (error) {
         console.log(error);
