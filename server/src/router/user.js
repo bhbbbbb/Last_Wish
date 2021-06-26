@@ -13,7 +13,7 @@ var accountManager = new AccountManager();
 var user_session = require('../lib/session.js');
 const https_config = require('../../https.config');
 /***************** Url Setting *******************/
-const prefix = 'http://'
+const prefix = https_config.https_enable ? 'https://' : 'http://'
 var port = https_config.port;
 var frontPort = 8080;
 const SERVER_URL = prefix + ip.address() + ':' + port;
