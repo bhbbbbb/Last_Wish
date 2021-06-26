@@ -3,6 +3,7 @@ import {
   apiGetUserId,
   apiGetEvents,
   apiAddEvent,
+  apiEditEvent,
 } from '../api';
 export default {
   namespaced: true,
@@ -17,6 +18,7 @@ export default {
     // buffer
     others: undefined,
     events: [],
+    event_map: undefined,
   },
   mutations: {
     updateProPic(state, payload) {
@@ -70,7 +72,10 @@ export default {
     },
 
     updateEvents(state, data) {
+      state.event_map = new Map();
+      let idx = 0;
       data.forEach((event) => {
+        state.event_map.set(event._id, idx++);
         event.start = new Date(event.start);
         event.end = new Date(event.end);
       });
@@ -79,6 +84,33 @@ export default {
     addEvent(state, event) {
       state.events.push(event);
     },
+    /**
+     *
+     * @param {Object} { idx, id }
+     */
+    setEventId(state, { idx, id }) {
+      state.events[idx]._id = id;
+      if (state.event_map) state.event_map.set(id, idx);
+    },
+    toggleEventFinish(state, idx) {
+      state.events[idx].finished = !state.events[idx].finished;
+    },
+    editEventName(state, { idx, name }) {
+      state.events[idx].name = name;
+    },
+    repickEventTime(state, { idx, start, end, color }) {
+      state.events[idx].start = start;
+      state.events[idx].end = end;
+      state.events[idx].color = color;
+    },
+  },
+  getters: {
+    getEventById: (state) => (id) => {
+      let idx = state.event_map.get(id);
+      if (!idx) throw `cannot find event with id ${id}`;
+      return state.events[idx];
+    },
+    is_finished: (state) => (idx) => state.events[idx].finished,
   },
   actions: {
     setSelf({ commit }, payload) {
@@ -131,10 +163,39 @@ export default {
      * @param {Obj} event
      */
     async addEvent(context, event) {
-      apiAddEvent(event).catch((err) => {
+      context.commit('addEvent', event);
+      let idx = context.state.events.length - 1;
+      apiAddEvent(event)
+        .then(({ data: id }) => {
+          context.commit('setEventId', { idx, id });
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+
+    editEvent(context, idx) {
+      let edited_event = context.state.events[idx];
+      apiEditEvent(edited_event._id, edited_event).catch((err) => {
         console.error(err);
       });
-      context.commit('addEvent', event);
+    },
+
+    editEventName(context, { idx, name }) {
+      context.commit('editEventName', { idx, name });
+      context.dispatch('editEvent', idx);
+    },
+    repickEventTime(context, { idx, start, end, color }) {
+      context.commit('repickEventTime', { idx, start, end, color });
+      context.dispatch('editEvent', idx);
+    },
+    /**
+     *
+     * @param {Number} idx (idx of events array)
+     */
+    toggleEventFinish(context, idx) {
+      context.commit('toggleEventFinish', idx);
+      context.dispatch('editEvent', idx);
     },
   },
 };
