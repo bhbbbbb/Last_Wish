@@ -24,17 +24,17 @@ v-timeline-item.align-center(small :color="color_list(7)" style="padding-top: 12
           no-title
           v-model="newMilestone.estDate"
           :color="color_list(7)"
-          @change="date_modified = true"
+          @change="pick"
         )
 
     v-col.flex-shrink-1(cols="8" offset="1")
       v-text-field(
-        v-model="title"
+        v-model="title_model"
         append-icon="mdi-check"
         @click:append="submit"
         @keydown.enter="submit"
         :error-messages="err_msg"
-        placeholder="新增里程碑"
+        placeholder="新增計畫"
       )
   //- v-row
   //-   v-col.d-flex.justify-center(cols="12")
@@ -59,8 +59,7 @@ export default {
       body: undefined,
       finished: false,
     },
-    title: undefined,
-    max: undefined,
+    title_model: undefined,
     calendar_show: false,
     menu: false,
     date_modified: false,
@@ -76,18 +75,16 @@ export default {
       this.err_msg = undefined;
     },
   },
-  created() {
-    this.max = this.getISONow();
-    this.newMilestone.estDate = this.max;
-  },
+  created() {},
 
   methods: {
-    getISONow() {
-      return moment().format('YYYY-MM-DD');
-    },
     date_format(time) {
       let time_arr = time.split('-');
       return time_arr[1] + '/' + time_arr[2];
+    },
+    pick() {
+      this.date_modified = true;
+      this.err_msg = undefined;
     },
     color_list,
     moment,
@@ -97,18 +94,18 @@ export default {
         this.err_msg = '請選擇日期';
         return;
       }
-      if (!this.title || !this.title.trim()) {
+      if (!this.title_model || !this.title_model.trim()) {
         this.err_msg = '不得為空';
         return;
       }
 
-      this.newMilestone.title = this.title;
+      this.newMilestone.title = this.title_model;
       let copy = JSON.parse(JSON.stringify(this.newMilestone));
       this.$emit('created', copy);
       this.newMilestone.title = undefined;
       this.newMilestone.estDate = undefined;
       this.newMilestone.body = undefined;
-      this.title = undefined;
+      this.title_model = undefined;
       this.date_modified = false;
     },
   },
