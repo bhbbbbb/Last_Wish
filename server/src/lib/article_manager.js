@@ -241,14 +241,14 @@ module.exports = function() {
         await article.sortMilestonesAndSave();
     }
     
-    this.toggleFinishedMilestoneOfArticle = async function(articleId, milestoneId) {
+    this.setFinishedMilestoneOfArticle = async function(articleId, milestoneId, set) {
         let article = await Article.findById(articleId);
         if (!article)
             throw "no such aritcle";
         let milestone = article.milestones.id(milestoneId);
         if (!milestone)
             throw "no such milestone"
-        milestone.finished = !milestone.finished;
+        milestone.finished = set;
         await article.sortMilestonesAndSave();
     }
 }

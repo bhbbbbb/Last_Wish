@@ -191,21 +191,31 @@ module.exports = function() {
      * @param {String} targetId
      * @throws "user not found"
      */
-    this.toggleFollowRelation = async function(userId, targetId) {
+    this.setFollowRelation = async function(userId, targetId) {
         let target = await User.findById(targetId);
         if (!target)
             throw "user not found";
         let user  = await User.findById(userId);
         if (!user)
             throw "user not found";
-        if (user.followedUsers.includes(target._id)) {
-            // In this case it is going to unfollow
-            user.followedUsers.pull(target._id);
-            target.fans.pull(user._id);
-        } else {
+        // if (user.followedUsers.includes(target._id)) {
+        //     // In this case it is going to unfollow
+        //     user.followedUsers.pull(target._id);
+        //     target.fans.pull(user._id);
+        // } else {
+        //     // In this case it is going to follow
+        //     user.followedUsers.push(target._id);
+        //     target.fans.push(user._id);
+        // }
+        
+        if (set) {
             // In this case it is going to follow
             user.followedUsers.push(target._id);
             target.fans.push(user._id);
+        } else {
+            // In this case it is going to unfollow
+            user.followedUsers.pull(target._id);
+            target.fans.pull(user._id);
         }
         user.save();
         target.save();

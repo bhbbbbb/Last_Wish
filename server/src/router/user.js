@@ -219,7 +219,7 @@ user.post('/toggle_followed_user', user_session, async (req, res) => {
     }
 });
 
-user.post('/toggle_followed_post', user_session, async (req, res) => {
+user.post('/set_followed_post', user_session, async (req, res) => {
     // accountManager
     //     .toggleFollowedPostsToUser(req.session.user_id, req.body.article_id)
     //     .then(() => {
@@ -230,7 +230,8 @@ user.post('/toggle_followed_post', user_session, async (req, res) => {
     //         res.status(400).json(error);
     //     });
     try {
-        await accountManager.toggleFollowedPostsToUser(req.session.user_id, req.body.article_id);
+        let set = req.body.set == "set";
+        await accountManager.setFollowedPostsToUser(req.session.user_id, req.body.article_id, set);
         res.sendStatus(200);
     } catch (error) {
         console.log(error);
