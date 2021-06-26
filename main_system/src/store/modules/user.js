@@ -95,6 +95,14 @@ export default {
     toggleEventFinish(state, idx) {
       state.events[idx].finished = !state.events[idx].finished;
     },
+    editEventName(state, { idx, name }) {
+      state.events[idx].name = name;
+    },
+    repickEventTime(state, { idx, start, end, color }) {
+      state.events[idx].start = start;
+      state.events[idx].end = end;
+      state.events[idx].color = color;
+    },
   },
   getters: {
     getEventById: (state) => (id) => {
@@ -171,6 +179,15 @@ export default {
       apiEditEvent(edited_event._id, edited_event).catch((err) => {
         console.error(err);
       });
+    },
+
+    editEventName(context, { idx, name }) {
+      context.commit('editEventName', { idx, name });
+      context.dispatch('editEvent', idx);
+    },
+    repickEventTime(context, { idx, start, end, color }) {
+      context.commit('repickEventTime', { idx, start, end, color });
+      context.dispatch('editEvent', idx);
     },
     /**
      *

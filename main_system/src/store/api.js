@@ -47,7 +47,7 @@ export const apiGetFollowedPosts = () =>
 export const apiEditArticle = (id, new_article) =>
   articleRequest.post('/edit_article', {
     article_id: id,
-    newArticle: new_article,
+    new_article,
   });
 
 export const apiGetArticleById = (id) =>
