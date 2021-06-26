@@ -35,10 +35,12 @@ global.post('/insert', user_session, async (req, res) => {
     try {
         let newPostId = await accountManager.addPostsToAuthor(req.session.user_id, req.body.article_content);
         res.status(200).json(newPostId);
+        return;
     } catch (error) {
         console.log(error);
         let response = INSERT[USER_NOT_FOUND];
         res.status(response.status).json(response.body);
+        return;
     }
 });
 
@@ -110,9 +112,11 @@ global.post('/edit_comment', user_session, async (req, res) => {
     try {
         let newDate = await articleManager.replaceCommentOfArticle(newComment , articleId, commentId, userId);
         res.status(200).json(newDate);
+        return;
     } catch (error) {
         console.log(error);
         res.status(400).json(error);
+        return;
     }
 });
 
@@ -130,6 +134,7 @@ global.post('/add_milestone', user_session, async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(400).json(error);
+        return;
     }
 });
 
@@ -151,6 +156,7 @@ global.post('/edit_milestone', user_session, async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(400).json(error);
+        return;
     }
 });
 
@@ -171,6 +177,7 @@ global.post('/toggle_finished_milestone', user_session, async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(400).json(error);
+        return;
     }
 });
 
@@ -195,6 +202,7 @@ global.get('/', async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(400).json(error);
+        return;
     }
 });
 
@@ -305,15 +313,17 @@ global.get('/get_followed_posts', user_session, async (req, res) => {
     }
 });
 
-global.get('/visit',async (req, res) => {
+global.get('/visit', async (req, res) => {
     articleId = req.query.article_id;
     try {
         await articleManager.addVisited(articleId);
     } catch (error) {
         console.log(error);
         res.status(400).json(error);
+        return;
     }
     res.status(200).json();
+    return;
 })
 
 module.exports = global;

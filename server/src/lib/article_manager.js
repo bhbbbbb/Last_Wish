@@ -214,7 +214,6 @@ module.exports = function() {
         return comment.date;
     }
 
-
     /**
      * @parma articleId
      * @throw "no such article"

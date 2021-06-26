@@ -14,16 +14,16 @@ module.exports = function() {
      * @returns user liked posts
      */    
     this.getUserLiked = async function(userId) {
-        try {
+        // try {
             let user = await User.findById(userId); //.exec();
             console.log(user);
             if (user)
                 return user.likedPosts;
             else
                 return null;
-        } catch (e) {
-            return null;
-        }
+        // } catch (e) {
+        //     return null;
+        // }
     }
 
     /**
@@ -31,20 +31,16 @@ module.exports = function() {
      * @param {String} nonce
      */
     this.setNonceToUser = async function(username, nonce) {
-        try {
+        // try {
             let user = await User.findOne({ username: username })
-                                //  .exec()
-                                //  .then((user) => {
-                                //      return user;
-                                //  });
             if (user) {
                 user.nonce = nonce;
                 user.save();
                 return;
             }
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
         throw "user not found";
     }
 
@@ -53,15 +49,11 @@ module.exports = function() {
      * @returns if the user is in the list
      */
     this.hasUser = async function(username) {
-        try {
+        // try {
             return await User.findOne({username: username}) != null;
-                            //  .exec()
-                            //  .then((user) => {
-                            //      return user != null;
-                            //  });
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
     }
     
     /**
@@ -93,12 +85,8 @@ module.exports = function() {
      * @returns null if user not found;
      */
      this.checkVerified = async function(username) {
-        try {
-            let user = await User.findOne({ username: username })
-                                 .exec()
-                                 .then((user) => {
-                                     return user;
-                                 });
+        // try {
+            let user = await User.findOne({ username: username });
             if (user) {
                 let result = {
                    verified: user.verified,
@@ -108,12 +96,10 @@ module.exports = function() {
                 return result;
             }
             return null;
-        } catch (error) {
-            return null;
-        }
+        // } catch (error) {
+        //     return null;
+        // }
     }
-
-
 
     /**
      * @param {String} username 
@@ -122,7 +108,7 @@ module.exports = function() {
      * @throws "user not found" exception
      */
     this.checkPassword = async function(username, password) {
-        try {
+        // try {
             let user = await User.findOne({ username: username });
             if (user) {
                 let result = {
@@ -133,9 +119,9 @@ module.exports = function() {
                 }
                 return result;
             }
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
         throw "user not found";
     }
 
@@ -146,7 +132,7 @@ module.exports = function() {
      */
     this.addUser = async function(username, password, email) {
         var duplicated;
-        try {
+        // try {
             duplicated = await User.findOne({ username: username })
                                    .exec()
                                    .then((user) => {
@@ -163,15 +149,15 @@ module.exports = function() {
                 await user.save();
                 return user._id;  // if the function is executed normally
             }
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
         throw 'duplicated user';
     }
     
     this.setSelfIntroToUser = async function(userId, selfIntro) {
         var user;
-        try {
+        // try {
             user = await User.findById(userId)
                              .exec()
                              .then((user) => {
@@ -182,15 +168,15 @@ module.exports = function() {
                 user.save();
                 return;
             }
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
         throw "user not found";
     }
     
     this.setHonorToUser = async function(userId, honor) {
         var user;
-        try {
+        // try {
             user = await User.findById(userId);
             if (user) {
                 user.honor = honor;
@@ -201,23 +187,23 @@ module.exports = function() {
                 user.save();
                 return;
             }
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
         throw "user not found";
     }
 
     this.setProPicToUser = async function(userId, proPicUrl) {
-        try {
+        // try {
             let user = await User.findById(userId);
             if (user) {
                 user.proPic = proPicUrl;
                 user.save();
                 return;
             }
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
         throw "user not found";
     }
 
@@ -227,7 +213,7 @@ module.exports = function() {
      * @throws "user not found" exception
      */
     this.getUserInfo = async function(id) {
-        try {
+        // try {
             let user = await User.findById(id);
             if (user) {
                 let userInfo = {
@@ -242,9 +228,9 @@ module.exports = function() {
                 };
                 return userInfo;
             }
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
         throw "user not found"
     }
 
@@ -252,15 +238,16 @@ module.exports = function() {
      * @param {String} username 
      * @returns id of given username
      */
-    this.getIdbyUsername = async function(username) {
-        try {
+    this.getIdByUsername = async function(username) {
+        // try {
+            console.log('username:', username);
             let user = await User.findOne({ username: username });
             if (user) {
                 return user._id;
             }
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
         throw "user not found";
     }
 
@@ -272,7 +259,7 @@ module.exports = function() {
      * @throws "user not found"
      */
     this.toggleFollowRelation = async function(userId, targetId) {
-        try {
+        // try {
             let target = await User.findById(targetId);
             if (target) {
                 let user  = await User.findById(userId);
@@ -291,9 +278,9 @@ module.exports = function() {
                     return;
                 }
             }
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
         throw "user not found";
     }
 
@@ -305,7 +292,7 @@ module.exports = function() {
      * @throw "user not found"
      */
     this.toggleFollowedPostsToUser = async function(userId, articleId) {
-        try {
+        // try {
             let article = await this.articleManager.getArticleById(articleId);
             if (article) {
                 let user = await User.findById(userId);
@@ -328,14 +315,14 @@ module.exports = function() {
                     return;
                 }
             }
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
         throw "user not found"
     }
     
     this.toggleLikedPostsToUser = async function(userId, articleId) {
-        try {
+        // try {
             let article = await this.articleManager.getArticleById(articleId);
             if (article) {
                 let user = await User.findById(userId);
@@ -358,9 +345,9 @@ module.exports = function() {
                     return;
                 }
             }
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
         throw "user not found"
     }
 
@@ -371,17 +358,17 @@ module.exports = function() {
      * @return {Number} newPostId
      */
     this.addPostsToAuthor = async function(userId, articleContent) {
-        try {
+        // try {
             let author = await User.findById(userId);
             if (author) {
-                let newPostId = this.articleManager.addArticle(author, articleContent);
+                let newPostId = await this.articleManager.addArticle(author, articleContent);
                 author.selfPosts.push(newPostId);
                 author.save();
                 return newPostId;
             }
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
         throw "user not found";
     }
 
@@ -391,7 +378,7 @@ module.exports = function() {
      * @throws "user not found" exception
      */
     this.getFollowedPostsByUser = async function(userId) {
-        try {
+        // try {
             let user = await User.findById(userId)
                                  .populate('followedUsers');
             if (user) {
@@ -406,9 +393,9 @@ module.exports = function() {
                 }
                 return articleIds;
             }
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
         throw "user not found"; 
     }
     
@@ -419,14 +406,14 @@ module.exports = function() {
      * @throws "user not found" exception
      */
     this.getPostsByAuthor = async function(userId) {
-        try {
+        // try {
             let author = await User.findById(userId);
             if (author) {
                 return author.selfPosts;
             }
-        } catch (error) {
-            throw error;
-        }
+        // } catch (error) {
+        //     throw error;
+        // }
         throw "user not found";
     }
 
@@ -437,16 +424,16 @@ module.exports = function() {
      * @throws "user not found" exception
      */
     this.addEventToUser = async function(event, userId) {
-        try {
+        // try {
             let user = await User.findById(userId).exec();
             if (user) {
                 await user.events.push(event);
                 await user.save();
                 return;
             }
-        } catch (error){
-            throw error;
-        }
+        // } catch (error){
+        //     throw error;
+        // }
         throw "user not found";
     }
 
@@ -456,14 +443,14 @@ module.exports = function() {
      * @throws "user not found" exception
      */
     this.getUserEvent = async function(userId) {
-        try {
+        // try {
             let user = await User.findById(userId);
             if (!user)
                 throw "user not found";
             return user.events;
-        } catch(error) {
-            throw(error);
-        }
+        // } catch(error) {
+        //     throw(error);
+        // }
     }
 
     /**
@@ -475,8 +462,8 @@ module.exports = function() {
      * @throws "event not found" exception
      * @returns event of eventId if event exist
      */
-     this.editEventById = async function(eventId, userId, modifiedEvent) {
-        try {
+    this.editEventById = async function(eventId, userId, modifiedEvent) {
+        // try {
             let user = await User.findById(userId);
             if (!user)
                 throw "user not found";
@@ -486,40 +473,8 @@ module.exports = function() {
             await event.set(modifiedEvent);
             await user.save()
             return;
-        } catch(error) {
-            throw(error);
-        }
+        // } catch(error) {
+        //     throw(error);
+        // }
     }
-//    /**
-//     * get user event lists by userId
-//     * @param {String} userId
-//     * @throws "user not found" exception
-//     * @retunrs eventList of user
-//     */
-//    this.getUserEvents = async function(userId){
-//        try{
-//           let user = await User.findById(userId);
-//           if(!user)
-//               throw "user not found";
-//            return user.eventLists;
-//        }catch(error){
-//            throw error;
-//        }
-//    }
-
-
-
-    /**
-     * @param {String} username 
-     * @param {String} articleId 
-     * @param {String} commentStr 
-     * @throws "user not found" exception
-     */
-    // this.addCommentByAuthor = function(username, articleId, commentStr) {
-    //     if (!this.hasUser(username)) {
-    //         throw "user not found";
-    //     }
-    //     let author = this.accounts_info.find(account => account['username'] == username)
-    //     this.articleManager.addCommentToArticle(author, articleId, commentStr);
-    // }
 };
