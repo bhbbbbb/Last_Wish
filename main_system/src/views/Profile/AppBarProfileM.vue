@@ -21,8 +21,14 @@ v-app-bar(
             ) 
               v-icon mdi-cog
           v-list
-            v-list-item
-              v-list-item-title 設定自介
+            Confirm()
+              SelfIntro
+              template(#activator="{ on, attrs }")
+                v-list-item(
+                  v-on="on"
+                  v-bind="attrs"
+                )
+                  v-list-item-title 設定自介
             v-list-item(
               to="upl"
             )
@@ -75,6 +81,8 @@ export default {
   name: 'AppBarProfileM',
   components: {
     UserAvatar: () => import('@/components/UserAvatar'),
+    Confirm: () => import('@/components/Confirm'),
+    SelfIntro: () => import('@/components/SelfIntro'),
   },
   props: {
     username: {
