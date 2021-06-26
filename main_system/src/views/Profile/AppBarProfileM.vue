@@ -21,7 +21,7 @@ v-app-bar(
             ) 
               v-icon mdi-cog
           v-list
-            Confirm()
+            MsgBox()
               SelfIntro
               template(#activator="{ on, attrs }")
                 v-list-item(
@@ -59,7 +59,7 @@ v-app-bar(
         depressed
       ) 
         span 我的願望 (n)
-        v-btn.pa-0(text) 全部
+        v-btn.pa-0(text :ripple="false") 全部
           v-icon mdi-menu-down
       v-btn.pa-0(
         style="min-width: 3px;"
@@ -81,7 +81,7 @@ export default {
   name: 'AppBarProfileM',
   components: {
     UserAvatar: () => import('@/components/UserAvatar'),
-    Confirm: () => import('@/components/Confirm'),
+    MsgBox: () => import('@/components/MsgBox'),
     SelfIntro: () => import('@/components/SelfIntro'),
   },
   props: {

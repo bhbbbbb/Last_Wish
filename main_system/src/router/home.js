@@ -9,34 +9,16 @@ export const home_routes = [
       fetchAction: 'getGlobalArticles',
     }),
   },
-  {
-    path: 'register',
-    name: 'Register',
-    component: () => import('@/views/Home/Register'),
-    beforeEnter(to, from, next) {
-      if (store.state.is_login) next('/articles');
-      else next();
-    },
-  },
-  {
-    path: 'login',
-    name: 'Login',
-    component: () => import('@/views/Home/MyLogin'),
-    beforeEnter(to, from, next) {
-      if (store.state.is_login) next('/articles');
-      else next();
-    },
-  },
-  {
-    path: 'reset',
-    name: 'Reset',
-    component: () => import('@/views/Home/Register'),
-    beforeEnter(to, from, next) {
-      console.log(to.query.token);
-      if (to.query.token) next();
-      else next(false);
-    },
-  },
+  // {
+  //   path: 'reset',
+  //   name: 'Reset',
+  //   component: () => import('@/views/Home/Register'),
+  //   beforeEnter(to, from, next) {
+  //     console.log(to.query.token);
+  //     if (to.query.token) next();
+  //     else next(false);
+  //   },
+  // },
   {
     path: 'article/:id',
     name: 'Article',

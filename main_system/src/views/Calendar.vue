@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-card(flat)
+  v-card.m-view.mt-3(flat)
     v-sheet(height="64") 
       v-row(no-gutters).ma-0
         v-col(cols="1")

@@ -1,16 +1,13 @@
 <template lang="pug">
-v-sheet.pa-0.ma-0
-	span hello world
+v-sheet.fill-screen.d-flex.align-center.justify-center(min-height="268" flat color="white")
+  router-view
 </template>
 
 <script>
 export default {
-  name: 'SelfIntro',
+  name: 'Frame',
   components: {},
-  props: {},
   data: () => ({}),
-  computed: {},
-  created() {},
   methods: {},
 };
 </script>

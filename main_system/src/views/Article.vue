@@ -39,7 +39,7 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
             )
 
             //- v-dialog
-            Confirm(
+            MsgBox(
               @confirm="deletePost"
               width="320"
               v-if="$store.state.user.self.id === article.author.id"
@@ -134,7 +134,7 @@ export default {
     NavLink: () => import('@/components/NavLink'),
     Body: () => import('@/components/Body'),
     Milestones: () => import('@/components/Milestones'),
-    Confirm: () => import('@/components/Confirm'),
+    MsgBox: () => import('@/components/MsgBox'),
     EditCard: () => import('@/components/EditCard'),
   },
   props: {

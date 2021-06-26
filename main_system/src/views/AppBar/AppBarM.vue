@@ -31,6 +31,7 @@ v-app-bar.d-flex.justify-center.align-end(
       
       v-col.align-self-center(cols="2")
         v-btn.ma-0.pa-1(
+          v-if="$store.state.is_login"
           width="64"
           height="64"
           text

@@ -143,7 +143,7 @@ export default {
     },
     updateProPic({ commit }, payload) {
       commit('updateProPic', payload);
-      commit('updateSelfArticlesProPic', payload);
+      commit('updateSelfArticlesProPic', payload, { root: true });
     },
 
     async getEvents(context, force_update) {
