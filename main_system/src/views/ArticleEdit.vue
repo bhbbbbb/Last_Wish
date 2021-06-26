@@ -1,4 +1,3 @@
-/* eslint-disable */
 <template lang="pug">
 v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)")
   v-container            
