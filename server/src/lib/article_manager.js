@@ -151,10 +151,9 @@ module.exports = function() {
             "author": author,
             "body": commentStr,
         };
-        await article.comments.push(newComment);
-        let len = article.comments.length;
-        let res = await article.save();
-        return res.comments[len - 1].date;
+        let len = await article.comments.push(newComment);
+        await article.save();
+        return article.comments[len - 1].date;
      }
 
     /**

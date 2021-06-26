@@ -322,9 +322,10 @@ module.exports = function() {
         let user = await User.findById(userId).exec();
         if (!user)
             throw "user not found";
-        await user.events.push(event);
+        let len = await user.events.push(event);
         await user.save();
-        return;
+        console.log(user.events);
+        return user.events[len - 1]._id;
     }
 
     /**

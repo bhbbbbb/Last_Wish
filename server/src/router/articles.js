@@ -265,10 +265,11 @@ global.get('/get_user_posts', user_session, async (req, res) => {
  */
  global.post('/edit_article', user_session, async (req, res) => {
     try {
-        let newArticle = {
-            "title": req.body.newArticle.title,
-            "body": req.body.newArticle.body,
-        };
+        // let newArticle = {
+        //     "title": req.body.newArticle.title,
+        //     "body": req.body.newArticle.body,
+        // };
+        let newArticle = req.body.new_article;
         let articleId = req.body.article_id;
         let userId = req.session.user_id;
         let newDate = await articleManager.replaceArticle(newArticle, articleId, userId);

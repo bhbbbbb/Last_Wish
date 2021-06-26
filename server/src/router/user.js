@@ -404,11 +404,13 @@ user.post('/add_event_to_user', user_session, async (req, res) => {
     };
     let userId = req.session.user_id;
     try {
-        await accountManager.addEventToUser(newEvent, userId);
-        res.sendStatus(200);
+        let event_id = await accountManager.addEventToUser(newEvent, userId);
+        res.status(200).json(event_id);
+        return;
     } catch (error) {
         console.log(error);
         res.sendStatus(400);
+        return;
     }
 });
 
