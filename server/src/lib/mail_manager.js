@@ -42,14 +42,14 @@ module.exports = function() {
             (err, emailToken) => {
                 const url = serverUrl + `/user/confirmation/${emailToken}`;
                 var html =
-                    'Please click this link to activate your new password:<br><br>'+ `<a href="${
+                    'Please click this link to activate your new password:<br>'+ `<a href="${
                         url}">Click me</a>`+'<br>Your password will remain unchanged until you click the link\
                         <br>The link above will expired within 30min\
                         <br>If you have no clue of this mail, just ignore it';
-                var sub = username + ' 密碼重啟驗證 from lernen';
+                var sub =username + '的密碼重啟驗證信 from Lernen';
                 var mailOptions = {
-                    from : 'lernen confirm mail <no-reply@lernen.com>',
-                    replyTo:'no-reply@lernen.com',
+                    from : 'Lernen <no-reply@Lernen.com>',
+                    replyTo:'no-reply@Lernen.com',
                     to : mailAddr,
                     subject : sub,
                     html : html,
@@ -103,8 +103,8 @@ module.exports = function() {
      */
     this.sendMails = (mailAddr, subject, bodyText) => {
         var mailOptions = {
-            from : 'lernen <no-reply@lernen.com>',
-            replyTo:'no-reply@lernen.com',
+            from : 'Lernen <no-reply@Lernen.com>',
+            replyTo:'no-reply@Lernen.com',
             to: mailAddr,
             subject: subject,
             text: bodyText,
@@ -153,10 +153,10 @@ module.exports = function() {
                 var html =
                     'Please click this link to confirm your email:<br><br>'+ `<a href="${
                         url}">Click me</a>`+'<br>The link above will expired within 30min<br><br>If you have no clue of this mail, just ignore it';
-                var sub = username + ' 這是你的驗證資訊 from lernen';
+                var sub = username + ' 這是你的驗證資訊 from Lernen';
                 var mailOptions = {
-                    from : 'lernen confirm mail <no-reply@lernen.com>',
-                    replyTo:'no-reply@lernen.com',
+                    from : 'Lernen confirm mail <no-reply@Lernen.com>',
+                    replyTo:'no-reply@Lernen.com',
                     to : mailAddr,
                     subject : sub,
                     html : html,
