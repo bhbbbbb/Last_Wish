@@ -35,24 +35,47 @@ module.exports = function() {
      * @returns the json object containing all articles with frontend format
      */
     this.getAllArticleIds = async function(options) {
-        let allArticleIds = [];
-        let rawArticles = await Article.find({});
+        let rawArticles = [];
         if (options) {
-            if (options.new2old) {
-                rawArticles.sort((a, b) => {
-                    return b.date - a.date;
-                });
-            } else {
-                rawArticles.sort((a, b) => {
-                    return a.date - b.date;
-                });
+            switch (options.filter) {
+                case "all":
+                    rawArticles = await Article.find({});
+                    break;
+                case "finished":
+                    rawArticles = await Article.find({ finished: true });
+                    break;
+                case "unfinished":
+                    rawArticles = await Article.find({ finished: false});
+                    break;
+                default:
+                    rawArticles = await Article.find({});
+                    break;
             }
-            if (options.finished) {
-                rawArticles.sort((a, b) => {
-                    return a.finished - b.finished;
-                });
+            switch (options.sortBy) {
+                case "new2old":
+                    rawArticles.sort((a, b) => {
+                        return b.date - a.date;
+                    });
+                    break;
+                case "old2new":
+                    rawArticles.sort((a, b) => {
+                        return a.date - b.date;
+                    });
+                    break;
+                case "most_liked":
+                    rawArticles.sort((a, b) => {
+                        return b.likes - a.likes;
+                    });
+                    break;
+                case "most_followed":
+                    rawArticles.sort((a, b) => {
+                        return b.fans.length - a.fans.length;
+                    });
+                    break;
             }
+            
         }
+        let allArticleIds = [];
         for (article of rawArticles) {
             allArticleIds.push(article._id);
         }
@@ -79,25 +102,47 @@ module.exports = function() {
     }
 
     this.sortArticleIdsByOptions = async function(articleIds, options) {
-        let articles = await Article.find({ '_id': { $in: articleIds } });
+        let rawArticles = [];
         if (options) {
-            if (options.new2old) {
-                articles.sort((a, b) => {
-                    return b.date - a.date;
-                });
-            } else {
-                articles.sort((a, b) => {
-                    return a.date - b.date;
-                });
+            switch (options.filter) {
+                case "all":
+                    rawArticles = await Article.find({ '_id': { $in: articleIds } });
+                    break;
+                case "finished":
+                    rawArticles = await Article.find({ '_id': { $in: articleIds }, finished: true });
+                    break;
+                case "unfinished":
+                    rawArticles = await Article.find({ '_id': { $in: articleIds }, finished: false });
+                    break;
+                default:
+                    rawArticles = await Article.find({ '_id': { $in: articleIds } });
+                    break;
             }
-            if (options.finished) {
-                articles.sort((a, b) => {
-                    return a.finished - b.finished;
-                });
+            switch (options.sortBy) {
+                case "new2old":
+                    rawArticles.sort((a, b) => {
+                        return b.date - a.date;
+                    });
+                    break;
+                case "old2new":
+                    rawArticles.sort((a, b) => {
+                        return a.date - b.date;
+                    });
+                    break;
+                case "most_liked":
+                    rawArticles.sort((a, b) => {
+                        return b.likes - a.likes;
+                    });
+                    break;
+                case "most_followed":
+                    rawArticles.sort((a, b) => {
+                        return b.fans.length - a.fans.length;
+                    });
+                    break;
             }
         }
         let sortedArticleIds = [];
-        for (article of articles) {
+        for (article of rawArticles) {
             sortedArticleIds.push(article._id);
         }
         return sortedArticleIds;
