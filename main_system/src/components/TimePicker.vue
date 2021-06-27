@@ -80,7 +80,7 @@ import 'vue2-datepicker/index.css';
 // import moment from 'moment';
 export default {
   name: 'TimePicker',
-	components: { DatePicker },
+  components: { DatePicker },
   props: {
     value: {
       type: Boolean,
@@ -96,37 +96,35 @@ export default {
     },
   }),
   created() {
-		this.resetPick();
-	},
+    this.resetPick();
+  },
   methods: {
-		resetPick() {
-			this.pick.start = new Date();
-			this.pick.end = new Date();
-			this.pick.start.setHours(0, 0);
-			this.pick.end.setHours(23, 59);
-		},
+    resetPick() {
+      this.pick.start = new Date();
+      this.pick.end = new Date();
+      this.pick.start.setHours(0, 0);
+      this.pick.end.setHours(23, 59);
+    },
     cancelPicking() {
       this.$emit('cancel');
     },
     confirmPicking() {
       this.pick.color = EVENT_COLOR_LIST[this.pick.color];
-			//The component will return an date obj, following code is used to parse data in specific form
-			this.pick.start = this.getTimeStr(this.pick.start);
-			this.pick.end = this.getTimeStr(this.pick.end);
+      //The component will return an date obj, following code is used to parse data in specific form
+      this.pick.start = this.getTimeStr(this.pick.start);
+      this.pick.end = this.getTimeStr(this.pick.end);
       this.$emit('pick', this.pick);
-			this.resetPick();
+      this.resetPick();
     },
-		validEndtime(time){
-			if(this.pick.end < this.pick.start)
-				this.pick.end = this.pick.start
-			return time < this.pick.start;
-		},		
-		validStarttime(time){
-			if(this.pick.end < this.pick.start)
-				this.pick.start = this.pick.end;
-			return time > this.pick.end;
-		},
-		/**
+    validEndtime(time) {
+      if (this.pick.end < this.pick.start) this.pick.end = this.pick.start;
+      return time < this.pick.start;
+    },
+    validStarttime(time) {
+      if (this.pick.end < this.pick.start) this.pick.start = this.pick.end;
+      return time > this.pick.end;
+    },
+    /**
      * @param {Date} Date
      * @returns xx:xx
      */
@@ -137,7 +135,6 @@ export default {
       if (m < 10) m = '0' + m;
       return `${h}:${m}`;
     },
-  },    
-
+  },
 };
 </script>
