@@ -4,6 +4,7 @@ import {
   apiGetEvents,
   apiAddEvent,
   apiEditEvent,
+  apiSetSelfIntro,
 } from '../api';
 export default {
   namespaced: true,
@@ -21,6 +22,10 @@ export default {
     event_map: undefined,
   },
   mutations: {
+    updateIntro(state, payload) {
+      state.self.self_intro = payload;
+    },
+
     updateProPic(state, payload) {
       state.self.pro_pic = payload;
     },
@@ -144,6 +149,10 @@ export default {
     updateProPic({ commit }, payload) {
       commit('updateProPic', payload);
       commit('updateSelfArticlesProPic', payload, { root: true });
+    },
+    updateIntro({ commit }, payload) {
+      apiSetSelfIntro({ self_intro: payload });
+      commit('updateIntro', payload);
     },
 
     async getEvents(context, force_update) {
