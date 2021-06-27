@@ -87,6 +87,15 @@ export const apiSendTokenMail = (data) =>
 
 /**
  *
+ * @param {obj} self_intro : (String)
+ * @returns
+ */
+
+export const apiSetSelfIntro = (data) =>
+  userRequest.post('/set_self_intro', data);
+
+/**
+ *
  * @param {String} id
  */
 export const apiToggleFollow = (id) =>
