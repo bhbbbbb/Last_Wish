@@ -224,6 +224,35 @@ module.exports = function() {
         await article.save();
         return article.date;
     }
+    
+    this.updateArticle = async function(articleId, updateQuery) {
+        let article = await Article.findById(articleId);
+        if (!article)
+            throw "no such article";
+        if (updateQuery.title)
+            article.title = updateQuery.title;
+        if (updateQuery.body)
+            article.body = updateQuery.body;
+        if (updateQuery.tags)
+            article.tags = updateQuery.tags;
+        if (updateQuery.title)
+            article.title = updateQuery.title;
+        for (milestoneData of updateQuery.milestones) {
+            if (milestoneData._id) {
+                oldMilestone.body = milestoneData.body;
+                oldMilestone.title = milestoneData.title;
+                oldMilestone.estDate = milestoneData.estDate;
+                oldMilestone.finished = milestoneData.finished;
+            } else {
+                article.milestones.push(milestoneData);
+            }
+        }
+        for (milestone of article.milestones) {
+            // if (milestone._id)
+        }
+        await article.save();
+        return article.date;
+    }
 
     /**
      * Replace a comment body in an article
@@ -262,6 +291,14 @@ module.exports = function() {
         article.visited++;
         await article.save();
         return;
+    }
+    
+    this.setFinishedArticle = async function(articleId, set) {
+        let article = await Article.findById(articleId);
+        if (!article)
+            throw "no such article";
+        article.finished = set;
+        await article.save();
     }
 
     this.addMilestoneToArticle = async function(articleId, milestone) {

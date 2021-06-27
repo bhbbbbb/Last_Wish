@@ -146,6 +146,28 @@ global.post('/set_finished_milestone', user_session, async (req, res) => {
     }
 });
 
+global.post('/set_finished_article', user_session, async (req, res) => {
+    try {
+        let set = req.body.set == "true";
+        let posts = await accountManager.getPostsByAuthor(req.session.user_id);
+        if (posts.includes(req.body.article_id)) {
+            await articleManager.setFinishedArticle(
+                req.body.article_id,
+                set
+            );
+            res.sendStatus(200);
+            return;
+        } else {
+            res.status(400).json("not the author");
+            return;
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+        return;
+    }
+});
+
 global.get('/', async (req, res) => {
     let options = {
         sortBy: req.query.sort_by,
@@ -209,6 +231,24 @@ global.get('/get_user_posts', user_session, async (req, res) => {
         let newDate = await articleManager.replaceArticle(newArticle, articleId, userId);
         res.status(200).json(newDate);
         return;
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+        return;
+    }
+});
+
+global.post('/update_article', user_session, async (req, res) => {
+    try {
+        let posts = await accountManager.getPostsByAuthor(req.session.user_id);
+        if (posts.includes(req.body.article_id)) {
+            let articleId = await articleManager.updateArticle(req.body.article_id, req.body.new_article);
+            res.status(200).json(articleId);
+            return;
+        } else {
+            res.status(400).json("not the author");
+            return;
+        }
     } catch (error) {
         console.log(error);
         res.status(400).json(error);
