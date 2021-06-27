@@ -13,7 +13,7 @@ var accountManager = new AccountManager();
 var user_session = require('../lib/session.js');
 const https_config = require('../../https.config');
 /***************** Url Setting *******************/
-const prefix = 'http://'
+const prefix = https_config.https_enable ? 'https://' : 'http://'
 var port = https_config.port;
 var frontPort = 8080;
 const SERVER_URL = prefix + ip.address() + ':' + port;
@@ -264,6 +264,7 @@ user.get('/logout', user_session, (req, res) => {
     res.sendStatus(200);
 });
 
+
 const GET_PUBLIC_INFO = [
     {
         status : 200
@@ -342,9 +343,9 @@ const LINK_EXPIRED = (` \
 
 user.get('/confirmation/:token', async (req, res) => {
     try {
-        const { user: id, nonce: nonce } = jwt.verify(req.params.token, EMAIL_SECRET);
+        const { user: id, nonce: nonce, pass: cryptPass} = jwt.verify(req.params.token, EMAIL_SECRET);
         if (id) {
-            const result = await mailManager.verified(id, nonce);
+            const result = await mailManager.verified(id, nonce, cryptPass);
             if (result) {
                 // TODO: Auto logged in
                 res.redirect(FRONT_URL);
@@ -356,6 +357,12 @@ user.get('/confirmation/:token', async (req, res) => {
         res.send(LINK_EXPIRED);
     }
 });
+
+
+
+
+
+
 
 const VERIFIED = 2;
 const SEND_TOKEN = [
@@ -458,5 +465,73 @@ user.get('/get_liked_posts', user_session, async (req, res) => {
         res.sendStatus(500);
     }
 });
+
+user.post('/reset_pass', user_session,async(req, res) => {
+    try {
+        let userId = req.session.user_id;
+        let username = req.body.username;
+        let pass = req.body.new_pass;
+        let user = [];
+        if(!userId)
+            user = await accountManager.findUserbyUsername(username);
+        else
+            user = await accountManager.findUserById(userId);
+        if(!pass || !user){
+            res.sendStatus(400);
+            return;
+        }
+        let hash = await accountManager.hashPass(pass);
+        await mailManager.sendResetPass(user.email, user._id, user.username, SERVER_URL, EMAIL_SECRET, hash);
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(400);
+    }
+})
+
+user.post('/reset_email', user_session, async(req, res) => {
+    try {
+        userId = req.session.user_id;
+        let email = req.body.new_email;
+        let pass = req.body.password;
+        let check1 = await mailManager.hasMailAddr(email);
+        let check2 = mailManager.isValidAddr(email);
+        if(check1){
+            let response = REGISTER[DUPLICATED_EMAIL];
+            res.status(response.status).json(response.body);
+            return;
+        }else if(!check2){
+            let response = REGISTER[INVALID_ADDR];
+            res.status(response.status).json(response.body);
+            return;
+        }else{
+            let correct = await accountManager.setEmailToUser(userId, pass, email);
+            if(correct)
+                res.sendStatus(200);
+            else{
+                let response = {
+                    err_code : 4,
+                    err_msg : "Wrong password"
+                }
+                res.status(400).json(response);
+            }
+        }
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(400);
+    }
+})
+
+// function genNonce(length) {
+//     let result = [];
+//     let characters =
+//         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+//     let charactersLength = characters.length;
+//     for (var i = 0; i < length; i++) {
+//         result.push(
+//             characters.charAt(Math.floor(Math.random() * charactersLength)));
+//     }
+//     return result.join('');
+// }
 
 module.exports = user;

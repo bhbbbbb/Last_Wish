@@ -37,36 +37,38 @@ export default {
       required: false,
       default: 300,
     },
-		buttons: {
-			type: Number,
-			default: 2,
-			validator: (val) => val === 1 || val === 2,
-		},
-		value: {
-			type: Boolean,
-			default: false,
-		}
+    buttons: {
+      type: Number,
+      default: 2,
+      validator: (val) => val === 1 || val === 2,
+    },
+    value: {
+      type: Boolean,
+      default: undefined,
+    },
   },
   data: () => ({
+    value_: undefined,
   }),
-	computed: {
-		inner_value: {
-			get() {
-				return this.value;
-			},
-			set(val) {
-				this.$emit('update:value', val);
-			}
-		}
-	},
-  created() {
-	},
+  computed: {
+    inner_value: {
+      get() {
+        if (this.value === undefined) return this.value_;
+        else return this.value;
+      },
+      set(val) {
+        if (this.value === undefined) this.value_ = val;
+        else this.$emit('update:value', val);
+      },
+    },
+  },
+  created() {},
   methods: {
-		confirm() {
-			this.$emit('confirm');
-			this.inner_value = false;
-		}
-	},
+    confirm() {
+      this.$emit('confirm');
+      this.inner_value = false;
+    },
+  },
 };
 </script>
 
