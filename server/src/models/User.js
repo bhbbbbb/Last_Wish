@@ -16,6 +16,15 @@ const eventSchema = new mongoose.Schema({
   end: Date,
   finished: Boolean
 });
+const selfnotifySchema = new mongoose.Schema({
+  describe: String,
+  Link:{type: mongoose.Types.ObjectId, ref: 'Article'},
+  checked:{
+    type: Boolean,
+    default: false
+  }
+})
+
 
 const userSchema = new mongoose.Schema({
   username: String,
@@ -49,7 +58,11 @@ const userSchema = new mongoose.Schema({
   selfPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   finishedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   events: [eventSchema],
-  checkedNotifies: [{ type: mongoose.Types.ObjectId, ref: 'Notify'}],
+  Notifies: [selfnotifySchema],
+  lastSync:{
+    type: Date,
+    default: Date.now,
+  },
 });
 
 userSchema.post('remove', (user) => {
