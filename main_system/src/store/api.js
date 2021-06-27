@@ -45,7 +45,8 @@ export const apiGetLikedPost = () => userRequest.get('/get_liked_posts');
 
 // ----------------------------------------------------------------
 
-export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
+export const apiUploadArticle = (content) =>
+  articleRequest.post('/insert', { article_content: content });
 
 /**
  *
@@ -67,12 +68,27 @@ export const apiDeleteArticle = (id) =>
 
 /********************** milestone #milestone #ms  ********************/
 
-// export const apiToggleMsFinished = (article_id, milestone_id) =>
-//   articleRequest.post('/toggle_finished_milestone', {
-//     article_id,
-//     milestone_id,
-//   });
+/**
+ *
+ * @param {String} article_id
+ * @param {String} milestone_id
+ * @param {Boolean} set
+ * @returns {Promise}
+ */
+export const apiSetMsFinished = (article_id, milestone_id, set) =>
+  articleRequest.post('/set_finished_milestone', {
+    article_id,
+    milestone_id,
+    set,
+  });
 
+/**
+ *
+ * @param {String} article_id
+ * @param {String} milestone_id
+ * @param {Object} new_milestone
+ * @returns {Promise}
+ */
 export const apiEditMilestone = (article_id, milestone_id, new_milestone) =>
   articleRequest.post('/edit_milestone', {
     article_id,

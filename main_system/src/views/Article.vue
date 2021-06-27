@@ -64,7 +64,7 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
       v-col(cols="10" offset="1")
         
         //-- #edit
-        EditCard.mt-3(v-if="editing" :article="article.content")
+        EditCard.mt-3(v-if="editing" :article.sync="article.content")
 
         v-card.pa-0.ma-0.transparent(flat v-else)
           //------------ #title -----------
@@ -88,7 +88,11 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
 
           //----------- #milestone -----------------
           v-row
-            Milestones(:content="article.content.milestones" :author-id="article.author.id")
+            Milestones(
+              :content="article.content.milestones"
+              :author-id="article.author.id"
+              :article-id="article.id"
+            )
 
 
 
@@ -104,7 +108,6 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
         )
         NewComment(
           v-if="$store.state.is_login"
-          @update="updateComment"
           :article-id="id"
         )
     v-overlay.align-start(:value="show_info", absolute="absolute", opacity="0")
@@ -120,7 +123,6 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
 <script>
 import moment from 'moment';
 import color_list from '@/data/color_list';
-import { apiEditArticle } from '@/store/api';
 // var Article_id = '';
 
 export default {
@@ -150,17 +152,25 @@ export default {
     infos: '',
     ThePost: [],
     NP: false,
-    article: undefined,
     editing: false,
   }),
   computed: {
     date() {
       return moment(this.article.date).format('M/D');
     },
+    article: {
+      get() {
+        return this.$store.state.article.data[this.id];
+      },
+      set(val) {
+        this.$store.dispatch('editArticle', {
+          article_id: this.id,
+          content: val.content,
+        });
+      },
+    },
   },
-  created() {
-    this.article = this.$store.state.article.data[this.id];
-  },
+  created() {},
 
   methods: {
     Copy() {
@@ -194,27 +204,6 @@ export default {
     //     },
     //   });
     // },
-    // GoWish(idx) {
-    //   this.$router.push({
-    //     name: 'Wish',
-    //     params: {
-    //       id: this.id,
-    //       wish: this.article.wishes[idx],
-    //       content: this.article.wishes[idx],
-    //       // color: this.color,
-    //     },
-    //   });
-    // },
-    GoEdit() {
-      this.$router.push({
-        name: 'ArticleEdit',
-        params: {
-          id: this.id,
-          author: this.article.author,
-          content: this.article,
-        },
-      });
-    },
     toggleEdit() {
       this.editing = !this.editing;
       if (!this.editing) {
@@ -223,11 +212,16 @@ export default {
       }
     },
     submitEdit() {
-      apiEditArticle(this.article.id, this.article.content);
+      this.$store.dispatch('editArticle', {
+        article_id: this.id,
+        content: this.article.content,
+      });
+      // if (!this.id)
+      //   apiEditArticle(this.article.id, this.article.content);
     },
-    updateComment(newComment) {
-      this.article.comments.push(newComment);
-    },
+    // updateComment(newComment) {
+    //   // this.article.comments.push(newComment);
+    // },
     moment,
     color_list,
     deletePost() {

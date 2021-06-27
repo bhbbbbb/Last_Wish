@@ -31,9 +31,8 @@ v-timeline(
         span.d-flex.text-no-wrap(style="overflow-x: hidden")
           | {{ ms.title }}
       v-col.d-flex.align-self-start(cols="1")
-        v-btn(icon small @click="del(idx)")
+        v-btn(icon small @click="del(idx)" v-if="editable")
           v-icon(
-            v-if="editable"
             small
           ) mdi-close
       //- v-col(offset="1")
@@ -61,7 +60,8 @@ v-timeline(
   ) 完成計畫
   MsgBox(:value.sync="show" @confirm="archive" )
     v-col.d-flex.justify-center(cols="12")
-      span.align-center(class="msgtxt") 計畫一但完成後就不能再修改<br>
+      span.align-center(class="msgtxt") 計畫一但完成後就不能再修改
+      br
     v-col.d-flex.justify-center(cols="12")
       span.align-center(class="msgtxt") 確定要完成嗎?
 </template>
@@ -84,6 +84,11 @@ export default {
     authorId: {
       type: String,
       required: true,
+    },
+    articleId: {
+      type: String,
+      required: false,
+      default: undefined,
     },
     editable: {
       type: Boolean,
@@ -119,12 +124,17 @@ export default {
       this.content.splice(idx, 1);
     },
     finish(idx) {
-      this.content[idx].finished = !this.content[idx].finished;
+      if (this.$store.state.user.self.id === this.authorId && this.articleId)
+        this.$store.dispatch('setMilestoneFinished', {
+          article_id: this.articleId,
+          ms_idx: idx,
+          value: !this.content[idx].finished,
+        });
+      this.$forceUpdate();
     },
     check_display({ idx, hover }) {
       let self = this.content[idx].finished || hover;
-      let others = this.content[idx].finished;
-      return this.$store.state.user.self.id === this.authorId ? self : others;
+      return this.$store.state.user.self.id === this.authorId && self;
     },
     all_fin() {
       let result = true;
@@ -160,13 +170,13 @@ export default {
 }
 </style>
 <style scpoed>
-.msgtxt{
-font-family: Roboto;
-font-style: medium;
-font-weight: 360;
-line-height: 4px;
-text-align: center;
+.msgtxt {
+  font-family: Roboto;
+  font-style: medium;
+  font-weight: 360;
+  line-height: 4px;
+  text-align: center;
 
-color: #888888;
+  color: #888888;
 }
 </style>

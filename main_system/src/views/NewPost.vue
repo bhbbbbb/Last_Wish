@@ -9,7 +9,7 @@ v-card.ma-1.pa-0(min-height="10vh" flat)
           span.text-body-2() 新增計畫
         v-col.d-flex.justify-end(cols="2")
           v-btn(text @click="SubmitNewArticle") 發佈
-  EditCard.mx-6.mt-3(:article="new_article")
+  EditCard.mx-6.mt-3(:article.sync="new_article")
   v-overlay.align-start(
     :value="show_info"
     absolute
@@ -19,7 +19,6 @@ v-card.ma-1.pa-0(min-height="10vh" flat)
 </template>
 
 <script>
-import { apiUploadArticle } from '@/store/api';
 export default {
   name: 'NewPost',
   components: {
@@ -35,7 +34,6 @@ export default {
     show_info: false,
     info_type: 'success',
     infos: '',
-    submit_buffer: false,
   }),
   computed: {},
   created() {},
@@ -46,23 +44,9 @@ export default {
         this.Show_info('Blank data!', 'error');
         return;
       }
-      this.submit_buffer = true;
-      apiUploadArticle({
-        article_content: this.new_article,
-      })
-        .then((res) => {
-          // TODO : insert new post locally
-          let newPostId = res.data;
-          this.$store.dispatch('getGlobalArticles', true).then(() => {
-            this.$router.push(`/article/${newPostId}`);
-          });
-        })
-        .catch((err) => {
-          this.Show_info('Something went wrong', 'error');
-          console.log(err);
-        });
-
-      this.$store.dispatch('getSelfArticles', { force_update: true });
+      this.$store.dispatch('addArticle', this.new_article).then((id) => {
+        this.$router.push(`/article/${id}`);
+      });
     },
     Show_info(Info, infoType) {
       /**

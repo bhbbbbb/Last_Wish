@@ -5,7 +5,7 @@ v-card.ma-0.pa-0.transparent(min-height="10vh" flat)
   v-row(no-gutters)
     v-text-field.ma-0.pa-0(
       placeholder="Title here"
-      v-model="article.title"
+      v-model="inner_article.title"
       autocomplete="off"
     )
 
@@ -15,7 +15,7 @@ v-card.ma-0.pa-0.transparent(min-height="10vh" flat)
       auto-grow
       hint="Tell me about your wish"
       placeholder="body here"
-      v-model="article.body"
+      v-model="inner_article.body"
       rows="1"
     )
 
@@ -41,7 +41,7 @@ v-card.ma-0.pa-0.transparent(min-height="10vh" flat)
     )
   v-row(no-gutters)
     v-chip.ma-1(
-      v-for="(tag, idx) in article.tags"
+      v-for="(tag, idx) in inner_article.tags"
       :key="idx"
       close
       close-icon="mdi-close"
@@ -51,8 +51,10 @@ v-card.ma-0.pa-0.transparent(min-height="10vh" flat)
       dark
       @click:close="removeTag(idx)"
     ) {{ tag }} &nbsp;
+  
+  //-- #ms
   Milestones(
-    :content="article.milestones"
+    :content="inner_article.milestones"
     :author-id="$store.state.user.self.id"
     editable
   )
@@ -71,15 +73,20 @@ export default {
     },
   },
   data: () => ({
-    // article: {
-    //   title: '',
-    //   body: '',
-    //   milestones: [],
-    //   tags: [],
-    // },
     tag_model: '',
     err_msg: undefined,
   }),
+  computed: {
+    inner_article: {
+      get() {
+        return this.article;
+      },
+      set(val) {
+        console.log(val);
+        this.$emit('update:article', val);
+      },
+    },
+  },
   watch: {
     tag_model(new_val, val) {
       this.err_msg = undefined;
@@ -115,11 +122,11 @@ export default {
         this.err_msg = 'cannot be empty';
         return;
       }
-      this.article.tags.push(this.tag_model);
+      this.inner_article.tags.push(this.tag_model);
       this.tag_model = '#';
     },
     removeTag(idx) {
-      this.article.tags.splice(idx, 1);
+      this.inner_article.tags.splice(idx, 1);
     },
     valid(val) {
       const pattern = /^#\w+$/g;
@@ -127,7 +134,7 @@ export default {
       return pattern.test(val) || 'contain illegal charactersss';
     },
     repeated(val) {
-      return !this.article.tags.includes(val) || `${val} already exists`;
+      return !this.inner_article.tags.includes(val) || `${val} already exists`;
     },
   },
 };
