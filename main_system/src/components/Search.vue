@@ -1,5 +1,5 @@
 <template lang="pug">
-v-sheet.pt-3.sticky(flat style="margin: -5px -5px 5px -5px;")
+v-sheet.pt-3.sticky(flat style="margin: -8px -5px 5px -5px;")
   v-row.mb-2.pb-1(no-gutters)
     v-menu(
       close-on-content-click
