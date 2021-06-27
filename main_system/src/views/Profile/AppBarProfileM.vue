@@ -21,8 +21,8 @@ v-app-bar(
             ) 
               v-icon mdi-cog
           v-list
-            MsgBox()
-              SelfIntro
+            MsgBox(@confirm="setIntroConfirm")
+              SelfIntro(v-model="intro")
               template(#activator="{ on, attrs }")
                 v-list-item(
                   v-on="on"
@@ -96,6 +96,7 @@ export default {
     tab_which: 'articles',
     imgUrl: '',
     user: undefined,
+    intro: undefined,
   }),
   computed: {
     ...mapState(['links']),
@@ -117,6 +118,9 @@ export default {
       this.imgUrl = '/media/' + srcUrl;
       console.log(srcUrl);
       console.log(this.imgUrl);
+    },
+    setIntroConfirm() {
+      console.log(this.intro);
     },
   },
 };

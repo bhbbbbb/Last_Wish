@@ -90,13 +90,21 @@ export default {
   data: () => ({
     EVENT_COLOR_LIST,
     pick: {
-      start: '00:00',
-      end: '23:59',
+      start: undefined,
+      end: undefined,
       color: 0,
     },
   }),
-  created() {},
+  created() {
+		this.resetPick();
+	},
   methods: {
+		resetPick() {
+			this.pick.start = new Date();
+			this.pick.end = new Date();
+			this.pick.start.setHours(0, 0);
+			this.pick.end.setHours(23, 59);
+		},
     cancelPicking() {
       this.$emit('cancel');
     },
@@ -106,11 +114,7 @@ export default {
 			this.pick.start = this.getTimeStr(this.pick.start);
 			this.pick.end = this.getTimeStr(this.pick.end);
       this.$emit('pick', this.pick);
-      this.pick = {
-        start: '00:00',
-        end: '23:59',
-        color: 0,
-      };
+			this.resetPick();
     },
 		validEndtime(time){
 			if(this.pick.end < this.pick.start)
