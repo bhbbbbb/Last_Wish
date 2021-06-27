@@ -5,6 +5,7 @@ import { isLogin } from '@/lib/log';
 // import store from '../store';
 import { home_routes } from './home';
 import { user_routes } from './user';
+import { frameless_routes } from './frameless';
 import store from '../store';
 // import store from '../store';
 Vue.use(VueRouter);
@@ -20,6 +21,14 @@ const routes = [
     },
     redirect: { name: 'Articles' },
     children: home_routes,
+  },
+  {
+    path: '/frameless',
+    name: 'Frameless',
+    components: {
+      Main: () => import('@/views/Frameless/Frame'),
+    },
+    children: frameless_routes,
   },
   {
     path: '/:username',

@@ -14,9 +14,9 @@ export default {
 
 <style scoped>
 .mar {
-  margin-left: 30px;
-  margin-right: 30px;
-  margin-top: 17px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
   margin-bottom: 17px;
 }
 </style>

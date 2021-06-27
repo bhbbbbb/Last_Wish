@@ -1,5 +1,4 @@
 import store from '../store';
-// import { isLogin } from '@/lib/log';
 export const user_routes = [
   {
     path: 'articles',

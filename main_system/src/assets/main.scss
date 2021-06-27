@@ -6,7 +6,26 @@
 	white-space: nowrap;
 }
 
+.m-view {
+	margin-left: 20px;
+	margin-right: 20px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
 
+.fill-screen {
+	width: 100vw;
+	height: 100vh;
+}
+
+.main-color {
+	color: #9BA2AA;
+}
+
+
+// .fs-10 {
+// 	font-size: 0.6rem;
+// }
 // .appbar {
 // 	transform: translateY(-46px) !important;
 // 	z-index: 10000 !important;

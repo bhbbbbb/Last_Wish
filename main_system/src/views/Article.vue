@@ -1,11 +1,11 @@
 <template lang="pug">
-v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width="100%" v-if="content")
+v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)" min-width="90%" v-if="article")
   v-container      
     v-row(no-gutters="no-gutters")
       v-col.d-flex.justify-start.align-center(cols="6")
-        UserAvatar(:user="content.author")
-        NavLink(:to="`/${content.author.name}`")
-          span.py-3.mx-3.text-center.font-weight-bold {{ content.author.name }}
+        UserAvatar(:user="article.author")
+        NavLink(:to="`/${article.author.name}`")
+          span.py-3.mx-3.text-center.font-weight-bold {{ article.author.name }}
         v-card-subtitle.mx-4.px-4.py-0 {{ date }}
       v-col.d-flex.justify-end(cols="6")
         v-tooltip(bottom v-if="editing")
@@ -32,17 +32,17 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
             //- v-list-item(@click="Clone") 願望拷貝
             v-list-item(
               @click="toggleEdit"
-              v-if="$store.state.user.self.id === content.author.id"
+              v-if="$store.state.user.self.id === article.author.id"
             ) {{ editing ? '取消編輯' : '編輯內文' }}
             v-divider.mx-2(
-              v-if="$store.state.user.self.id === content.author.id"
+              v-if="$store.state.user.self.id === article.author.id"
             )
 
             //- v-dialog
-            Confirm(
+            MsgBox(
               @confirm="deletePost"
               width="320"
-              v-if="$store.state.user.self.id === content.author.id"
+              v-if="$store.state.user.self.id === article.author.id"
             )
               span 讓口卡獸把這篇文章吃掉嗎？
               template(#activator="{ on, attrs }")
@@ -64,22 +64,22 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
       v-col(cols="10" offset="1")
         
         //-- #edit
-        EditCard.mt-3(v-if="editing" :article="content.content")
+        EditCard.mt-3(v-if="editing" :article="article.content")
 
         v-card.pa-0.ma-0.transparent(flat v-else)
           //------------ #title -----------
           v-row.my-3(no-gutters)
-            h3 {{ content.content.title }}
+            h3 {{ article.content.title }}
           
           //------------ #body -------------
           v-row(no-gutters)
-            Body.text-pre-wrap(:content="content.content.body")
+            Body.text-pre-wrap(:content="article.content.body")
 
 
           //------------ #tags -------------
           v-row(no-gutters)
             v-chip.mr-2.my-1(
-              v-for="(tag, idx) in content.content.tags"
+              v-for="(tag, idx) in article.content.tags"
               :key="idx"
               color="#9BA2AA"
               small
@@ -88,7 +88,7 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
 
           //----------- #milestone -----------------
           v-row
-            Milestones(:content="content.content.milestones" :author-id="content.author.id")
+            Milestones(:content="article.content.milestones" :author-id="article.author.id")
 
 
 
@@ -96,9 +96,9 @@ v-card.ma-0.pa-1(min-height="80vh", rounded="lg", :color="color_list(id)" width=
     v-row.mr-3.mt-5(no-gutters)
       v-col(cols="11" offset="1")
         v-divider
-        ArticleBtns(v-if="content" :key="content._id" :content="content")
+        ArticleBtns(v-if="article" :content="article")
         CommentCard(
-          v-for="(comment, idx) in content.comments",
+          v-for="(comment, idx) in article.comments",
           :key="idx",
           :content="comment"
         )
@@ -134,7 +134,7 @@ export default {
     NavLink: () => import('@/components/NavLink'),
     Body: () => import('@/components/Body'),
     Milestones: () => import('@/components/Milestones'),
-    Confirm: () => import('@/components/Confirm'),
+    MsgBox: () => import('@/components/MsgBox'),
     EditCard: () => import('@/components/EditCard'),
   },
   props: {
@@ -150,16 +150,16 @@ export default {
     infos: '',
     ThePost: [],
     NP: false,
-    content: undefined,
+    article: undefined,
     editing: false,
   }),
   computed: {
     date() {
-      return moment(this.content.date).format('M/D');
+      return moment(this.article.date).format('M/D');
     },
   },
   created() {
-    this.content = this.$store.state.article.data[this.id];
+    this.article = this.$store.state.article.data[this.id];
   },
 
   methods: {
@@ -199,8 +199,8 @@ export default {
     //     name: 'Wish',
     //     params: {
     //       id: this.id,
-    //       wish: this.content.wishes[idx],
-    //       content: this.content.wishes[idx],
+    //       wish: this.article.wishes[idx],
+    //       content: this.article.wishes[idx],
     //       // color: this.color,
     //     },
     //   });
@@ -210,8 +210,8 @@ export default {
         name: 'ArticleEdit',
         params: {
           id: this.id,
-          author: this.content.author,
-          content: this.content,
+          author: this.article.author,
+          content: this.article,
         },
       });
     },
@@ -223,10 +223,10 @@ export default {
       }
     },
     submitEdit() {
-      apiEditArticle(this.content.id, this.content.content);
+      apiEditArticle(this.article.id, this.article.content);
     },
     updateComment(newComment) {
-      this.content.comments.push(newComment);
+      this.article.comments.push(newComment);
     },
     moment,
     color_list,

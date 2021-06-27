@@ -47,7 +47,7 @@ export const apiGetFollowedPosts = () =>
 export const apiEditArticle = (id, new_article) =>
   articleRequest.post('/edit_article', {
     article_id: id,
-    newArticle: new_article,
+    new_article,
   });
 
 export const apiGetArticleById = (id) =>
@@ -115,9 +115,19 @@ export const apiToggleLike = (article_id) =>
 
 export const apiGetLikedPost = () => userRequest.get('/get_liked_posts');
 
-// ----------------- event -------------------------
+// ----------------- #event -------------------------
 
 export const apiGetEvents = () => userRequest.get('/get_events');
 
 export const apiAddEvent = (event) =>
   userRequest.post('/add_event_to_user', event);
+
+export const apiEditEvent = (event_id, event) =>
+  userRequest.post('/edit_event_by_id', {
+    event_id,
+    name: event.name,
+    color: event.color,
+    start: event.start,
+    end: event.end,
+    finished: event.finished,
+  });

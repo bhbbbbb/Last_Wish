@@ -21,8 +21,14 @@ v-app-bar(
             ) 
               v-icon mdi-cog
           v-list
-            v-list-item
-              v-list-item-title 設定自介
+            MsgBox()
+              SelfIntro
+              template(#activator="{ on, attrs }")
+                v-list-item(
+                  v-on="on"
+                  v-bind="attrs"
+                )
+                  v-list-item-title 設定自介
             v-list-item(
               to="upl"
             )
@@ -53,7 +59,7 @@ v-app-bar(
         depressed
       ) 
         span 我的願望 (n)
-        v-btn.pa-0(text) 全部
+        v-btn.pa-0(text :ripple="false") 全部
           v-icon mdi-menu-down
       v-btn.pa-0(
         style="min-width: 3px;"
@@ -75,6 +81,8 @@ export default {
   name: 'AppBarProfileM',
   components: {
     UserAvatar: () => import('@/components/UserAvatar'),
+    MsgBox: () => import('@/components/MsgBox'),
+    SelfIntro: () => import('@/components/SelfIntro'),
   },
   props: {
     username: {
