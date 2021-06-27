@@ -24,9 +24,11 @@ const uploadRequest = axios.create({
 /********************** Call upload.js **********************/
 export const apiUploadFiles = (data) => uploadRequest.post('/uploadFile', data);
 
-/********************** Call article.js **********************/
-export const apiGetArticles = () =>
-  articleRequest.get('/', { params: { new2old: true } });
+/********************** Call #article.js **********************/
+export const apiGetArticles = (sort_by, filiter) =>
+  articleRequest.get('/', { params: { sort_by, filiter } });
+
+
 export const apiUploadArticle = (data) => articleRequest.post('/insert', data);
 
 /**
@@ -58,11 +60,11 @@ export const apiDeleteArticle = (id) =>
 
 /********************** milestone #milestone #ms  ********************/
 
-export const apiToggleMsFinished = (article_id, milestone_id) =>
-  articleRequest.post('/toggle_finished_milestone', {
-    article_id,
-    milestone_id,
-  });
+// export const apiToggleMsFinished = (article_id, milestone_id) =>
+//   articleRequest.post('/toggle_finished_milestone', {
+//     article_id,
+//     milestone_id,
+//   });
 
 export const apiEditMilestone = (article_id, milestone_id, new_milestone) =>
   articleRequest.post('/edit_milestone', {
@@ -97,9 +99,10 @@ export const apiSetSelfIntro = (data) =>
 /**
  *
  * @param {String} id
+ * @param {Boolean} set
  */
-export const apiToggleFollow = (id) =>
-  userRequest.post('/toggle_followed_post', { article_id: id });
+export const apiSetFollow = (id, set) =>
+  userRequest.post('/set_followed_post', { article_id: id, set });
 
 /**
  *
@@ -122,9 +125,10 @@ export const apiLineLogin = (data) => userRequest.post('/line_login_req', data);
 /**
  *
  * @param {String} article_id
+ * @param {Boolean} set
  */
-export const apiToggleLike = (article_id) =>
-  userRequest.post('/toggle_liked_post', { article_id });
+export const apiSetLike = (article_id, set) =>
+  userRequest.post('/set_liked_post', { article_id, set });
 
 export const apiGetLikedPost = () => userRequest.get('/get_liked_posts');
 
