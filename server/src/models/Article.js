@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongoose_fuzzy_searching = require("mongoose-fuzzy-searching");
 
 const commentSchema = new mongoose.Schema({
   body: String, 
@@ -89,4 +90,5 @@ articleSchema.method('toFrontendFormat', function() {
   }
 });
 
+articleSchema.plugin(mongoose_fuzzy_searching, { fields: ['title'] });
 module.exports = mongoose.model('Article', articleSchema);

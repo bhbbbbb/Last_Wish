@@ -5,8 +5,8 @@ var ArticleManager = require('./article_manager.js');
 module.exports = function() {
     this.articleManager = new ArticleManager();
 
-    this.findUserbyUsername = function(username) {
-        return User.findOne({ username: username }).exec();
+    this.findUserbyUsername = async function(username) {
+        return await User.findOne({ username: username });
     }
 
     /**
@@ -183,6 +183,13 @@ module.exports = function() {
             throw "user not found";
         return user._id;
     }
+    
+    this.searchUsersByKeywords = async function(keywordStr) {
+        // const updateFuzzy = require('./update_fuzzy');
+        // await updateFuzzy(User, ['username']);
+        let users = await User.fuzzySearch(keywordStr);
+        return users.map(user => user._id);
+    }
 
     /**
      * To make an user to follow/unfollow another user
@@ -247,6 +254,8 @@ module.exports = function() {
     this.setLikedPostsToUser = async function(userId, articleId, set) {
         let article = await this.articleManager.getArticleById(articleId);
         if (article) {
+            let score = set? 2 : -2;
+            await this.articleManager.changeScore(article.author, score);
             let user = await User.findById(userId);
             if (!user)
                 throw "user not found"
@@ -347,7 +356,18 @@ module.exports = function() {
             throw "user not found";
         return user.events;
     }
+    /**
+     * 
+     * @param {String} password 
+     * @returns hased_pass
+     */
+    this.hashPass = async(password) => {
+        return await bcrypt.hashSync(password, 10);
+    }
 
+    this.findUserById = async(id) => {
+        return await User.findById(id);
+    }
     /**
      * replace existed event with modifiedEvent obj
      * @param {String} eventId 
@@ -368,4 +388,31 @@ module.exports = function() {
         await user.save()
         return;
     }
+    
+    this.setFinishedEventById = async function(eventId, userId, set) {
+        let user = await User.findById(userId);
+        if (!user)
+            throw "user not found";
+        let event = await user.events.id(eventId);
+        if (!event)
+            throw "event not found";
+        event.finished = set;
+        let score = set? 10 : -10;
+        await this.articleManager.changeScore(userId, score);
+        await user.save()
+        return;
+    }
+
+    this.setEmailToUser = async function(userId, password, email){
+        let user = await User.findById(userId);
+        if(!user)
+            throw "user not found"
+        let correct = bcrypt.compareSync(password, user.password)
+        if(correct){
+            user.email = email
+            await user.save();
+        }
+        return correct;
+    }
+
 };

@@ -27,8 +27,15 @@ const corsOptions = {
 const db_url =
     'mongodb://yuyu:isengineer@cluster0-shard-00-00.jhbg0.mongodb.net:27017,cluster0-shard-00-01.jhbg0.mongodb.net:27017,cluster0-shard-00-02.jhbg0.mongodb.net:27017/test?ssl=true&replicaSet=atlas-qfbkre-shard-0&authSource=admin&retryWrites=true&w=majority';
 
+const mongooseOptions = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+};
+
 // do the shit only when db is connected
-mongoose.connect(db_url, {useNewUrlParser : true, useUnifiedTopology : true})
+mongoose.connect(db_url, mongooseOptions)
     .then(() => {
         const app = express();
         app.use('/media', express.static(filePath));
@@ -41,11 +48,13 @@ mongoose.connect(db_url, {useNewUrlParser : true, useUnifiedTopology : true})
         var user = require('./router/user');
         var articles = require('./router/articles');
         var uploads = require('./router/upload');
+        var search = require('./router/search');
         // setup router
 
-        app.use('/articles', articles);
         app.use('/user', user);
+        app.use('/articles', articles);
         app.use('/uploads', uploads);
+        app.use('/search', search);
 
         process.env.NODE_ENV =
             https_config.production ? 'production' : 'develop';

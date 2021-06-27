@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Article = require("./Article");
 const Notify = require("./Notify");
 
+const mongoose_fuzzy_searching = require("mongoose-fuzzy-searching");
 const colorValidator = (v) => {
   return (/^#([0-9a-fA-F]{3}){1,2}$/i).test(v);
 }
@@ -63,6 +64,10 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  score:{
+    type: Number,
+    default: 0,
+  }
 });
 
 userSchema.post('remove', (user) => {
@@ -71,5 +76,5 @@ userSchema.post('remove', (user) => {
     Article.findByIdAndRemove(articleId);
   }
 });
-
+userSchema.plugin(mongoose_fuzzy_searching, { fields: ['username'] });
 module.exports = mongoose.model('User', userSchema);

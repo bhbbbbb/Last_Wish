@@ -13,6 +13,7 @@ v-overlay(
 	)
 		v-row(no-gutters).justify-center
 			span.subtitle-1(style="color: grey") 開始時間
+		v-row(no-gutters).justify-center
 			date-picker(
 				type="time"
 				format="HH:mm"
@@ -22,8 +23,9 @@ v-overlay(
 				placeholder="select start time"
 			)
 
-		v-row(no-gutters).mt-5.justify-center
+		v-row(no-gutters).mt-10.justify-center
 			span.subtitle-1(style="color: grey") 結束時間
+		v-row(no-gutters).justify-center
 			date-picker(
 				type="time"
 				format="HH:mm"
@@ -34,7 +36,7 @@ v-overlay(
 			)
 
 
-		v-row(no-gutters).mt-5.justify-center
+		v-row(no-gutters).mt-10.justify-center
 			span.subtitle-1(style="color: grey") 選擇顏色
 
 		v-row(no-gutters).mt-5.justify-center
@@ -42,7 +44,7 @@ v-overlay(
 				mandatory
 				v-model="pick.color"
 			)
-				v-btn(
+				v-btn.mx-1(
 					v-for="(color, idx) in EVENT_COLOR_LIST"
 					:key="idx"
 					fab
@@ -78,7 +80,7 @@ import 'vue2-datepicker/index.css';
 // import moment from 'moment';
 export default {
   name: 'TimePicker',
-	components: { DatePicker },
+  components: { DatePicker },
   props: {
     value: {
       type: Boolean,
@@ -88,51 +90,51 @@ export default {
   data: () => ({
     EVENT_COLOR_LIST,
     pick: {
-      start: '00:00',
-      end: '23:59',
+      start: undefined,
+      end: undefined,
       color: 0,
     },
   }),
-  created() {},
+  created() {
+    this.resetPick();
+  },
   methods: {
+    resetPick() {
+      this.pick.start = new Date();
+      this.pick.end = new Date();
+      this.pick.start.setHours(0, 0);
+      this.pick.end.setHours(23, 59);
+    },
     cancelPicking() {
       this.$emit('cancel');
     },
     confirmPicking() {
       this.pick.color = EVENT_COLOR_LIST[this.pick.color];
-			//The component will return an date obj, following code is used to parse data in specific form
-			this.pick.start = this.getTimeStr(this.pick.start);
-			this.pick.end = this.getTimeStr(this.pick.end);
+      //The component will return an date obj, following code is used to parse data in specific form
+      this.pick.start = this.getTimeStr(this.pick.start);
+      this.pick.end = this.getTimeStr(this.pick.end);
       this.$emit('pick', this.pick);
-      this.pick = {
-        start: '00:00',
-        end: '23:59',
-        color: 0,
-      };
+      this.resetPick();
     },
-		validEndtime(time){
-			if(this.pick.end < this.pick.start)
-				this.pick.end = this.pick.start
-			return time < this.pick.start;
-		},		
-		validStarttime(time){
-			if(this.pick.end < this.pick.start)
-				this.pick.start = this.pick.end;
-			return time > this.pick.end;
-		},
-		/**
-     * @param {Object} Date
+    validEndtime(time) {
+      if (this.pick.end < this.pick.start) this.pick.end = this.pick.start;
+      return time < this.pick.start;
+    },
+    validStarttime(time) {
+      if (this.pick.end < this.pick.start) this.pick.start = this.pick.end;
+      return time > this.pick.end;
+    },
+    /**
+     * @param {Date} Date
      * @returns xx:xx
      */
     getTimeStr(time) {
-			console.log(time);
       let h = time.getHours();
       if (h < 10) h = '0' + h;
       let m = time.getMinutes();
       if (m < 10) m = '0' + m;
       return `${h}:${m}`;
     },
-  },    
-
+  },
 };
 </script>

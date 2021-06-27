@@ -62,7 +62,7 @@ export default {
           console.log(err);
         });
 
-      this.$store.dispatch('getSelfArticles', true);
+      this.$store.dispatch('getSelfArticles', { force_update: true });
     },
     Show_info(Info, infoType) {
       /**

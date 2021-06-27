@@ -5,20 +5,14 @@ export const home_routes = [
     name: 'Articles',
     component: () => import('@/views/ArticleContainer'),
     props: () => ({
-      articles: store.state.article.global,
-      fetchAction: 'getGlobalArticles',
+      type: 'global',
     }),
   },
-  // {
-  //   path: 'reset',
-  //   name: 'Reset',
-  //   component: () => import('@/views/Home/Register'),
-  //   beforeEnter(to, from, next) {
-  //     console.log(to.query.token);
-  //     if (to.query.token) next();
-  //     else next(false);
-  //   },
-  // },
+  {
+    path: 'reset',
+    name: 'Reset',
+    component: () => import('@/views/Reset'),
+  },
   {
     path: 'article/:id',
     name: 'Article',

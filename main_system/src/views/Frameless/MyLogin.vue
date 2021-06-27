@@ -109,16 +109,17 @@ export default {
         // username or pswd is blank
         this.showInfo('帳號或密碼為空');
         return;
-      } 
+      }
       let status = this.rules.regex(this.user.username) === true;
       if (!status) {
         this.showInfo('請檢查使用者名稱');
         return;
       }
-      this.$store.dispatch('tryLogin', {
-        username: this.user.username,
-        password: this.user.password,
-      })
+      this.$store
+        .dispatch('tryLogin', {
+          username: this.user.username,
+          password: this.user.password,
+        })
         .then(() => {
           this.$router.replace('/');
         })
@@ -148,20 +149,18 @@ export default {
         });
     },
     Send_mail() {
-      if (this.user.username.trim() == '')
-        this.showInfo('Required username');
+      if (this.user.username.trim() == '') this.showInfo('Required username');
       else {
         apiSendTokenMail(this.user.username.trim())
           .then((res) => {
-            if (res.status == 200)
-              this.showInfo('Email has been sent', 'ok');
+            if (res.status == 200) this.showInfo('Email has been sent', 'ok');
           })
           .catch((e) => {
             this.showInfo(e.response.data.err_msg);
           });
       }
     },
-    showInfo(info, type='try_again') {
+    showInfo(info, type = 'try_again') {
       this.info_msg = info;
       this.show_info = true;
       this.type = type;
