@@ -55,14 +55,14 @@ const articleSchema = new mongoose.Schema({
 });
 
 // this is not stable maybe need revising
-articleSchema.method('sortMilestonesAndSave', function() {
+articleSchema.method('sortMilestonesAndSave', async function() {
   this.milestones.sort((m, n) => {
     return m.estDate - n.estDate;
   });
   this.milestones.sort((m, n) => {
     return n.finished - m.finished;
   });
-  this.save();
+  await this.save();
 });
 
 articleSchema.method('toFrontendFormat', function() {

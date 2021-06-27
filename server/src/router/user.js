@@ -13,14 +13,13 @@ var accountManager = new AccountManager();
 var user_session = require('../lib/session.js');
 const https_config = require('../../https.config');
 /***************** Url Setting *******************/
-const prefix = 'http://'
+const prefix = https_config.https_enable ? 'https://' : 'http://'
 var port = https_config.port;
 var frontPort = 8080;
 const SERVER_URL = prefix + ip.address() + ':' + port;
 const FRONT_URL  = prefix + ip.address() + ':' + frontPort;
 /***************** Others *************************/
 const EMAIL_SECRET = 'df45ea4g684AgpfsdSDLK4W6sdfsdg54asd4fgsljopa'
-let lineLoginStates = {};
 
 // the following API is to test the db
 user.get('/get_all_users', user_session, (_req, res) => {
@@ -51,7 +50,6 @@ const TRY_LOGIN = [
 ];
 user.post('/try_login', user_session, async (req, res) => {
     try {
-        console.log(req.body.username);
         const exist = await accountManager.hasUser(req.body.username);
         if (!exist) {
             let response = TRY_LOGIN[USER_NOT_FOUND];
@@ -91,19 +89,19 @@ const REGISTER = [
     }, 
     {
         status: 400,
-        body: { err_code: DUPLICATED_USER, err_msg: "duplicated user"}
+        body: { err_code: DUPLICATED_USER, err_msg: "duplicated user" }
     },
     {
         status: 400, 
-        body: { err_code: DUPLICATED_EMAIL, err_msg: "duplicated email"}
+        body: { err_code: DUPLICATED_EMAIL, err_msg: "duplicated email" }
     },
     {
         status: 400,
-        body: { err_code: INVALID_ADDR, err_msg: "invalid email address"}
+        body: { err_code: INVALID_ADDR, err_msg: "invalid email address" }
     },
     {
         status: 500,
-        body: { err_code: EMAIL_ERR, err_msg: "email sent failed"}
+        body: { err_code: EMAIL_ERR, err_msg: "email sent failed" }
     },    
 ];
 user.post('/register', async (req, res) => {
@@ -111,7 +109,6 @@ user.post('/register', async (req, res) => {
     if (!mailManager.isValidAddr(addr)) {
         let response = REGISTER[INVALID_ADDR];
         res.status(response.status).json(response.body);
-        console.log(response.body);
     } else {
         let trimmedUsername = req.body.username.trim();
         let trimmedPassword = req.body.password.trim();
@@ -120,14 +117,12 @@ user.post('/register', async (req, res) => {
         if (result) {
             let response = REGISTER[DUPLICATED_EMAIL];
             res.status(response.status).json(response.body);
-            console.log(response.body);
         } else if (invalid) {
             let response = REGISTER[DUPLICATED_USER];
             res.status(response.status).json(response.body);
         } else {
             const id = await accountManager.addUser(trimmedUsername, trimmedPassword, addr);
             let response = REGISTER[SUCCEED];
-            console.log(id);
             try {
                 mailManager.sendToken(addr, id, trimmedUsername, SERVER_URL, EMAIL_SECRET);
                 res.sendStatus(response.status);
@@ -140,40 +135,61 @@ user.post('/register', async (req, res) => {
     }
 });
 
-user.post('/set_self_intro', user_session, (req, res) => {
-    accountManager
-        .setSelfIntroToUser(req.session.user_id, req.body.self_intro)
-        .then(() => {
-            res.sendStatus(200);
-        })
-        .catch((error) => {
-            console.log(error);
-            res.status(400).json(error);
-        });
+user.post('/set_self_intro', user_session, async (req, res) => {
+    // accountManager
+    //     .setSelfIntroToUser(req.session.user_id, req.body.self_intro)
+    //     .then(() => {
+    //         res.sendStatus(200);
+    //     })
+    //     .catch((error) => {
+    //         console.log(error);
+    //         res.status(400).json(error);
+    //     });
+    try {
+        await accountManager.setSelfIntroToUser(req.session.user_id, req.body.self_intro);
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+    }
 });
 
-user.post('/set_honor', user_session, (req, res) => {
-    accountManager
-        .setHonorToUser(req.session.user_id, req.body.honor)
-        .then(() => {
-            res.sendStatus(200);
-        })
-        .catch((error) => {
-            console.log(error);
-            res.status(400).json(error);
-        });
+user.post('/set_honor', user_session, async (req, res) => {
+    // accountManager
+    //     .setHonorToUser(req.session.user_id, req.body.honor)
+    //     .then(() => {
+    //         res.sendStatus(200);
+    //     })
+    //     .catch((error) => {
+    //         console.log(error);
+    //         res.status(400).json(error);
+    //     });
+    try {
+        await accountManager.setHonorToUser(req.session.user_id, req.body.honor);
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+    }
 });
 
-user.post('/set_pro_pic', user_session, (req, res) => {
-    accountManager
-        .setProPicToUser(req.session.user_id, req.body.pro_pic_url)
-        .then(() => {
-            res.sendStatus(200);
-        })
-        .catch((error) => {
-            console.log(error);
-            res.status(400).json(error);
-        });
+user.post('/set_pro_pic', user_session, async (req, res) => {
+    // accountManager
+    //     .setProPicToUser(req.session.user_id, req.body.pro_pic_url)
+    //     .then(() => {
+    //         res.sendStatus(200);
+    //     })
+    //     .catch((error) => {
+    //         console.log(error);
+    //         res.status(400).json(error);
+    //     });
+    try {
+        await accountManager.setProPicToUser(req.session.user_id, req.body.pro_pic_url);
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+    }
 });
 
 user.get('/who', user_session, (req, res) => {
@@ -184,40 +200,63 @@ user.get('/who', user_session, (req, res) => {
         res.sendStatus(401);
 });
 
-user.post('/toggle_followed_user', user_session, (req, res) => {
-    accountManager
-        .toggleFollowRelation(req.session.user_id, req.body.target_id)
-        .then(() => {
-            res.sendStatus(200);
-        })
-        .catch((error) => {
-            console.log(error);
-            res.status(400).json(error);
-        });
+user.post('/toggle_followed_user', user_session, async (req, res) => {
+    // accountManager
+    //     .toggleFollowRelation(req.session.user_id, req.body.target_id)
+    //     .then(() => {
+    //         res.sendStatus(200);
+    //     })
+    //     .catch((error) => {
+    //         console.log(error);
+    //         res.status(400).json(error);
+    //     });
+    try {
+        await accountManager.toggleFollowRelation(req.session.user_id, req.body.target_id);
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+    }
 });
 
-user.post('/toggle_followed_post', user_session, (req, res) => {
-    accountManager
-        .toggleFollowedPostsToUser(req.session.user_id, req.body.article_id)
-        .then(() => {
-            res.sendStatus(200);
-        })
-        .catch((error) => {
-            console.log(error);
-            res.status(400).json(error);
-        });
+user.post('/set_followed_post', user_session, async (req, res) => {
+    // accountManager
+    //     .toggleFollowedPostsToUser(req.session.user_id, req.body.article_id)
+    //     .then(() => {
+    //         res.sendStatus(200);
+    //     })
+    //     .catch((error) => {
+    //         console.log(error);
+    //         res.status(400).json(error);
+    //     });
+    try {
+        let set = req.body.set == "set";
+        await accountManager.setFollowedPostsToUser(req.session.user_id, req.body.article_id, set);
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+    }
 });
 
-user.post('/toggle_liked_post', user_session, (req, res) => {
-    accountManager
-        .toggleLikedPostsToUser(req.session.user_id, req.body.article_id)
-        .then(() => {
-            res.sendStatus(200);
-        })
-        .catch((error) => {
-            console.log(error);
-            res.status(400).json(error);
-        });
+user.post('/set_liked_post', user_session, async (req, res) => {
+    // accountManager
+    //     .toggleLikedPostsToUser(req.session.user_id, req.body.article_id)
+    //     .then(() => {
+    //         res.sendStatus(200);
+    //     })
+    //     .catch((error) => {
+    //         console.log(error);
+    //         res.status(400).json(error);
+    //     });
+    try {
+        let set = req.body.set == "true";
+        await accountManager.toggleLikedPostsToUser(req.session.user_id, req.body.article_id, set);
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+    }
 });
 
 user.get('/logout', user_session, (req, res) => {
@@ -238,45 +277,69 @@ const GET_PUBLIC_INFO = [
         }
     }
 ];
-user.get('/get_public_info', (req, res) => {
-    accountManager
-        .getUserInfo(req.query.id)
-        .then((userInfo) => {
-            let response = GET_PUBLIC_INFO[SUCCEED];
-            res.status(response.status).json(userInfo);
-        })
-        .catch((error) => {
-            console.log(error);
-            let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
-            res.status(response.status).json(response.body);
-        });
+user.get('/get_public_info', async (req, res) => {
+    // accountManager
+    //     .getUserInfo(req.query.id)
+    //     .then((userInfo) => {
+    //         let response = GET_PUBLIC_INFO[SUCCEED];
+    //         res.status(response.status).json(userInfo);
+    //     })
+    //     .catch((error) => {
+    //         console.log(error);
+    //         let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
+    //         res.status(response.status).json(response.body);
+    //     });
+    try {
+        let userInfo = await accountManager.getUserInfo(req.query.id);
+        let response = GET_PUBLIC_INFO[SUCCEED];
+        res.status(response.status).json(userInfo);
+    } catch (error) {
+        console.log(error);
+        let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
+        res.status(response.status).json(response.body);
+    }
 });
 
-user.get('/is_valid_username', user_session, (req, res) => {
-    accountManager.hasUser(req.query.username)
-        .then((exist) => {
-            res.send(!exist); 
-        })
-        .catch((error) => {
-            console.log(error);
-            res.sendStatus(400);
-        });
+user.get('/is_valid_username', user_session, async (req, res) => {
+    // accountManager.hasUser(req.query.username)
+    //     .then((exist) => {
+    //         res.send(!exist); 
+    //     })
+    //     .catch((error) => {
+    //         console.log(error);
+    //         res.sendStatus(400);
+    //     });
+    try {
+        let exist = await accountManager.hasUser(req.query.username);
+        res.send(!exist);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(400);
+    }
 });
 
-user.get('/get_id_by_name', (req, res) => {
-    accountManager.getIdbyUsername(req.query.name)
-        .then((id) => { 
-            res.send(id);
-        })
-        .catch((error) => {
-            console.log(error);
-            res.sendStatus(400);
-        });
+user.get('/get_id_by_name', async (req, res) => {
+    // accountManager.getIdbyUsername(req.query.name)
+    //     .then((id) => { 
+    //         res.send(id);
+    //     })
+    //     .catch((error) => {
+    //         console.log(error);
+    //         res.sendStatus(400);
+    //     });
+    try {
+        let id = await accountManager.getIdByUsername(req.query.name);
+        res.send(id);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(400);
+    }
 });
-const LINK_EXPIRED='\
-<p>很抱歉，這個連結已經失效了</p><p>We\'re sorry, the link has expired.</p>\
-<a href='+FRONT_URL+'>回到首頁</a>\
-';
+const LINK_EXPIRED = (` \
+    <p>很抱歉，這個連結已經失效了</p> \
+    <p>We\'re sorry, the link has expired.</p> \
+    <a href=${FRONT_URL}>回到首頁</a> \
+`);
 
 user.get('/confirmation/:token', async (req, res) => {
     try {
@@ -284,12 +347,13 @@ user.get('/confirmation/:token', async (req, res) => {
         if (id) {
             const result = await mailManager.verified(id, nonce, cryptPass);
             if (result) {
+                // TODO: Auto logged in
                 res.redirect(FRONT_URL);
                 return;
             }
         }
         res.send(LINK_EXPIRED);
-    } catch (e) {
+    } catch (error) {
         res.send(LINK_EXPIRED);
     }
 });
@@ -327,13 +391,12 @@ user.get('/send_token_mail', user_session, async (req, res) => {
     } else if (result.verified) {
         let response = SEND_TOKEN[VERIFIED];    //User is verified, no need to send mail again;
         res.status(response.status).json(response.body); 
-        
     } else {
         try {
             mailManager.sendToken(result.email, result.id, req.query.username, SERVER_URL, EMAIL_SECRET);
             let response = SEND_TOKEN[SUCCEED];
             res.status(response.status).json(response.body);
-        } catch(e) {
+        } catch(error) {
             let response = SEND_TOKEN[EMAIL_ERR];
             res.status(response.status).json(response.body); 
         }
@@ -350,11 +413,13 @@ user.post('/add_event_to_user', user_session, async (req, res) => {
     };
     let userId = req.session.user_id;
     try {
-        await accountManager.addEventToUser(newEvent, userId);
-        res.sendStatus(200);
-    } catch (e) {
-        console.log(e);
+        let event_id = await accountManager.addEventToUser(newEvent, userId);
+        res.status(200).json(event_id);
+        return;
+    } catch (error) {
+        console.log(error);
         res.sendStatus(400);
+        return;
     }
 });
 
@@ -391,27 +456,32 @@ user.post('/edit_event_by_id', user_session, async (req, res) => {
 user.get('/get_liked_posts', user_session, async (req, res) => {
     try {
         let userId = req.session.user_id;
-        const result = await accountManager.getUserLiked(userId);
-        if (result)
-            res.status(200).json(result);
+        let articleIds = await accountManager.getUserLiked(userId);
+        if (articleIds)
+            res.status(200).json(articleIds);
         else
             res.sendStatus(400);
-    } catch (e) {
+    } catch (error) {
         res.sendStatus(500);
     }
 });
 
-user.post('/reset_pass', user_session, async(req, res) => {
+user.post('/reset_pass', user_session,async(req, res) => {
     try {
-        userId = req.session.user_id;
+        let userId = req.session.user_id;
+        let username = req.body.username;
         let pass = req.body.new_pass;
-        let hash = await accountManager.hashPass(pass);
-        let user = await accountManager.findUserById(userId);
+        let user = [];
+        if(!userId)
+            user = await accountManager.findUserbyUsername(username);
+        else
+            user = await accountManager.findUserById(userId);
         if(!pass || !user){
             res.sendStatus(400);
             return;
         }
-        await mailManager.sendResetPass(user.email, userId, user.username, SERVER_URL, EMAIL_SECRET, hash);
+        let hash = await accountManager.hashPass(pass);
+        await mailManager.sendResetPass(user.email, user._id, user.username, SERVER_URL, EMAIL_SECRET, hash);
         res.sendStatus(200);
     } catch (error) {
         console.log(error);
