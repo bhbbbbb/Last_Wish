@@ -219,7 +219,7 @@ global.post('/update_article', user_session, async (req, res) => {
 });
 
 // to test:
-global.get('/update_tags', async (req, res) => {
+global.get('/update_tags', async (_req, res) => {
     try {
         articleManager.updateTags();
         res.sendStatus(200);

@@ -90,5 +90,5 @@ articleSchema.method('toFrontendFormat', function() {
   }
 });
 
-articleSchema.plugin(mongoose_fuzzy_searching, { fields: ['title', 'body'] });
+articleSchema.plugin(mongoose_fuzzy_searching, { fields: ['title'] });
 module.exports = mongoose.model('Article', articleSchema);
