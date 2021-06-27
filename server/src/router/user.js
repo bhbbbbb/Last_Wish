@@ -230,7 +230,7 @@ user.post('/set_followed_post', user_session, async (req, res) => {
     //         res.status(400).json(error);
     //     });
     try {
-        let set = req.body.set == "set";
+        let set = req.body.set === "true";
         await accountManager.setFollowedPostsToUser(req.session.user_id, req.body.article_id, set);
         res.sendStatus(200);
     } catch (error) {
@@ -250,7 +250,7 @@ user.post('/set_liked_post', user_session, async (req, res) => {
     //         res.status(400).json(error);
     //     });
     try {
-        let set = req.body.set == "true";
+        let set = req.body.set === "true";
         await accountManager.setLikedPostsToUser(req.session.user_id, req.body.article_id, set);
         res.sendStatus(200);
     } catch (error) {
@@ -358,12 +358,6 @@ user.get('/confirmation/:token', async (req, res) => {
     }
 });
 
-
-
-
-
-
-
 const VERIFIED = 2;
 const SEND_TOKEN = [
     {
@@ -453,6 +447,19 @@ user.post('/edit_event_by_id', user_session, async (req, res) => {
     }
 });
 
+user.post('/set_finished_event', user_session, async (req, res) => {
+    let eventId = req.body.event_id;
+    let set = req.body.set === "true";
+    let userId = req.session.user_id;
+    try {
+       await accountManager.setFinishedEventById(eventId, userId, set);
+       res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(400);
+    }
+});
+
 user.get('/get_liked_posts', user_session, async (req, res) => {
     try {
         let userId = req.session.user_id;
@@ -521,17 +528,5 @@ user.post('/reset_email', user_session, async(req, res) => {
         res.sendStatus(400);
     }
 })
-
-// function genNonce(length) {
-//     let result = [];
-//     let characters =
-//         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-//     let charactersLength = characters.length;
-//     for (var i = 0; i < length; i++) {
-//         result.push(
-//             characters.charAt(Math.floor(Math.random() * charactersLength)));
-//     }
-//     return result.join('');
-// }
 
 module.exports = user;

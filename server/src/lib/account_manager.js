@@ -388,7 +388,18 @@ module.exports = function() {
         await user.save()
         return;
     }
-
+    
+    this.setFinishedEventById = async function(eventId, userId, set) {
+        let user = await User.findById(userId);
+        if (!user)
+            throw "user not found";
+        let event = await user.events.id(eventId);
+        if (!event)
+            throw "event not found";
+        event.finished = set;
+        await user.save()
+        return;
+    }
 
     this.setEmailToUser = async function(userId, password, email){
         let user = await User.findById(userId);
@@ -402,6 +413,4 @@ module.exports = function() {
         return correct;
     }
 
-
 };
-
