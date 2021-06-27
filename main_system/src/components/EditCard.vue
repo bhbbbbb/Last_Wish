@@ -4,7 +4,7 @@ v-card.ma-0.pa-0.transparent(min-height="10vh" flat)
   //- #title
   v-row(no-gutters)
     v-text-field.ma-0.pa-0(
-      placeholder="Title here"
+      placeholder="標題"
       v-model="inner_article.title"
       autocomplete="off"
     )
@@ -13,8 +13,7 @@ v-card.ma-0.pa-0.transparent(min-height="10vh" flat)
   v-row(no-gutters)
     v-textarea.ma-0.pa-0(
       auto-grow
-      hint="Tell me about your wish"
-      placeholder="body here"
+      placeholder="輸入內文"
       v-model="inner_article.body"
       rows="1"
     )
@@ -129,7 +128,7 @@ export default {
       this.inner_article.tags.splice(idx, 1);
     },
     valid(val) {
-      const pattern = /^#\w+$/g;
+      const pattern = /^#\S+$/g;
       if (val.length <= 1) return true;
       return pattern.test(val) || 'contain illegal charactersss';
     },

@@ -34,6 +34,13 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
               @click="toggleEdit"
               v-if="$store.state.user.self.id === article.author.id"
             ) {{ editing ? '取消編輯' : '編輯內文' }}
+
+
+            v-list-item(
+              @click="goLink"
+              v-if="$store.state.is_login"
+            ) 引用計畫
+
             v-divider.mx-2(
               v-if="$store.state.user.self.id === article.author.id"
             )
@@ -51,7 +58,9 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
                   v-on="on"
                   v-bind="attrs"
                 ) 
-                  v-list-item-title(style="color: red") 刪除文章
+                  v-list-item-title(style="color: red") 刪除計畫
+              template(#confirm)
+                span(style="color: red;") 刪除
               
     
     //------------ article link from -----------
@@ -110,12 +119,10 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
           v-if="$store.state.is_login"
           :article-id="id"
         )
-    v-overlay.align-start(:value="show_info", absolute="absolute", opacity="0")
-      v-alert.mt-10(
-        :value="show_info",
-        :type="info_type",
-        transition="slide-x-transition"
-      ) {{ infos }}
+  MsgBox(:value.sync="show_info" :buttons="1" :timeout="1000") 
+    v-row(no-gutters)
+      v-col.d-flex.justify-center(cols="12")
+        span 已複製到剪貼簿
   
   input#url(style="position: absolute; opacity: 0" disabled)
 </template>
@@ -123,7 +130,6 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
 <script>
 import moment from 'moment';
 import color_list from '@/data/color_list';
-// var Article_id = '';
 
 export default {
   name: 'Article',
@@ -148,10 +154,6 @@ export default {
   data: () => ({
     newMilestone_show: false,
     show_info: false,
-    info_type: 'success',
-    infos: '',
-    ThePost: [],
-    NP: false,
     editing: false,
   }),
   computed: {
@@ -178,32 +180,9 @@ export default {
       ele.value = window.location.href;
       ele.select();
       document.execCommand('copy');
-      this.Show_info('Copied', 'success');
-    },
-    Show_info(Info, infoType) {
-      /**
-       *There are 4 types of infoType in default:
-       *success
-       *info
-       *warning
-       *error
-       */
-      this.infos = Info;
-      this.info_type = infoType;
+      this.Show_info('已複製到剪貼簿');
       this.show_info = true;
-      setTimeout(() => {
-        this.show_info = false;
-      }, 1000);
     },
-    // Clone() {
-    //   this.$router.push({
-    //     name: 'ArticleClone',
-    //     params: {
-    //       id: this.id,
-    //       newArticle: this.ThePost,
-    //     },
-    //   });
-    // },
     toggleEdit() {
       this.editing = !this.editing;
       if (!this.editing) {
@@ -216,17 +195,15 @@ export default {
         article_id: this.id,
         content: this.article.content,
       });
-      // if (!this.id)
-      //   apiEditArticle(this.article.id, this.article.content);
     },
-    // updateComment(newComment) {
-    //   // this.article.comments.push(newComment);
-    // },
     moment,
     color_list,
     deletePost() {
       this.$store.dispatch('deleteArticle', this.id);
       this.$router.replace('/');
+    },
+    goLink() {
+      this.$router.push({ name: 'Link', params: { reference: this.article }});
     },
   },
 };

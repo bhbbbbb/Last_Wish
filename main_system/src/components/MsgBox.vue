@@ -1,30 +1,30 @@
 <template lang="pug">
 v-dialog(
-	max-width="400"
-	v-model="inner_value"
-	:width="width"
-	v-bind="$attrs"
+  max-width="400"
+  v-model="inner_value"
+  :width="width"
+  v-bind="$attrs"
 )
-	template(#activator="{ on, attrs }")
-		slot(name="activator" :on="on" :attrs="attrs")
-	v-card.pt-3.px-5.pb-1(flat)
-		slot
-		
-		v-card-actions.pa-0.mx-0.mb-0.mt-3.justify-space-around
-			v-btn(
-				v-if="buttons === 2"
-				text
-				plain
-				@click="inner_value = false"
-			)
-				slot(name="cancel") 取消
-			v-btn(
-				text
-				plain
-				@click="confirm"
-			)
-				slot(name="confirm") 確定
-			
+  template(#activator="{ on, attrs }")
+    slot(name="activator" :on="on" :attrs="attrs")
+  v-card.pt-3.px-5.pb-1(flat)
+    slot
+    
+    v-card-actions.pa-0.mx-0.mb-0.mt-3.justify-space-around
+      v-btn(
+        v-if="buttons === 2"
+        text
+        plain
+        @click="inner_value = false"
+      )
+        slot(name="cancel") 取消
+      v-btn(
+        text
+        plain
+        @click="confirm"
+      )
+        slot(name="confirm") 確定
+      
 
 </template>
 
@@ -46,6 +46,10 @@ export default {
       type: Boolean,
       default: undefined,
     },
+    timeout: {
+      type: [Number, Boolean],
+      default: false,
+    },
   },
   data: () => ({
     value_: undefined,
@@ -60,6 +64,15 @@ export default {
         if (this.value === undefined) this.value_ = val;
         else this.$emit('update:value', val);
       },
+    },
+  },
+  watch: {
+    inner_value(val) {
+      if (val && this.timeout) {
+        setTimeout(() => {
+          this.inner_value = false;
+        }, this.timeout);
+      }
     },
   },
   created() {},

@@ -81,6 +81,16 @@ export const home_routes = [
     },
   },
   {
+    path: 'link',
+    name: 'Link',
+    component: () => import('@/views/Link'),
+    beforeEnter(to, from, next) {
+      if (store.state.is_login && to.params.reference) next();
+      else next('/articles');
+    },
+    props: true,
+  },
+  {
     path: 'follow_article',
     name: 'FollowArticles',
     component: () => import('@/views/FollowArticles'),
