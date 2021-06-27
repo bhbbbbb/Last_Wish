@@ -254,6 +254,8 @@ module.exports = function() {
     this.setLikedPostsToUser = async function(userId, articleId, set) {
         let article = await this.articleManager.getArticleById(articleId);
         if (article) {
+            let score = set? 2 : -2;
+            await this.articleManager.changeScore(article.author, score);
             let user = await User.findById(userId);
             if (!user)
                 throw "user not found"
@@ -402,3 +404,4 @@ module.exports = function() {
 
 
 };
+

@@ -47,7 +47,10 @@ const userSchema = new mongoose.Schema({
   selfPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   finishedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   events: [eventSchema],
+  score:{
+    type: Number,
+    default: 0,
+  }
 });
-
 userSchema.plugin(mongoose_fuzzy_searching, { fields: ['username'] });
 module.exports = mongoose.model('User', userSchema);
