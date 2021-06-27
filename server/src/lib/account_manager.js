@@ -183,6 +183,11 @@ module.exports = function() {
             throw "user not found";
         return user._id;
     }
+    
+    this.searchUserByKeywords = async function(keywordStr) {
+        let users = await User.fuzzySearch(keywordStr);
+        return users.map(user => user._id);
+    }
 
     /**
      * To make an user to follow/unfollow another user

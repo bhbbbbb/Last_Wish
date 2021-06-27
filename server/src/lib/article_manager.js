@@ -75,11 +75,7 @@ module.exports = function() {
             }
             
         }
-        let allArticleIds = [];
-        for (article of rawArticles) {
-            allArticleIds.push(article._id);
-        }
-        return allArticleIds;
+        return rawArticles.map(article => article._id);
     }
 
     this.rmArticleById = async function(articleId) {
@@ -93,7 +89,7 @@ module.exports = function() {
                 }
             }).exec();
         }
-        User.findByIdAndUpdate(deletedArticle.author, {
+        await User.findByIdAndUpdate(deletedArticle.author, {
             $pullAll: {
                 selfPosts: [deletedArticle._id]
             }
@@ -141,11 +137,7 @@ module.exports = function() {
                     break;
             }
         }
-        let sortedArticleIds = [];
-        for (article of rawArticles) {
-            sortedArticleIds.push(article._id);
-        }
-        return sortedArticleIds;
+        return rawArticles.map(article => article._id);
     }
     
     /**
@@ -175,8 +167,12 @@ module.exports = function() {
             throw "no such article";
         return article.toFrontendFormat();
     }
+    
+    this.searchArticleByKeywords = async function(keywordStr) {
+        let articles = await Article.fuzzySearch(keywordStr);
+        return articles.map(article => article._id);
+    }
 
-    // TODO: modify this
     /**
      * @param {Object} author 
      * @param {String} articleId 
@@ -191,7 +187,6 @@ module.exports = function() {
             throw "no such article";
         if (!author)
             throw "author is required";
-            
         let newComment = {
             "author": author,
             "body": commentStr,
@@ -210,20 +205,20 @@ module.exports = function() {
     * @throws "no such article" exception
     * @throws "not the author" exception
     */
-    this.replaceArticle = async function(newArticle, articleId, userId) {
-        let article = await Article.findById(articleId);
-        if (!article)
-            throw "no such article";
-        if (userId != article.author)
-            throw "not the author";
-        if (newArticle.title)
-            article.title = newArticle.title;
-        if (newArticle.body)
-            article.body = newArticle.body;
-        article.date = Date.now();
-        await article.save();
-        return article.date;
-    }
+    // this.replaceArticle = async function(newArticle, articleId, userId) {
+    //     let article = await Article.findById(articleId);
+    //     if (!article)
+    //         throw "no such article";
+    //     if (userId != article.author)
+    //         throw "not the author";
+    //     if (newArticle.title)
+    //         article.title = newArticle.title;
+    //     if (newArticle.body)
+    //         article.body = newArticle.body;
+    //     article.date = Date.now();
+    //     await article.save();
+    //     return article.date;
+    // }
     
     this.updateArticle = async function(articleId, updateQuery) {
         let article = await Article.findById(articleId);
@@ -310,28 +305,6 @@ module.exports = function() {
         await article.save();
     }
 
-    this.addMilestoneToArticle = async function(articleId, milestone) {
-        let article = await Article.findById(articleId);
-        if (!article)
-            throw "no such artcle";
-        article.milestones.push(milestone);
-        await article.sortMilestonesAndSave();
-    }
-    
-    this.replaceMilestoneOfArticle = async function(newMilestone, articleId, milestoneId) {
-        let article = await Article.findById(articleId);
-        if (!article)
-            throw "no such aritcle";
-        let milestone = article.milestones.id(milestoneId);
-        if (!milestone)
-            throw "no such milestone"
-        milestone.title = newMilestone.title;
-        milestone.body = newMilestone.body;
-        milestone.estDate = newMilestone.estDate;
-        milestone.finished = newMilestone.finished;
-        await article.sortMilestonesAndSave();
-    }
-    
     this.setFinishedMilestoneOfArticle = async function(articleId, milestoneId, set) {
         let article = await Article.findById(articleId);
         if (!article)

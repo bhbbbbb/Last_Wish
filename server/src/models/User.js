@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Article = require("./Article");
+const mongoose_fuzzy_searching = require("mongoose-fuzzy-searching");
 const colorValidator = (v) => {
   return (/^#([0-9a-fA-F]{3}){1,2}$/i).test(v);
 }
@@ -49,11 +49,5 @@ const userSchema = new mongoose.Schema({
   events: [eventSchema],
 });
 
-userSchema.post('remove', (user) => {
-  console.log("deleting", user.username);
-  for (articleId of user.selfPosts) {
-    Article.findByIdAndRemove(articleId);
-  }
-});
-
+userSchema.plugin(mongoose_fuzzy_searching, { fields: ['username'] });
 module.exports = mongoose.model('User', userSchema);
