@@ -35,24 +35,47 @@ module.exports = function() {
      * @returns the json object containing all articles with frontend format
      */
     this.getAllArticleIds = async function(options) {
-        let allArticleIds = [];
-        let rawArticles = await Article.find({});
+        let rawArticles = [];
         if (options) {
-            if (options.new2old) {
-                rawArticles.sort((a, b) => {
-                    return b.date - a.date;
-                });
-            } else {
-                rawArticles.sort((a, b) => {
-                    return a.date - b.date;
-                });
+            switch (options.filter) {
+                case "all":
+                    rawArticles = await Article.find({});
+                    break;
+                case "finished":
+                    rawArticles = await Article.find({ finished: true });
+                    break;
+                case "unfinished":
+                    rawArticles = await Article.find({ finished: false});
+                    break;
+                default:
+                    rawArticles = await Article.find({});
+                    break;
             }
-            if (options.finished) {
-                rawArticles.sort((a, b) => {
-                    return a.finished - b.finished;
-                });
+            switch (options.sortBy) {
+                case "new2old":
+                    rawArticles.sort((a, b) => {
+                        return b.date - a.date;
+                    });
+                    break;
+                case "old2new":
+                    rawArticles.sort((a, b) => {
+                        return a.date - b.date;
+                    });
+                    break;
+                case "most_liked":
+                    rawArticles.sort((a, b) => {
+                        return b.likes - a.likes;
+                    });
+                    break;
+                case "most_followed":
+                    rawArticles.sort((a, b) => {
+                        return b.fans.length - a.fans.length;
+                    });
+                    break;
             }
+            
         }
+        let allArticleIds = [];
         for (article of rawArticles) {
             allArticleIds.push(article._id);
         }
@@ -79,25 +102,47 @@ module.exports = function() {
     }
 
     this.sortArticleIdsByOptions = async function(articleIds, options) {
-        let articles = await Article.find({ '_id': { $in: articleIds } });
+        let rawArticles = [];
         if (options) {
-            if (options.new2old) {
-                articles.sort((a, b) => {
-                    return b.date - a.date;
-                });
-            } else {
-                articles.sort((a, b) => {
-                    return a.date - b.date;
-                });
+            switch (options.filter) {
+                case "all":
+                    rawArticles = await Article.find({ '_id': { $in: articleIds } });
+                    break;
+                case "finished":
+                    rawArticles = await Article.find({ '_id': { $in: articleIds }, finished: true });
+                    break;
+                case "unfinished":
+                    rawArticles = await Article.find({ '_id': { $in: articleIds }, finished: false });
+                    break;
+                default:
+                    rawArticles = await Article.find({ '_id': { $in: articleIds } });
+                    break;
             }
-            if (options.finished) {
-                articles.sort((a, b) => {
-                    return a.finished - b.finished;
-                });
+            switch (options.sortBy) {
+                case "new2old":
+                    rawArticles.sort((a, b) => {
+                        return b.date - a.date;
+                    });
+                    break;
+                case "old2new":
+                    rawArticles.sort((a, b) => {
+                        return a.date - b.date;
+                    });
+                    break;
+                case "most_liked":
+                    rawArticles.sort((a, b) => {
+                        return b.likes - a.likes;
+                    });
+                    break;
+                case "most_followed":
+                    rawArticles.sort((a, b) => {
+                        return b.fans.length - a.fans.length;
+                    });
+                    break;
             }
         }
         let sortedArticleIds = [];
-        for (article of articles) {
+        for (article of rawArticles) {
             sortedArticleIds.push(article._id);
         }
         return sortedArticleIds;
@@ -179,6 +224,44 @@ module.exports = function() {
         await article.save();
         return article.date;
     }
+    
+    this.updateArticle = async function(articleId, updateQuery) {
+        let article = await Article.findById(articleId);
+        if (!article)
+            throw "no such article";
+        if (updateQuery.title)
+            article.title = updateQuery.title;
+        if (updateQuery.body)
+            article.body = updateQuery.body;
+        if (updateQuery.tags)
+            article.tags = updateQuery.tags;
+        if (updateQuery.deleted_milestones) {
+            for (deletedMilestoneId of updateQuery.deleted_milestones) {
+                article.milestones.pull(deletedMilestoneId);
+            }
+        }
+        if (updateQuery.new_milestones) {
+            for (newMilestoneData of updateQuery.new_milestones) {
+                article.milestones.push(newMilestoneData);
+            }
+        }
+        if (updateQuery.modified_milestones) {
+            for (modifiedMilestone of updateQuery.modified_milestones) {
+                let milestone = await article.milestones.id(modifiedMilestone._id);
+                if (!milestone)
+                    throw "no such milestone";
+                if (modifiedMilestone.title)
+                    milestone.title = modifiedMilestone.title;
+                if (modifiedMilestone.body)
+                    milestone.body = modifiedMilestone.body;
+                if (modifiedMilestone.estDate)
+                    milestone.estDate = modifiedMilestone.estDate;
+                if (modifiedMilestone.finished)
+                    milestone.finished = modifiedMilestone.finished;
+            }
+        }
+        await article.sortMilestonesAndSave();
+    }
 
     /**
      * Replace a comment body in an article
@@ -217,6 +300,14 @@ module.exports = function() {
         article.visited++;
         await article.save();
         return;
+    }
+    
+    this.setFinishedArticle = async function(articleId, set) {
+        let article = await Article.findById(articleId);
+        if (!article)
+            throw "no such article";
+        article.finished = set;
+        await article.save();
     }
 
     this.addMilestoneToArticle = async function(articleId, milestone) {
