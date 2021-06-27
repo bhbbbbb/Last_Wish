@@ -169,6 +169,8 @@ module.exports = function() {
     }
     
     this.searchArticleByKeywords = async function(keywordStr) {
+        // const updateFuzzy = require('./update_fuzzy');
+        // await updateFuzzy(User, ['title', 'body']);
         let articles = await Article.fuzzySearch(keywordStr);
         return articles.map(article => article._id);
     }
