@@ -17,6 +17,8 @@ v-overlay(
 				type="time"
 				format="HH:mm"
 				v-model="pick.start"
+				:default-value="new Date().setHours(0, 0)"
+				:disabled-time="validStarttime"
 				placeholder="select start time"
 			)
 
@@ -27,7 +29,7 @@ v-overlay(
 				format="HH:mm"
 				v-model="pick.end"
 				:disabled-time="validEndtime"
-				:default-value="pick.start"
+				:default-value="new Date().setHours(23, 59)"
 				placeholder="select end time"
 			)
 
@@ -112,6 +114,11 @@ export default {
 			if(this.pick.end < this.pick.start)
 				this.pick.end = this.pick.start
 			return time < this.pick.start;
+		},		
+		validStarttime(time){
+			if(this.pick.end < this.pick.start)
+				this.pick.start = this.pick.end;
+			return time > this.pick.end;
 		},
 		/**
      * @param {Object} Date
