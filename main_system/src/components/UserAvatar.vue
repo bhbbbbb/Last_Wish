@@ -34,7 +34,14 @@ export default {
     error: false,
   }),
   created() {},
-  methods: {},
+  beforeUpdate() {
+    this.init();
+  },
+  methods: {
+    init() {
+      this.error = false;
+    },
+  },
 };
 </script>
 

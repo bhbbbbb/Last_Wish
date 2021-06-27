@@ -1,8 +1,12 @@
 <template lang="pug">
 v-sheet.m-view(rounded="lg")
-  Search(v-if="fetchAction !== 'getSelfArticles' && fetchAction !== 'getOthersArticles'")
+  Search(
+    v-if="type === 'global' || type === 'followed'"
+    @update="updateArticles"
+  )
   v-row(
     no-gutters
+    v-if="articles"
   )
     v-col.ma-0.pa-0.pa-sm-2.pm-md-2(
       cols="12"
@@ -14,13 +18,25 @@ v-sheet.m-view(rounded="lg")
     )
       ArticleCard(
         :id="id"
-        :color="color_list(idx)"
       )
+    
+    //- #loading
+  v-row(
+    no-gutters
+    v-else
+  )
+    v-col.d-flex.align-center.justify-center(cols="12" style="height: 60vh")
+      v-progress-circular(
+        indeterminate
+        size="64"
+        color="grey"
+      )
+    
+
 
 </template>
 
 <script>
-import color_list from '@/data/color_list';
 export default {
   name: 'ArticleContainer',
 
@@ -29,13 +45,11 @@ export default {
     Search: () => import('@/components/Search'),
   },
   props: {
-    articles: {
-      required: true,
-      type: Array,
-    },
-    fetchAction: {
+    type: {
       required: true,
       type: String,
+      validator: (val) =>
+        ['global', 'followed', 'self', 'others'].includes(val),
     },
     username: {
       required: false,
@@ -43,10 +57,14 @@ export default {
       default: undefined,
     },
   },
-  data: () => ({}),
+  data: () => ({
+    articles: undefined,
+    sort_by: 'new2old',
+    filter: 'all',
+  }),
   computed: {},
   watch: {
-    fetchAction() {
+    type() {
       this.fetchArticles();
     },
   },
@@ -55,21 +73,27 @@ export default {
     this.fetchArticles();
   },
   methods: {
-    // ToInnerArticle(article_id) {
-    //   this.$router.push({
-    //     name: 'Article',
-    //     params: {
-    //       id: article_id,
-    //     },
-    //   });
-    // },
-    color_list: color_list,
+    updateArticles({ sort_by, filter }) {
+      this.sort_by = sort_by;
+      this.filter = filter;
+      this.fetchArticles();
+    },
     async fetchArticles() {
-      if (this.fetchAction === 'getOthersArticles') {
-        // let { id } = await this.$store.dispatch('getUserByName', this.username);
-        let id = this.$store.state.user.others.id;
-        this.$store.dispatch(this.fetchAction, id);
-      } else this.$store.dispatch(this.fetchAction);
+      this.articles = this.$store.getters.articles(
+        this.type,
+        this.sort_by,
+        this.filter
+      );
+      if (!this.articles)
+        this.$store
+          .dispatch('getArticles', {
+            type: this.type,
+            sort_by: this.sort_by,
+            filter: this.filter,
+          })
+          .then((data) => {
+            this.articles = data;
+          });
     },
   },
 };

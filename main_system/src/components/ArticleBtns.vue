@@ -33,8 +33,8 @@ v-row.align-center(v-if="content" no-gutters)
 </template>
 
 <script>
-import { apiToggleFollow, apiToggleLike } from '@/store/api';
-// import color_list from '@/data/color_list';
+// import { apiToggleFollow, apiToggleLike } from '@/store/api';
+import { apiSetFollow, apiSetLike } from '@/store/api';
 export default {
   name: 'ArticleBtns',
   components: {},
@@ -50,11 +50,19 @@ export default {
     liked: false,
     liked_count: undefined,
   }),
+  watch: {
+    content() {
+      this.init();
+    },
+  },
   created() {
-    this.getFollowState();
-    this.getLikeState();
+    this.init();
   },
   methods: {
+    init() {
+      this.getFollowState();
+      this.getLikeState();
+    },
     getFollowState() {
       const user_id = this.$store.state.user.self.id;
       let found = this.content.fans.find((element) => element === user_id);
@@ -66,11 +74,11 @@ export default {
       this.followed = !this.followed;
       if (this.followed) this.followed_count++;
       else this.followed_count--;
-      apiToggleFollow(this.content.id).then(() => {
+      apiSetFollow(this.content.id, this.followed).then(() => {
         this.$store
           .dispatch('getArticle', { id: this.content.id, force_update: true })
           .then(() => {
-            this.$store.dispatch('getUserFollowed', true);
+            this.$store.dispatch('getFollowedArticles', true);
           });
       });
     },
@@ -83,7 +91,7 @@ export default {
       this.liked = !this.liked;
       if (this.liked) this.liked_count++;
       else this.liked_count--;
-      apiToggleLike(this.content.id);
+      apiSetLike(this.content.id, this.liked);
       this.$store.commit('setLiked', {
         id: this.content.id,
         value: this.liked,
