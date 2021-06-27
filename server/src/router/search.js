@@ -38,7 +38,7 @@ finder.get('/tag', async (req, res) => {
     }
 });
 
-finder.get('/tag', async (req, res) => {
+finder.get('/tag_name', async (req, res) => {
 
 });
 

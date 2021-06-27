@@ -1,5 +1,6 @@
 const Article = require('../models/Article');
 const User = require("../models/User");
+const Tag =require("../models/Tag");
 
 module.exports = function() {
 
@@ -21,9 +22,20 @@ module.exports = function() {
             title: articleContent.title,
             body: articleContent.body,
             author: author._id,
-            tags: articleContent.tags,
         };
         const article = new Article(newArticleData);
+        for (tagStr of articleContent.tags) {
+            let existingTag = await Tag.findOne({ name: tagStr });
+            if (existingTag) {
+                existingTag.related.push(article._id);
+                await existingTag.save();
+            } else {
+                let tag = new Tag({ name: tagStr });
+                tag.related.push(article._id);
+                await tag.save();
+            }
+            article.tags.push(tagStr);
+        }
         for (newMilestoneData of articleContent.milestones) {
             article.milestones.push(newMilestoneData);
         }
@@ -82,6 +94,13 @@ module.exports = function() {
         let deletedArticle = await Article.findByIdAndDelete(articleId);
         if (!deletedArticle)
             throw "no such article";
+        for (tag of deletedArticle.tags) {
+            Tag.findOneAndUpdate({ name: tag }, {
+                $pullAll: {
+                    related: [deletedArticle._id]
+                }
+            }).exec();
+        }
         for (fan of deletedArticle.fans) {
             User.findByIdAndUpdate(fan, {
                 $pullAll: {
@@ -89,7 +108,7 @@ module.exports = function() {
                 }
             }).exec();
         }
-        await User.findByIdAndUpdate(deletedArticle.author, {
+        User.findByIdAndUpdate(deletedArticle.author, {
             $pullAll: {
                 selfPosts: [deletedArticle._id]
             }
@@ -176,6 +195,7 @@ module.exports = function() {
     }
     
     this.searchArticleByTags = async function(tagStr) {
+        // TODO: modify this by using the Tag model
         let tags = tagStr.split(" ").map(tag => "#" + tag);
         let articles = await Article.find({ tags: { $in: tags } });
         return articles.map(article => article._id);
@@ -236,8 +256,30 @@ module.exports = function() {
             article.title = updateQuery.title;
         if (updateQuery.body)
             article.body = updateQuery.body;
-        if (updateQuery.tags)
-            article.tags = updateQuery.tags;
+        if (updateQuery.tags) {
+            let toRemove = article.tags.filter(t => !updateQuery.tags.includes(t));
+            let toAdd = updateQuery.tags.filter(t => !article.tags.includes(t));
+            for (tag of toRemove) {
+                Tag.findOneAndUpdate({ name: tag }, {
+                    $pullAll: {
+                        related: [article._id]
+                    }
+                }).exec();
+                article.tags.pull(tag);
+            }
+            for (tagStr of toAdd) {
+                let existingTag = await Tag.findOne({ name: tagStr });
+                if (existingTag) {
+                    existingTag.related.push(article._id);
+                    await existingTag.save();
+                } else {
+                    let tag = new Tag({ name: tagStr });
+                    tag.related.push(article._id);
+                    await tag.save();
+                }
+                article.tags.push(tagStr);
+            }
+        }
         if (updateQuery.deleted_milestones) {
             for (deletedMilestoneId of updateQuery.deleted_milestones) {
                 article.milestones.pull(deletedMilestoneId);
