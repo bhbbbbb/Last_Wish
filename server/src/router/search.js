@@ -28,7 +28,14 @@ finder.get('/user', async (req, res) => {
 });
 
 finder.get('/tag', async (req, res) => {
-
+    try {
+        let searchingResult = await articleManager.searchArticleByTags(req.query.q);
+        res.status(200).json(searchingResult);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+        return;
+    }
 });
 
 finder.get('/tag', async (req, res) => {

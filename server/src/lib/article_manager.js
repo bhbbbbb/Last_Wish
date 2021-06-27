@@ -174,6 +174,12 @@ module.exports = function() {
         let articles = await Article.fuzzySearch(keywordStr);
         return articles.map(article => article._id);
     }
+    
+    this.searchArticleByTags = async function(tagStr) {
+        let tags = tagStr.split(" ").map(tag => "#" + tag);
+        let articles = await Article.find({ tags: { $in: tags } });
+        return articles.map(article => article._id);
+    }
 
     /**
      * @param {Object} author 
