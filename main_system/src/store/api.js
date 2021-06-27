@@ -1,9 +1,7 @@
 import axios from 'axios';
-const proURL = 'https://luffy.ee.ncku.edu.tw:2222';
-const devURL = '';
-// const devURL = 'http://192.168.0.3:2222';
-
-export const baseURL = process.env.NODE_ENV === 'development' ? devURL : proURL;
+import config from '../../config';
+// export const baseURL = process.env.NODE_ENV === 'development' ? devURL : proURL;
+export const baseURL = config.backendUrl;
 
 const articleRequest = axios.create({
   baseURL: baseURL + '/articles',
@@ -45,14 +43,36 @@ export const apiGetUserPosts = (user_id) =>
 
 export const apiGetFollowedPosts = () =>
   articleRequest.get('/get_followed_posts');
-// export const apiUploadMilestone = (data) =>
-//   articleRequest.post('/addMilestone', data);
 
-export const apiUpdateArticle = (data) =>
-  articleRequest.post('/editArticle', data);
+export const apiEditArticle = (id, new_article) =>
+  articleRequest.post('/edit_article', {
+    article_id: id,
+    new_article,
+  });
 
 export const apiGetArticleById = (id) =>
   articleRequest.get('/get_article_by_id', { params: { article_id: id } });
+
+export const apiDeleteArticle = (id) =>
+  articleRequest.post('/delete', { article_id: id });
+
+/********************** milestone #milestone #ms  ********************/
+
+export const apiToggleMsFinished = (article_id, milestone_id) =>
+  articleRequest.post('/toggle_finished_milestone', {
+    article_id,
+    milestone_id,
+  });
+
+export const apiEditMilestone = (article_id, milestone_id, new_milestone) =>
+  articleRequest.post('/edit_milestone', {
+    article_id,
+    milestone_id,
+    new_milestone,
+  });
+
+export const apiAddMilestone = (article_id, milestone) =>
+  articleRequest.post('/add_milestone', { article_id, milestone });
 
 /********************** Call user.js **********************/
 export const apiGetUserId = (name) =>
@@ -95,9 +115,19 @@ export const apiToggleLike = (article_id) =>
 
 export const apiGetLikedPost = () => userRequest.get('/get_liked_posts');
 
-// ----------------- event -------------------------
+// ----------------- #event -------------------------
 
 export const apiGetEvents = () => userRequest.get('/get_events');
 
 export const apiAddEvent = (event) =>
   userRequest.post('/add_event_to_user', event);
+
+export const apiEditEvent = (event_id, event) =>
+  userRequest.post('/edit_event_by_id', {
+    event_id,
+    name: event.name,
+    color: event.color,
+    start: event.start,
+    end: event.end,
+    finished: event.finished,
+  });

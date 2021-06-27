@@ -1,14 +1,16 @@
 <template lang="pug">
-v-sheet(rounded="lg")
+v-sheet.m-view(rounded="lg")
   Search(v-if="fetchAction !== 'getSelfArticles' && fetchAction !== 'getOthersArticles'")
   v-row(
     no-gutters
   )
-    v-col.ma-0.pa-0.ma-sm-3(
+    v-col.ma-0.pa-0.pa-sm-2.pm-md-2(
       cols="12"
-      sm="5"
+      sm="6"
+      lg="4"
       v-for="(id, idx) in articles",
       :key="idx"
+      v-if="$store.state.article.data[id] !== false"
     )
       ArticleCard(
         :id="id"

@@ -5,6 +5,7 @@ import { isLogin } from '@/lib/log';
 // import store from '../store';
 import { home_routes } from './home';
 import { user_routes } from './user';
+import { frameless_routes } from './frameless';
 import store from '../store';
 // import store from '../store';
 Vue.use(VueRouter);
@@ -22,6 +23,14 @@ const routes = [
     children: home_routes,
   },
   {
+    path: '/frameless',
+    name: 'Frameless',
+    components: {
+      Main: () => import('@/views/Frameless/Frame'),
+    },
+    children: frameless_routes,
+  },
+  {
     path: '/:username',
     name: 'User',
     components: {
@@ -31,7 +40,7 @@ const routes = [
     },
     beforeEnter(to, from, next) {
       if (store.state.user.self.name !== to.params.username)
-        store.dispatch('getOthersByName', to.params.username).then(() => {
+        store.dispatch('user/getOthersByName', to.params.username).then(() => {
           next();
         });
       else next();
@@ -40,6 +49,26 @@ const routes = [
     children: user_routes,
     props: {
       AppBar: true,
+    },
+  },
+  {
+    path: '/frame/article/:id',
+    name: 'FrameArticle',
+    components: {
+      Main: () => import('@/views/Article'),
+    },
+    beforeEnter(to, from, next) {
+      store
+        .dispatch('getArticle', { id: to.params.id })
+        .then(() => {
+          next();
+        })
+        .catch(() => {
+          next(false);
+        });
+    },
+    props: {
+      Main: true,
     },
   },
 ];

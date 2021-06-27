@@ -7,6 +7,7 @@ import VueAxios from 'vue-axios';
 import axios from 'axios';
 import VueCookies from 'vue-cookies';
 import './registerServiceWorker';
+import '@/assets/main.scss';
 
 Vue.config.productionTip = false;
 

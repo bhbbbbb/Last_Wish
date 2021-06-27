@@ -48,17 +48,22 @@ const articleSchema = new mongoose.Schema({
   },
   comments: [commentSchema],
   fans: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
+  visited:{
+    type: Number,
+    default : 0,
+  }
 });
 
 // this is not stable maybe need revising
-articleSchema.method('sortMilestonesAndSave', function() {
+articleSchema.method('sortMilestonesAndSave', async function() {
   this.milestones.sort((m, n) => {
-    return m.estDate - n.estDate;
-  });
-  this.milestones.sort((m, n) => {
-    return n.finished - m.finished;
-  });
-  this.save();
+    if (m.finished == n.finished) {
+      return m.estDate - n.estDate;
+    } else {
+      return n.finished - m.finished;
+    }
+  })
+  await this.save();
 });
 
 articleSchema.method('toFrontendFormat', function() {
