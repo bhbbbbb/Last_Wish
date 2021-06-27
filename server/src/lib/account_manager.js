@@ -5,8 +5,8 @@ var ArticleManager = require('./article_manager.js');
 module.exports = function() {
     this.articleManager = new ArticleManager();
 
-    this.findUserbyUsername = function(username) {
-        return User.findOne({ username: username }).exec();
+    this.findUserbyUsername = async function(username) {
+        return await User.findOne({ username: username });
     }
 
     /**
@@ -191,21 +191,31 @@ module.exports = function() {
      * @param {String} targetId
      * @throws "user not found"
      */
-    this.toggleFollowRelation = async function(userId, targetId) {
+    this.setFollowRelation = async function(userId, targetId) {
         let target = await User.findById(targetId);
         if (!target)
             throw "user not found";
         let user  = await User.findById(userId);
         if (!user)
             throw "user not found";
-        if (user.followedUsers.includes(target._id)) {
-            // In this case it is going to unfollow
-            user.followedUsers.pull(target._id);
-            target.fans.pull(user._id);
-        } else {
+        // if (user.followedUsers.includes(target._id)) {
+        //     // In this case it is going to unfollow
+        //     user.followedUsers.pull(target._id);
+        //     target.fans.pull(user._id);
+        // } else {
+        //     // In this case it is going to follow
+        //     user.followedUsers.push(target._id);
+        //     target.fans.push(user._id);
+        // }
+        
+        if (set) {
             // In this case it is going to follow
             user.followedUsers.push(target._id);
             target.fans.push(user._id);
+        } else {
+            // In this case it is going to unfollow
+            user.followedUsers.pull(target._id);
+            target.fans.pull(user._id);
         }
         user.save();
         target.save();
@@ -240,20 +250,24 @@ module.exports = function() {
         }
     }
     
-    this.toggleLikedPostsToUser = async function(userId, articleId) {
+    this.setLikedPostsToUser = async function(userId, articleId, set) {
         let article = await this.articleManager.getArticleById(articleId);
         if (article) {
             let user = await User.findById(userId);
             if (!user)
                 throw "user not found"
             if (user.likedPosts.includes(article._id)) {
-                // In this case it is going to like
-                user.likedPosts.pull(article._id);
-                article.likes -= 1;
-            } else {
                 // In this case it is going to dislike
-                user.likedPosts.push(article._id);
-                article.likes += 1;
+                if (!set) {
+                    user.likedPosts.pull(article._id);
+                    article.likes -= 1;
+                }
+            } else {
+                // In this case it is going to like
+                if (set) {
+                    user.likedPosts.push(article._id);
+                    article.likes += 1;
+                }
             }
             user.save();
             article.save();
@@ -339,7 +353,18 @@ module.exports = function() {
             throw "user not found";
         return user.events;
     }
+    /**
+     * 
+     * @param {String} password 
+     * @returns hased_pass
+     */
+    this.hashPass = async(password) => {
+        return await bcrypt.hashSync(password, 10);
+    }
 
+    this.findUserById = async(id) => {
+        return await User.findById(id);
+    }
     /**
      * replace existed event with modifiedEvent obj
      * @param {String} eventId 
@@ -360,4 +385,19 @@ module.exports = function() {
         await user.save()
         return;
     }
+
+
+    this.setEmailToUser = async function(userId, password, email){
+        let user = await User.findById(userId);
+        if(!user)
+            throw "user not found"
+        let correct = bcrypt.compareSync(password, user.password)
+        if(correct){
+            user.email = email
+            await user.save();
+        }
+        return correct;
+    }
+
+
 };

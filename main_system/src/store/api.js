@@ -110,12 +110,24 @@ export const apiGetPublicInfo = (id) =>
 
 export const apiLineLogin = (data) => userRequest.post('/line_login_req', data);
 
+/**
+ *
+ * @param {String} article_id
+ */
 export const apiToggleLike = (article_id) =>
   userRequest.post('/toggle_liked_post', { article_id });
 
 export const apiGetLikedPost = () => userRequest.get('/get_liked_posts');
 
-// ----------------- #event -------------------------
+/**
+ *
+ * @param {String} username
+ * @param {String} new_pass
+ */
+export const apiReset = (username, new_pass) =>
+  userRequest.post('/reset_pass', { username, new_pass });
+
+// ----------------- event -------------------------
 
 export const apiGetEvents = () => userRequest.get('/get_events');
 
