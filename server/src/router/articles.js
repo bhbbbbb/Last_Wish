@@ -242,8 +242,11 @@ global.post('/update_article', user_session, async (req, res) => {
     try {
         let posts = await accountManager.getPostsByAuthor(req.session.user_id);
         if (posts.includes(req.body.article_id)) {
-            let articleId = await articleManager.updateArticle(req.body.article_id, req.body.new_article);
-            res.status(200).json(articleId);
+            await articleManager.updateArticle(
+                req.body.article_id,
+                req.body.new_article
+            );
+            res.sendStatus(200);
             return;
         } else {
             res.status(400).json("not the author");

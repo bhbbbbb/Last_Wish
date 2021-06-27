@@ -235,23 +235,32 @@ module.exports = function() {
             article.body = updateQuery.body;
         if (updateQuery.tags)
             article.tags = updateQuery.tags;
-        if (updateQuery.title)
-            article.title = updateQuery.title;
-        for (milestoneData of updateQuery.milestones) {
-            if (milestoneData._id) {
-                oldMilestone.body = milestoneData.body;
-                oldMilestone.title = milestoneData.title;
-                oldMilestone.estDate = milestoneData.estDate;
-                oldMilestone.finished = milestoneData.finished;
-            } else {
-                article.milestones.push(milestoneData);
+        if (updateQuery.deleted_milestones) {
+            for (deletedMilestoneId of updateQuery.deleted_milestones) {
+                article.milestones.pull(deletedMilestoneId);
             }
         }
-        for (milestone of article.milestones) {
-            // if (milestone._id)
+        if (updateQuery.new_milestones) {
+            for (newMilestoneData of updateQuery.new_milestones) {
+                article.milestones.push(newMilestoneData);
+            }
         }
-        await article.save();
-        return article.date;
+        if (updateQuery.modified_milestones) {
+            for (modifiedMilestone of updateQuery.modified_milestones) {
+                let milestone = await article.milestones.id(modifiedMilestone._id);
+                if (!milestone)
+                    throw "no such milestone";
+                if (modifiedMilestone.title)
+                    milestone.title = modifiedMilestone.title;
+                if (modifiedMilestone.body)
+                    milestone.body = modifiedMilestone.body;
+                if (modifiedMilestone.estDate)
+                    milestone.estDate = modifiedMilestone.estDate;
+                if (modifiedMilestone.finished)
+                    milestone.finished = modifiedMilestone.finished;
+            }
+        }
+        await article.sortMilestonesAndSave();
     }
 
     /**
