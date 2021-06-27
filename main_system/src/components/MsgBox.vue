@@ -44,18 +44,21 @@ export default {
 		},
 		value: {
 			type: Boolean,
-			default: false,
+			default: undefined,
 		}
   },
   data: () => ({
+		value_: undefined,
   }),
 	computed: {
 		inner_value: {
 			get() {
-				return this.value;
+				if (this.value === undefined) return this.value_;
+				else return this.value;
 			},
 			set(val) {
-				this.$emit('update:value', val);
+				if (this.value === undefined) this.value_ = val;
+				else this.$emit('update:value', val);
 			}
 		}
 	},

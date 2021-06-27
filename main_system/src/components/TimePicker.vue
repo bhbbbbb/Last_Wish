@@ -13,6 +13,7 @@ v-overlay(
 	)
 		v-row(no-gutters).justify-center
 			span.subtitle-1(style="color: grey") 開始時間
+		v-row(no-gutters).justify-center
 			date-picker(
 				type="time"
 				format="HH:mm"
@@ -22,8 +23,9 @@ v-overlay(
 				placeholder="select start time"
 			)
 
-		v-row(no-gutters).mt-5.justify-center
+		v-row(no-gutters).mt-10.justify-center
 			span.subtitle-1(style="color: grey") 結束時間
+		v-row(no-gutters).justify-center
 			date-picker(
 				type="time"
 				format="HH:mm"
@@ -34,7 +36,7 @@ v-overlay(
 			)
 
 
-		v-row(no-gutters).mt-5.justify-center
+		v-row(no-gutters).mt-10.justify-center
 			span.subtitle-1(style="color: grey") 選擇顏色
 
 		v-row(no-gutters).mt-5.justify-center
@@ -42,7 +44,7 @@ v-overlay(
 				mandatory
 				v-model="pick.color"
 			)
-				v-btn(
+				v-btn.mx-1(
 					v-for="(color, idx) in EVENT_COLOR_LIST"
 					:key="idx"
 					fab
@@ -121,11 +123,10 @@ export default {
 			return time > this.pick.end;
 		},
 		/**
-     * @param {Object} Date
+     * @param {Date} Date
      * @returns xx:xx
      */
     getTimeStr(time) {
-			console.log(time);
       let h = time.getHours();
       if (h < 10) h = '0' + h;
       let m = time.getMinutes();

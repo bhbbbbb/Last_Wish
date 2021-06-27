@@ -208,8 +208,6 @@ export default {
       this.picked = true;
     },
     confirmPick({ start, end, color }) {
-      console.log(start)
-      console.log(end)
       if (!this.selected_date) {
         this.selected_date = moment().format('YYYY-MM-DD');
       }
