@@ -397,6 +397,8 @@ module.exports = function() {
         if (!event)
             throw "event not found";
         event.finished = set;
+        let score = set? 10 : -10;
+        await this.articleManager.changeScore(userId, score);
         await user.save()
         return;
     }
