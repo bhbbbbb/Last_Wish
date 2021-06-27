@@ -31,5 +31,5 @@ export const frameless_routes = [
       // if (store.state.is_login) next('/articles');
       // else next();
     },
-  }
+  },
 ];

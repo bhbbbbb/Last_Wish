@@ -7,13 +7,11 @@ export const user_routes = [
     props: (route) => {
       if (store.state.user.self.name === route.params.username)
         return {
-          articles: store.state.article.self,
-          fetchAction: 'getSelfArticles',
+          type: 'self',
         };
       else
         return {
-          articles: store.state.article.others,
-          fetchAction: 'getOthersArticles',
+          type: 'others',
           username: route.params.username,
         };
     },

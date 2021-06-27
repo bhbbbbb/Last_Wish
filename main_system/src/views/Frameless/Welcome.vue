@@ -17,9 +17,9 @@
 export default {
   name: 'Welcome',
   components: {
-		MyLogin: () => import('@/views/Frameless/MyLogin'),
-		Page2: () => import('@/views/Frameless/Page2'),
-	},
+    MyLogin: () => import('@/views/Frameless/MyLogin'),
+    Page2: () => import('@/views/Frameless/Page2'),
+  },
   data: () => ({}),
   methods: {},
 };

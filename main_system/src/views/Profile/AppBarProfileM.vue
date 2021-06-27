@@ -58,8 +58,9 @@ v-app-bar(
         key="articles"
         depressed
       ) 
-        span 我的願望 (n)
-        v-btn.pa-0(text :ripple="false") 全部
+        span 我的願望
+        span(v-if="$store.state.article.self") ({{ $store.state.article.self.length }})
+        //- v-btn.pa-0(text :ripple="false") 全部
           v-icon mdi-menu-down
       v-btn.pa-0(
         style="min-width: 3px;"

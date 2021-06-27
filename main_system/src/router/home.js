@@ -5,8 +5,7 @@ export const home_routes = [
     name: 'Articles',
     component: () => import('@/views/ArticleContainer'),
     props: () => ({
-      articles: store.state.article.global,
-      fetchAction: 'getGlobalArticles',
+      type: 'global',
     }),
   },
   {

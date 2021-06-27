@@ -50,11 +50,19 @@ export default {
     liked: false,
     liked_count: undefined,
   }),
+  watch: {
+    content() {
+      this.init();
+    },
+  },
   created() {
-    this.getFollowState();
-    this.getLikeState();
+    this.init();
   },
   methods: {
+    init() {
+      this.getFollowState();
+      this.getLikeState();
+    },
     getFollowState() {
       const user_id = this.$store.state.user.self.id;
       let found = this.content.fans.find((element) => element === user_id);
@@ -70,7 +78,7 @@ export default {
         this.$store
           .dispatch('getArticle', { id: this.content.id, force_update: true })
           .then(() => {
-            this.$store.dispatch('getUserFollowed', true);
+            this.$store.dispatch('getFollowedArticles', true);
           });
       });
     },

@@ -48,7 +48,7 @@ export default new Vuex.Store({
         context.commit('login', data);
         await Promise.all([
           context.dispatch('user/setSelf', data),
-          context.dispatch('fetchUserLiked'),
+          context.dispatch('getLikedArticles'),
         ]);
         Vue.$cookies.set('login', id);
       } catch (err) {

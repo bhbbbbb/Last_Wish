@@ -1,8 +1,7 @@
 <template>
   <ArticleContainer
     v-if="!fetched || (articles && articles.length)"
-    :articles="articles"
-    fetch-action="getUserFollowed"
+    type="followed"
   />
   <v-card v-else flat>
     <v-card-title class="justify-center">
@@ -26,10 +25,12 @@ export default {
   }),
   computed: {},
   created() {
-    this.$store.dispatch('getUserFollowed').then(() => {
-      this.articles = this.$store.state.article.followed;
-      this.fetched = true;
-    });
+    this.$store
+      .dispatch('getFollowedArticles', { forceUpdate: false })
+      .then((data) => {
+        this.articles = data;
+        this.fetched = true;
+      });
   },
 };
 </script>

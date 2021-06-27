@@ -25,14 +25,22 @@ export default {
     data: [],
     parsed: false,
   }),
+  watch: {
+    content() {
+      this.init();
+    },
+  },
   created() {
-    this.input = this.content;
-    this.parse();
-    this.checkValid().then(() => {
-      this.parsed = true;
-    });
+    this.init();
   },
   methods: {
+    init() {
+      this.input = this.content;
+      this.parse();
+      this.checkValid().then(() => {
+        this.parsed = true;
+      });
+    },
     parse() {
       const pattern = /(?:\s|^)@(\w+)/;
       while (this.input) {
