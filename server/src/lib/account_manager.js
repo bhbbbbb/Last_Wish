@@ -184,7 +184,7 @@ module.exports = function() {
         return user._id;
     }
     
-    this.searchUserByKeywords = async function(keywordStr) {
+    this.searchUsersByKeywords = async function(keywordStr) {
         // const updateFuzzy = require('./update_fuzzy');
         // await updateFuzzy(User, ['username']);
         let users = await User.fuzzySearch(keywordStr);

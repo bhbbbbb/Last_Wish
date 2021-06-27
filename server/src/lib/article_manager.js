@@ -187,18 +187,48 @@ module.exports = function() {
         return article.toFrontendFormat();
     }
     
-    this.searchArticleByKeywords = async function(keywordStr) {
+    this.searchArticlesByKeywords = async function(keywordStr) {
         // const updateFuzzy = require('./update_fuzzy');
         // await updateFuzzy(User, ['title', 'body']);
         let articles = await Article.fuzzySearch(keywordStr);
         return articles.map(article => article._id);
     }
     
-    this.searchArticleByTags = async function(tagStr) {
-        // TODO: modify this by using the Tag model
-        let tags = tagStr.split(" ").map(tag => "#" + tag);
-        let articles = await Article.find({ tags: { $in: tags } });
-        return articles.map(article => article._id);
+    this.getRelatedArticlesByTag = async function(tagStr) {
+        let tag = await Tag.findOne({ name: "#" + tagStr });
+        if (tag)
+            return tag.related;
+        else
+            return [];
+    }
+    
+    this.searchTagsByKeywords = async function(keywordStr) {
+        let tags = await Tag.fuzzySearch(keywordStr);
+        return tags.map((tag) => {
+            return {
+                name: tag.name,
+                nRef: tag.related.length
+            };
+        });
+    }
+    
+    // to test:
+    this.updateTags = async function() {
+        let allArticles = await Article.find({});
+        for (article of allArticles) {
+            console.log(article.tags);
+            for (tagStr of article.tags) {
+                let existingTag = await Tag.findOne({ name: tagStr });
+                if (existingTag) {
+                    existingTag.related.push(article._id);
+                    await existingTag.save();
+                } else {
+                    let tag = new Tag({ name: tagStr });
+                    tag.related.push(article._id);
+                    await tag.save();
+                }
+            }
+        }
     }
 
     /**

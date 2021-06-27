@@ -218,6 +218,19 @@ global.post('/update_article', user_session, async (req, res) => {
     }
 });
 
+// to test:
+global.get('/update_tags', async (_req, res) => {
+    try {
+        articleManager.updateTags();
+        res.sendStatus(200);
+        return;
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+        return;
+    }
+}) 
+
 global.get('/get_followed_posts', user_session, async (req, res) => {
     let options = {
         sortBy: req.query.sort_by,
