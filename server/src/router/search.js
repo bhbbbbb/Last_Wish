@@ -38,7 +38,7 @@ finder.get('/tags', async (req, res) => {
     }
 });
 
-finder.get('/tag_name', async (req, res) => {
+finder.get('/tag_names', async (req, res) => {
     try {
         let searchingResult = await articleManager.searchTagsByKeywords(req.query.q);
         res.status(200).json(searchingResult);
