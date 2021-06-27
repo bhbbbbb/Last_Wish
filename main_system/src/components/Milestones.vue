@@ -51,6 +51,19 @@ v-timeline(
     v-if="$store.state.user.self.id === authorId && newMilestone_show"
     @created="updateMilestone"
   )
+
+  v-btn(
+    v-if="$store.state.user.self.id === authorId && all_fin()"
+    rounded
+    color ="#D1D7D7"
+    depressed
+    @click="show = true"
+  ) 完成計畫
+  MsgBox(:value.sync="show" @confirm="archive" )
+    v-col.d-flex.justify-center(cols="12")
+      span.align-center(class="msgtxt") 計畫一但完成後就不能再修改<br>
+    v-col.d-flex.justify-center(cols="12")
+      span.align-center(class="msgtxt") 確定要完成嗎?
 </template>
 
 <script>
@@ -61,6 +74,7 @@ export default {
   name: 'Milestones',
   components: {
     NewMilestone: () => import('@/views/NewMilestone'),
+    MsgBox: () => import('@/components/MsgBox'),
   },
   props: {
     content: {
@@ -78,6 +92,7 @@ export default {
   },
   data: () => ({
     newMilestone_show: true,
+    show: false,
   }),
   computed: {},
   created() {},
@@ -111,6 +126,22 @@ export default {
       let others = this.content[idx].finished;
       return this.$store.state.user.self.id === this.authorId ? self : others;
     },
+    all_fin() {
+      let result = true;
+      if (this.content.length > 0)
+        for (let i = this.content.length - 1; i >= 0; i--) {
+          if (!this.content[i].finished) {
+            result = false;
+            break;
+          }
+        }
+      else result = false;
+      //console.log(result);
+      return result;
+    },
+    archive() {
+      console.log('fin');
+    },
     moment,
     color_list,
   },
@@ -126,5 +157,16 @@ export default {
 <style scpoed>
 .v-timeline-item {
   padding-bottom: 16px !important;
+}
+</style>
+<style scpoed>
+.msgtxt{
+font-family: Roboto;
+font-style: medium;
+font-weight: 360;
+line-height: 4px;
+text-align: center;
+
+color: #888888;
 }
 </style>
