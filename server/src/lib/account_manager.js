@@ -404,9 +404,11 @@ module.exports = function() {
                              .populate('stashedNotifies');
         if (!user)
             throw "user not found";
-        for (notify of user.stashedNotifies) {
+        while(user.stashedNotifies.length){
+            let notify = user.stashedNotifies.pop();
             user.notifies.push(notify);
         }
+        await user.save();
     }
     
     this.getAllNotifiesOfUser = async function(userId) {

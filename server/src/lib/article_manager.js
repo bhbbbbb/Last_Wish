@@ -452,7 +452,6 @@ module.exports = function() {
             let tmp = await User.findOne({ username: user});
             userIds.push(tmp._id);
         }
-        console.log(userIds);
         return userIds;
       }
 }

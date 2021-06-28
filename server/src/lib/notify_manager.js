@@ -1,5 +1,5 @@
 const Notify = require('../models/Notify');
-
+const User = require('../models/User')
 module.exports = function() {
     /**
      * 
@@ -22,6 +22,12 @@ module.exports = function() {
         };
         let notify = new Notify(notifyData);
         await notify.save();
+        let user = await User.findById(to);
+        if(!user)
+          return;
+        user.stashedNotifies.push(notify._id);
+        console.log(user.stashedNotifies);
+        await user.save();
         return notify._id;
     }
 }

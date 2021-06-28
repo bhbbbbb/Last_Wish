@@ -32,6 +32,7 @@ const notifySchema = new mongoose.Schema({
 });
 
 notifySchema.method('getDescription', function() {  // refer to parse
+  console.log(this.from.username);
   switch (this.action) {
     case 'TagInPost':
       return `${this.from.username}在文章 '${this.link.title}' 標註了你`
@@ -50,7 +51,7 @@ notifySchema.method('getDescription', function() {  // refer to parse
   }
 });
 
-notifySchema.method('getFrontendFormat', function() {
+notifySchema.method('toFrontendFormat', function() {
   return {
     description: this.getDescription(),
     linek: this.link,
