@@ -425,7 +425,8 @@ module.exports = function() {
         if(user.score < 0)
             user.score = 0;
         let lv = await getLevel(user.score);
-        user.honor = lv;    
+        if( lv > user.honor)
+            user.honor = lv;    
         await user.save();
     };
 };
