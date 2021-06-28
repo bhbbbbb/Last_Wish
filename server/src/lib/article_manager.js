@@ -1,7 +1,8 @@
 const Article = require('../models/Article');
 const User = require("../models/User");
-const Tag =require("../models/Tag");
-
+const Tag = require("../models/Tag");
+var AccountManager = require("./account_manager")
+var accountManager = new AccountManager();
 module.exports = function() {
 
     /**
@@ -249,6 +250,8 @@ module.exports = function() {
             "author": author,
             "body": commentStr,
         };
+        let score = 5;
+        await accountManager.changeScore(article.author, score);
         let len = await article.comments.push(newComment);
         await article.save();
         return article.comments[len - 1].date;
@@ -382,6 +385,8 @@ module.exports = function() {
         if (!article)
             throw "no such article";
         article.finished = set;
+        let score = set ? 100 : -100;
+        await accountManager.changeScore(article.author, score);
         await article.save();
     }
 
@@ -395,4 +400,7 @@ module.exports = function() {
         milestone.finished = set;
         await article.sortMilestonesAndSave();
     }
+
 }
+
+
