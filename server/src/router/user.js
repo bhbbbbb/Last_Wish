@@ -461,4 +461,16 @@ user.post('/reset_email', user_session, async (req, res) => {
     }
 })
 
+user.post('/get_notify', user_session, async(req, res) => {
+    try {
+        let userId = req.session.user_id;
+        await accountManager.popAllStashedNotifiesToUser(userId);
+        let notifies = await accountManager.getAllNotifiesOfUser(userId);
+        res.status(200).json(notifies);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(400);
+    }
+})
+
 module.exports = user;
