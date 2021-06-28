@@ -29,8 +29,11 @@ v-card.my.pa-3(
             @touchstart.stop=""
           )
             v-icon(style="transform: rotate(0.125turn);") mdi-link
-  v-row(v-if="content" no-gutters="")
-    strong(style="white-space: nowrap; overflow: hidden;") {{ content.content.title }}
+  v-row(v-if="content" no-gutters)
+    v-col.ellipsis(cols="11")
+      strong.text-nowrap.ellipsis {{ content.content.title }}
+    v-col(cols="1")
+      v-icon.ml-2(small v-if="content.finished") mdi-checkbox-marked-circle
   v-row(
     v-if="content"
     no-gutters

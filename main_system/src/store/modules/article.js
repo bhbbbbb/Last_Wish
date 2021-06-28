@@ -10,6 +10,7 @@ import {
   apiEditArticle,
   apiSetMsFinished,
   apiSetFollow,
+  apiSetFinishedArticle,
 } from '../api';
 
 export default {
@@ -156,6 +157,9 @@ export default {
         let idx = state.data[article_id].fans.findIndex((id) => id === self_id);
         state.data[article_id].fans.splice(idx, 0);
       }
+    },
+    finishArticle(state, article_id) {
+      state.data[article_id].finished = true;
     },
   },
   getters: {
@@ -431,6 +435,11 @@ export default {
       context.commit('cleanFollowedArticles');
       await apiSetFollow(article_id, value);
       context.dispatch('getArticle', { id: article_id, force_update: true });
+    },
+
+    finishArticle(context, { article_id }) {
+      context.commit('finishArticle', article_id);
+      apiSetFinishedArticle(article_id, true);
     },
   },
 };

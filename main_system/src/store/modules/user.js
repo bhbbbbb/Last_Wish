@@ -6,7 +6,11 @@ import {
   apiEditEvent,
   apiSetSelfIntro,
   apiSetFinishedEvent,
+  apiGetHomePageInfo,
+  apiIsValid,
 } from '../api';
+const MORE = 2,
+  LITE = 1;
 export default {
   namespaced: true,
   state: {
@@ -21,6 +25,7 @@ export default {
     others: undefined,
     events: [],
     event_map: undefined,
+    name_list: {},
   },
   mutations: {
     updateIntro(state, payload) {
@@ -34,16 +39,16 @@ export default {
      *
      * @param {Object} payload { id , info}
      */
-    addUser(state, info) {
+    updateUserLite(state, info) {
       state.data[info.id] = {
         id: info.id,
         name: info.username,
-        self_intro: info.selfIntro,
-        honor: info.honor,
-        pro_pic: info.proPic,
-        n_fans: info.nFans,
-        n_following: info.nFollowing,
-        n_posts: info.nPosts,
+        pro_pic: info.pro_pic,
+        // self_intro: info.self_intro,
+        // honor: info.honor,
+        // n_fans: info.nFans,
+        // n_following: info.nFollowing,
+        // n_posts: info.nPosts,
       };
     },
     /**
@@ -51,6 +56,22 @@ export default {
      */
     setSelf(state, id) {
       state.self = state.data[id];
+    },
+
+    updateHomePageInfo(state, info) {
+      state.data[info.id] = {
+        id: info.id,
+        name: info.username,
+        pro_pic: info.pro_pic,
+        self_intro: info.self_intro,
+        lv: info.lv,
+        score: info.score,
+        honor: info.honor,
+        n_posts: info.n_posts,
+        n_cited: info.n_cited,
+        n_liked: info.n_liked,
+        n_finished: info.n_finished,
+      };
     },
 
     /**
@@ -63,10 +84,12 @@ export default {
 
     /**
      *
-     * @param {Object} { id, promise }
+     * @param {Object} { id, promise, more }
      */
-    startFetching(state, { id, promise }) {
-      state.fetching[id] = promise;
+    startFetching(state, { id, promise, more }) {
+      if (more) state.fetching[id] = MORE;
+      else state.fetching[id] = LITE;
+      state.data[id] = promise;
     },
 
     /**
@@ -109,6 +132,9 @@ export default {
       state.events[idx].end = end;
       state.events[idx].color = color;
     },
+    updateNameList(state, { name, result }) {
+      state.name_list[name] = result;
+    },
   },
   getters: {
     getEventById: (state) => (id) => {
@@ -120,30 +146,47 @@ export default {
   },
   actions: {
     setSelf({ commit }, payload) {
-      commit('addUser', payload);
+      commit('updateUserLite', payload);
       commit('setSelf', payload.id); // must be called after addUser
     },
-    async getUser({ state, commit }, id) {
-      if (id in state.data) return state.data[id];
+    async getUser({ state, commit, dispatch }, { id, more }) {
+      if (id in state.data && (!more || state.data[id].lv))
+        return state.data[id];
 
-      if (state.fetching[id]) return state.fetching[id];
+      if (state.fetching[id] === MORE || (state.fetching[id] === LITE && !more))
+        return state.data[id];
 
-      let res = apiGetPublicInfo(id)
-        .then((res) => {
-          commit('addUser', res.data);
+      let res;
+      if (!more)
+        res = apiGetPublicInfo(id)
+          .then((res) => {
+            commit('updateUserLite', res.data);
+            commit('endFetching', id);
+            return state.data[id];
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      else
+        res = dispatch('getHomePageInfo', id).then(() => {
           commit('endFetching', id);
           return state.data[id];
-        })
-        .catch((err) => {
-          console.error(err);
         });
 
-      commit('startFetching', { id, promise: res });
+      commit('startFetching', { id, promise: res, more });
+
       return res;
+    },
+    async getHomePageInfo(context, id) {
+      let { data } = await apiGetHomePageInfo(id);
+      context.commit('updateHomePageInfo', data);
     },
     async getOthersByName(context, name) {
       let res = await apiGetUserId(name);
-      let user = await context.dispatch('getUser', res.data);
+      let user = await context.dispatch('getUser', {
+        id: res.data,
+        more: true,
+      });
       context.commit('updateOthers', user);
       return user;
     },
@@ -208,6 +251,13 @@ export default {
       let value = context.state.events[idx].finished;
       let event_id = context.state.events[idx]._id;
       apiSetFinishedEvent(event_id, value);
+    },
+
+    async nameExisted(context, name) {
+      if (name in context.state.name_list) return name;
+
+      let new_name = apiIsValid(name).then(({ data }) => !data);
+      context.commit('updateNameList', { name, result: new_name });
     },
   },
 };

@@ -83,7 +83,6 @@ export default {
     mode: {
       type: Number,
       default: 1,
-      validator: (val) => [0, 1, 2, 3].includes(val),
     },
   },
   data: () => ({

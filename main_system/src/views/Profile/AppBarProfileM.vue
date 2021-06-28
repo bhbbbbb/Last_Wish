@@ -122,15 +122,20 @@ export default {
       this.user = undefined;
       if (this.$store.state.user.self.name === this.username) {
         this.user = this.$store.state.user.self;
-        this.intro = this.$store.state.user.self.self_intro;
-        this.static_intro = this.intro;
       } else {
         this.user = await this.$store.dispatch(
           'user/getOthersByName',
           this.username
         );
-        this.static_intro = this.$store.state.user.others.self_intro;
       }
+      this.user = await this.$store.dispatch('user/getUser', {
+        id: this.user.id,
+        more: true,
+      });
+      this.static_intro = this.user.self_intro;
+
+      if (this.$store.state.user.self.name === this.username)
+        this.intro = this.$store.state.user.self.self_intro;
     },
     Back() {
       this.$router.go(-1);

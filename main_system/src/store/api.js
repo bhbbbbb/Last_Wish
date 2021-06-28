@@ -165,6 +165,9 @@ export const apiIsValid = (data) =>
 export const apiGetPublicInfo = (id) =>
   userRequest.get('/get_public_info', { params: { id: id } });
 
+export const apiGetHomePageInfo = (id) =>
+  userRequest.get('/get_homepage_info', { params: { id } });
+
 export const apiLineLogin = (data) => userRequest.post('/line_login_req', data);
 
 /**
@@ -202,3 +205,6 @@ export const apiEditEvent = (event_id, event) =>
 
 export const apiSetFinishedEvent = (event_id, set) =>
   userRequest.post('/set_finished_event', { event_id, set });
+
+export const apiSetFinishedArticle = (article_id, set) =>
+  articleRequest.post('/set_finished_article', { article_id, set });
