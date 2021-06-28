@@ -230,7 +230,7 @@ user.post('/set_followed_post', user_session, async (req, res) => {
     //         res.status(400).json(error);
     //     });
     try {
-        let set = req.body.set === "true";
+        let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "ture";
         await accountManager.setFollowedPostsToUser(req.session.user_id, req.body.article_id, set);
         res.sendStatus(200);
     } catch (error) {
@@ -250,7 +250,7 @@ user.post('/set_liked_post', user_session, async (req, res) => {
     //         res.status(400).json(error);
     //     });
     try {
-        let set = req.body.set === "true";
+        let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "ture";
         await accountManager.setLikedPostsToUser(req.session.user_id, req.body.article_id, set);
         res.sendStatus(200);
     } catch (error) {
@@ -449,7 +449,7 @@ user.post('/edit_event_by_id', user_session, async (req, res) => {
 
 user.post('/set_finished_event', user_session, async (req, res) => {
     let eventId = req.body.event_id;
-    let set = req.body.set === "true";
+    let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "ture";
     let userId = req.session.user_id;
     try {
        await accountManager.setFinishedEventById(eventId, userId, set);
