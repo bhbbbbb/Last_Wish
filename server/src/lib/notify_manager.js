@@ -48,22 +48,22 @@ module.exports = function() {
       throw "user not found"
     let time = user.lastSync;
     //This is used for old data
-    if(!time)
+    //if(!time)
       time = new Date('July 1, 1999');
 
     let selfNotify = await Notify.find({"to": userId}).exec();
     let followNotify = [];
     if(user.followedPosts){
-      user.followedPosts.forEach(async (articleId) => {
-        let tar = await Notify.find({"link": articleId});
-        followNotify.push(tar);
-      })
+      let len = user.followedPosts.length;
+      if(len > 0){
+        for(i = 0;i < len;i++){
+          followNotify.push(await Notify.find({"link": user.followedPosts[i]}));
+        }
+      }
     }
-    console.log(followNotify);
-    console.log(selfNotify);
-    if(selfNotify){
-      let selfLen = selfNotify.length();
-      for(i = 0; i < selfLen; i++){
+    if(selfNotify.length > 0){
+      let selfLen = selfNotify.length;
+      for(i = selfLen-1; i >= 0; i--){
         obj = selfNotify[i];
         if(obj.date > time){
           if(obj.from != obj.to)
@@ -73,18 +73,21 @@ module.exports = function() {
           break;
       }
     }
-    let followLen = followNotify.length();
-    for(i = 0; i < followLen; i++){
-      let notifyCollection = followNotify[i];
-      let nofifyCollectionLen = notifyCollection.length();
-      for(j = 0;j < nofifyCollectionLen;j++){
-        let obj = notifyCollection[j];
-        if(obj.date > time){
-          if(obj.to != userId)
-            await followNotifyParse(obj, userId);
-          }
-        else
-          break;
+    let followLen = followNotify.length;
+    if(followLen > 0){
+      for(i = followLen - 1; i >= 0; i--){
+        let notifyCollection = followNotify[i];
+        let notifyCollectionLen = notifyCollection.length;
+        if(notifyCollectionLen > 0)
+        for(j = notifyCollectionLen-1;j >= 0 ;j--){
+          let obj = notifyCollection[j];
+          if(obj.date > time){
+            if(obj.to != userId)
+              await followNotifyParse(obj, userId);
+            }
+          else
+            break;
+        }
       }
     }
     user.lastSync = Date.now();
@@ -142,8 +145,6 @@ async function selfNotifyParse(obj){
     default:
       break;
   }
-  console.log(describes);
-
   if(describes){
     let newNotify = {
       describe: describes,
@@ -157,7 +158,7 @@ async function selfNotifyParse(obj){
 
 async function followNotifyParse(obj, userId){
   if(obj.from == userId)
-    return;
+    return; 
   from = await User.findById(obj.from);
   user = await User.findById(userId);
   article = articleManager.getArticleById(obj.link);
@@ -169,7 +170,8 @@ async function followNotifyParse(obj, userId){
     default:
       break;
   }
-  if(describe){
+  console.log(describes);
+  if(describes){
     let newNotify = {
       describe: describes,
       link: obj.link,
