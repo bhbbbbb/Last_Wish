@@ -136,15 +136,6 @@ user.post('/register', async (req, res) => {
 });
 
 user.post('/set_self_intro', user_session, async (req, res) => {
-    // accountManager
-    //     .setSelfIntroToUser(req.session.user_id, req.body.self_intro)
-    //     .then(() => {
-    //         res.sendStatus(200);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.status(400).json(error);
-    //     });
     try {
         await accountManager.setSelfIntroToUser(req.session.user_id, req.body.self_intro);
         res.sendStatus(200);
@@ -155,15 +146,6 @@ user.post('/set_self_intro', user_session, async (req, res) => {
 });
 
 user.post('/set_honor', user_session, async (req, res) => {
-    // accountManager
-    //     .setHonorToUser(req.session.user_id, req.body.honor)
-    //     .then(() => {
-    //         res.sendStatus(200);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.status(400).json(error);
-    //     });
     try {
         await accountManager.setHonorToUser(req.session.user_id, req.body.honor);
         res.sendStatus(200);
@@ -174,15 +156,6 @@ user.post('/set_honor', user_session, async (req, res) => {
 });
 
 user.post('/set_pro_pic', user_session, async (req, res) => {
-    // accountManager
-    //     .setProPicToUser(req.session.user_id, req.body.pro_pic_url)
-    //     .then(() => {
-    //         res.sendStatus(200);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.status(400).json(error);
-    //     });
     try {
         await accountManager.setProPicToUser(req.session.user_id, req.body.pro_pic_url);
         res.sendStatus(200);
@@ -201,15 +174,6 @@ user.get('/who', user_session, (req, res) => {
 });
 
 user.post('/toggle_followed_user', user_session, async (req, res) => {
-    // accountManager
-    //     .toggleFollowRelation(req.session.user_id, req.body.target_id)
-    //     .then(() => {
-    //         res.sendStatus(200);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.status(400).json(error);
-    //     });
     try {
         await accountManager.toggleFollowRelation(req.session.user_id, req.body.target_id);
         res.sendStatus(200);
@@ -220,15 +184,6 @@ user.post('/toggle_followed_user', user_session, async (req, res) => {
 });
 
 user.post('/set_followed_post', user_session, async (req, res) => {
-    // accountManager
-    //     .toggleFollowedPostsToUser(req.session.user_id, req.body.article_id)
-    //     .then(() => {
-    //         res.sendStatus(200);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.status(400).json(error);
-    //     });
     try {
         let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "ture";
         await accountManager.setFollowedPostsToUser(req.session.user_id, req.body.article_id, set);
@@ -240,15 +195,6 @@ user.post('/set_followed_post', user_session, async (req, res) => {
 });
 
 user.post('/set_liked_post', user_session, async (req, res) => {
-    // accountManager
-    //     .toggleLikedPostsToUser(req.session.user_id, req.body.article_id)
-    //     .then(() => {
-    //         res.sendStatus(200);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.status(400).json(error);
-    //     });
     try {
         let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "ture";
         await accountManager.setLikedPostsToUser(req.session.user_id, req.body.article_id, set);
@@ -278,17 +224,6 @@ const GET_PUBLIC_INFO = [
     }
 ];
 user.get('/get_public_info', async (req, res) => {
-    // accountManager
-    //     .getUserInfo(req.query.id)
-    //     .then((userInfo) => {
-    //         let response = GET_PUBLIC_INFO[SUCCEED];
-    //         res.status(response.status).json(userInfo);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
-    //         res.status(response.status).json(response.body);
-    //     });
     try {
         let userInfo = await accountManager.getUserInfo(req.query.id);
         let response = GET_PUBLIC_INFO[SUCCEED];
@@ -301,14 +236,6 @@ user.get('/get_public_info', async (req, res) => {
 });
 
 user.get('/is_valid_username', user_session, async (req, res) => {
-    // accountManager.hasUser(req.query.username)
-    //     .then((exist) => {
-    //         res.send(!exist); 
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.sendStatus(400);
-    //     });
     try {
         let exist = await accountManager.hasUser(req.query.username);
         res.send(!exist);
@@ -319,14 +246,6 @@ user.get('/is_valid_username', user_session, async (req, res) => {
 });
 
 user.get('/get_id_by_name', async (req, res) => {
-    // accountManager.getIdbyUsername(req.query.name)
-    //     .then((id) => { 
-    //         res.send(id);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.sendStatus(400);
-    //     });
     try {
         let id = await accountManager.getIdByUsername(req.query.name);
         res.send(id);

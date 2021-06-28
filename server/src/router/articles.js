@@ -236,20 +236,6 @@ global.get('/get_followed_posts', user_session, async (req, res) => {
         sortBy: req.query.sort_by,
         filter: req.query.filter
     };
-    // accountManager
-    //     .getFollowedPostsByUser(req.session.user_id)
-    //     .then((articleIds) => {
-    //         articleManager
-    //             .sortArticleIdsByOptions(articleIds, options)
-    //             .then((sortedArticleIds) => {
-    //                 res.status(200).json(sortedArticleIds);
-    //             });
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.sendStatus(400);
-    //         res.status(400).json(error);
-    //     });
     try {
         let articleIds = await accountManager.getFollowedPostsByUser(req.session.user_id);
         let sortedArticleIds = await articleManager.sortArticleIdsByOptions(articleIds, options);
