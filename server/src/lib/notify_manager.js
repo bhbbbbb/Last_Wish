@@ -16,8 +16,6 @@ module.exports = function() {
   this.addNotify = async function(from, to, link, action){
     if(!from || !to)
       return;
-    if(from == to)
-      return;
     let notify = new Notify({
       from: from,
       to: to,
@@ -27,6 +25,21 @@ module.exports = function() {
     await notify.save();
   }
   
+  this.addNotifyWithoutTo = async function(from, link, action){
+    let article = await Article.findById(link);
+    if(!article)
+      return;
+    let = to = article.author;
+    if(!from || !to)
+      return;
+    let notify = new Notify({
+      from: from,
+      to: to,
+      link: link,
+      actions: action,
+    })
+    await notify.save();
+  }
 
   //This havan't been tested yet
   this.extrcatNotify = async function(userId){
@@ -34,25 +47,46 @@ module.exports = function() {
     if(!user)
       throw "user not found"
     let time = user.lastSync;
+    //This is used for old data
     if(!time)
       time = new Date('July 1, 1999');
+
     let selfNotify = await Notify.find({"to": userId}).exec();
     let followNotify = [];
     if(user.followedPosts){
       user.followedPosts.forEach(async (articleId) => {
-        followNotify.push(await Notify.find({"link": articleId}).exec());
+        let tar = await Notify.find({"link": articleId});
+        followNotify.push(tar);
       })
     }
-    selfNotify.forEach(async obj => {
-      if(obj.date > time)
-        await selfNotifyParse(obj);
-    })
-    followNotify.forEach(notifyCollection => {
-      notifyCollection.forEach(async obj => {
-        if(obj.date > time && obj.to != userId)
-          await followNotifyParse(obj);
-      })
-    })
+    console.log(followNotify);
+    console.log(selfNotify);
+    if(selfNotify){
+      let selfLen = selfNotify.length();
+      for(i = 0; i < selfLen; i++){
+        obj = selfNotify[i];
+        if(obj.date > time){
+          if(obj.from != obj.to)
+            await selfNotifyParse(obj);
+        }
+        else
+          break;
+      }
+    }
+    let followLen = followNotify.length();
+    for(i = 0; i < followLen; i++){
+      let notifyCollection = followNotify[i];
+      let nofifyCollectionLen = notifyCollection.length();
+      for(j = 0;j < nofifyCollectionLen;j++){
+        let obj = notifyCollection[j];
+        if(obj.date > time){
+          if(obj.to != userId)
+            await followNotifyParse(obj, userId);
+          }
+        else
+          break;
+      }
+    }
     user.lastSync = Date.now();
     await user.save();
   }
@@ -68,7 +102,9 @@ module.exports = function() {
       users.push(found[1]);
     }
     if(users){
-      users = [...new Set(users)];
+      users = [...new Set(users)];  //Use set to wipe out duplicated user
+                                    //a = ['a','a','b','c']; 
+                                    //[...new Set(a)] = ['a','b','c'];
     }
     users.forEach(async (user) => {
       let userObj = await accountManager.findUserbyUsername(user);
@@ -140,5 +176,6 @@ async function followNotifyParse(obj, userId){
       checked: false,
     }
     user.notifies.push(newNotify);
+    await user.save();
   }
 }

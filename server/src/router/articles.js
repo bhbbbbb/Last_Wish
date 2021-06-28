@@ -63,6 +63,7 @@ global.post('/add_comment', user_session, async (req, res) => {
         let articleId = req.body.article_id;
         let comment = req.body.comment;
         let newDate = await articleManager.addCommentToArticle(author , articleId, comment);
+        await notifyManager.addNotifyWithoutTo(author, articleId, 'Comment');
         await notifyManager.addTagevent(author, comment, articleId);
         res.status(200).json(newDate);
         return;
