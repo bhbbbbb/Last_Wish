@@ -256,11 +256,11 @@ module.exports = function() {
      * @throws "user not found" exception
      * @return {Number} newPostId
      */
-    this.addPostsToAuthor = async function(userId, articleContent, citeFrom) {
+    this.addPostsToAuthor = async function(userId, articleContent, citationId) {
         let author = await User.findById(userId);
         if (!author)
             throw "user not found";
-        let newPostId = await this.articleManager.addArticle(author, articleContent, citeFrom);
+        let newPostId = await this.articleManager.addArticle(author, articleContent, citationId);
         author.selfPosts.push(newPostId);
         author.save();
         return newPostId;
