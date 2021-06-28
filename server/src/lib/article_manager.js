@@ -1,7 +1,8 @@
 const Article = require('../models/Article');
 const User = require("../models/User");
-const Tag =require("../models/Tag");
-
+const Tag = require("../models/Tag");
+var AccountManager = require("./account_manager")
+var accountManager = new AccountManager();
 module.exports = function() {
 
     /**
@@ -250,7 +251,7 @@ module.exports = function() {
             "body": commentStr,
         };
         let score = 5;
-        await this.changeScore(article.author, score);
+        await accountManager.changeScore(article.author, score);
         let len = await article.comments.push(newComment);
         await article.save();
         return article.comments[len - 1].date;
@@ -384,8 +385,8 @@ module.exports = function() {
         if (!article)
             throw "no such article";
         article.finished = set;
-        let score = set? 100 : -100;
-        await this.changeScore(article.author, score);
+        let score = set ? 100 : -100;
+        await accountManager.changeScore(article.author, score);
         await article.save();
     }
 
@@ -399,39 +400,7 @@ module.exports = function() {
         milestone.finished = set;
         await article.sortMilestonesAndSave();
     }
-    this.changeScore = async function (userId, deltaScore){
-        console.log(userId);
-        let user = await User.findById(userId);
-        if (!user)
-            throw "user not found";
-        if(!user.score)
-            user.score = deltaScore;
-        else
-            user.score += deltaScore;
-        if(user.score < 0)
-            user.score = 0;
-        let lv = await getLevel(user.score);
-        user.honor = lv;    
-        await user.save();
-    };
+
 }
 
 
-async function getLevel(score){
-    let lv = 'lv1';
-    if(score>=5000)
-        lv = 'lv8';
-    else if(score>=3000)
-        lv = 'lv7';
-    else if(score>=2000)
-        lv = 'lv6';
-    else if(score>=1000)
-        lv = 'lv5';
-    else if(score>=600)
-        lv = 'lv4';
-    else if(score>=300)
-        lv = 'lv3';
-    else if(score>=100)
-        lv = 'lv2';
-    return lv;
-}
