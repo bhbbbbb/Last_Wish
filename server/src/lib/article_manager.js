@@ -404,6 +404,28 @@ module.exports = function() {
         milestone.finished = set;
         await article.sortMilestonesAndSave();
     }
+    /**
+     * 
+     * @param {String} stringToBeParse 
+     * @returns {Array} users
+     */
+    this.tagTextParse = async function(stringToBeParse){
+        let users = [];
+        const pattern = /(?:\s|^)@(\w+)/;
+        while (stringToBeParse) {
+          let found = stringToBeParse.match(pattern);
+          if (!found) break;
+          let plain_text = stringToBeParse.substring(0, found.index);
+          stringToBeParse = stringToBeParse.substring(found.index + found[0].length);
+          users.push(found[1]);
+        }
+        if(users){
+          users = [...new Set(users)];  //Use set to wipe out duplicated user
+                                        //a = ['a','a','b','c']; 
+                                        //[...new Set(a)] = ['a','b','c'];
+        }
+        return users;
+      }
 }
 
 
