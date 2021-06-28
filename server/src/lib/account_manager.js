@@ -398,4 +398,26 @@ module.exports = function() {
         }
         return correct;
     }
+    
+    this.pushNotifyToUser = async function(userId, notify) {
+        
+    }
+    
+    this.popAllStashedNotifiesToUser = async function(userId) {
+        let user = await User.findById(userId)
+                             .populate('stashedNotifies');
+        if (!user)
+            throw "user not found";
+        for (notify of user.stashedNotifies) {
+            user.notifies.push(notify);
+        }
+    }
+    
+    this.getAllNotifiesOfUser = async function(userId) {
+        let user = await User.findById(userId)
+                             .populate('notifies');
+        if (!user)
+            throw "user not found";
+        return user.notifies.map(notify => notify.toFrontendFormat());
+    }
 };
