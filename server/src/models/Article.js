@@ -31,7 +31,7 @@ const articleSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  citeFrom: { type: mongoose.Types.ObjectId, ref: 'User' },
+  citation: { type: mongoose.Types.ObjectId, ref: 'Article' },
   author: { type: mongoose.Types.ObjectId, ref: 'User' },
   tags: [String],
   finished: {
@@ -83,8 +83,8 @@ articleSchema.method('toFrontendFormat', function() {
     },
     finished: this.finished,
     date: this.date,
-    cite_from: this.citeFrom,
-    cited_count: this.cited_count,
+    citation: this.citation,
+    cited_count: this.citedCount,
     likes: this.likes,
     comments: this.comments,
     fans: this.fans
