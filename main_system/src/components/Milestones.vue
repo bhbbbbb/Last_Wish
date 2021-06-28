@@ -48,7 +48,7 @@ v-timeline(
   
   NewMilestone(
     v-if="$store.state.user.self.id === authorId && newMilestone_show"
-    @created="updateMilestone"
+    @created="addMilestone"
   )
 
   v-btn(
@@ -103,7 +103,7 @@ export default {
   created() {},
 
   methods: {
-    updateMilestone(value) {
+    addMilestone(value) {
       let new_date_value = new Date(value.estDate);
       let insert_idx = 0;
       for (let i = this.content.length - 1; i >= 0; i--) {
@@ -117,7 +117,17 @@ export default {
           break;
         }
       }
-      this.content.splice(insert_idx, 0, value);
+      if (this.editable)
+        this.content.splice(insert_idx, 0, value);
+      
+      else {
+        this.$store.dispatch('addMilestone', {
+          article_id: this.articleId,
+          insert_idx,
+          milestone: value,
+        });
+        this.$forceUpdate();
+      }
       // this.$emit('update:new', value);
     },
     del(idx) {

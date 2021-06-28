@@ -58,7 +58,7 @@ export const apiAddComment = (article_id, comment) =>
   articleRequest.post('/add_comment', { article_id, comment });
 
 export const apiEditArticle = (id, new_article) =>
-  articleRequest.post('/edit_article', {
+  articleRequest.post('/update_article', {
     article_id: id,
     new_article,
   });

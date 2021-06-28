@@ -9,6 +9,7 @@ import {
   apiAddComment,
   apiEditArticle,
   apiSetMsFinished,
+  apiSetFollow,
 } from '../api';
 
 export default {
@@ -100,6 +101,19 @@ export default {
       state.global.new2old.unfinished = undefined;
       state.global.new2old.all = undefined;
     },
+    cleanFollowedArticles(state) {
+      state.followed.most_liked.finished = undefined;
+      state.followed.most_liked.unfinished = undefined;
+      state.followed.most_liked.all = undefined;
+
+      state.followed.most_followed.finished = undefined;
+      state.followed.most_followed.unfinished = undefined;
+      state.followed.most_followed.all = undefined;
+
+      state.followed.new2old.finished = undefined;
+      state.followed.new2old.unfinished = undefined;
+      state.followed.new2old.all = undefined;
+    },
     deleteArticle(state, id) {
       state.data[id] = false;
       let idx = state.self.findIndex((_id) => _id === id);
@@ -120,12 +134,27 @@ export default {
     setMilestoneFinished(state, { article_id, ms_idx, value }) {
       state.data[article_id].content.milestones[ms_idx].finished = value;
     },
+    addMilestone(state, { article_id, insert_idx, milestone }) {
+      state.data[article_id].content.milestones[insert_idx]
+      state.data[article_id].content.milestones.splice(insert_idx, 0, milestone);
+    },
     addComment(state, { article_id, data }) {
       state.data[article_id].comments.push(data);
     },
     updateArticleContent(state, { article_id, content }) {
       state.data[article_id].content = content;
     },
+    setFollowed(state, { article_id, value, self_id }) {
+      let followed_state = state.data[article_id].fans.includes(self_id);
+
+      if (value && !followed_state)
+        state.data[article_id].fans.push(self_id);
+
+      else if (!value && followed_state) {
+        let idx = state.data[article_id].fans.findIndex((id) => id === self_id); 
+        state.data[article_id].fans.splice(idx, 0);
+      }
+    }
   },
   getters: {
     /**
@@ -320,6 +349,26 @@ export default {
     },
 
     /**
+     * 
+     * @param {String} article_id
+     * @param {Number} insert_idx 
+     * @param {Object} milestone
+     */
+    addMilestone(context, { article_id, insert_idx, milestone }) {
+      let tem = context.state.data[article_id];
+      let new_article = {
+        title: tem.title,
+        body: tem.body,
+        tags: tem.tags,
+        modified_milestones: [],
+        new_milestones: [ milestone ],
+        deleted_milestones: [],
+      };
+      context.commit('addMilestone', { article_id, insert_idx, milestone });
+      apiEditArticle(article_id, new_article);
+    },
+
+    /**
      *
      * @param {String} article_id
      * @param {String} new_comment
@@ -344,6 +393,13 @@ export default {
     editArticle(context, { article_id, content }) {
       apiEditArticle(article_id, content);
       context.commit('updateArticleContent', { article_id, content });
+    },
+
+    async setFollowed(context, { article_id, value }) {
+      context.commit('setFollowed', { article_id, value, self_id: context.rootState.user.self.id });
+      context.commit('cleanFollowedArticles');
+      await apiSetFollow(article_id, value);
+      context.dispatch('getArticle', { id: article_id, force_update: true });
     },
   },
 };

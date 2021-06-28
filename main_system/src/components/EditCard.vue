@@ -96,7 +96,9 @@ export default {
       }
     },
   },
-  created() {},
+  created() {
+
+  },
   methods: {
     addHashTag() {
       if (!this.tag_model) this.tag_model = '#';

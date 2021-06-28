@@ -34,7 +34,8 @@ v-row.align-center(v-if="content" no-gutters)
 
 <script>
 // import { apiToggleFollow, apiToggleLike } from '@/store/api';
-import { apiSetFollow, apiSetLike } from '@/store/api';
+// import { apiSetFollow, apiSetLike } from '@/store/api';
+import { apiSetLike } from '@/store/api';
 export default {
   name: 'ArticleBtns',
   components: {},
@@ -65,8 +66,7 @@ export default {
     },
     getFollowState() {
       const user_id = this.$store.state.user.self.id;
-      let found = this.content.fans.find((element) => element === user_id);
-      this.followed = Boolean(found);
+      this.followed = this.content.fans.includes(user_id);
       this.followed_count = this.content.fans.length;
     },
     follow() {
@@ -74,13 +74,18 @@ export default {
       this.followed = !this.followed;
       if (this.followed) this.followed_count++;
       else this.followed_count--;
-      apiSetFollow(this.content.id, this.followed).then(() => {
-        this.$store
-          .dispatch('getArticle', { id: this.content.id, force_update: true })
-          .then(() => {
-            this.$store.dispatch('getFollowedArticles', true);
-          });
+    
+      this.$store.dispatch('setFollowed', {
+        article_id: this.content.id,
+        value: this.followed
       });
+      // apiSetFollow(this.content.id, this.followed).then(() => {
+      //   this.$store
+      //     .dispatch('getArticle', { id: this.content.id, force_update: true })
+      //     .then(() => {
+      //       this.$store.dispatch('getFollowedArticles', true);
+      //     });
+      // });
     },
     getLikeState() {
       this.liked = !!this.$store.state.article.liked[this.content.id];

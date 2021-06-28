@@ -82,7 +82,8 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
           
           //------------ #body -------------
           v-row(no-gutters)
-            Body.text-pre-wrap(:content="article.content.body")
+            v-col(cols="12")
+              Body.text-pre-wrap(:content="article.content.body")
 
 
           //------------ #tags -------------
