@@ -111,7 +111,7 @@ export default {
       if (this.user.username)
         apiIsValid(this.user.username).then((res) => {
           console.log(res.data);
-          if (res.data.isValid) this.valid_message = '使用者以重複';
+          if (res.data.isValid) this.valid_message = '使用者已重複';
           else this.valid_message = 'OK';
         });
     },

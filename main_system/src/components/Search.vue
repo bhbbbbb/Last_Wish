@@ -1,9 +1,10 @@
 <template lang="pug">
-v-sheet.pt-3.sticky(flat style="margin: -5px -5px 5px -5px;")
+v-sheet.pt-3.sticky(flat style="margin: -8px -5px 5px -5px;")
   v-row.mb-2.pb-1(no-gutters)
     v-menu(
-      v-model="order"
       close-on-content-click
+      bottom
+      offset-y
     )
       template(#activator="{ on, attrs }")
         v-btn.mr-3(
@@ -13,24 +14,73 @@ v-sheet.pt-3.sticky(flat style="margin: -5px -5px 5px -5px;")
           height="30"
           elevation="0"
           color="#D1D7D7"
+          min-width="120"
         )
-          span 最新發布
+          span {{ options[sort_by] }}
           v-icon mdi-menu-down
+      
+      //- #options #sort_by
+      v-list
+        v-list-item-group(v-model="sort_by")
+          v-list-item(
+            value="new2old"
+            @click="sort_by = 'new2old'"
+            v-if="sort_by !== 'new2old'"
+          )
+            span {{ options.new2old }}
+          v-list-item(
+            value="most_liked"
+            @click="sort_by = 'most_liked'"
+            v-if="sort_by !== 'most_liked'"
+          )
+            span {{ options.most_liked }}
+          v-list-item(
+            value="most_followed"
+            @click="sort_by = 'most_followed'"
+            v-if="sort_by !== 'most_followed'"
+          )
+            span {{ options.most_followed }}
+
+    //- #filter
     v-menu(
-      v-model="completed"
       close-on-content-click
+      bottom
+      offset-y
     )
       template(#activator="{ on, attrs }")
         v-btn(
-          v-bind="attrs"
-          v-on="on"
           rounded
           height="30"
           elevation="0"
           color="#D1D7D7"
+          v-on="on"
+          v-bind="attrs"
+          min-width="100"
         )
-          span 已完成
+          span {{ filter_options[filter] }}
           v-icon mdi-menu-down
+
+      v-list
+        v-list-item-group(v-model="filter")
+          v-list-item(
+            value="all"
+            @click="filter = 'all'"
+            v-if="filter != 'all'"
+          )
+            span {{ filter_options.all }}
+          v-list-item(
+            value="finished"
+            @click="filter = 'finished'"
+            v-if="filter != 'finished'"
+          )
+            span {{ filter_options.finished }}
+          v-list-item(
+            value="unfinished"
+            @click="filter = 'unfinished'"
+            v-if="filter != 'unfinished'"
+          )
+            span {{ filter_options.unfinished }}
+
     v-btn.ml-auto(
       color="#D1D7D7"
       fab
@@ -83,10 +133,28 @@ export default {
     search_box_show: false,
     search_mode: 'all',
     mode_options_show: false,
-    order: undefined,
-    completed: undefined,
+    options: {
+      new2old: '最新發佈',
+      most_liked: '讚數',
+      most_followed: '追蹤數',
+    },
+    sort_by: 'new2old',
+    filter_options: {
+      finished: '已完成',
+      unfinished: '未完成',
+      all: '全部',
+    },
+    filter: 'all',
   }),
   computed: {},
+  watch: {
+    sort_by() {
+      this.$emit('update', { sort_by: this.sort_by, filter: this.filter });
+    },
+    filter() {
+      this.$emit('update', { sort_by: this.sort_by, filter: this.filter });
+    },
+  },
   created() {},
 
   methods: {

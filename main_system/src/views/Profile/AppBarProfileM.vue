@@ -21,8 +21,14 @@ v-app-bar(
             ) 
               v-icon mdi-cog
           v-list
-            v-list-item
-              v-list-item-title 設定自介
+            MsgBox(@confirm="setIntroConfirm")
+              SelfIntro(v-model="intro")
+              template(#activator="{ on, attrs }")
+                v-list-item(
+                  v-on="on"
+                  v-bind="attrs"
+                )
+                  v-list-item-title 設定自介
             v-list-item(
               to="upl"
             )
@@ -34,7 +40,7 @@ v-app-bar(
         UserAvatar(:user="user" large)
       v-col.d-flex.flex-column.align-start(cols="7" offset="1")
         span(style="font-size:2rem") {{ user.name }}
-        span(style="font-size:1rem") 簡單自介
+        span(style="font-size:1rem") {{$store.state.user.self.self_intro }}
 
   //------------- extension --------------------
   template(v-slot:extension)
@@ -52,8 +58,9 @@ v-app-bar(
         key="articles"
         depressed
       ) 
-        span 我的願望 (n)
-        v-btn.pa-0(text) 全部
+        span 我的願望
+        span(v-if="$store.state.article.self") ({{ $store.state.article.self.length }})
+        //- v-btn.pa-0(text :ripple="false") 全部
           v-icon mdi-menu-down
       v-btn.pa-0(
         style="min-width: 3px;"
@@ -71,10 +78,13 @@ v-app-bar(
 
 <script>
 import { mapState } from 'vuex';
+//import { apiSetSelfIntro } from '@/store/api'
 export default {
   name: 'AppBarProfileM',
   components: {
     UserAvatar: () => import('@/components/UserAvatar'),
+    MsgBox: () => import('@/components/MsgBox'),
+    SelfIntro: () => import('@/components/SelfIntro'),
   },
   props: {
     username: {
@@ -88,6 +98,7 @@ export default {
     tab_which: 'articles',
     imgUrl: '',
     user: undefined,
+    intro: undefined,
   }),
   computed: {
     ...mapState(['links']),
@@ -96,6 +107,7 @@ export default {
     if (this.$store.state.user.self.name === this.username)
       this.user = this.$store.state.user.self;
     else this.user = this.$store.state.user.others;
+    this.intro = this.$store.state.user.self.self_intro;
   },
   methods: {
     Back() {
@@ -109,6 +121,9 @@ export default {
       this.imgUrl = '/media/' + srcUrl;
       console.log(srcUrl);
       console.log(this.imgUrl);
+    },
+    setIntroConfirm() {
+      this.$store.dispatch('user/updateIntro', this.intro);
     },
   },
 };

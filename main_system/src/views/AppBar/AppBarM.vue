@@ -10,17 +10,28 @@ v-app-bar.d-flex.justify-center.align-end(
     style="width:100vw;"
   )
     v-row(no-gutters)
-      v-col.align-self-center(cols="2")
-        v-avatar(@click.stop="Back")
-          v-icon(large color="white") mdi-chevron-left
-      v-col.d-flex.justify-center(cols="8")
-        v-app-bar-title
-          .text-center()
-            h3.subtitle 願望清單
-            span.subtitle wish list
+      //- v-col.align-self-center(cols="2")
+      //-   v-avatar(@click.stop="Back")
+      //-     v-icon(large color="white") mdi-chevron-left
+      //- v-col.d-flex.justify-center(cols="8")
+      //-   v-app-bar-title
+      //-     .text-center()
+      //-       h3.subtitle 願望清單
+      //-       span.subtitle wish list
+      v-col.align-self-center(cols="9" offset="1")
+        a(href="/")
+          v-img(
+            src="@/assets/appbar_logo_3.png"
+            height="29"
+            width="108"
+            max-height="50"
+            contain
+          )
+            //- :srcset="`${require('@/assets/appbar_logo_1.png')}, ${require('@/assets/appbar_logo_3.png')}`"
       
       v-col.align-self-center(cols="2")
         v-btn.ma-0.pa-1(
+          v-if="$store.state.is_login"
           width="64"
           height="64"
           text
@@ -62,13 +73,10 @@ v-app-bar.d-flex.justify-center.align-end(
 import { mapState } from 'vuex';
 export default {
   name: 'AppBarM',
-  components: {},
-  props: {
-    // links: {
-    //   required: true,
-    //   type: Array
-    // },
+  components: {
+    NavLink: () => import('@/components/NavLink'),
   },
+  props: {},
   data: () => ({
     drawer: false,
     selected: 0,
@@ -76,6 +84,7 @@ export default {
   computed: {
     ...mapState(['links']),
   },
+  created() {},
   methods: {
     Back() {
       this.$router.go(-1);

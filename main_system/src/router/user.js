@@ -1,5 +1,4 @@
 import store from '../store';
-// import { isLogin } from '@/lib/log';
 export const user_routes = [
   {
     path: 'articles',
@@ -8,13 +7,11 @@ export const user_routes = [
     props: (route) => {
       if (store.state.user.self.name === route.params.username)
         return {
-          articles: store.state.article.self,
-          fetchAction: 'getSelfArticles',
+          type: 'self',
         };
       else
         return {
-          articles: store.state.article.others,
-          fetchAction: 'getOthersArticles',
+          type: 'others',
           username: route.params.username,
         };
     },
@@ -52,5 +49,9 @@ export const user_routes = [
     path: 'upl',
     name: 'Upl',
     component: () => import('@/components/Upl'),
+    beforeEnter(to, from, next) {
+      if (store.state.is_login) next();
+      else next('/login');
+    },
   },
 ];

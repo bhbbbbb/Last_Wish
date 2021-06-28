@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongoose_fuzzy_searching = require("mongoose-fuzzy-searching");
 
 const commentSchema = new mongoose.Schema({
   body: String, 
@@ -48,17 +49,22 @@ const articleSchema = new mongoose.Schema({
   },
   comments: [commentSchema],
   fans: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
+  visited:{
+    type: Number,
+    default : 0,
+  }
 });
 
 // this is not stable maybe need revising
-articleSchema.method('sortMilestonesAndSave', function() {
+articleSchema.method('sortMilestonesAndSave', async function() {
   this.milestones.sort((m, n) => {
-    return m.estDate - n.estDate;
-  });
-  this.milestones.sort((m, n) => {
-    return n.finished - m.finished;
-  });
-  this.save();
+    if (m.finished == n.finished) {
+      return m.estDate - n.estDate;
+    } else {
+      return n.finished - m.finished;
+    }
+  })
+  await this.save();
 });
 
 articleSchema.method('toFrontendFormat', function() {
@@ -75,6 +81,7 @@ articleSchema.method('toFrontendFormat', function() {
       body: this.body,
       milestones: this.milestones,
     },
+    finished: this.finished,
     date: this.date,
     cite_from: this.citeFrom,
     cited_count: this.cited_count,
@@ -84,4 +91,5 @@ articleSchema.method('toFrontendFormat', function() {
   }
 });
 
+articleSchema.plugin(mongoose_fuzzy_searching, { fields: ['title'] });
 module.exports = mongoose.model('Article', articleSchema);

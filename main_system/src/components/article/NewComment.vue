@@ -20,7 +20,6 @@ v-sheet.ma-1.pa-1.transparent.d-flex.align-center(
 </template>
 
 <script>
-import { apiAddComment } from '@/store/api';
 import moment from 'moment';
 export default {
   name: 'NewComment',
@@ -42,8 +41,11 @@ export default {
   methods: {
     SubmitNewComment() {
       if (!this.new_comment.trim()) return;
-      apiAddComment(this.articleId, this.new_comment);
-
+      // apiAddComment(this.articleId, this.new_comment);
+      this.$store.dispatch('addComment', {
+        article_id: this.articleId,
+        new_comment: this.new_comment,
+      });
       this.$emit('update', {
         likes: 0,
         _id: undefined,
@@ -56,9 +58,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.pre {
-  white-space: pre-wrap;
-}
-</style>

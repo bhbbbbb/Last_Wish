@@ -159,7 +159,7 @@ export default {
             if (res.status == 200) {
               apiSetProPic({ pro_pic_url: filePath }).then((res) => {
                 if (res.status == 200) {
-                  this.$store.dispatch('updateProPic', filePath);
+                  this.$store.dispatch('user/updateProPic', filePath);
                   this.file = '';
                   this.reset();
                   this.$router.push({

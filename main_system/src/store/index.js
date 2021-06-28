@@ -1,13 +1,13 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { apiGetPublicInfo, apiLogout, apiTryLogin } from './api';
-import router from '@/router/index';
 import { global_links, user_links } from '@/data/links.js';
 import user from './modules/user';
 import article from './modules/article';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+  strict: process.env.NODE_ENV !== 'production',
   state: {
     is_login: false,
     links: global_links,
@@ -37,17 +37,8 @@ export default new Vuex.Store({
      *
      */
     async tryLogin(context, payload) {
-      try {
-        let { data } = await apiTryLogin(payload);
-        await context.dispatch('login', data.id);
-        router.push({
-          name: 'Articles',
-          params: { links: context.state.user_links },
-        });
-      } catch (err) {
-        console.error(err);
-        throw err;
-      }
+      let { data } = await apiTryLogin(payload);
+      await context.dispatch('login', data.id);
       return;
     },
 
@@ -56,8 +47,8 @@ export default new Vuex.Store({
         let { data } = await apiGetPublicInfo(id);
         context.commit('login', data);
         await Promise.all([
-          context.dispatch('setSelf', data),
-          context.dispatch('fetchUserLiked'),
+          context.dispatch('user/setSelf', data),
+          context.dispatch('getLikedArticles'),
         ]);
         Vue.$cookies.set('login', id);
       } catch (err) {
