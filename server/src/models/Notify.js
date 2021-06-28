@@ -4,15 +4,13 @@ const mongoose = require("mongoose");
 
 const notifySchema = new mongoose.Schema({
   from: {
-    name: String,
     id: {type: mongoose.Types.ObjectId}
   },
   to: {
-    name: String,
     id: {type: mongoose.Types.ObjectId}
   },
-  Link:{type: mongoose.Types.ObjectId, ref: 'Article'},
-  Actions: {
+  link:{type: mongoose.Types.ObjectId, ref: 'Article'},
+  actions: {
     type: String,
     enum:['Tag','Comment','Followed','Liked','Quote'],
   },
@@ -20,5 +18,9 @@ const notifySchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  delete:{
+    type: Boolean,
+    default:false,
+  }
 });
 module.exports = mongoose.model('Notify', notifySchema);

@@ -19,7 +19,7 @@ const eventSchema = new mongoose.Schema({
 });
 const selfnotifySchema = new mongoose.Schema({
   describe: String,
-  Link:{type: mongoose.Types.ObjectId, ref: 'Article'},
+  link:{type: mongoose.Types.ObjectId, ref: 'Article'},
   checked:{
     type: Boolean,
     default: false
@@ -62,7 +62,6 @@ const userSchema = new mongoose.Schema({
   Notifies: [selfnotifySchema],
   lastSync:{
     type: Date,
-    default: Date.now,
   },
   score:{
     type: Number,
