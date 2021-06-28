@@ -356,7 +356,6 @@ export default {
     setMilestoneFinished(context, { article_id, ms_idx, value }) {
       context.commit('setMilestoneFinished', { article_id, ms_idx, value });
       let ms_id = context.state.data[article_id].content.milestones[ms_idx]._id;
-      console.log(article_id, ms_id, value);
       apiSetMsFinished(article_id, ms_id, value);
     },
 
@@ -400,11 +399,15 @@ export default {
     /**
      *
      * @param {String} article_id
-     * @param {Object} content : article.content
+     * @param {Object} content : content to suit api form
+     * @param {Object} content_native : article.content
      */
-    editArticle(context, { article_id, content }) {
+    editArticle(context, { article_id, content, content_native }) {
       apiEditArticle(article_id, content);
-      context.commit('updateArticleContent', { article_id, content });
+      context.commit('updateArticleContent', {
+        article_id,
+        content: content_native,
+      });
     },
 
     async setFollowed(context, { article_id, value }) {

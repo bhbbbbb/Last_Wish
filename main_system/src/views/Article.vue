@@ -73,7 +73,11 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
       v-col(cols="10" offset="1")
         
         //-- #edit
-        EditCard.mt-3(v-if="editing" :article.sync="article.content")
+        EditCard.mt-3(
+          v-if="editing"
+          :article.sync="article.content"
+          @deleted="del_ms"
+        )
 
         v-card.pa-0.ma-0.transparent(flat v-else)
           //------------ #title -----------
@@ -97,7 +101,7 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
             ) {{ tag }}
 
           //----------- #milestone -----------------
-          v-row
+          v-row(no-gutters)
             Milestones(
               :content="article.content.milestones"
               :author-id="article.author.id"
@@ -131,6 +135,8 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
 <script>
 import moment from 'moment';
 import color_list from '@/data/color_list';
+const MODIFIED = 1,
+  NEW = 2;
 
 export default {
   name: 'Article',
@@ -156,6 +162,7 @@ export default {
     newMilestone_show: false,
     show_info: false,
     editing: false,
+    deleted_milestones: [],
   }),
   computed: {
     date() {
@@ -186,16 +193,41 @@ export default {
     },
     toggleEdit() {
       this.editing = !this.editing;
+      if (this.editing) {
+        this.deleted_milestones = [];
+      }
       if (!this.editing) {
         // end editing
         this.submitEdit();
       }
     },
     submitEdit() {
+      let { new_milestones, modified_milestones } = this.milestonesHandle();
       this.$store.dispatch('editArticle', {
         article_id: this.id,
-        content: this.article.content,
+        content: {
+          title: this.article.content.title,
+          body: this.article.content.body,
+          tags: this.article.content.tags,
+          modified_milestones,
+          new_milestones,
+          deleted_milestones: this.deleted_milestones,
+        },
+        content_native: this.article.content,
       });
+    },
+    milestonesHandle() {
+      let new_milestones = [];
+      let modified_milestones = [];
+      this.article.content.milestones.forEach((ms) => {
+        if (!ms.type) return;
+        if (ms.type === NEW) new_milestones.push(ms);
+        else if (ms.type === MODIFIED) modified_milestones.push(ms);
+      });
+      return { new_milestones, modified_milestones };
+    },
+    del_ms(id) {
+      this.deleted_milestones.push(id);
     },
     moment,
     color_list,

@@ -6,7 +6,7 @@ module.exports = {
   transpileDependencies: ['vuetify'],
   productionSourceMap: false,
   pwa: {
-    name: 'lernen',
+    name: 'Lernen',
     // appleMobileWebAppStatusBarStyle: 'black-translucent',
   },
 };

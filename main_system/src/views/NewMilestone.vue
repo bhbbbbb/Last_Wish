@@ -98,7 +98,6 @@ export default {
         this.err_msg = '不得為空';
         return;
       }
-
       this.newMilestone.title = this.title_model;
       let copy = JSON.parse(JSON.stringify(this.newMilestone));
       this.$emit('created', copy);
