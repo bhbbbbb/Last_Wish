@@ -20,6 +20,16 @@ export const user_routes = [
     path: 'honorRoll',
     name: 'HonorRoll',
     component: () => import('@/views/HonorRoll'),
+    // beforeEnter(to, from, next) {
+    // },
+    props: (route) => {
+      return {
+        user:
+          route.params.username === store.state.user.self.name
+            ? store.state.user.self
+            : store.state.user.others,
+      };
+    },
   },
   // {
   //   path: 'article/:id',

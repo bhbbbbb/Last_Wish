@@ -35,6 +35,10 @@ export default {
     updateProPic(state, payload) {
       state.self.pro_pic = payload;
     },
+
+    setSelfLite(state, id) {
+      state.self = state.data[id];
+    },
     /**
      *
      * @param {Object} payload { id , info}
@@ -50,12 +54,6 @@ export default {
         // n_following: info.nFollowing,
         // n_posts: info.nPosts,
       };
-    },
-    /**
-     * must be called after commmit addUser(self)
-     */
-    setSelf(state, id) {
-      state.self = state.data[id];
     },
 
     updateHomePageInfo(state, info) {
@@ -145,9 +143,11 @@ export default {
     is_finished: (state) => (idx) => state.events[idx].finished,
   },
   actions: {
-    setSelf({ commit }, payload) {
-      commit('updateUserLite', payload);
-      commit('setSelf', payload.id); // must be called after addUser
+    async getSelfMore(context) {
+      return context.dispatch('getUser', {
+        id: context.state.self.id,
+        more: true,
+      });
     },
     async getUser({ state, commit, dispatch }, { id, more }) {
       if (id in state.data && (!more || state.data[id].lv))
