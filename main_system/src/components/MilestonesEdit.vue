@@ -7,6 +7,7 @@ v-timeline(
   v-timeline-item(
     v-for="(ms, idx) in content"
     small
+    fill-dot
     :color="ms.finished ? '#9BA2AA' : '#C4C4C4'"
     :key="idx"
   )
@@ -220,5 +221,9 @@ export default {
 <style scpoed>
 .v-timeline-item {
   padding-bottom: 16px !important;
+}
+.v-timeline-item__dot--small {
+  height: 16px !important;
+  width: 16px !important;
 }
 </style>

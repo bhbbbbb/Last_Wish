@@ -204,10 +204,6 @@ export default {
 </script>
 
 <style scpoed>
-.v-timeline-item__dot--small {
-  height: 16px !important;
-  width: 16px !important;
-}
 .v-timeline-item {
   padding-bottom: 16px !important;
 }
@@ -219,5 +215,9 @@ export default {
   text-align: center;
 
   color: #888888;
+}
+.v-timeline-item__dot--small {
+  height: 16px !important;
+  width: 16px !important;
 }
 </style>
