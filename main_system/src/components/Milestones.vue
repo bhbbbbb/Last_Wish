@@ -1,8 +1,9 @@
 <template lang="pug">
-v-timeline(
+v-timeline.ml-n10(
+  v-else
   dense
-  style="margin-left: -20px"
   align-top
+  style="width: 100%; min-width: 300px;"
 )
   v-timeline-item(
     v-for="(ms, idx) in content"
@@ -27,16 +28,22 @@ v-timeline(
             span.subtitle-2.text--disabled(v-on="on" v-bind="attrs")
               | {{ moment(ms.estDate).format('M/D') }}
           span {{ moment(ms.estDate).format('YYYY/MM/DD') }}
-      v-col.d-flex.flex-shrink-1(cols="10")
-        span.d-flex.text-no-wrap(style="overflow-x: hidden")
+      v-col.text-nowrap.ellipsis(cols="11")
+        span.text-nowrap.ellipsis(style="width: 100%")
           | {{ ms.title }}
-      v-col.d-flex.align-self-start(cols="1")
-        v-btn(icon small @click="del(idx)" v-if="editable")
-          v-icon(
-            small
-          ) mdi-close
-      //- v-col(offset="1")
-      //-   v-icon(v-if="ms.finished" small) mdi-check-circle
+    v-row(no-gutters v-if="ms.body")
+      v-col(cols="1" style="height: 20px;")
+        v-icon(
+          small
+          @click="expand(idx)"
+        ) {{ expanded[idx] ? 'mdi-chevron-down' : 'mdi-chevron-right' }}
+      v-col.ellipsis(
+        cols="11"
+        :style="expanded[idx] ? '' : 'height: 20px;'"
+      )
+        span.caption.ellipsis(
+          :class="{ 'text-nowrap': !expanded[idx], 'text-pre-wrap': expanded[idx] }"
+        ) {{ ms.body }}
 
   v-timeline-item.align-center(
     small
@@ -75,6 +82,7 @@ export default {
   components: {
     NewMilestone: () => import('@/views/NewMilestone'),
     MsgBox: () => import('@/components/MsgBox'),
+    MilestonesEdit: () => import('@/components/MilestonesEdit'),
   },
   props: {
     content: {
@@ -90,14 +98,11 @@ export default {
       required: false,
       default: undefined,
     },
-    editable: {
-      type: Boolean,
-      default: false,
-    },
   },
   data: () => ({
     newMilestone_show: true,
     show: false,
+    expanded: {},
   }),
   computed: {},
   created() {},
@@ -117,15 +122,12 @@ export default {
           break;
         }
       }
-      if (this.editable) this.content.splice(insert_idx, 0, value);
-      else {
-        this.$store.dispatch('addMilestone', {
-          article_id: this.articleId,
-          insert_idx,
-          milestone: value,
-        });
-        this.$forceUpdate();
-      }
+      this.$store.dispatch('addMilestone', {
+        article_id: this.articleId,
+        insert_idx,
+        milestone: value,
+      });
+      this.$forceUpdate();
       // this.$emit('update:new', value);
     },
     del(idx) {
@@ -162,22 +164,18 @@ export default {
     },
     moment,
     color_list,
+    expand(idx) {
+      if (this.expanded[idx] === undefined) this.$set(this.expanded, idx, true);
+      else this.expanded[idx] = !this.expanded[idx];
+    },
   },
 };
 </script>
-
-<style>
-.text-pre-wrap {
-  white-space: pre-wrap;
-}
-</style>
 
 <style scpoed>
 .v-timeline-item {
   padding-bottom: 16px !important;
 }
-</style>
-<style scpoed>
 .msgtxt {
   font-family: Roboto;
   font-style: medium;
