@@ -34,19 +34,19 @@ const notifySchema = new mongoose.Schema({
 notifySchema.method('getDescription', function() {  // refer to parse
   switch (this.action) {
     case 'TagInPost':
-      return `${this.form.username}在文章 '${this.link.title}' 標註了你`
+      return `${this.from.username}在文章 '${this.link.title}' 標註了你`
     case 'TagInComment':
-      return `${this.form.username}在一則留言中標註了你`
+      return `${this.from.username}在一則留言中標註了你`
     case 'CommentOnSelf':
-      return `${this.form.username}在你的文章 '${this.link.title}' 底下留言`
+      return `${this.from.username}在你的文章 '${this.link.title}' 底下留言`
     case 'CommentOnFollowed':
-      return `${this.form.username}在你追蹤的文章 '${this.link.title}' 底下留言`
+      return `${this.from.username}在你追蹤的文章 '${this.link.title}' 底下留言`
     case 'UpdateOnFollowed':
-      return `${this.form.username}更新了你追蹤的文章 '${this.link.title}'`
+      return `${this.from.username}更新了你追蹤的文章 '${this.link.title}'`
     case 'Liked':
-      return `${this.form.username}喜歡你的文章 '${this.link.title}'`
+      return `${this.from.username}喜歡你的文章 '${this.link.title}'`
     case 'Quote':
-      return `${this.form.username}引用了你的文章 '${this.link.title}'`
+      return `${this.from.username}引用了你的文章 '${this.link.title}'`
   }
 });
 
