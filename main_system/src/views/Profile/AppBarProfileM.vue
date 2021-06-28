@@ -45,7 +45,7 @@ v-app-bar(
         UserAvatar(:user="user" large)
       v-col.d-flex.flex-column.align-start(cols="7" offset="1")
         span(style="font-size:2rem") {{ user.name }}
-        span(style="font-size:1rem") {{$store.state.user.self.self_intro }}
+        span(style="font-size:1rem") {{ static_intro }}
 
   //------------- extension --------------------
   template(v-slot:extension)
@@ -104,6 +104,7 @@ export default {
     imgUrl: '',
     user: undefined,
     intro: undefined,
+    static_intro: undefined,
   }),
   computed: {
     ...mapState(['links']),
@@ -122,12 +123,13 @@ export default {
       if (this.$store.state.user.self.name === this.username) {
         this.user = this.$store.state.user.self;
         this.intro = this.$store.state.user.self.self_intro;
+        this.static_intro = this.intro;
       } else {
         this.user = await this.$store.dispatch(
           'user/getOthersByName',
           this.username
         );
-        this.intro = this.$store.state.user.others.self_intro;
+        this.static_intro = this.$store.state.user.others.self_intro;
       }
     },
     Back() {
