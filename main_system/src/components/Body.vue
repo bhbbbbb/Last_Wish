@@ -35,6 +35,8 @@ export default {
   },
   methods: {
     init() {
+      this.data = [];
+      this.parsed = false;
       this.input = this.content;
       this.parse();
       this.checkValid().then(() => {

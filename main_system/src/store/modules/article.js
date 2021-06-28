@@ -135,8 +135,12 @@ export default {
       state.data[article_id].content.milestones[ms_idx].finished = value;
     },
     addMilestone(state, { article_id, insert_idx, milestone }) {
-      state.data[article_id].content.milestones[insert_idx]
-      state.data[article_id].content.milestones.splice(insert_idx, 0, milestone);
+      state.data[article_id].content.milestones[insert_idx];
+      state.data[article_id].content.milestones.splice(
+        insert_idx,
+        0,
+        milestone
+      );
     },
     addComment(state, { article_id, data }) {
       state.data[article_id].comments.push(data);
@@ -147,14 +151,12 @@ export default {
     setFollowed(state, { article_id, value, self_id }) {
       let followed_state = state.data[article_id].fans.includes(self_id);
 
-      if (value && !followed_state)
-        state.data[article_id].fans.push(self_id);
-
+      if (value && !followed_state) state.data[article_id].fans.push(self_id);
       else if (!value && followed_state) {
-        let idx = state.data[article_id].fans.findIndex((id) => id === self_id); 
+        let idx = state.data[article_id].fans.findIndex((id) => id === self_id);
         state.data[article_id].fans.splice(idx, 0);
       }
-    }
+    },
   },
   getters: {
     /**
@@ -189,10 +191,14 @@ export default {
      * @param {String} type : 'global', 'followed', 'self', 'others'
      * @param {String} sort_by : 'new2old', 'most_liked', 'most_followed'
      * @param {String} filter : 'all', 'finished', 'unfinished'
+     * @param {String} username : only be true when type = 'others'
      * @param {Boolean} force_update : force_update or not
      * @returns {Promise} Array of id
      */
-    async getArticles(context, { type, sort_by, filter, force_update }) {
+    async getArticles(
+      context,
+      { type, sort_by, filter, username, force_update }
+    ) {
       switch (type) {
         case 'global':
           return context.dispatch('getGlobalArticles', {
@@ -212,6 +218,12 @@ export default {
           return context.dispatch('getSelfArticles', { force_update });
 
         case 'others':
+          if (
+            !context.rootState.user.others ||
+            context.rootState.user.others.name !== username
+          ) {
+            await context.dispatch('user/getOthersByName', username);
+          }
           return context.dispatch('getOthersArticles', {
             user_id: context.rootState.user.others.id,
             force_update,
@@ -349,9 +361,9 @@ export default {
     },
 
     /**
-     * 
+     *
      * @param {String} article_id
-     * @param {Number} insert_idx 
+     * @param {Number} insert_idx
      * @param {Object} milestone
      */
     addMilestone(context, { article_id, insert_idx, milestone }) {
@@ -361,7 +373,7 @@ export default {
         body: tem.body,
         tags: tem.tags,
         modified_milestones: [],
-        new_milestones: [ milestone ],
+        new_milestones: [milestone],
         deleted_milestones: [],
       };
       context.commit('addMilestone', { article_id, insert_idx, milestone });
@@ -396,7 +408,11 @@ export default {
     },
 
     async setFollowed(context, { article_id, value }) {
-      context.commit('setFollowed', { article_id, value, self_id: context.rootState.user.self.id });
+      context.commit('setFollowed', {
+        article_id,
+        value,
+        self_id: context.rootState.user.self.id,
+      });
       context.commit('cleanFollowedArticles');
       await apiSetFollow(article_id, value);
       context.dispatch('getArticle', { id: article_id, force_update: true });

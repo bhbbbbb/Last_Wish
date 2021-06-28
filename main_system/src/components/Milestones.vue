@@ -117,9 +117,7 @@ export default {
           break;
         }
       }
-      if (this.editable)
-        this.content.splice(insert_idx, 0, value);
-      
+      if (this.editable) this.content.splice(insert_idx, 0, value);
       else {
         this.$store.dispatch('addMilestone', {
           article_id: this.articleId,

@@ -7,8 +7,13 @@ v-app-bar(
   height="180"
   extension-height="50"
 )
-  v-sheet.pa-0.px-0.ma-0(style="width: 100vw" color="transparent")
-    v-row.align-self-start(no-gutters)
+  v-card.pa-0.px-0.ma-0(
+    style="width: 100vw"
+    color="transparent"
+    :loading="!user ? 'grey' : false"
+    flat
+  )
+    v-row.align-self-start(no-gutters v-if="user")
       v-col(cols="6")
         v-icon(@click.stop="Back") mdi-chevron-left
       v-col.d-flex.justify-end.pr-0(cols="6" v-if="username === $store.state.user.self.name")
@@ -40,7 +45,7 @@ v-app-bar(
         UserAvatar(:user="user" large)
       v-col.d-flex.flex-column.align-start(cols="7" offset="1")
         span(style="font-size:2rem") {{ user.name }}
-        span(style="font-size:1rem") {{$store.state.user.self.self_intro }}
+        span(style="font-size:1rem") {{ static_intro }}
 
   //------------- extension --------------------
   template(v-slot:extension)
@@ -99,17 +104,34 @@ export default {
     imgUrl: '',
     user: undefined,
     intro: undefined,
+    static_intro: undefined,
   }),
   computed: {
     ...mapState(['links']),
   },
+  watch: {
+    username() {
+      this.init();
+    },
+  },
   created() {
-    if (this.$store.state.user.self.name === this.username)
-      this.user = this.$store.state.user.self;
-    else this.user = this.$store.state.user.others;
-    this.intro = this.$store.state.user.self.self_intro;
+    this.init();
   },
   methods: {
+    async init() {
+      this.user = undefined;
+      if (this.$store.state.user.self.name === this.username) {
+        this.user = this.$store.state.user.self;
+        this.intro = this.$store.state.user.self.self_intro;
+        this.static_intro = this.intro;
+      } else {
+        this.user = await this.$store.dispatch(
+          'user/getOthersByName',
+          this.username
+        );
+        this.static_intro = this.$store.state.user.others.self_intro;
+      }
+    },
     Back() {
       this.$router.go(-1);
     },

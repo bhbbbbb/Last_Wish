@@ -90,7 +90,7 @@ export default {
       });
     },
     goLink() {
-      this.$router.push({ name: 'Link', params: { reference: this.content }});
+      this.$router.push({ name: 'Link', params: { reference: this.content } });
     },
   },
 };

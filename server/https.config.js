@@ -7,4 +7,5 @@ module.exports = {
         key : "/home/yichung/ssl/private.key",
     },
     port : 2222,
+    front_port: 8080
 }

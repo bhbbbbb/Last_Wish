@@ -48,7 +48,7 @@ module.exports = function() {
                         <br>If you have no clue of this mail, just ignore it';
                 var sub =username + '的密碼重啟驗證信 from Lernen';
                 var mailOptions = {
-                    from : 'Lernen <no-reply@Lernen.com>',
+                    from : 'Lernen confirm mail <no-reply@Lernen.com>',
                     replyTo:'no-reply@Lernen.com',
                     to : mailAddr,
                     subject : sub,
