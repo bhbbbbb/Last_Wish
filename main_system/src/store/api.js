@@ -7,7 +7,6 @@ const articleRequest = axios.create({
   baseURL: baseURL + '/articles',
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
-  // headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 });
 
 const userRequest = axios.create({
@@ -21,12 +20,19 @@ const uploadRequest = axios.create({
   withCredentials: true,
   headers: { 'Content-Type': 'multipart/form-data' },
 });
+
+const searchRequest = axios.create({
+  baseURL: baseURL + '/search',
+  withCredentials: true,
+  headers: { 'Content-Type': 'application/json' },
+});
+
 /********************** Call upload.js **********************/
 export const apiUploadFiles = (data) => uploadRequest.post('/uploadFile', data);
 
 /********************** Call #article.js **********************/
 
-//--------------------- get #articles --------------------------
+//--------------------- #get #articles --------------------------
 export const apiGetArticles = (sort_by, filter) =>
   articleRequest.get('/', { params: { sort_by, filter } });
 
@@ -44,6 +50,22 @@ export const apiGetArticleById = (id) =>
 export const apiGetLikedPost = () => userRequest.get('/get_liked_posts');
 
 // ----------------------------------------------------------------
+
+// ---------------------- #search --------------------------------
+
+export const apiSearchAll = (key) => searchRequest('/', { params: { q: key } });
+
+export const apiSearchArticles = (key) =>
+  searchRequest('/articles', { params: { q: key } });
+
+export const apiSearchUser = (key) =>
+  searchRequest('/users', { params: { q: key } });
+
+export const apiSearchTags = (key) =>
+  searchRequest('/tags', { params: { q: key } });
+
+export const apiSearchTagNames = (key) =>
+  searchRequest('/tag_names', { params: { q: key } });
 
 export const apiUploadArticle = (content) =>
   articleRequest.post('/insert', { article_content: content });
