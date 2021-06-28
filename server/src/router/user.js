@@ -15,6 +15,7 @@ const https_config = require('../../https.config');
 /***************** Url Setting *******************/
 const prefix = https_config.https_enable ? 'https://' : 'http://'
 var frontPort = https_config.front_port;
+var port = https_config.port;
 var ip_ =  https_config.https_enable ? 'luffy.ee.ncku.edu.tw' : ip.address();
 const SERVER_URL = prefix + ip_ + ':' + port;
 const FRONT_URL  = prefix + ip_ + ':' + frontPort;

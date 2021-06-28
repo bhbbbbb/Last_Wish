@@ -150,7 +150,6 @@ global.get('/', async (req, res) => {
 global.get('/get_article_by_id', async (req, res) => {
     try {
         let article = await articleManager.getFormatedArticleById(req.query.article_id);
-        console.log(article);
         res.status(200).json(article);
         return;
     } catch (error) {
