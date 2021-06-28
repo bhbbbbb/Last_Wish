@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
-var ArticleManager = require('./article_manager');
+const ArticleManager = require('./article_manager');
 
 module.exports = function() {
     this.articleManager = new ArticleManager();
@@ -397,10 +397,6 @@ module.exports = function() {
             await user.save();
         }
         return correct;
-    }
-    
-    this.pushNotifyToUser = async function(userId, notify) {
-        
     }
     
     this.popAllStashedNotifiesToUser = async function(userId) {
