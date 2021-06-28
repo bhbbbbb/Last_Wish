@@ -464,11 +464,17 @@ user.post('/reset_email', user_session, async (req, res) => {
     }
 })
 user.post('/get_notify', user_session, async(req, res) => {
-    let userId = req.session.user_id;
-    if(!userId)
-        res.status(400).json('please log in');
-    await notifyManager.extrcatNotify(userId);
-    let user = await accountManager.findUserById(userId);
-    res.status(200).json(user.notifies);
+    try{
+        let userId = req.session.user_id;
+        if(!userId){
+            res.status(400).json('please log in');
+        }
+        await notifyManager.extrcatNotify(userId);
+        let user = await accountManager.findUserById(userId); //Don't know why this won't be update at first time
+        res.status(200).json(user.notifies);
+    }catch (e){
+        console.log(e);
+        res.sendStatus(400);
+    }
 })
 module.exports = user;

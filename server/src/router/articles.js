@@ -28,6 +28,7 @@ global.post('/insert', user_session, async (req, res) => {
             req.body.article_content,
             req.body.citation
         );
+        await notifyManager.addTagevent(req.session.user_id, req.body.article_content.body, newPostId);
         res.status(200).json(newPostId);
         return;
     } catch (error) {

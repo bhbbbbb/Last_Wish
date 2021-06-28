@@ -83,14 +83,16 @@ async function selfNotifyParse(obj){
   to = await User.findById(obj.to);
   if(!from || !to)
     return;
+  if(from == to)
+    return;
   article = await articleManager.getArticleById(obj.link);
   let describes = '';
   switch(obj.actions){
     case 'Tag':
-      describes = from.username + '在文章 ' + article.title + '標註了你' ;
+      describes = from.username + '在文章' + article.title + '標註了你' ;
       break;
     case'Comment':
-      describes = from.username + '在你的文章 ' + article.title + '底下留言' ;
+      describes = from.username + '在你的文章' + article.title + '底下留言' ;
       break;
     //case 'Followed':
     //  describes = from.username + '追蹤了你的文章 ' + article.title ; //追蹤文章會有反覆追蹤的問題，暫時保留
@@ -99,7 +101,7 @@ async function selfNotifyParse(obj){
     //  describes = from.username + '喜歡你的文章 ' + article.title ;   //Liked文章會有反覆like的問題，暫時保留
     //  break; 
     case 'Quote':
-      describes = from.username + '引用了你的文章 ' + article.title ;
+      describes = from.username + '引用了你的文章' + article.title ;
       break;
     default:
       break;
@@ -118,13 +120,15 @@ async function selfNotifyParse(obj){
 }
 
 async function followNotifyParse(obj, userId){
+  if(obj.from == userId)
+    return;
   from = await User.findById(obj.from);
   user = await User.findById(userId);
   article = articleManager.getArticleById(obj.link);
   let describes = '';
   switch(obj.actions){
     case'Comment':
-      describes = from.username + '在你追蹤的文章 ' + article.title + '底下留言' ;
+      describes = from.username + '在你追蹤的文章' + article.title + '底下留言' ;
       break;
     default:
       break;
