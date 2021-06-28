@@ -254,8 +254,6 @@ module.exports = function() {
     this.setLikedPostsToUser = async function(userId, articleId, set) {
         let article = await this.articleManager.getArticleById(articleId);
         if (article) {
-            let score = set? 2 : -2;
-            await this.changeScore(article.author, score);
             let user = await User.findById(userId);
             if (!user)
                 throw "user not found"
@@ -264,12 +262,14 @@ module.exports = function() {
                 if (!set) {
                     user.likedPosts.pull(article._id);
                     article.likes -= 1;
+                    await this.changeScore(article.author, -2);
                 }
             } else {
                 // In this case it is going to like
                 if (set) {
                     user.likedPosts.push(article._id);
                     article.likes += 1;
+                    await this.changeScore(article.author, 2);
                 }
             }
             user.save();
@@ -397,7 +397,7 @@ module.exports = function() {
         if (!event)
             throw "event not found";
         event.finished = set;
-        let score = set? 10 : -10;
+        let score = set ? 10 : -10;
         await this.changeScore(userId, score);
         await user.save()
         return;

@@ -385,7 +385,7 @@ module.exports = function() {
         if (!article)
             throw "no such article";
         article.finished = set;
-        let score = set? 100 : -100;
+        let score = set ? 100 : -100;
         await accountManager.changeScore(article.author, score);
         await article.save();
     }
