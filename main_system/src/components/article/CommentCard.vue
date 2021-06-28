@@ -54,12 +54,6 @@ export default {
     });
   },
   methods: {
-    test() {
-      setTimeout(() => {
-        console.log('1234');
-        alert(this.content._id);
-      }, 1000);
-    },
   },
 };
 </script>

@@ -6,7 +6,7 @@ const mongoose_fuzzy_searching = require("mongoose-fuzzy-searching");
 const colorValidator = (v) => {
   return (/^#([0-9a-fA-F]{3}){1,2}$/i).test(v);
 }
-const HONOR = ["honor1", "honor2", "honor3", "honor4", "honor5", "honor6", "honor7", "honor8"];
+const HONOR = ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8"];
 
 const eventSchema = new mongoose.Schema({
   name: String,
@@ -40,33 +40,42 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  score: {
+    type: Number,
+    default: 0,
+  },
   lv: {
     type: Number,
     default: 1
   },
   selfIntro: {
     type: String,
-    default: 'The user don\'t have a self intro',
+    default: '這就是我的自介',
   },
   proPic: {
     type: String,  // url to profile picture
     default: "",
   },
-  fans: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
-  followedUsers: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
   followedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   likedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article' }],
   selfPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
-  finishedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   events: [eventSchema],
   notifies: [selfnotifySchema],
   lastSync:{
     type: Date,
   },
-  score:{
+  nFinishedPosts: {
+    type: Number,
+    default: 0
+  },
+  citedCount: {
     type: Number,
     default: 0,
-  }
+  },
+  likedCount: {
+    type: Number,
+    default: 0,
+  },
 });
 
 userSchema.method('getHonor', function() {
@@ -85,6 +94,30 @@ userSchema.method('changeScore', function(deltaScore) {
   } else {
     // the case should not occuar, but it's more safe this way
     this.score = 0;
+  }
+});
+
+userSchema.method('getPublicInfo', function() {
+  return {
+    id: this._id,
+    username: this.username,
+    pro_pic: this.proPic,
+  };
+});
+
+userSchema.method('getHomePageInfo', function() {
+  return {
+    id: this._id,
+    username: this.username,
+    pro_pic: this.proPic,
+    self_intro: this.selfIntro,
+    lv: this.lv,
+    score: this.score,
+    honor: this.getHonor(),
+    n_posts: this.selfPosts.length,
+    n_finished: this.nFinishedPosts,
+    n_cited: this.citedCount,
+    n_liked: this.likedCount,
   }
 });
 
