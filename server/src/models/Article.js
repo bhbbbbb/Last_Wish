@@ -31,7 +31,7 @@ const articleSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  citeFrom: { type: mongoose.Types.ObjectId, ref: 'User' },
+  citeFrom: { type: mongoose.Types.ObjectId, ref: 'Article' },
   author: { type: mongoose.Types.ObjectId, ref: 'User' },
   tags: [String],
   finished: {
