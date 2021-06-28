@@ -1,8 +1,7 @@
 const Article = require('../models/Article');
 const User = require("../models/User");
 const Tag = require("../models/Tag");
-var AccountManager = require("./account_manager")
-var accountManager = new AccountManager();
+
 module.exports = function() {
 
     /**
@@ -241,7 +240,8 @@ module.exports = function() {
      * @returns date of newComment
      */
      this.addCommentToArticle = async function(author, articleId, commentStr) {
-        let article = await Article.findById(articleId);
+        let article = await Article.findById(articleId)
+                                   .populate('author');
         if (!article)
             throw "no such article";
         if (!author)
@@ -250,9 +250,10 @@ module.exports = function() {
             "author": author,
             "body": commentStr,
         };
-        let score = 5;
-        await accountManager.changeScore(article.author, score);
         let len = await article.comments.push(newComment);
+        let score = 5;
+        article.author.changeScore(score);
+        await article.author.save();
         await article.save();
         return article.comments[len - 1].date;
      }
@@ -381,12 +382,27 @@ module.exports = function() {
     }
     
     this.setFinishedArticle = async function(articleId, set) {
-        let article = await Article.findById(articleId);
+        let article = await Article.findById(articleId)
+                                   .populate('author');
         if (!article)
             throw "no such article";
-        article.finished = set;
-        let score = set ? 100 : -100;
-        await accountManager.changeScore(article.author, score);
+        console.log(article.finished);
+        console.log(set, typeof set);
+        if (article.finished) {
+            if (!set) {
+                article.finished = false;
+                // await accountManager.changeScore(article.author, -100);
+                article.author.changeScore(-100);
+            }
+        } else {
+            if (set) {
+                article.finished = true;
+                // await accountManager.changeScore(article.author, 100);
+                article.author.changeScore(100);
+            }
+        }
+        await article.author.save();
+        console.log(article.author);
         await article.save();
     }
 
@@ -400,7 +416,6 @@ module.exports = function() {
         milestone.finished = set;
         await article.sortMilestonesAndSave();
     }
-
 }
 
 

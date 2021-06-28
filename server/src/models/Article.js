@@ -81,6 +81,7 @@ articleSchema.method('toFrontendFormat', function() {
       body: this.body,
       milestones: this.milestones,
     },
+    finished: this.finished,
     date: this.date,
     cite_from: this.citeFrom,
     cited_count: this.cited_count,
