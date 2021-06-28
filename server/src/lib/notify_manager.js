@@ -48,7 +48,7 @@ module.exports = function() {
       throw "user not found"
     let time = user.lastSync;
     //This is used for old data
-    //if(!time)
+    if(!time)
       time = new Date('July 1, 1999');
 
     let selfNotify = await Notify.find({"to": userId}).exec();
@@ -69,8 +69,6 @@ module.exports = function() {
           if(obj.from != obj.to)
             await selfNotifyParse(obj);
         }
-        else
-          break;
       }
     }
     let followLen = followNotify.length;
@@ -85,8 +83,6 @@ module.exports = function() {
             if(obj.to != userId)
               await followNotifyParse(obj, userId);
             }
-          else
-            break;
         }
       }
     }
@@ -161,7 +157,7 @@ async function followNotifyParse(obj, userId){
     return; 
   from = await User.findById(obj.from);
   user = await User.findById(userId);
-  article = articleManager.getArticleById(obj.link);
+  article = await articleManager.getArticleById(obj.link);
   let describes = '';
   switch(obj.actions){
     case'Comment':
