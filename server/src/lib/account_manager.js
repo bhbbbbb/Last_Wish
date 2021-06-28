@@ -356,18 +356,20 @@ module.exports = function() {
             throw "user not found";
         return user.events;
     }
+
     /**
      * 
      * @param {String} password 
      * @returns hased_pass
      */
-    this.hashPass = async(password) => {
+    this.hashPass = async (password) => {
         return await bcrypt.hashSync(password, 10);
     }
 
-    this.findUserById = async(id) => {
+    this.findUserById = async (id) => {
         return await User.findById(id);
     }
+
     /**
      * replace existed event with modifiedEvent obj
      * @param {String} eventId 
@@ -396,14 +398,22 @@ module.exports = function() {
         let event = await user.events.id(eventId);
         if (!event)
             throw "event not found";
-        event.finished = set;
-        let score = set ? 10 : -10;
-        await this.changeScore(userId, score);
+        if (event.finished) {
+            if (!set) {
+                event.finished = false;
+                await this.changeScore(userId, -10);
+            }
+        } else {
+            if (set) {
+                event.finished = true;
+                await this.changeScore(userId, 10);
+            }
+        }
         await user.save()
         return;
     }
 
-    this.setEmailToUser = async function(userId, password, email){
+    this.setEmailToUser = async function(userId, password, email) {
         let user = await User.findById(userId);
         if(!user)
             throw "user not found"
@@ -414,36 +424,38 @@ module.exports = function() {
         }
         return correct;
     }
-    this.changeScore = async function (userId, deltaScore){
+
+    this.changeScore = async function (userId, deltaScore) {
         let user = await User.findById(userId);
         if (!user)
             throw "user not found";
-        if(!user.score)
+        if (!user.score)
             user.score = deltaScore;
         else
             user.score += deltaScore;
-        if(user.score < 0)
+        if (user.score < 0)
             user.score = 0;
-        let lv = await getLevel(user.score);
+        let lv = getLevel(user.score);
         user.honor = lv;    
         await user.save();
     };
 };
-async function getLevel(score){
+
+function getLevel(score){
     let lv = 'lv1';
-    if(score>=5000)
+    if (score>=5000)
         lv = 'lv8';
-    else if(score>=3000)
+    else if (score>=3000)
         lv = 'lv7';
-    else if(score>=2000)
+    else if (score>=2000)
         lv = 'lv6';
-    else if(score>=1000)
+    else if (score>=1000)
         lv = 'lv5';
-    else if(score>=600)
+    else if (score>=600)
         lv = 'lv4';
-    else if(score>=300)
+    else if (score>=300)
         lv = 'lv3';
-    else if(score>=100)
+    else if (score>=100)
         lv = 'lv2';
     return lv;
 }

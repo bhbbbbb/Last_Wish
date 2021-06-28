@@ -250,10 +250,10 @@ module.exports = function() {
             "author": author,
             "body": commentStr,
         };
-        let score = 5;
-        await accountManager.changeScore(article.author, score);
         let len = await article.comments.push(newComment);
         await article.save();
+        let score = 5;
+        await accountManager.changeScore(article.author, score);
         return article.comments[len - 1].date;
      }
 
@@ -384,9 +384,17 @@ module.exports = function() {
         let article = await Article.findById(articleId);
         if (!article)
             throw "no such article";
-        article.finished = set;
-        let score = set ? 100 : -100;
-        await accountManager.changeScore(article.author, score);
+        if (article.finished) {
+            if (!set) {
+                article.finished = false;
+                await accountManager.changeScore(article.author, -100);
+            }
+        } else {
+            if (set) {
+                article.finished = true;
+                await accountManager.changeScore(article.author, 100);
+            }
+        }
         await article.save();
     }
 
@@ -400,7 +408,6 @@ module.exports = function() {
         milestone.finished = set;
         await article.sortMilestonesAndSave();
     }
-
 }
 
 

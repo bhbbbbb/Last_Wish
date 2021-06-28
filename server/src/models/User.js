@@ -52,5 +52,6 @@ const userSchema = new mongoose.Schema({
     default: 0,
   }
 });
+
 userSchema.plugin(mongoose_fuzzy_searching, { fields: ['username'] });
 module.exports = mongoose.model('User', userSchema);
