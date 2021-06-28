@@ -399,23 +399,22 @@ module.exports = function() {
                                    .populate('author');
         if (!article)
             throw "no such article";
-        console.log(article.finished);
-        console.log(set, typeof set);
         if (article.finished) {
             if (!set) {
                 article.finished = false;
                 // await accountManager.changeScore(article.author, -100);
                 article.author.changeScore(-100);
+                article.author.nFinishedPosts -= 1;
             }
         } else {
             if (set) {
                 article.finished = true;
                 // await accountManager.changeScore(article.author, 100);
                 article.author.changeScore(100);
+                article.author.nFinishedPosts += 1;
             }
         }
         await article.author.save();
-        console.log(article.author);
         await article.save();
     }
 

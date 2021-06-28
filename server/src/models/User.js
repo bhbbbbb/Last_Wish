@@ -28,28 +28,29 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  score: {
+    type: Number,
+    default: 0,
+  },
   lv: {
     type: Number,
     default: 1
   },
   selfIntro: {
     type: String,
-    default: 'The user don\'t have a self intro',
+    default: '這就是我的自介',
   },
   proPic: {
     type: String,  // url to profile picture
     default: "",
   },
-  fans: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
-  followedUsers: [{ type: mongoose.Types.ObjectId, ref: 'User'}],
   followedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   likedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article' }],
   selfPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
-  finishedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   events: [eventSchema],
-  score:{
+  nFinishedPosts: {
     type: Number,
-    default: 0,
+    default: 0
   },
   citedCount: {
     type: Number,
@@ -58,7 +59,7 @@ const userSchema = new mongoose.Schema({
   likedCount: {
     type: Number,
     default: 0,
-  }
+  },
 });
 
 userSchema.method('getHonor', function() {
@@ -84,11 +85,24 @@ userSchema.method('getPublicInfo', function() {
   return {
     id: this._id,
     username: this.username,
-    proPic: this.proPic,
+    pro_pic: this.proPic,
   };
 });
 
-userSchema.method('getHonorRollInfo', function() {
+userSchema.method('getHomePageInfo', function() {
+  return {
+    id: this._id,
+    username: this.username,
+    pro_pic: this.proPic,
+    self_intro: this.selfIntro,
+    lv: this.lv,
+    score: this.score,
+    honor: this.getHonor(),
+    n_posts: this.selfPosts.length,
+    n_finished: this.nFinishedPosts,
+    n_cited: this.citedCount,
+    n_liked: this.likedCount,
+  }
 });
 
 function getLevel(score) {

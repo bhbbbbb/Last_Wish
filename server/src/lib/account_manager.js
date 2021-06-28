@@ -156,23 +156,18 @@ module.exports = function() {
      * @returns user info with given id
      * @throws "user not found" exception
      */
-    this.getUserInfo = async function(id) {
+    this.getPublicInfoById = async function(id) {
         let user = await User.findById(id);
         if (!user)
             throw "user not found"
-        // let userInfo = {
-        //     "id": user._id,
-        //     "username": user.username,
-        //     "selfIntro": user.selfIntro,
-        //     "honor": user.getHonor(),
-        //     "lv": user.lv,
-        //     "score": user.score,
-        //     "proPic": user.proPic,
-        //     "nFans": user.fans.length,
-        //     "nFollowing": user.followedUsers.length,
-        //     "nPosts": user.selfPosts.length,
-        // };
         return user.getPublicInfo();
+    }
+    
+    this.getHomePageInfoById = async function(id) {
+        let user = await User.findById(id);
+        if (!user)
+            throw "user not found"
+        return user.getHomePageInfo();
     }
 
     /**
@@ -191,34 +186,6 @@ module.exports = function() {
         // await updateFuzzy(User, ['username']);
         let users = await User.fuzzySearch(keywordStr);
         return users.map(user => user._id);
-    }
-
-    /**
-     * To make an user to follow/unfollow another user
-     * 
-     * @param {String} userId 
-     * @param {String} targetId
-     * @throws "user not found"
-     */
-    this.setFollowRelation = async function(userId, targetId) {
-        let target = await User.findById(targetId);
-        if (!target)
-            throw "user not found";
-        let user  = await User.findById(userId);
-        if (!user)
-            throw "user not found";
-        if (user.followedUsers.includes(target._id)) {
-            // In this case it is going to unfollow
-            user.followedUsers.pull(target._id);
-            target.fans.pull(user._id);
-        } else {
-            // In this case it is going to follow
-            user.followedUsers.push(target._id);
-            target.fans.push(user._id);
-        }
-        user.save();
-        target.save();
-        return;
     }
 
     /**
@@ -247,9 +214,8 @@ module.exports = function() {
                     article.fans.push(user._id);
                 }
             }
-            user.save();
-            article.save();
-            return;
+            await user.save();
+            await article.save();
         }
     }
     
@@ -266,6 +232,7 @@ module.exports = function() {
                     article.likes -= 1;
                     // await this.changeScore(article.author, -2);
                     article.author.changeScore(-2);
+                    article.author.likedCount -= 1;
                 }
             } else {
                 // In this case it is going to like
@@ -274,12 +241,12 @@ module.exports = function() {
                     article.likes += 1;
                     // await this.changeScore(article.author, 2);
                     article.author.changeScore(2);
+                    article.author.likedCount += 1;
                 }
             }
-            article.author.save();
-            user.save();
-            article.save();
-            return;
+            await user.save();
+            await article.author.save();
+            await article.save();
         }
     }
 
@@ -431,19 +398,4 @@ module.exports = function() {
         }
         return correct;
     }
-
-    // this.changeScore = async function (userId, deltaScore) {
-    //     let user = await User.findById(userId);
-    //     if (!user)
-    //         throw "user not found";
-    //     if (!user.score)
-    //         user.score = deltaScore;
-    //     else
-    //         user.score += deltaScore;
-    //     if (user.score < 0)
-    //         user.score = 0;
-    //     let lv = getLevel(user.score);
-    //     user.lv = (user.lv > lv)? user.lv : lv;    
-    //     await user.save();
-    // };
 };
