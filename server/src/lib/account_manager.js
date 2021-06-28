@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
-var ArticleManager = require('./article_manager.js');
+var ArticleManager = require('./article_manager');
 
 module.exports = function() {
     this.articleManager = new ArticleManager();
@@ -164,7 +164,9 @@ module.exports = function() {
             "id": user._id,
             "username": user.username,
             "selfIntro": user.selfIntro,
-            "honor": user.honor,
+            "honor": user.getHonor(),
+            "lv": user.lv,
+            "score": user.score,
             "proPic": user.proPic,
             "nFans": user.fans.length,
             "nFollowing": user.followedUsers.length,
@@ -182,6 +184,13 @@ module.exports = function() {
         if (!user)
             throw "user not found";
         return user._id;
+    }
+    
+    this.searchUsersByKeywords = async function(keywordStr) {
+        // const updateFuzzy = require('./update_fuzzy');
+        // await updateFuzzy(User, ['username']);
+        let users = await User.fuzzySearch(keywordStr);
+        return users.map(user => user._id);
     }
 
     /**
@@ -255,14 +264,19 @@ module.exports = function() {
                 if (!set) {
                     user.likedPosts.pull(article._id);
                     article.likes -= 1;
+                    // await this.changeScore(article.author, -2);
+                    article.author.changeScore(-2);
                 }
             } else {
                 // In this case it is going to like
                 if (set) {
                     user.likedPosts.push(article._id);
                     article.likes += 1;
+                    // await this.changeScore(article.author, 2);
+                    article.author.changeScore(2);
                 }
             }
+            article.author.save();
             user.save();
             article.save();
             return;
@@ -347,18 +361,20 @@ module.exports = function() {
             throw "user not found";
         return user.events;
     }
+
     /**
      * 
      * @param {String} password 
      * @returns hased_pass
      */
-    this.hashPass = async(password) => {
+    this.hashPass = async (password) => {
         return await bcrypt.hashSync(password, 10);
     }
 
-    this.findUserById = async(id) => {
+    this.findUserById = async (id) => {
         return await User.findById(id);
     }
+
     /**
      * replace existed event with modifiedEvent obj
      * @param {String} eventId 
@@ -379,19 +395,55 @@ module.exports = function() {
         await user.save()
         return;
     }
-
-
-    this.setEmailToUser = async function(userId, password, email){
+    
+    this.setFinishedEventById = async function(eventId, userId, set) {
         let user = await User.findById(userId);
-        if(!user)
+        if (!user)
+            throw "user not found";
+        let event = await user.events.id(eventId);
+        if (!event)
+            throw "event not found";
+        if (event.finished) {
+            if (!set) {
+                event.finished = false;
+                // await this.changeScore(userId, -10);
+                user.changeScore(-10);
+            }
+        } else {
+            if (set) {
+                event.finished = true;
+                // await this.changeScore(userId, 10);
+                user.changeScore(10);
+            }
+        }
+        await user.save()
+        return;
+    }
+
+    this.setEmailToUser = async function(userId, password, email) {
+        let user = await User.findById(userId);
+        if (!user)
             throw "user not found"
         let correct = bcrypt.compareSync(password, user.password)
-        if(correct){
+        if (correct){
             user.email = email
             await user.save();
         }
         return correct;
     }
 
-
+    // this.changeScore = async function (userId, deltaScore) {
+    //     let user = await User.findById(userId);
+    //     if (!user)
+    //         throw "user not found";
+    //     if (!user.score)
+    //         user.score = deltaScore;
+    //     else
+    //         user.score += deltaScore;
+    //     if (user.score < 0)
+    //         user.score = 0;
+    //     let lv = getLevel(user.score);
+    //     user.lv = (user.lv > lv)? user.lv : lv;    
+    //     await user.save();
+    // };
 };

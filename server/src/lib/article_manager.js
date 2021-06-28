@@ -1,5 +1,6 @@
 const Article = require('../models/Article');
 const User = require("../models/User");
+const Tag = require("../models/Tag");
 
 module.exports = function() {
 
@@ -21,9 +22,20 @@ module.exports = function() {
             title: articleContent.title,
             body: articleContent.body,
             author: author._id,
-            tags: articleContent.tags,
         };
         const article = new Article(newArticleData);
+        for (tagStr of articleContent.tags) {
+            let existingTag = await Tag.findOne({ name: tagStr });
+            if (existingTag) {
+                existingTag.related.push(article._id);
+                await existingTag.save();
+            } else {
+                let tag = new Tag({ name: tagStr });
+                tag.related.push(article._id);
+                await tag.save();
+            }
+            article.tags.push(tagStr);
+        }
         for (newMilestoneData of articleContent.milestones) {
             article.milestones.push(newMilestoneData);
         }
@@ -75,17 +87,20 @@ module.exports = function() {
             }
             
         }
-        let allArticleIds = [];
-        for (article of rawArticles) {
-            allArticleIds.push(article._id);
-        }
-        return allArticleIds;
+        return rawArticles.map(article => article._id);
     }
 
     this.rmArticleById = async function(articleId) {
         let deletedArticle = await Article.findByIdAndDelete(articleId);
         if (!deletedArticle)
             throw "no such article";
+        for (tag of deletedArticle.tags) {
+            Tag.findOneAndUpdate({ name: tag }, {
+                $pullAll: {
+                    related: [deletedArticle._id]
+                }
+            }).exec();
+        }
         for (fan of deletedArticle.fans) {
             User.findByIdAndUpdate(fan, {
                 $pullAll: {
@@ -141,11 +156,7 @@ module.exports = function() {
                     break;
             }
         }
-        let sortedArticleIds = [];
-        for (article of rawArticles) {
-            sortedArticleIds.push(article._id);
-        }
-        return sortedArticleIds;
+        return rawArticles.map(article => article._id);
     }
     
     /**
@@ -175,8 +186,51 @@ module.exports = function() {
             throw "no such article";
         return article.toFrontendFormat();
     }
+    
+    this.searchArticlesByKeywords = async function(keywordStr) {
+        // const updateFuzzy = require('./update_fuzzy');
+        // await updateFuzzy(User, ['title', 'body']);
+        let articles = await Article.fuzzySearch(keywordStr);
+        return articles.map(article => article._id);
+    }
+    
+    this.getRelatedArticlesByTag = async function(tagStr) {
+        let tag = await Tag.findOne({ name: "#" + tagStr });
+        if (tag)
+            return tag.related;
+        else
+            return [];
+    }
+    
+    this.searchTagsByKeywords = async function(keywordStr) {
+        let tags = await Tag.fuzzySearch(keywordStr);
+        return tags.map((tag) => {
+            return {
+                name: tag.name,
+                nRef: tag.related.length
+            };
+        });
+    }
+    
+    // to test:
+    this.updateTags = async function() {
+        let allArticles = await Article.find({});
+        for (article of allArticles) {
+            console.log(article.tags);
+            for (tagStr of article.tags) {
+                let existingTag = await Tag.findOne({ name: tagStr });
+                if (existingTag) {
+                    existingTag.related.push(article._id);
+                    await existingTag.save();
+                } else {
+                    let tag = new Tag({ name: tagStr });
+                    tag.related.push(article._id);
+                    await tag.save();
+                }
+            }
+        }
+    }
 
-    // TODO: modify this
     /**
      * @param {Object} author 
      * @param {String} articleId 
@@ -186,17 +240,20 @@ module.exports = function() {
      * @returns date of newComment
      */
      this.addCommentToArticle = async function(author, articleId, commentStr) {
-        let article = await Article.findById(articleId);
+        let article = await Article.findById(articleId)
+                                   .populate('author');
         if (!article)
             throw "no such article";
         if (!author)
             throw "author is required";
-            
         let newComment = {
             "author": author,
             "body": commentStr,
         };
         let len = await article.comments.push(newComment);
+        let score = 5;
+        article.author.changeScore(score);
+        await article.author.save();
         await article.save();
         return article.comments[len - 1].date;
      }
@@ -210,20 +267,20 @@ module.exports = function() {
     * @throws "no such article" exception
     * @throws "not the author" exception
     */
-    this.replaceArticle = async function(newArticle, articleId, userId) {
-        let article = await Article.findById(articleId);
-        if (!article)
-            throw "no such article";
-        if (userId != article.author)
-            throw "not the author";
-        if (newArticle.title)
-            article.title = newArticle.title;
-        if (newArticle.body)
-            article.body = newArticle.body;
-        article.date = Date.now();
-        await article.save();
-        return article.date;
-    }
+    // this.replaceArticle = async function(newArticle, articleId, userId) {
+    //     let article = await Article.findById(articleId);
+    //     if (!article)
+    //         throw "no such article";
+    //     if (userId != article.author)
+    //         throw "not the author";
+    //     if (newArticle.title)
+    //         article.title = newArticle.title;
+    //     if (newArticle.body)
+    //         article.body = newArticle.body;
+    //     article.date = Date.now();
+    //     await article.save();
+    //     return article.date;
+    // }
     
     this.updateArticle = async function(articleId, updateQuery) {
         let article = await Article.findById(articleId);
@@ -233,8 +290,30 @@ module.exports = function() {
             article.title = updateQuery.title;
         if (updateQuery.body)
             article.body = updateQuery.body;
-        if (updateQuery.tags)
-            article.tags = updateQuery.tags;
+        if (updateQuery.tags) {
+            let toRemove = article.tags.filter(t => !updateQuery.tags.includes(t));
+            let toAdd = updateQuery.tags.filter(t => !article.tags.includes(t));
+            for (tag of toRemove) {
+                Tag.findOneAndUpdate({ name: tag }, {
+                    $pullAll: {
+                        related: [article._id]
+                    }
+                }).exec();
+                article.tags.pull(tag);
+            }
+            for (tagStr of toAdd) {
+                let existingTag = await Tag.findOne({ name: tagStr });
+                if (existingTag) {
+                    existingTag.related.push(article._id);
+                    await existingTag.save();
+                } else {
+                    let tag = new Tag({ name: tagStr });
+                    tag.related.push(article._id);
+                    await tag.save();
+                }
+                article.tags.push(tagStr);
+            }
+        }
         if (updateQuery.deleted_milestones) {
             for (deletedMilestoneId of updateQuery.deleted_milestones) {
                 article.milestones.pull(deletedMilestoneId);
@@ -303,35 +382,30 @@ module.exports = function() {
     }
     
     this.setFinishedArticle = async function(articleId, set) {
-        let article = await Article.findById(articleId);
+        let article = await Article.findById(articleId)
+                                   .populate('author');
         if (!article)
             throw "no such article";
-        article.finished = set;
+        console.log(article.finished);
+        console.log(set, typeof set);
+        if (article.finished) {
+            if (!set) {
+                article.finished = false;
+                // await accountManager.changeScore(article.author, -100);
+                article.author.changeScore(-100);
+            }
+        } else {
+            if (set) {
+                article.finished = true;
+                // await accountManager.changeScore(article.author, 100);
+                article.author.changeScore(100);
+            }
+        }
+        await article.author.save();
+        console.log(article.author);
         await article.save();
     }
 
-    this.addMilestoneToArticle = async function(articleId, milestone) {
-        let article = await Article.findById(articleId);
-        if (!article)
-            throw "no such artcle";
-        article.milestones.push(milestone);
-        await article.sortMilestonesAndSave();
-    }
-    
-    this.replaceMilestoneOfArticle = async function(newMilestone, articleId, milestoneId) {
-        let article = await Article.findById(articleId);
-        if (!article)
-            throw "no such aritcle";
-        let milestone = article.milestones.id(milestoneId);
-        if (!milestone)
-            throw "no such milestone"
-        milestone.title = newMilestone.title;
-        milestone.body = newMilestone.body;
-        milestone.estDate = newMilestone.estDate;
-        milestone.finished = newMilestone.finished;
-        await article.sortMilestonesAndSave();
-    }
-    
     this.setFinishedMilestoneOfArticle = async function(articleId, milestoneId, set) {
         let article = await Article.findById(articleId);
         if (!article)
@@ -343,3 +417,5 @@ module.exports = function() {
         await article.sortMilestonesAndSave();
     }
 }
+
+

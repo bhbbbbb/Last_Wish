@@ -136,15 +136,6 @@ user.post('/register', async (req, res) => {
 });
 
 user.post('/set_self_intro', user_session, async (req, res) => {
-    // accountManager
-    //     .setSelfIntroToUser(req.session.user_id, req.body.self_intro)
-    //     .then(() => {
-    //         res.sendStatus(200);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.status(400).json(error);
-    //     });
     try {
         await accountManager.setSelfIntroToUser(req.session.user_id, req.body.self_intro);
         res.sendStatus(200);
@@ -154,35 +145,17 @@ user.post('/set_self_intro', user_session, async (req, res) => {
     }
 });
 
-user.post('/set_honor', user_session, async (req, res) => {
-    // accountManager
-    //     .setHonorToUser(req.session.user_id, req.body.honor)
-    //     .then(() => {
-    //         res.sendStatus(200);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.status(400).json(error);
-    //     });
-    try {
-        await accountManager.setHonorToUser(req.session.user_id, req.body.honor);
-        res.sendStatus(200);
-    } catch (error) {
-        console.log(error);
-        res.status(400).json(error);
-    }
-});
+// user.post('/set_honor', user_session, async (req, res) => {
+//     try {
+//         await accountManager.setHonorToUser(req.session.user_id, req.body.honor);
+//         res.sendStatus(200);
+//     } catch (error) {
+//         console.log(error);
+//         res.status(400).json(error);
+//     }
+// });
 
 user.post('/set_pro_pic', user_session, async (req, res) => {
-    // accountManager
-    //     .setProPicToUser(req.session.user_id, req.body.pro_pic_url)
-    //     .then(() => {
-    //         res.sendStatus(200);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.status(400).json(error);
-    //     });
     try {
         await accountManager.setProPicToUser(req.session.user_id, req.body.pro_pic_url);
         res.sendStatus(200);
@@ -201,15 +174,6 @@ user.get('/who', user_session, (req, res) => {
 });
 
 user.post('/toggle_followed_user', user_session, async (req, res) => {
-    // accountManager
-    //     .toggleFollowRelation(req.session.user_id, req.body.target_id)
-    //     .then(() => {
-    //         res.sendStatus(200);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.status(400).json(error);
-    //     });
     try {
         await accountManager.toggleFollowRelation(req.session.user_id, req.body.target_id);
         res.sendStatus(200);
@@ -220,17 +184,8 @@ user.post('/toggle_followed_user', user_session, async (req, res) => {
 });
 
 user.post('/set_followed_post', user_session, async (req, res) => {
-    // accountManager
-    //     .toggleFollowedPostsToUser(req.session.user_id, req.body.article_id)
-    //     .then(() => {
-    //         res.sendStatus(200);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.status(400).json(error);
-    //     });
     try {
-        let set = req.body.set == "set";
+        let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "true";
         await accountManager.setFollowedPostsToUser(req.session.user_id, req.body.article_id, set);
         res.sendStatus(200);
     } catch (error) {
@@ -240,17 +195,8 @@ user.post('/set_followed_post', user_session, async (req, res) => {
 });
 
 user.post('/set_liked_post', user_session, async (req, res) => {
-    // accountManager
-    //     .toggleLikedPostsToUser(req.session.user_id, req.body.article_id)
-    //     .then(() => {
-    //         res.sendStatus(200);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.status(400).json(error);
-    //     });
     try {
-        let set = req.body.set == "true";
+        let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "true";
         await accountManager.setLikedPostsToUser(req.session.user_id, req.body.article_id, set);
         res.sendStatus(200);
     } catch (error) {
@@ -278,17 +224,6 @@ const GET_PUBLIC_INFO = [
     }
 ];
 user.get('/get_public_info', async (req, res) => {
-    // accountManager
-    //     .getUserInfo(req.query.id)
-    //     .then((userInfo) => {
-    //         let response = GET_PUBLIC_INFO[SUCCEED];
-    //         res.status(response.status).json(userInfo);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
-    //         res.status(response.status).json(response.body);
-    //     });
     try {
         let userInfo = await accountManager.getUserInfo(req.query.id);
         let response = GET_PUBLIC_INFO[SUCCEED];
@@ -301,14 +236,6 @@ user.get('/get_public_info', async (req, res) => {
 });
 
 user.get('/is_valid_username', user_session, async (req, res) => {
-    // accountManager.hasUser(req.query.username)
-    //     .then((exist) => {
-    //         res.send(!exist); 
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.sendStatus(400);
-    //     });
     try {
         let exist = await accountManager.hasUser(req.query.username);
         res.send(!exist);
@@ -319,14 +246,6 @@ user.get('/is_valid_username', user_session, async (req, res) => {
 });
 
 user.get('/get_id_by_name', async (req, res) => {
-    // accountManager.getIdbyUsername(req.query.name)
-    //     .then((id) => { 
-    //         res.send(id);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //         res.sendStatus(400);
-    //     });
     try {
         let id = await accountManager.getIdByUsername(req.query.name);
         res.send(id);
@@ -357,12 +276,6 @@ user.get('/confirmation/:token', async (req, res) => {
         res.send(LINK_EXPIRED);
     }
 });
-
-
-
-
-
-
 
 const VERIFIED = 2;
 const SEND_TOKEN = [
@@ -453,6 +366,19 @@ user.post('/edit_event_by_id', user_session, async (req, res) => {
     }
 });
 
+user.post('/set_finished_event', user_session, async (req, res) => {
+    let eventId = req.body.event_id;
+    let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "true";
+    let userId = req.session.user_id;
+    try {
+       await accountManager.setFinishedEventById(eventId, userId, set);
+       res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(400);
+    }
+});
+
 user.get('/get_liked_posts', user_session, async (req, res) => {
     try {
         let userId = req.session.user_id;
@@ -466,7 +392,7 @@ user.get('/get_liked_posts', user_session, async (req, res) => {
     }
 });
 
-user.post('/reset_pass', user_session,async(req, res) => {
+user.post('/reset_pass', user_session, async (req, res) => {
     try {
         let userId = req.session.user_id;
         let username = req.body.username;
@@ -489,29 +415,29 @@ user.post('/reset_pass', user_session,async(req, res) => {
     }
 })
 
-user.post('/reset_email', user_session, async(req, res) => {
+user.post('/reset_email', user_session, async (req, res) => {
     try {
         userId = req.session.user_id;
         let email = req.body.new_email;
         let pass = req.body.password;
         let check1 = await mailManager.hasMailAddr(email);
         let check2 = mailManager.isValidAddr(email);
-        if(check1){
+        if (check1) {
             let response = REGISTER[DUPLICATED_EMAIL];
             res.status(response.status).json(response.body);
             return;
-        }else if(!check2){
+        } else if (!check2) {
             let response = REGISTER[INVALID_ADDR];
             res.status(response.status).json(response.body);
             return;
-        }else{
+        } else {
             let correct = await accountManager.setEmailToUser(userId, pass, email);
-            if(correct)
+            if(correct) {
                 res.sendStatus(200);
-            else{
+            } else {
                 let response = {
-                    err_code : 4,
-                    err_msg : "Wrong password"
+                    err_code: 4,
+                    err_msg: "Wrong password"
                 }
                 res.status(400).json(response);
             }
@@ -521,17 +447,5 @@ user.post('/reset_email', user_session, async(req, res) => {
         res.sendStatus(400);
     }
 })
-
-// function genNonce(length) {
-//     let result = [];
-//     let characters =
-//         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-//     let charactersLength = characters.length;
-//     for (var i = 0; i < length; i++) {
-//         result.push(
-//             characters.charAt(Math.floor(Math.random() * charactersLength)));
-//     }
-//     return result.join('');
-// }
 
 module.exports = user;
