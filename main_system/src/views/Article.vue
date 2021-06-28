@@ -204,7 +204,7 @@ export default {
       this.$router.replace('/');
     },
     goLink() {
-      this.$router.push({ name: 'Link', params: { reference: this.article }});
+      this.$router.push({ name: 'Link', params: { reference: this.article } });
     },
   },
 };

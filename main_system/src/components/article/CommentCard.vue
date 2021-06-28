@@ -53,8 +53,7 @@ export default {
       this.author = res;
     });
   },
-  methods: {
-  },
+  methods: {},
 };
 </script>
 

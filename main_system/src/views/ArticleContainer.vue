@@ -90,6 +90,7 @@ export default {
             type: this.type,
             sort_by: this.sort_by,
             filter: this.filter,
+            username: this.username, // only be true when type = 'others'
           })
           .then((data) => {
             this.articles = data;

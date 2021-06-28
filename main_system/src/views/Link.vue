@@ -24,12 +24,12 @@ export default {
     EditCard: () => import('@/components/EditCard'),
     MsgBox: () => import('@/components/MsgBox'),
   },
-	props: {
-		reference: {
-			required: true,
-			type: Object,
-		},
-	},
+  props: {
+    reference: {
+      required: true,
+      type: Object,
+    },
+  },
   data: () => ({
     new_article: undefined,
     show_info: false,
@@ -37,8 +37,8 @@ export default {
   }),
   computed: {},
   created() {
-		this.new_article = JSON.parse(JSON.stringify(this.reference)).content;
-	},
+    this.new_article = JSON.parse(JSON.stringify(this.reference)).content;
+  },
   methods: {
     SubmitNewArticle() {
       if (!this.new_article.title) {
@@ -46,7 +46,7 @@ export default {
         return;
       }
       if (!this.new_article.body) {
-        this.Show_info('內文不得為空'); 
+        this.Show_info('內文不得為空');
         return;
       }
       this.$store.dispatch('addArticle', this.new_article).then((id) => {
@@ -57,11 +57,9 @@ export default {
       this.info_msg = info;
       this.show_info = true;
     },
-		cancel() {
-			this.$router.go(-1);
-		},
+    cancel() {
+      this.$router.go(-1);
+    },
   },
 };
 </script>
-
-
