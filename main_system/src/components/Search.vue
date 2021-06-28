@@ -91,6 +91,7 @@ v-sheet.pt-3.sticky(flat style="margin: -8px -5px 5px -5px;")
       v-icon(v-if="!search_box_show") mdi-magnify
       span(v-else) 取消
   v-row(no-gutters style="width: 100%" v-if="search_box_show")
+    //-- #search
     v-text-field(
       outlined
       rounded
@@ -98,6 +99,8 @@ v-sheet.pt-3.sticky(flat style="margin: -8px -5px 5px -5px;")
       @focus="mode_options_show = true"
       autocomplete="off"
       hide-details
+      v-model="input_model"
+      id="search-input"
     )
       template(#append-outer)
         span.mt-1.d-flex.text-no-wrap 搜尋
@@ -123,15 +126,26 @@ v-sheet.pt-3.sticky(flat style="margin: -8px -5px 5px -5px;")
 </template>
 
 <script>
-// import color_list from '@/data/color_list';
+// const ALL = 0, ARTICLES = 1, TAGS = 2, USER = 3;
 export default {
   name: 'Search',
 
   components: {},
-  props: {},
+  props: {
+    value: {
+      required: false,
+      type: String,
+      default: undefined,
+    },
+    mode: {
+      require: false,
+      type: Number,
+      default: 0,
+    },
+  },
   data: () => ({
     search_box_show: false,
-    search_mode: 'all',
+    search_mode: 0,
     mode_options_show: false,
     options: {
       new2old: '最新發佈',
@@ -145,8 +159,20 @@ export default {
       all: '全部',
     },
     filter: 'all',
+    inner_value: undefined,
+    try_focus: false,
   }),
-  computed: {},
+  computed: {
+    input_model: {
+      get() {
+        return this.inner_value;
+      },
+      set(val) {
+        this.inner_value = val;
+        this.$emit('update:value', { value: val, mode: this.search_mode });
+      },
+    },
+  },
   watch: {
     sort_by() {
       this.$emit('update', { sort_by: this.sort_by, filter: this.filter });
@@ -154,13 +180,33 @@ export default {
     filter() {
       this.$emit('update', { sort_by: this.sort_by, filter: this.filter });
     },
+    search_mode(val) {
+      this.$emit('update:value', { value: this.input_model, mode: val });
+    },
   },
-  created() {},
+  created() {
+    this.inner_value = this.value;
+    if (this.value) {
+      this.search_box_show = true;
+      this.mode_options_show = true;
+      this.search_mode = this.mode;
+    }
+  },
+  updated() {
+    this.doFocus();
+  },
 
   methods: {
     toggleSearchBox() {
       this.search_box_show = !this.search_box_show;
       if (!this.search_box_show) this.mode_options_show = false;
+      else this.try_focus = true;
+    },
+    doFocus() {
+      if (this.try_focus) {
+        document.getElementById('search-input').focus();
+        this.try_focus = false;
+      }
     },
   },
 };

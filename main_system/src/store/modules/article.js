@@ -276,8 +276,10 @@ export default {
      * @param {String} user_id
      * @returns
      */
-    async getUserArticles(context, user_id) {
-      return apiGetUserPosts(user_id, 'new2old', 'all')
+    async getUserArticles(context, { user_id, sort_by, filter }) {
+      if (!sort_by) sort_by = 'new2old';
+      if (!filter) filter = 'all';
+      return apiGetUserPosts(user_id, sort_by, filter)
         .then((res) => {
           return res.data;
         })
@@ -294,17 +296,27 @@ export default {
     async getSelfArticles(context, { force_update }) {
       if (context.state.self && !force_update) return context.state.self;
       return context
-        .dispatch('getUserArticles', context.rootState.user.self.id)
+        .dispatch('getUserArticles', {
+          user_id: context.rootState.user.self.id,
+          sort_by: 'new2old',
+          filter: 'all',
+        })
         .then((data) => {
           context.commit('updateSelfArticles', data);
           return data;
         });
     },
     async getOthersArticles(context, { user_id }) {
-      return context.dispatch('getUserArticles', user_id).then((data) => {
-        context.commit('updateOthersArticles', data);
-        return data;
-      });
+      return context
+        .dispatch('getUserArticles', {
+          user_id,
+          sort_by: 'new2old',
+          filter: 'all',
+        })
+        .then((data) => {
+          context.commit('updateOthersArticles', data);
+          return data;
+        });
     },
 
     async getLikedArticles(context) {
