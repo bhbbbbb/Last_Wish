@@ -84,7 +84,7 @@ articleSchema.method('toFrontendFormat', function() {
     finished: this.finished,
     date: this.date,
     cite_from: this.citeFrom,
-    cited_count: this.cited_count,
+    cited_count: this.citedCount,
     likes: this.likes,
     comments: this.comments,
     fans: this.fans

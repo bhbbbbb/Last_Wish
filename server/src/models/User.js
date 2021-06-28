@@ -3,7 +3,7 @@ const mongoose_fuzzy_searching = require("mongoose-fuzzy-searching");
 const colorValidator = (v) => {
   return (/^#([0-9a-fA-F]{3}){1,2}$/i).test(v);
 }
-const HONOR = ["honor1", "honor2", "honor3", "honor4", "honor5", "honor6", "honor7", "honor8"];
+const HONOR = ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8"];
 
 const eventSchema = new mongoose.Schema({
   name: String,
@@ -50,6 +50,14 @@ const userSchema = new mongoose.Schema({
   score:{
     type: Number,
     default: 0,
+  },
+  citedCount: {
+    type: Number,
+    default: 0,
+  },
+  likedCount: {
+    type: Number,
+    default: 0,
   }
 });
 
@@ -70,6 +78,17 @@ userSchema.method('changeScore', function(deltaScore) {
     // the case should not occuar, but it's more safe this way
     this.score = 0;
   }
+});
+
+userSchema.method('getPublicInfo', function() {
+  return {
+    id: this._id,
+    username: this.username,
+    proPic: this.proPic,
+  };
+});
+
+userSchema.method('getHonorRollInfo', function() {
 });
 
 function getLevel(score) {

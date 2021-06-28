@@ -17,7 +17,7 @@ module.exports = function() {
      * @param {Object} articleContent = {body, title, [tags], [milestones]}
      * @returns {String} the new article id
      */
-    this.addArticle = async function(author, articleContent) {
+    this.addArticle = async function(author, articleContent, citeFrom) {
         let newArticleData = {
             title: articleContent.title,
             body: articleContent.body,
@@ -38,6 +38,19 @@ module.exports = function() {
         }
         for (newMilestoneData of articleContent.milestones) {
             article.milestones.push(newMilestoneData);
+        }
+        if (citeFrom) {
+            // We know this post is citing another
+            let citation = await Article.findById(citeFrom)
+                                        .populate('author');
+            if (!citation)
+                throw "citation not found";
+            article.citeFrom = citeFrom;
+            citation.citedCount++;
+            citation.author.citedCount++;
+            citation.author.changeScore(10);
+            citation.author.save();
+            citation.save();
         }
         await article.sortMilestonesAndSave();
         return article._id;

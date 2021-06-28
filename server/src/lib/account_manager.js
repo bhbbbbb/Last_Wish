@@ -160,19 +160,19 @@ module.exports = function() {
         let user = await User.findById(id);
         if (!user)
             throw "user not found"
-        let userInfo = {
-            "id": user._id,
-            "username": user.username,
-            "selfIntro": user.selfIntro,
-            "honor": user.getHonor(),
-            "lv": user.lv,
-            "score": user.score,
-            "proPic": user.proPic,
-            "nFans": user.fans.length,
-            "nFollowing": user.followedUsers.length,
-            "nPosts": user.selfPosts.length,
-        };
-        return userInfo;
+        // let userInfo = {
+        //     "id": user._id,
+        //     "username": user.username,
+        //     "selfIntro": user.selfIntro,
+        //     "honor": user.getHonor(),
+        //     "lv": user.lv,
+        //     "score": user.score,
+        //     "proPic": user.proPic,
+        //     "nFans": user.fans.length,
+        //     "nFollowing": user.followedUsers.length,
+        //     "nPosts": user.selfPosts.length,
+        // };
+        return user.getPublicInfo();
     }
 
     /**
@@ -289,11 +289,11 @@ module.exports = function() {
      * @throws "user not found" exception
      * @return {Number} newPostId
      */
-    this.addPostsToAuthor = async function(userId, articleContent) {
+    this.addPostsToAuthor = async function(userId, articleContent, citeFrom) {
         let author = await User.findById(userId);
         if (!author)
             throw "user not found";
-        let newPostId = await this.articleManager.addArticle(author, articleContent);
+        let newPostId = await this.articleManager.addArticle(author, articleContent, citeFrom);
         author.selfPosts.push(newPostId);
         author.save();
         return newPostId;

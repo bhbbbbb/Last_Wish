@@ -22,7 +22,11 @@ const INSERT = [
 ];
 global.post('/insert', user_session, async (req, res) => {
     try {
-        let newPostId = await accountManager.addPostsToAuthor(req.session.user_id, req.body.article_content);
+        let newPostId = await accountManager.addPostsToAuthor(
+            req.session.user_id,
+            req.body.article_content,
+            req.body.cite_from
+        );
         res.status(200).json(newPostId);
         return;
     } catch (error) {
@@ -146,6 +150,7 @@ global.get('/', async (req, res) => {
 global.get('/get_article_by_id', async (req, res) => {
     try {
         let article = await articleManager.getFormatedArticleById(req.query.article_id);
+        console.log(article);
         res.status(200).json(article);
         return;
     } catch (error) {
