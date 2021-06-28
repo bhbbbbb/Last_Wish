@@ -14,47 +14,78 @@ module.exports = function() {
    * @param {String} action
    */
   this.addNotify = async function(from, to, link, action){
+    if(!from || !to)
+      return;
+    if(from == to)
+      return;
     let notify = new Notify({
       from: from,
       to: to,
       link: link,
-      action: action,
+      actions: action,
     })
     await notify.save();
   }
   
 
-//This havan't been tested yet
+  //This havan't been tested yet
   this.extrcatNotify = async function(userId){
-    let user = User.findById(userId);
+    let user = await User.findById(userId);
     if(!user)
       throw "user not found"
     let time = user.lastSync;
     if(!time)
       time = new Date('July 1, 1999');
-    let selfNotify = await Notify.find({"to": userId});
-    let followNotify = []
-    for(articleId in user.followedPosts)
-      followNotify.push(await Notify.find({"link": articleId}));
-
-    for(obj in selfNotify){
-      if(obj.date > time)
-        selfNotifyParse(obj);
+    let selfNotify = await Notify.find({"to": userId}).exec();
+    let followNotify = [];
+    if(user.followedPosts){
+      user.followedPosts.forEach(async (articleId) => {
+        followNotify.push(await Notify.find({"link": articleId}).exec());
+      })
     }
-    for(obj in followNotify)
-      if(obj.date > time && obj.to != userId)
-        followNotifyParse(obj);
+    selfNotify.forEach(async obj => {
+      if(obj.date > time)
+        await selfNotifyParse(obj);
+    })
+    followNotify.forEach(notifyCollection => {
+      notifyCollection.forEach(async obj => {
+        if(obj.date > time && obj.to != userId)
+          await followNotifyParse(obj);
+      })
+    })
+    user.lastSync = Date.now();
+    await user.save();
   }
 
-
+  this.addTagevent = async function(from, stringToBeParse, articleId){
+    let users = [];
+    const pattern = /(?:\s|^)@(\w+)/;
+    while (stringToBeParse) {
+      let found = stringToBeParse.match(pattern);
+      if (!found) break;
+      let plain_text = stringToBeParse.substring(0, found.index);
+      stringToBeParse = stringToBeParse.substring(found.index + found[0].length);
+      users.push(found[1]);
+    }
+    if(users){
+      users = [...new Set(users)];
+    }
+    users.forEach(async (user) => {
+      let userObj = await accountManager.findUserbyUsername(user);
+      if(userObj)
+        this.addNotify(from, userObj._id, articleId, 'Tag');
+    })
+  }
 }
 
 async function selfNotifyParse(obj){
-  from = await User.fundById(obj.from);
-  to = await User.fundById(obj.to);
-  article = articleManager.getArticleById(obj.link);
+  from = await User.findById(obj.from);
+  to = await User.findById(obj.to);
+  if(!from || !to)
+    return;
+  article = await articleManager.getArticleById(obj.link);
   let describes = '';
-  switch(obj.action){
+  switch(obj.actions){
     case 'Tag':
       describes = from.username + '在文章 ' + article.title + '標註了你' ;
       break;
@@ -73,22 +104,25 @@ async function selfNotifyParse(obj){
     default:
       break;
   }
-  if(describe){
+  console.log(describes);
+
+  if(describes){
     let newNotify = {
       describe: describes,
       link: obj.link,
       checked: false,
     }
-    to.Notifies.push(newNotify);
+    to.notifies.push(newNotify);
+    await to.save();
   }
 }
 
 async function followNotifyParse(obj, userId){
-  from = await User.fundById(obj.from);
-  user = await User.fundById(userId);
+  from = await User.findById(obj.from);
+  user = await User.findById(userId);
   article = articleManager.getArticleById(obj.link);
   let describes = '';
-  switch(obj.action){
+  switch(obj.actions){
     case'Comment':
       describes = from.username + '在你追蹤的文章 ' + article.title + '底下留言' ;
       break;
@@ -101,6 +135,6 @@ async function followNotifyParse(obj, userId){
       link: obj.link,
       checked: false,
     }
-    user.Notifies.push(newNotify);
+    user.notifies.push(newNotify);
   }
 }

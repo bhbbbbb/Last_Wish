@@ -5,7 +5,8 @@ var AccountManager = require('../lib/account_manager.js');
 var accountManager = new AccountManager();
 var ArticleManager = require('../lib/article_manager.js');
 var articleManager = new ArticleManager();
-
+const NotifyManager = require('../lib/notify_manager');
+var notifyManager = new NotifyManager();
 const SUCCEED = 0;
 const USER_NOT_FOUND = 1;
 const INSERT = [
@@ -57,6 +58,7 @@ global.post('/add_comment', user_session, async (req, res) => {
         let articleId = req.body.article_id;
         let comment = req.body.comment;
         let newDate = await articleManager.addCommentToArticle(author , articleId, comment);
+        await notifyManager.addTagevent(author, comment, articleId);
         res.status(200).json(newDate);
         return;
     } catch (error) {

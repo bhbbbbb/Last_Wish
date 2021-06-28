@@ -3,12 +3,8 @@ const mongoose = require("mongoose");
 
 
 const notifySchema = new mongoose.Schema({
-  from: {
-    id: {type: mongoose.Types.ObjectId}
-  },
-  to: {
-    id: {type: mongoose.Types.ObjectId}
-  },
+  from: {type: mongoose.Types.ObjectId},
+  to: {type: mongoose.Types.ObjectId},
   link:{type: mongoose.Types.ObjectId, ref: 'Article'},
   actions: {
     type: String,

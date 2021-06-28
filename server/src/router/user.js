@@ -12,6 +12,8 @@ const AccountManager = require('../lib/account_manager.js');
 var accountManager = new AccountManager();
 var user_session = require('../lib/session.js');
 const https_config = require('../../https.config');
+const NotifyManager = require('../lib/notify_manager');
+var notifyManager = new NotifyManager();
 /***************** Url Setting *******************/
 const prefix = https_config.https_enable ? 'https://' : 'http://'
 var port = https_config.port;
@@ -104,6 +106,8 @@ const REGISTER = [
         body: { err_code: EMAIL_ERR, err_msg: "email sent failed" }
     },    
 ];
+
+
 user.post('/register', async (req, res) => {
     let addr = req.body.email.toLowerCase();
     if (!mailManager.isValidAddr(addr)) {
@@ -447,5 +451,12 @@ user.post('/reset_email', user_session, async (req, res) => {
         res.sendStatus(400);
     }
 })
-
+user.post('/get_notify', user_session, async(req, res) => {
+    let userId = req.session.user_id;
+    if(!userId)
+        res.status(400).json('please log in');
+    await notifyManager.extrcatNotify(userId);
+    let user = await accountManager.findUserById(userId);
+    res.status(200).json(user.notifies);
+})
 module.exports = user;

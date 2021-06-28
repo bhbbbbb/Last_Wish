@@ -59,7 +59,7 @@ const userSchema = new mongoose.Schema({
   selfPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   finishedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Article'}],
   events: [eventSchema],
-  Notifies: [selfnotifySchema],
+  notifies: [selfnotifySchema],
   lastSync:{
     type: Date,
   },
