@@ -262,12 +262,14 @@ module.exports = function() {
                 if (!set) {
                     user.likedPosts.pull(article._id);
                     article.likes -= 1;
+                    await this.changeScore(article.author, -2);
                 }
             } else {
                 // In this case it is going to like
                 if (set) {
                     user.likedPosts.push(article._id);
                     article.likes += 1;
+                    await this.changeScore(article.author, 2);
                 }
             }
             user.save();
@@ -395,6 +397,8 @@ module.exports = function() {
         if (!event)
             throw "event not found";
         event.finished = set;
+        let score = set ? 10 : -10;
+        await this.changeScore(userId, score);
         await user.save()
         return;
     }
@@ -410,5 +414,36 @@ module.exports = function() {
         }
         return correct;
     }
-
+    this.changeScore = async function (userId, deltaScore){
+        let user = await User.findById(userId);
+        if (!user)
+            throw "user not found";
+        if(!user.score)
+            user.score = deltaScore;
+        else
+            user.score += deltaScore;
+        if(user.score < 0)
+            user.score = 0;
+        let lv = await getLevel(user.score);
+        user.honor = lv;    
+        await user.save();
+    };
 };
+async function getLevel(score){
+    let lv = 'lv1';
+    if(score>=5000)
+        lv = 'lv8';
+    else if(score>=3000)
+        lv = 'lv7';
+    else if(score>=2000)
+        lv = 'lv6';
+    else if(score>=1000)
+        lv = 'lv5';
+    else if(score>=600)
+        lv = 'lv4';
+    else if(score>=300)
+        lv = 'lv3';
+    else if(score>=100)
+        lv = 'lv2';
+    return lv;
+}
