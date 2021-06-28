@@ -14,10 +14,10 @@ var user_session = require('../lib/session.js');
 const https_config = require('../../https.config');
 /***************** Url Setting *******************/
 const prefix = https_config.https_enable ? 'https://' : 'http://'
-var port = https_config.port;
-var frontPort = 8080;
-const SERVER_URL = prefix + ip.address() + ':' + port;
-const FRONT_URL  = prefix + ip.address() + ':' + frontPort;
+var frontPort = https_config.front_port;
+var ip_ =  https_config.https_enable ? 'luffy.ee.ncku.edu.tw' : ip.address();
+const SERVER_URL = prefix + ip_ + ':' + port;
+const FRONT_URL  = prefix + ip_ + ':' + frontPort;
 /***************** Others *************************/
 const EMAIL_SECRET = 'df45ea4g684AgpfsdSDLK4W6sdfsdg54asd4fgsljopa'
 
