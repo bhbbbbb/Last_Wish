@@ -19,7 +19,7 @@ v-app-bar.d-flex.justify-center.align-end(
       //-       h3.subtitle 願望清單
       //-       span.subtitle wish list
       v-col.align-self-center(cols="9" offset="1")
-        NavLink(:underline="false" to="/")
+        a(href="/")
           v-img(
             src="@/assets/appbar_logo_3.png"
             height="29"

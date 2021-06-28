@@ -1,10 +1,15 @@
 import {
+  apiUploadArticle,
   apiGetArticles,
   apiGetArticleById,
   apiGetFollowedPosts,
   apiGetUserPosts,
   apiGetLikedPost,
   apiDeleteArticle,
+  apiAddComment,
+  apiEditArticle,
+  apiSetMsFinished,
+  apiSetFollow,
 } from '../api';
 
 export default {
@@ -54,7 +59,7 @@ export default {
      *
      * @param {Object} payload {id, data}
      */
-    addArticle(state, payload) {
+    updateArticle(state, payload) {
       state.data[payload.id] = payload.data;
     },
     updateGlobalArticles(state, { data, sort_by, filter }) {
@@ -79,6 +84,36 @@ export default {
         state.data[id].author.pro_pic = payload;
       });
     },
+
+    // clean articles that would affect by upload new article
+    cleanArticles(state) {
+      state.self = undefined;
+
+      state.global.most_liked.finished = undefined;
+      state.global.most_liked.unfinished = undefined;
+      state.global.most_liked.all = undefined;
+
+      state.global.most_followed.finished = undefined;
+      state.global.most_followed.unfinished = undefined;
+      state.global.most_followed.all = undefined;
+
+      state.global.new2old.finished = undefined;
+      state.global.new2old.unfinished = undefined;
+      state.global.new2old.all = undefined;
+    },
+    cleanFollowedArticles(state) {
+      state.followed.most_liked.finished = undefined;
+      state.followed.most_liked.unfinished = undefined;
+      state.followed.most_liked.all = undefined;
+
+      state.followed.most_followed.finished = undefined;
+      state.followed.most_followed.unfinished = undefined;
+      state.followed.most_followed.all = undefined;
+
+      state.followed.new2old.finished = undefined;
+      state.followed.new2old.unfinished = undefined;
+      state.followed.new2old.all = undefined;
+    },
     deleteArticle(state, id) {
       state.data[id] = false;
       let idx = state.self.findIndex((_id) => _id === id);
@@ -96,6 +131,30 @@ export default {
       state.liked[id] = value;
       state.data[id].likes += value ? 1 : -1;
     },
+    setMilestoneFinished(state, { article_id, ms_idx, value }) {
+      state.data[article_id].content.milestones[ms_idx].finished = value;
+    },
+    addMilestone(state, { article_id, insert_idx, milestone }) {
+      state.data[article_id].content.milestones[insert_idx]
+      state.data[article_id].content.milestones.splice(insert_idx, 0, milestone);
+    },
+    addComment(state, { article_id, data }) {
+      state.data[article_id].comments.push(data);
+    },
+    updateArticleContent(state, { article_id, content }) {
+      state.data[article_id].content = content;
+    },
+    setFollowed(state, { article_id, value, self_id }) {
+      let followed_state = state.data[article_id].fans.includes(self_id);
+
+      if (value && !followed_state)
+        state.data[article_id].fans.push(self_id);
+
+      else if (!value && followed_state) {
+        let idx = state.data[article_id].fans.findIndex((id) => id === self_id); 
+        state.data[article_id].fans.splice(idx, 0);
+      }
+    }
   },
   getters: {
     /**
@@ -258,14 +317,89 @@ export default {
         return state.data[id];
       }
       return apiGetArticleById(id).then((res) => {
-        commit('addArticle', { id, data: res.data });
+        commit('updateArticle', { id, data: res.data });
         return res.data;
       });
     },
-
+    async addArticle(context, article_content) {
+      try {
+        let { data: new_id } = await apiUploadArticle(article_content);
+        context.dispatch('getArticle', { id: new_id });
+        context.commit('cleanArticles');
+        return new_id;
+      } catch (err) {
+        console.error(err);
+      }
+    },
     deleteArticle(context, id) {
       context.commit('deleteArticle', id);
       apiDeleteArticle(id).catch((err) => console.error(err));
+    },
+
+    /**
+     *
+     * @param {String} article_id
+     * @param {Number} ms_idx
+     */
+    setMilestoneFinished(context, { article_id, ms_idx, value }) {
+      context.commit('setMilestoneFinished', { article_id, ms_idx, value });
+      let ms_id = context.state.data[article_id].content.milestones[ms_idx]._id;
+      console.log(article_id, ms_id, value);
+      apiSetMsFinished(article_id, ms_id, value);
+    },
+
+    /**
+     * 
+     * @param {String} article_id
+     * @param {Number} insert_idx 
+     * @param {Object} milestone
+     */
+    addMilestone(context, { article_id, insert_idx, milestone }) {
+      let tem = context.state.data[article_id];
+      let new_article = {
+        title: tem.title,
+        body: tem.body,
+        tags: tem.tags,
+        modified_milestones: [],
+        new_milestones: [ milestone ],
+        deleted_milestones: [],
+      };
+      context.commit('addMilestone', { article_id, insert_idx, milestone });
+      apiEditArticle(article_id, new_article);
+    },
+
+    /**
+     *
+     * @param {String} article_id
+     * @param {String} new_comment
+     */
+    addComment(context, { article_id, new_comment }) {
+      let data = {
+        likes: 0,
+        _id: undefined,
+        author: context.rootState.user.self.id,
+        body: new_comment,
+        date: new Date(),
+      };
+      context.commit('addComment', { article_id, data });
+      apiAddComment(article_id, new_comment);
+    },
+
+    /**
+     *
+     * @param {String} article_id
+     * @param {Object} content : article.content
+     */
+    editArticle(context, { article_id, content }) {
+      apiEditArticle(article_id, content);
+      context.commit('updateArticleContent', { article_id, content });
+    },
+
+    async setFollowed(context, { article_id, value }) {
+      context.commit('setFollowed', { article_id, value, self_id: context.rootState.user.self.id });
+      context.commit('cleanFollowedArticles');
+      await apiSetFollow(article_id, value);
+      context.dispatch('getArticle', { id: article_id, force_update: true });
     },
   },
 };

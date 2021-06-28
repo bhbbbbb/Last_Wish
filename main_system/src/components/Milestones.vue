@@ -31,9 +31,8 @@ v-timeline(
         span.d-flex.text-no-wrap(style="overflow-x: hidden")
           | {{ ms.title }}
       v-col.d-flex.align-self-start(cols="1")
-        v-btn(icon small @click="del(idx)")
+        v-btn(icon small @click="del(idx)" v-if="editable")
           v-icon(
-            v-if="editable"
             small
           ) mdi-close
       //- v-col(offset="1")
@@ -49,7 +48,7 @@ v-timeline(
   
   NewMilestone(
     v-if="$store.state.user.self.id === authorId && newMilestone_show"
-    @created="updateMilestone"
+    @created="addMilestone"
   )
 
   v-btn(
@@ -61,7 +60,8 @@ v-timeline(
   ) 完成計畫
   MsgBox(:value.sync="show" @confirm="archive" )
     v-col.d-flex.justify-center(cols="12")
-      span.align-center(class="msgtxt") 計畫一但完成後就不能再修改<br>
+      span.align-center(class="msgtxt") 計畫一但完成後就不能再修改
+      br
     v-col.d-flex.justify-center(cols="12")
       span.align-center(class="msgtxt") 確定要完成嗎?
 </template>
@@ -85,6 +85,11 @@ export default {
       type: String,
       required: true,
     },
+    articleId: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
     editable: {
       type: Boolean,
       default: false,
@@ -98,7 +103,7 @@ export default {
   created() {},
 
   methods: {
-    updateMilestone(value) {
+    addMilestone(value) {
       let new_date_value = new Date(value.estDate);
       let insert_idx = 0;
       for (let i = this.content.length - 1; i >= 0; i--) {
@@ -112,19 +117,34 @@ export default {
           break;
         }
       }
-      this.content.splice(insert_idx, 0, value);
+      if (this.editable)
+        this.content.splice(insert_idx, 0, value);
+      
+      else {
+        this.$store.dispatch('addMilestone', {
+          article_id: this.articleId,
+          insert_idx,
+          milestone: value,
+        });
+        this.$forceUpdate();
+      }
       // this.$emit('update:new', value);
     },
     del(idx) {
       this.content.splice(idx, 1);
     },
     finish(idx) {
-      this.content[idx].finished = !this.content[idx].finished;
+      if (this.$store.state.user.self.id === this.authorId && this.articleId)
+        this.$store.dispatch('setMilestoneFinished', {
+          article_id: this.articleId,
+          ms_idx: idx,
+          value: !this.content[idx].finished,
+        });
+      this.$forceUpdate();
     },
     check_display({ idx, hover }) {
       let self = this.content[idx].finished || hover;
-      let others = this.content[idx].finished;
-      return this.$store.state.user.self.id === this.authorId ? self : others;
+      return this.$store.state.user.self.id === this.authorId && self;
     },
     all_fin() {
       let result = true;
@@ -160,13 +180,13 @@ export default {
 }
 </style>
 <style scpoed>
-.msgtxt{
-font-family: Roboto;
-font-style: medium;
-font-weight: 360;
-line-height: 4px;
-text-align: center;
+.msgtxt {
+  font-family: Roboto;
+  font-style: medium;
+  font-weight: 360;
+  line-height: 4px;
+  text-align: center;
 
-color: #888888;
+  color: #888888;
 }
 </style>
