@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
-var ArticleManager = require('./article_manager.js');
+var ArticleManager = require('./article_manager');
 
 module.exports = function() {
     this.articleManager = new ArticleManager();
@@ -164,7 +164,9 @@ module.exports = function() {
             "id": user._id,
             "username": user.username,
             "selfIntro": user.selfIntro,
-            "honor": user.honor,
+            "honor": user.getHonor(),
+            "lv": user.lv,
+            "score": user.score,
             "proPic": user.proPic,
             "nFans": user.fans.length,
             "nFollowing": user.followedUsers.length,
@@ -262,16 +264,19 @@ module.exports = function() {
                 if (!set) {
                     user.likedPosts.pull(article._id);
                     article.likes -= 1;
-                    await this.changeScore(article.author, -2);
+                    // await this.changeScore(article.author, -2);
+                    article.author.changeScore(-2);
                 }
             } else {
                 // In this case it is going to like
                 if (set) {
                     user.likedPosts.push(article._id);
                     article.likes += 1;
-                    await this.changeScore(article.author, 2);
+                    // await this.changeScore(article.author, 2);
+                    article.author.changeScore(2);
                 }
             }
+            article.author.save();
             user.save();
             article.save();
             return;
@@ -401,12 +406,14 @@ module.exports = function() {
         if (event.finished) {
             if (!set) {
                 event.finished = false;
-                await this.changeScore(userId, -10);
+                // await this.changeScore(userId, -10);
+                user.changeScore(-10);
             }
         } else {
             if (set) {
                 event.finished = true;
-                await this.changeScore(userId, 10);
+                // await this.changeScore(userId, 10);
+                user.changeScore(10);
             }
         }
         await user.save()
@@ -415,47 +422,28 @@ module.exports = function() {
 
     this.setEmailToUser = async function(userId, password, email) {
         let user = await User.findById(userId);
-        if(!user)
+        if (!user)
             throw "user not found"
         let correct = bcrypt.compareSync(password, user.password)
-        if(correct){
+        if (correct){
             user.email = email
             await user.save();
         }
         return correct;
     }
 
-    this.changeScore = async function (userId, deltaScore) {
-        let user = await User.findById(userId);
-        if (!user)
-            throw "user not found";
-        if (!user.score)
-            user.score = deltaScore;
-        else
-            user.score += deltaScore;
-        if (user.score < 0)
-            user.score = 0;
-        let lv = getLevel(user.score);
-        user.honor = lv;    
-        await user.save();
-    };
+    // this.changeScore = async function (userId, deltaScore) {
+    //     let user = await User.findById(userId);
+    //     if (!user)
+    //         throw "user not found";
+    //     if (!user.score)
+    //         user.score = deltaScore;
+    //     else
+    //         user.score += deltaScore;
+    //     if (user.score < 0)
+    //         user.score = 0;
+    //     let lv = getLevel(user.score);
+    //     user.lv = (user.lv > lv)? user.lv : lv;    
+    //     await user.save();
+    // };
 };
-
-function getLevel(score){
-    let lv = 'lv1';
-    if (score>=5000)
-        lv = 'lv8';
-    else if (score>=3000)
-        lv = 'lv7';
-    else if (score>=2000)
-        lv = 'lv6';
-    else if (score>=1000)
-        lv = 'lv5';
-    else if (score>=600)
-        lv = 'lv4';
-    else if (score>=300)
-        lv = 'lv3';
-    else if (score>=100)
-        lv = 'lv2';
-    return lv;
-}

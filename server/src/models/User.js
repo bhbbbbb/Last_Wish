@@ -3,6 +3,7 @@ const mongoose_fuzzy_searching = require("mongoose-fuzzy-searching");
 const colorValidator = (v) => {
   return (/^#([0-9a-fA-F]{3}){1,2}$/i).test(v);
 }
+const HONOR = ["honor1", "honor2", "honor3", "honor4", "honor5", "honor6", "honor7", "honor8"];
 
 const eventSchema = new mongoose.Schema({
   name: String,
@@ -27,10 +28,9 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  honor: {
-    type: String,
-    enum: ['lv1', 'lv2', 'lv3', 'lv4', 'lv5', 'lv6', 'lv7', 'lv8'],
-    default: 'lv1',
+  lv: {
+    type: Number,
+    default: 1
   },
   selfIntro: {
     type: String,
@@ -52,6 +52,44 @@ const userSchema = new mongoose.Schema({
     default: 0,
   }
 });
+
+userSchema.method('getHonor', function() {
+  return HONOR[this.lv - 1];
+});
+
+userSchema.method('changeScore', function(deltaScore) {
+  if (deltaScore > 0) {
+    this.score += deltaScore;
+    let lv = getLevel(this.score);
+    this.lv = (this.lv > lv)? this.lv : lv;    
+  } else if (this.score >= -deltaScore) {
+    // ths deltaScore is negative in this case
+    // don't update level and make sure there is enough score to be minused
+    this.score += deltaScore;
+  } else {
+    // the case should not occuar, but it's more safe this way
+    this.score = 0;
+  }
+});
+
+function getLevel(score) {
+    let lv = 1;
+    if (score>=5000)
+        lv = 8;
+    else if (score>=3000)
+        lv = 7;
+    else if (score>=2000)
+        lv = 6;
+    else if (score>=1000)
+        lv = 5;
+    else if (score>=600)
+        lv = 4;
+    else if (score>=300)
+        lv = 3;
+    else if (score>=100)
+        lv = 2;
+    return lv;
+}
 
 userSchema.plugin(mongoose_fuzzy_searching, { fields: ['username'] });
 module.exports = mongoose.model('User', userSchema);

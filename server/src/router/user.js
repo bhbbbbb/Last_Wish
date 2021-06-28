@@ -145,15 +145,15 @@ user.post('/set_self_intro', user_session, async (req, res) => {
     }
 });
 
-user.post('/set_honor', user_session, async (req, res) => {
-    try {
-        await accountManager.setHonorToUser(req.session.user_id, req.body.honor);
-        res.sendStatus(200);
-    } catch (error) {
-        console.log(error);
-        res.status(400).json(error);
-    }
-});
+// user.post('/set_honor', user_session, async (req, res) => {
+//     try {
+//         await accountManager.setHonorToUser(req.session.user_id, req.body.honor);
+//         res.sendStatus(200);
+//     } catch (error) {
+//         console.log(error);
+//         res.status(400).json(error);
+//     }
+// });
 
 user.post('/set_pro_pic', user_session, async (req, res) => {
     try {
@@ -185,7 +185,7 @@ user.post('/toggle_followed_user', user_session, async (req, res) => {
 
 user.post('/set_followed_post', user_session, async (req, res) => {
     try {
-        let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "ture";
+        let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "true";
         await accountManager.setFollowedPostsToUser(req.session.user_id, req.body.article_id, set);
         res.sendStatus(200);
     } catch (error) {
@@ -196,7 +196,7 @@ user.post('/set_followed_post', user_session, async (req, res) => {
 
 user.post('/set_liked_post', user_session, async (req, res) => {
     try {
-        let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "ture";
+        let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "true";
         await accountManager.setLikedPostsToUser(req.session.user_id, req.body.article_id, set);
         res.sendStatus(200);
     } catch (error) {
@@ -368,7 +368,7 @@ user.post('/edit_event_by_id', user_session, async (req, res) => {
 
 user.post('/set_finished_event', user_session, async (req, res) => {
     let eventId = req.body.event_id;
-    let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "ture";
+    let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "true";
     let userId = req.session.user_id;
     try {
        await accountManager.setFinishedEventById(eventId, userId, set);
@@ -392,7 +392,7 @@ user.get('/get_liked_posts', user_session, async (req, res) => {
     }
 });
 
-user.post('/reset_pass', user_session,async(req, res) => {
+user.post('/reset_pass', user_session, async (req, res) => {
     try {
         let userId = req.session.user_id;
         let username = req.body.username;
@@ -415,29 +415,29 @@ user.post('/reset_pass', user_session,async(req, res) => {
     }
 })
 
-user.post('/reset_email', user_session, async(req, res) => {
+user.post('/reset_email', user_session, async (req, res) => {
     try {
         userId = req.session.user_id;
         let email = req.body.new_email;
         let pass = req.body.password;
         let check1 = await mailManager.hasMailAddr(email);
         let check2 = mailManager.isValidAddr(email);
-        if(check1){
+        if (check1) {
             let response = REGISTER[DUPLICATED_EMAIL];
             res.status(response.status).json(response.body);
             return;
-        }else if(!check2){
+        } else if (!check2) {
             let response = REGISTER[INVALID_ADDR];
             res.status(response.status).json(response.body);
             return;
-        }else{
+        } else {
             let correct = await accountManager.setEmailToUser(userId, pass, email);
-            if(correct)
+            if(correct) {
                 res.sendStatus(200);
-            else{
+            } else {
                 let response = {
-                    err_code : 4,
-                    err_msg : "Wrong password"
+                    err_code: 4,
+                    err_msg: "Wrong password"
                 }
                 res.status(400).json(response);
             }

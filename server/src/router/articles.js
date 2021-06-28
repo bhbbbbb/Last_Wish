@@ -84,7 +84,7 @@ global.post('/edit_comment', user_session, async (req, res) => {
 
 global.post('/set_finished_milestone', user_session, async (req, res) => {
     try {
-        let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "ture";
+        let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "true";
         let posts = await accountManager.getPostsByAuthor(req.session.user_id);
         if (posts.includes(req.body.article_id)) {
             await articleManager.setFinishedMilestoneOfArticle(
@@ -107,7 +107,7 @@ global.post('/set_finished_milestone', user_session, async (req, res) => {
 
 global.post('/set_finished_article', user_session, async (req, res) => {
     try {
-        let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "ture";
+        let set = (typeof req.body.set === 'boolean')? req.body.set : req.body.set === "true";
         let posts = await accountManager.getPostsByAuthor(req.session.user_id);
         if (posts.includes(req.body.article_id)) {
             await articleManager.setFinishedArticle(
