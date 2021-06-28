@@ -5,6 +5,7 @@ import {
   apiAddEvent,
   apiEditEvent,
   apiSetSelfIntro,
+  apiSetFinishedEvent,
 } from '../api';
 export default {
   namespaced: true,
@@ -204,7 +205,9 @@ export default {
      */
     toggleEventFinish(context, idx) {
       context.commit('toggleEventFinish', idx);
-      context.dispatch('editEvent', idx);
+      let value = context.state.events[idx].finished;
+      let event_id = context.state.events[idx]._id;
+      apiSetFinishedEvent(event_id, value);
     },
   },
 };

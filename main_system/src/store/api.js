@@ -183,7 +183,7 @@ export const apiSetLike = (article_id, set) =>
 export const apiReset = (username, new_pass) =>
   userRequest.post('/reset_pass', { username, new_pass });
 
-// ----------------- event -------------------------
+// ----------------- #event -------------------------
 
 export const apiGetEvents = () => userRequest.get('/get_events');
 
@@ -199,3 +199,6 @@ export const apiEditEvent = (event_id, event) =>
     end: event.end,
     finished: event.finished,
   });
+
+export const apiSetFinishedEvent = (event_id, set) =>
+  userRequest.post('/set_finished_event', { event_id, set });
