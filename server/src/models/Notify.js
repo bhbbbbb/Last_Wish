@@ -21,7 +21,7 @@ const notifySchema = new mongoose.Schema({
       default: Date.now,
     },
     checked: {
-      type: Booleean,
+      type: Boolean,
       default: false
     },
     delete: {

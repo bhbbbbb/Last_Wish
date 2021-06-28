@@ -1,7 +1,8 @@
 const Article = require('../models/Article');
 const User = require("../models/User");
 const Tag = require("../models/Tag");
-
+const NotifyManager = require('./notify_manager');
+var notifyManager = new NotifyManager();
 module.exports = function() {
 
     /**
@@ -42,20 +43,25 @@ module.exports = function() {
         if (citationId) {
             // We know this post is citing another
             let citation = await Article.findById(citationId)
-                                        .populate('author');
+            .populate('author');
             if (!citation)
-                throw "citation not found";
+            throw "citation not found";
             article.citation = citationId;
             citation.citedCount++;
             citation.author.citedCount++;
             citation.author.changeScore(10);
             citation.author.save();
             citation.save();
+            await notifyManager.createNotify(author._id, citation.author, article._id, 'Quote');
         }
         await article.sortMilestonesAndSave();
+        let tagUsers = await this.tagTextParse(articleContent.body);
+        for(tagUser of tagUsers){
+            await notifyManager.createNotify(author._id, tagUser, article._id, 'TagInPost');
+        }
         return article._id;
     }
-
+    
     /**
      * @returns the json object containing all articles with frontend format
      */
@@ -268,6 +274,14 @@ module.exports = function() {
         article.author.changeScore(score);
         await article.author.save();
         await article.save();
+        await notifyManager.createNotify(author, article.author, articleId, 'CommentOnSelf');
+        let tagUsers = await this.tagTextParse(commentStr);
+        for(tagUser of tagUsers){
+            await notifyManager.createNotify(author, tagUser, article._id, 'TagInComment');
+        }
+        for(fan of article.fans){
+            await notifyManager.createNotify(author, fan, article._id, 'CommentOnFollowed');
+        }
         return article.comments[len - 1].date;
      }
 
@@ -327,6 +341,9 @@ module.exports = function() {
                 if (modifiedMilestone.finished)
                     milestone.finished = modifiedMilestone.finished;
             }
+        }
+        for(fan of article.fans){
+            await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
         }
         await article.sortMilestonesAndSave();
     }
@@ -392,6 +409,9 @@ module.exports = function() {
         }
         await article.author.save();
         await article.save();
+        for(fan of article.fans){
+            await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
+            }
     }
 
     this.setFinishedMilestoneOfArticle = async function(articleId, milestoneId, set) {
@@ -403,6 +423,9 @@ module.exports = function() {
             throw "no such milestone"
         milestone.finished = set;
         await article.sortMilestonesAndSave();
+        for(fan of article.fans){
+            await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
+            }
     }
     /**
      * 
@@ -424,7 +447,13 @@ module.exports = function() {
                                         //a = ['a','a','b','c']; 
                                         //[...new Set(a)] = ['a','b','c'];
         }
-        return users;
+        let userIds = [];
+        for(user of users){
+            let tmp = await User.findOne({ username: user});
+            userIds.push(tmp._id);
+        }
+        console.log(userIds);
+        return userIds;
       }
 }
 
