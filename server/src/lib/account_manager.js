@@ -228,7 +228,7 @@ module.exports = function() {
      * @param {String} articleId 
      * @throw "user not found"
      */
-    this.setFollowedPostsToUser = async function(userId, articleId) {
+    this.setFollowedPostsToUser = async function(userId, articleId, set) {
         let article = await this.articleManager.getArticleById(articleId);
         if (article) {
             let user = await User.findById(userId);
