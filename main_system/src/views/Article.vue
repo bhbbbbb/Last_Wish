@@ -28,24 +28,31 @@ v-card.m-view.pa-1.mt-6.mx-lg-auto(
           v-else
           offset-y,
           close-on-content-click="close-on-content-click",
-          nudge-left="50"
+          nudge-left="100"
+          min-width="140"
         )
           template(v-slot:activator="{ on, attrs }")
             v-btn.align-self-end(icon, v-bind="attrs", v-on="on")
               v-icon mdi-dots-horizontal
           v-list
-            v-list-item(@click="Copy") 複製連結
+            v-list-item(@click="Copy")
+              v-icon.mr-2 mdi-content-copy
+              span.text-nowrap 複製連結
             //- v-list-item(@click="Clone") 願望拷貝
             v-list-item(
               @click="toggleEdit"
               v-if="$store.state.user.self.id === article.author.id && !article.finished"
-            ) {{ editing ? '取消編輯' : '編輯內文' }}
+            ) 
+              v-icon.mr-2 mdi-pencil
+              span.text-nowrap {{ editing ? '取消編輯' : '編輯內文' }}
 
 
             v-list-item(
               @click="goLink"
               v-if="$store.state.is_login"
-            ) 引用計畫
+            ) 
+              v-icon.mr-2 mdi-link-variant
+              span.text-nowrap 引用計畫
 
             v-divider.mx-2(
               v-if="$store.state.user.self.id === article.author.id"
@@ -64,7 +71,8 @@ v-card.m-view.pa-1.mt-6.mx-lg-auto(
                   v-on="on"
                   v-bind="attrs"
                 ) 
-                  v-list-item-title(style="color: red") 刪除計畫
+                  v-icon.mr-2 mdi-delete-outline
+                  span.text-nowrap(style="color: red") 刪除計畫
               template(#confirm)
                 span(style="color: red;") 刪除
               

@@ -3,6 +3,7 @@ v-menu.mx-2(
 	bottom
 	offset-y
 	min-width="336"
+	:nudge-left="$vuetify.breakpoint.lg ? 420 : 100"
 )
 	template(#activator="{ on, attrs }")
 		v-btn.ma-0.pa-1(
