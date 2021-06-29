@@ -51,7 +51,7 @@ notifySchema.method('getDescription', function() {  // refer to parse
 });
 
 notifySchema.method('toFrontendFormat', function() {
-  if(!this.deleted)
+  if(!this.deleted && this.link)
     return {
       description: this.getDescription(),
       link: this.link._id,

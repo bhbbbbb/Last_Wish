@@ -411,6 +411,7 @@ module.exports = function() {
             user.notifies.push(notify);
         }
         await user.save();
+        return user.unread;
     }
     
     this.getAllNotifiesOfUser = async function(userId) {
