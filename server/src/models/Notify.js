@@ -25,7 +25,7 @@ const notifySchema = new mongoose.Schema({
       type: Boolean,
       default: false
     },
-    delete: {
+    deleted: {
       type: Boolean,
       default: false,
     },
@@ -55,6 +55,9 @@ notifySchema.method('toFrontendFormat', function() {
     description: this.getDescription(),
     link: this.link._id,
     checked: this.checked,
+    id: this._id,
+    date: this.date,
+    deleted: this.deleted,
   };
 });
 

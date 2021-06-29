@@ -1,7 +1,8 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const ArticleManager = require('./article_manager');
-
+const NotifyManager = require('./notify_manager');
+var notifyManager = new NotifyManager();
 module.exports = function() {
     this.articleManager = new ArticleManager();
 
