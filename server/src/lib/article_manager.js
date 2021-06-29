@@ -1,5 +1,4 @@
-const Article = require('../models/Article');
-const User = require("../models/User");
+const Article = require('../models/Article'); const User = require("../models/User");
 const Tag = require("../models/Tag");
 const NotifyManager = require('./notify_manager');
 var notifyManager = new NotifyManager();
@@ -206,11 +205,55 @@ module.exports = function() {
         return article.toFrontendFormat();
     }
     
-    this.searchArticlesByKeywords = async function(keywordStr) {
+    this.searchArticlesByKeywords = async function(keywordStr, options) {
         // const updateFuzzy = require('./update_fuzzy');
         // await updateFuzzy(User, ['title', 'body']);
-        let articles = await Article.fuzzySearch(keywordStr);
-        return articles.map(article => article._id);
+        let rawArticles = [];
+        if (options) {
+            switch (options.filter) {
+                case "all":
+                    rawArticles = await Article.find({})
+                                               .fuzzySearch(keywordStr);
+                    break;
+                case "finished":
+                    rawArticles = await Article.find({ finished: true })
+                                               .fuzzySearch(keywordStr);
+                    break;
+                case "unfinished":
+                    rawArticles = await Article.find({ finished: false})
+                                               .fuzzySearch(keywordStr);
+                    break;
+                default:
+                    rawArticles = await Article.find({})
+                                               .fuzzySearch(keywordStr);
+                    break;
+            }
+            switch (options.sortBy) {
+                case "new2old":
+                    rawArticles.sort((a, b) => {
+                        return b.date - a.date;
+                    });
+                    break;
+                case "old2new":
+                    rawArticles.sort((a, b) => {
+                        return a.date - b.date;
+                    });
+                    break;
+                case "most_liked":
+                    rawArticles.sort((a, b) => {
+                        return b.likes - a.likes;
+                    });
+                    break;
+                case "most_followed":
+                    rawArticles.sort((a, b) => {
+                        return b.fans.length - a.fans.length;
+                    });
+                    break;
+                case "default":
+                    break;
+            }
+        }
+        return rawArticles.map(article => article._id);
     }
     
     this.getRelatedArticlesByTag = async function(tagStr) {

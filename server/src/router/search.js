@@ -6,8 +6,12 @@ var ArticleManager = require('../lib/article_manager.js');
 var articleManager = new ArticleManager();
 
 finder.get('/articles', async (req, res) => {
+    let options = {
+        sortBy: req.query.sort_by,
+        filter: req.query.filter
+    };
     try {
-        let searchingResult = await articleManager.searchArticlesByKeywords(req.query.q);
+        let searchingResult = await articleManager.searchArticlesByKeywords(req.query.q, options);
         res.status(200).json(searchingResult);
     } catch (error) {
         console.log(error);
