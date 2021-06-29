@@ -80,11 +80,11 @@ export default {
         state.liked[id] = true;
       });
     },
-    updateSelfArticlesProPic(state, payload) {
-      state.self.forEach((id) => {
-        state.data[id].author.pro_pic = payload;
-      });
-    },
+    // updateSelfArticlesProPic(state, payload) {
+    //   state.self.forEach((id) => {
+    //     state.data[id].author.pro_pic = payload;
+    //   });
+    // },
 
     // clean articles that would affect by upload new article
     cleanArticles(state) {
@@ -115,14 +115,14 @@ export default {
       state.followed.new2old.unfinished = undefined;
       state.followed.new2old.all = undefined;
     },
-    deleteArticle(state, id) {
-      state.data[id] = false;
-      let idx = state.self.findIndex((_id) => _id === id);
-      if (idx !== -1) state.self.splice(idx, 1);
+    // deleteArticle(state, id) {
+    //   state.data[id] = false;
+    //   let idx = state.self.findIndex((_id) => _id === id);
+    //   if (idx !== -1) state.self.splice(idx, 1);
 
-      idx = state.global.findIndex((_id) => _id === id);
-      if (idx !== -1) state.global.splice(idx, 1);
-    },
+    //   // idx = state.global.findIndex((_id) => _id === id);
+    //   // if (idx !== -1) state.global.splice(idx, 1);
+    // },
 
     /**
      *
@@ -337,21 +337,29 @@ export default {
 
     /**
      *
-     * @param {Object} payload { id, force_update = false }
+     * @param {String} id article_id
+     * @param {Boolean} no_deep if set to true would only get the
+     *  article itself (wouldn't fetch citation article)
+     * @param {Object} force_update
      * @returns
      */
-    async getArticle({ state, commit }, { id, force_update }) {
+    async getArticle({ state, commit }, { id, force_update /*, no_deep*/ }) {
       if (!force_update && id in state.data) {
         return state.data[id];
       }
-      return apiGetArticleById(id).then((res) => {
-        commit('updateArticle', { id, data: res.data });
-        return res.data;
-      });
+
+      let { data } = await apiGetArticleById(id);
+
+      commit('updateArticle', { id, data });
+
+      // if (data.citation && !no_deep) {
+      //   await dispatch('getArticle', { id: data.citation, no_deep: true });
+      // }
+      return data;
     },
-    async addArticle(context, article_content) {
+    async addArticle(context, { content, citation }) {
       try {
-        let { data: new_id } = await apiUploadArticle(article_content);
+        let { data: new_id } = await apiUploadArticle(content, citation);
         context.dispatch('getArticle', { id: new_id });
         context.commit('cleanArticles');
         return new_id;
@@ -360,7 +368,8 @@ export default {
       }
     },
     deleteArticle(context, id) {
-      context.commit('deleteArticle', id);
+      // context.commit('deleteArticle', id);
+      context.commit('cleanArticles');
       apiDeleteArticle(id).catch((err) => console.error(err));
     },
 

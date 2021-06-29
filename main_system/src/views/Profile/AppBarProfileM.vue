@@ -43,9 +43,16 @@ v-app-bar(
     v-row.px-3.align-center.align-start(no-gutters v-if="user")
       v-col(cols="3")
         UserAvatar(:user="user" large)
-      v-col.d-flex.flex-column.align-start(cols="7" offset="1")
-        span(style="font-size:2rem") {{ user.name }}
-        span(style="font-size:1rem") {{ static_intro }}
+      v-col(cols="7" offset="1")
+        v-row.align-center(no-gutters)
+          span(style="font-size:2rem") {{ user.name }}
+          v-chip.mx-2(
+            color="#8B9988"
+            small
+            dark
+          ) LV. {{ user.lv }}
+        v-row(no-gutters)
+          span(style="font-size:1rem") {{ static_intro }}
 
   //------------- extension --------------------
   template(v-slot:extension)
@@ -62,9 +69,11 @@ v-app-bar(
         to="articles"
         key="articles"
         depressed
+        v-if="user"
       ) 
-        span 我的願望
-        span(v-if="$store.state.article.self") ({{ $store.state.article.self.length }})
+        span(style="text-transform: none;") {{ user.name }}
+        span 的計畫
+        span() {{ num_of_aritlces }}
         //- v-btn.pa-0(text :ripple="false") 全部
           v-icon mdi-menu-down
       v-btn.pa-0(
@@ -109,6 +118,15 @@ export default {
   }),
   computed: {
     ...mapState(['links']),
+    num_of_aritlces() {
+      let num;
+      if (this.user && this.$store.state.user.self.id === this.user.id)
+        if (this.$store.state.article.self)
+          num = this.$store.state.article.self.length;
+        else if (this.$store.state.article.others)
+          num = this.$store.state.article.others.length;
+      return num ? `(${num})` : '';
+    },
   },
   watch: {
     username() {

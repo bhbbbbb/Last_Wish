@@ -67,8 +67,8 @@ export const apiSearchTags = (key) =>
 export const apiSearchTagNames = (key) =>
   searchRequest('/tag_names', { params: { q: key } });
 
-export const apiUploadArticle = (content) =>
-  articleRequest.post('/insert', { article_content: content });
+export const apiUploadArticle = (content, citation) =>
+  articleRequest.post('/insert', { article_content: content, citation });
 
 /**
  *

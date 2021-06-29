@@ -30,7 +30,7 @@ const corsOptions = {
 //     'mongodb://yuyu:isengineer@cluster0-shard-00-00.jhbg0.mongodb.net:27017,cluster0-shard-00-01.jhbg0.mongodb.net:27017,cluster0-shard-00-02.jhbg0.mongodb.net:27017/alpha?ssl=true&replicaSet=atlas-qfbkre-shard-0&authSource=admin&retryWrites=true&w=majority';
 
 const db_url = 
-    `mongodb://${db_config.alpha.user}:${db_config.alpha.password}@${db_config.alpha.host}/${db_config.alpha.database}?${db_config.alpha.postfix}`;
+    `mongodb://${db_config.test.user}:${db_config.test.password}@${db_config.test.host}/${db_config.test.database}?${db_config.test.postfix}`;
 
 const mongooseOptions = {
     useNewUrlParser: true,
