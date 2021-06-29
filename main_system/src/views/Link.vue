@@ -37,7 +37,7 @@ export default {
   }),
   computed: {},
   created() {
-    this.new_article = JSON.parse(JSON.stringify(this.reference)).content;
+    this.new_article = JSON.parse(JSON.stringify(this.reference.content));
   },
   methods: {
     SubmitNewArticle() {
@@ -49,9 +49,14 @@ export default {
         this.Show_info('內文不得為空');
         return;
       }
-      this.$store.dispatch('addArticle', this.new_article).then((id) => {
-        this.$router.push(`/article/${id}`);
-      });
+      this.$store
+        .dispatch('addArticle', {
+          content: this.new_article,
+          citation: this.reference.id,
+        })
+        .then((id) => {
+          this.$router.push(`/article/${id}`);
+        });
     },
     Show_info(info) {
       this.info_msg = info;

@@ -64,9 +64,22 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
               
     
     //------------ article link from -----------
-    v-row(no-gutters)
-      v-col(cols="6" offset="1")
-        span.caption() 文章引用自 xxxxx
+    v-row(v-if="article" no-gutters)
+      v-col.pa-0.mt-n2.d-flex.flex-nowrap.align-center(
+        offset="1"
+        cols="auto"
+        style="height: 16px;"
+      )
+        NavLink.pl-3.ml-3.caption.font-weight-bold(
+          v-if="citation"
+          :to="{ name: 'Article', params: { id: citation.id }}"
+        ) 文章
+        span.caption.mr-1(v-show="citation") 引用自
+        NavLink.caption.font-weight-bold(
+          v-if="citation"
+          :to="{ name: 'User', params: { username: citation.author.name }}"
+        ) {{ citation.author.name }}
+      
 
 
     v-row(no-gutters)
@@ -164,6 +177,7 @@ export default {
     show_info: false,
     editing: false,
     deleted_milestones: [],
+    citation: undefined,
   }),
   computed: {
     date() {
@@ -181,9 +195,16 @@ export default {
       },
     },
   },
-  created() {},
-
+  created() {
+    this.init();
+  },
   methods: {
+    async init() {
+      if (this.article && this.article.citation)
+        this.citation = await this.$store.dispatch('getArticle', {
+          id: this.article.citation,
+        });
+    },
     Copy() {
       let ele = document.getElementById('url');
       ele.value = window.location.href;
