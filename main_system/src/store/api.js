@@ -55,17 +55,19 @@ export const apiGetLikedPost = () => userRequest.get('/get_liked_posts');
 
 export const apiSearchAll = (key) => searchRequest('/', { params: { q: key } });
 
-export const apiSearchArticles = (key) =>
-  searchRequest('/articles', { params: { q: key } });
+export const apiSearchArticles = (key, sort_by, filter) =>
+  searchRequest('/articles', { params: { q: key, sort_by, filter } });
 
-export const apiSearchUser = (key) =>
-  searchRequest('/users', { params: { q: key } });
+export const apiSearchUser = (key, sort_by, filter) =>
+  searchRequest('/users', { params: { q: key, sort_by, filter } });
 
-export const apiSearchTags = (key) =>
-  searchRequest('/tags', { params: { q: key } });
+export const apiSearchTags = (key, sort_by, filter) =>
+  searchRequest('/tags', { params: { q: key, sort_by, filter } });
 
-export const apiSearchTagNames = (key) =>
-  searchRequest('/tag_names', { params: { q: key } });
+export const apiSearchTagNames = (key, sort_by, filter) =>
+  searchRequest('/tag_names', { params: { q: key, sort_by, filter } });
+
+// -------------------- search end -----------------------------------
 
 export const apiUploadArticle = (content, citation) =>
   articleRequest.post('/insert', { article_content: content, citation });
@@ -208,3 +210,10 @@ export const apiSetFinishedEvent = (event_id, set) =>
 
 export const apiSetFinishedArticle = (article_id, set) =>
   articleRequest.post('/set_finished_article', { article_id, set });
+
+//----------- #notify ----------------------
+
+export const apiGetNotify = () => userRequest.get('/get_notify');
+
+export const apiSetCheckedNotify = (notify_id, set) =>
+  userRequest.post('/set_checked_notify', { notify_id, set });

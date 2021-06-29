@@ -63,7 +63,7 @@ v-card.my.pa-3(
       :content="content.content.body"
     )
   v-row(v-if="content" no-gutters)
-    span.subtitle-2.text--disabled {{ content.content.milestones.length }} 個計畫
+    span.subtitle-2.text--disabled ・{{ content.content.milestones.length }} 個計畫
   //--------- articleBtns 
   ArticleBtns(v-if="content" :content="content")
 </template>

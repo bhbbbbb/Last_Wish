@@ -183,7 +183,7 @@ export default {
 <style>
 @import 'https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma-rtl.min.css';
 .cropper {
-  height: 50vh;
+  height: 40vh;
   width: 100%;
   border-style: solid;
   border-width: 1px;

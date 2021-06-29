@@ -80,11 +80,13 @@ export default {
         state.liked[id] = true;
       });
     },
-    // updateSelfArticlesProPic(state, payload) {
-    //   state.self.forEach((id) => {
-    //     state.data[id].author.pro_pic = payload;
-    //   });
-    // },
+    cleanSelfArticles(state) {
+      console.log(state.self);
+      if (state.self)
+        state.self.forEach((id) => {
+          state.data[id] = undefined;
+        });
+    },
 
     // clean articles that would affect by upload new article
     cleanArticles(state) {

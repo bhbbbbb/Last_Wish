@@ -3,7 +3,8 @@ const mongoose_fuzzy_searching = require("mongoose-fuzzy-searching");
 const colorValidator = (v) => {
   return (/^#([0-9a-fA-F]{3}){1,2}$/i).test(v);
 }
-const HONOR = ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8"];
+const HONOR = ["魔法師學徒", "見習魔法士", "上級魔法士", "見習魔導士", "上級魔導士", "見習魔導師", "上級魔導師", "終極魔導師"];
+const THRESH = [100, 300, 600, 1000, 2000, 3000, 5000, 0];
 
 const eventSchema = new mongoose.Schema({
   name: String,
@@ -62,6 +63,10 @@ const userSchema = new mongoose.Schema({
   },
   notifies: [{ type: mongoose.Types.ObjectId, ref: 'Notify'}],
   stashedNotifies: [{ type: mongoose.Types.ObjectId, ref: 'Notify'}],
+  unread:{
+    type: Number,
+    default: 0,
+  }
 });
 
 userSchema.method('getHonor', function() {
@@ -71,8 +76,11 @@ userSchema.method('getHonor', function() {
 userSchema.method('changeScore', function(deltaScore) {
   if (deltaScore > 0) {
     this.score += deltaScore;
-    let lv = getLevel(this.score);
-    this.lv = (this.lv > lv)? this.lv : lv;    
+    if (this.score >= THRESH[this.lv - 1]) {
+      this.lv += (this.lv == 8)? 0 : 1;
+    }
+    // let lv = getLevel(this.score);
+    // this.lv = (this.lv > lv)? this.lv : lv;    
   } else if (this.score >= -deltaScore) {
     // ths deltaScore is negative in this case
     // don't update level and make sure there is enough score to be minused
@@ -93,12 +101,15 @@ userSchema.method('getPublicInfo', function() {
 
 userSchema.method('getHomePageInfo', function() {
   return {
+    // TODO: return the data for progress bar
     id: this._id,
     username: this.username,
     pro_pic: this.proPic,
     self_intro: this.selfIntro,
     lv: this.lv,
     score: this.score,
+    thresh: THRESH[this.lv - 1],
+    progress: computeProgress(this.score, this.lv),
     honor: this.getHonor(),
     n_posts: this.selfPosts.length,
     n_finished: this.nFinishedPosts,
@@ -107,23 +118,29 @@ userSchema.method('getHomePageInfo', function() {
   }
 });
 
-function getLevel(score) {
-    let lv = 1;
-    if (score>=5000)
-        lv = 8;
-    else if (score>=3000)
-        lv = 7;
-    else if (score>=2000)
-        lv = 6;
-    else if (score>=1000)
-        lv = 5;
-    else if (score>=600)
-        lv = 4;
-    else if (score>=300)
-        lv = 3;
-    else if (score>=100)
-        lv = 2;
-    return lv;
+// function getLevel(score) {
+//     let lv = 1;
+//     if (score>=5000)
+//         lv = 8;
+//     else if (score>=3000)
+//         lv = 7;
+//     else if (score>=2000)
+//         lv = 6;
+//     else if (score>=1000)
+//         lv = 5;
+//     else if (score>=600)
+//         lv = 4;
+//     else if (score>=300)
+//         lv = 3;
+//     else if (score>=100)
+//         lv = 2;
+//     return lv;
+// }
+// 
+
+function computeProgress(score, lv) {
+  let progress = 100 * (score - THRESH[lv - 2])/(THRESH[lv - 1] - THRESH[lv - 2]);
+  return (progress >= 0)? progress : 0;
 }
 
 userSchema.plugin(mongoose_fuzzy_searching, { fields: ['username'] });

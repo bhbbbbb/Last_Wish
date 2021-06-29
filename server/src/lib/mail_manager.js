@@ -27,7 +27,7 @@ module.exports = function() {
      */
     this.sendResetPass = async(mailAddr, id, username, serverUrl, EMAIL_SECRET, cryptPass) => {
         var nonce = genNonce(20 + Date.now() % 6);
-        console.log(nonce);
+        // console.log(nonce);
         await accountManager.setNonceToUser(username, nonce);
         jwt.sign(
             {
@@ -59,9 +59,9 @@ module.exports = function() {
                     transporter.sendMail(mailOptions, function(error, info) {
                         if (error) {
                             status = 401;
-                            console.log(error);
+                            // console.log(error);
                         } else {
-                            console.log('Email sent: ' + info.response);
+                            // console.log('Email sent: ' + info.response);
                             status = 200;
                         }
                     });
@@ -115,7 +115,7 @@ module.exports = function() {
                 if (error) {
                     console.log(error);
                 } else {
-                    console.log('Email sent: ' + info.response);
+                    // console.log('Email sent: ' + info.response);
                 }
             });
             status = 200;
@@ -137,7 +137,7 @@ module.exports = function() {
      */
     this.sendToken = async(mailAddr, id, username, serverUrl, EMAIL_SECRET) => {
         var nonce = genNonce(20 + Date.now() % 6);
-        console.log(nonce);
+        // console.log(nonce);
         await accountManager.setNonceToUser(username, nonce);
         jwt.sign(
             {
@@ -168,7 +168,7 @@ module.exports = function() {
                             status = 401;
                             console.log(error);
                         } else {
-                            console.log('Email sent: ' + info.response);
+                            // console.log('Email sent: ' + info.response);
                             status = 200;
                         }
                     });
@@ -200,9 +200,9 @@ module.exports = function() {
                     target.nonce = '';
                     await target.save();
                     return true;
+                } else {
+                    // console.log("nonce not match!");
                 }
-                else
-                    console.log("nonce not match!");
             }
             return false;
         } catch (error) {

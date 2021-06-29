@@ -4,6 +4,7 @@ import { apiLogout, apiTryLogin } from './api';
 import { global_links, user_links } from '@/data/links.js';
 import user from './modules/user';
 import article from './modules/article';
+import notify from './modules/notify';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -47,6 +48,7 @@ export default new Vuex.Store({
         let data = await context.dispatch('user/getUser', { id });
         context.commit('login', data);
         context.commit('user/setSelfLite', id);
+        context.dispatch('notify/fetch');
         context.dispatch('getLikedArticles');
         Vue.$cookies.set('login', id);
       } catch (err) {
@@ -58,14 +60,17 @@ export default new Vuex.Store({
 
     logout(context) {
       Vue.$cookies.remove('login');
-      // console.log(Vue.$cookies.keys());
-      apiLogout().then().catch();
+      apiLogout();
       context.commit('logout');
+      context.commit('user/logout');
+      context.commit('cleanFollowedArticles');
+      context.commit('cleanArticles');
       return;
     },
   },
   modules: {
     user,
     article,
+    notify,
   },
 });

@@ -28,12 +28,20 @@ export default {
     name_list: {},
   },
   mutations: {
+    logout(state) {
+      state.events = [];
+      state.event_map = undefined;
+      state.self.id = undefined;
+      state.self.name = undefined;
+      state.self.pro_pic = undefined;
+    },
     updateIntro(state, payload) {
       state.self.self_intro = payload;
     },
 
     updateProPic(state, payload) {
       state.self.pro_pic = payload;
+      state.data[state.self.id].pro_pic = payload;
     },
 
     setSelfLite(state, id) {
@@ -197,8 +205,7 @@ export default {
     },
     updateProPic({ commit }, payload) {
       commit('updateProPic', payload);
-      commit('cleanArticles', payload, { root: true });
-      // commit('updateSelfArticlesProPic', payload, { root: true });
+      // commit('cleanSelfArticles', null, { root: true });
     },
     updateIntro({ commit }, payload) {
       apiSetSelfIntro({ self_intro: payload });

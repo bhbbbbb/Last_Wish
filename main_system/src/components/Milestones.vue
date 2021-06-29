@@ -12,15 +12,23 @@ v-timeline.ml-n10(
     fill-dot
   )
     template(#icon)
-      v-hover(v-slot="{ hover }")
-        v-avatar(
-          size="28"
-          @click="finish(idx)"
-        )
-          v-icon(
-            v-if="check_display({ idx, hover })"
-            small
-          ) mdi-check
+      v-tooltip(bottom :disabled="finished || tooltip_show || authorId !== $store.state.user.self.id")
+        span {{ ms.finished ? '取消完成這個子計畫' : '完成這個子計畫' }}
+        template(#activator="{ on, attrs }")
+          v-hover(
+            v-slot="{ hover }"
+          )
+            v-avatar(
+              size="28"
+              @click="finish(idx)"
+              @touchstart="tooltip_show = true"
+              v-on="on"
+              v-bind="attrs"
+            )
+              v-icon(
+                v-if="check_display({ idx, hover })"
+                small
+              ) mdi-check
     v-row(no-gutters)
       v-col.d-flex.justify-end.pr-4(cols="1")
         v-tooltip(right open-delay="300")
@@ -131,7 +139,9 @@ export default {
   data: () => ({
     newMilestone_show: false,
     show: false,
+    check_show: undefined,
     expanded: {},
+    tooltip_show: false,
   }),
   computed: {
     finished_date() {
@@ -140,7 +150,9 @@ export default {
       );
     },
   },
-  created() {},
+  created() {
+    this.check_show = Array(this.content.length).fill(true);
+  },
 
   methods: {
     addMilestone(value) {
@@ -170,17 +182,22 @@ export default {
     },
     finish(idx) {
       if (this.finished) return;
+      let value = !this.content[idx].finished;
       if (this.$store.state.user.self.id === this.authorId && this.articleId)
         this.$store.dispatch('setMilestoneFinished', {
           article_id: this.articleId,
           ms_idx: idx,
-          value: !this.content[idx].finished,
+          value,
         });
       this.$forceUpdate();
+      if (!value) this.check_show[idx] = false;
+      else this.check_show[idx] = true;
     },
     check_display({ idx, hover }) {
       let self = this.content[idx].finished || hover;
-      return this.$store.state.user.self.id === this.authorId && self;
+      let res = this.$store.state.user.self.id === this.authorId && self;
+      if (this.check_show) res = res && this.check_show[idx];
+      return res;
     },
     allFinish() {
       let result = true;

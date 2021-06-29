@@ -15,7 +15,7 @@ v-app-bar(
   )
     v-row.align-self-start(no-gutters v-if="user")
       v-col(cols="6")
-        v-icon(@click.stop="Back") mdi-chevron-left
+        //- v-icon(@click.stop="Back") mdi-chevron-left
       v-col.d-flex.justify-end.pr-0(cols="6" v-if="username === $store.state.user.self.name")
         v-menu(offset-y)
           template(#activator="{ on, attrs }")
@@ -69,9 +69,11 @@ v-app-bar(
         to="articles"
         key="articles"
         depressed
+        v-if="user"
       ) 
-        span 我的願望
-        span(v-if="$store.state.article.self") ({{ $store.state.article.self.length }})
+        span(style="text-transform: none;") {{ user.name }}
+        span 的計畫
+        span() {{ num_of_aritlces }}
         //- v-btn.pa-0(text :ripple="false") 全部
           v-icon mdi-menu-down
       v-btn.pa-0(
@@ -116,6 +118,15 @@ export default {
   }),
   computed: {
     ...mapState(['links']),
+    num_of_aritlces() {
+      let num;
+      if (this.user && this.$store.state.user.self.id === this.user.id)
+        if (this.$store.state.article.self)
+          num = this.$store.state.article.self.length;
+        else if (this.$store.state.article.others)
+          num = this.$store.state.article.others.length;
+      return num ? `(${num})` : '';
+    },
   },
   watch: {
     username() {
@@ -130,7 +141,7 @@ export default {
       this.user = undefined;
       if (this.$store.state.user.self.name === this.username) {
         this.user = await this.$store.dispatch('user/getSelfMore');
-        this.intro = this.$store.state.user.self.self_intro;
+        this.intro = this.user.self_intro;
       } else {
         this.user = await this.$store.dispatch(
           'user/getOthersByName',
@@ -153,6 +164,7 @@ export default {
     },
     setIntroConfirm() {
       this.$store.dispatch('user/updateIntro', this.intro);
+      this.static_intro = this.intro;
     },
   },
 };

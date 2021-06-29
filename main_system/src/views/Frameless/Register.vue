@@ -1,52 +1,94 @@
 <template lang="pug">
-v-card(min-height='70vh', rounded='lg', flat)
-  v-card-text.justify-center
-    h2 your user name
+v-card.ma-0.pa-2(flat min-height="400" min-width="300")
+  v-row.mb-4(no-gutters)
+    v-img(
+      src="@/assets/logo_dark.png"
+      width="160"
+      height="44"
+      contain
+    )
+  v-row.justify-center(no-gutters)
+    span.main-color(style="width: 180px; white-space: wrap;") {{ subtitle }}
+  
+
+  //- #login #btn
+  v-row.justify-center.mt-10(no-gutters)
+    v-btn.lowercase(
+      width="132"
+      height="24"
+      @click="UploadRegister"
+      @keydown.enter="UploadRegister"
+      color="#F4F1EA"
+      rounded
+      :elevation="0"
+    ) Register
+  
+  //- #dev
+  //- v-row.mt-3.justify-center(no-gutters)
+  //-   v-btn(
+  //-     width="132"
+  //-     height="24"
+  //-     @click="Dev()"
+  //-     color="#F4F1EA"
+  //-     rounded
+  //-     :elevation="0"
+  //-   ) Dev log
+        
+  v-row.mt-3.justify-center(no-gutters)
     v-text-field(
-      v-model='user.username',
-      label='',
-      :rules='[rules.empty, rules.regex]',
-      autocomplete='off',
+      v-model="user.username"
+      label="帳號"
+      placeholder="帳號"
+      :rules="[rules.empty, rules.regex]"
       @blur='checkValid',
-      :error-messages='valid_message'
+      :success-messages = 'valid_message'
+      :error-messages='invalid_message'
+      @input="flushResult"
+      autocomplete="off"
     )
-    br/
-    h2 your password
+  v-row.mt-3.justify-center(no-gutters)
     v-text-field(
-      v-model.lazy='user.password',
-      label='',
-      type='password',
+      :append-icon="psw_show ? 'mdi-eye' : 'mdi-eye-off'"
+      :type="psw_show ? 'text' : 'password'"
+      @click:append="psw_show = !psw_show"
+      label="密碼"
+      placeholder="密碼"
+      v-model="user.password"
       :rules='[rules.empty, rules.regex]',
-      autocomplete='off'
+      autocomplete="off"
     )
-    br/
-    h2 confirm your password
+  v-row.mt-3.justify-center(no-gutters)
     v-text-field(
-      v-model.lazy='user.password_confirm',
-      label='',
-      type='password',
+      :append-icon="psw_show2 ? 'mdi-eye' : 'mdi-eye-off'"
+      :type="psw_show2 ? 'text' : 'password'"
+      @click:append="psw_show2 = !psw_show2"
+      label="確認密碼"
+      placeholder="確認密碼"
+      v-model="user.password_confirm"
       :rules='[rules.empty, rules.regex, rules.confirm_match]',
-      autocomplete='off'
+      autocomplete="off"
     )
-    br/
-    h2 your email
+  v-row.mt-3.justify-center(no-gutters)
     v-text-field(
-      v-model='user.email',
-      label='',
-      :rules='emailRules',
-      autocomplete='off'
+      label="信箱"
+      placeholder="信箱"
+      v-model="user.email"
+      :rules="[rules.empty, rules.email]"
+      autocomplete="off"
     )
 
-    v-card-actions.justify-center
-      v-btn(@click='UploadRegister()') confirm
-
-  v-overlay.align-start(:value='show_info', absolute, opacity='0') 
-    v-alert.mt-10(
-      :value='show_info',
-      :type='info_type',
-      class="multi-line",
-      transition='slide-x-transition'
-    ) {{ infos }}
+  
+  v-row.mt-3.justify-center.align-center(no-gutters)
+    span.caption.main-color 已經有帳號了
+    NavLink.mx-3.caption(to="/login" style="color: #D1AF9B")
+      | 去登入
+  
+  MsgBox(:value.sync="show_info" :buttons="1") 
+    v-row(no-gutters)
+      v-col.d-flex.justify-center(cols="12")
+        span.text-pre-wrap {{ info_msg }}
+    template(#confirm)
+      span  確認 
 </template>
 
 <script>
@@ -54,21 +96,24 @@ import { apiRegister, apiIsValid } from '@/store/api';
 
 export default {
   name: 'Register',
+  components: {
+    MsgBox: () => import('@/components/MsgBox'),
+    NavLink: () => import('@/components/NavLink'),
+  },
   data: () => ({
+    subtitle: '加入 lernen，幫自己製作屬於自己的學習計劃。',
     show_info: false,
-    infos: '',
-    info_type: 'success',
+    psw_show: false,
+    psw_show2: false,
+    info_msg: '',
     valid_message: undefined,
+    invalid_message: undefined,
     user: {
       username: '',
       password: '',
       password_confirm: '',
       email: '',
     },
-    emailRules: [
-      (v) => !!v || 'E-mail is required',
-      (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-    ],
     rules: {
       regex: (value) => {
         const pattern = /^[^\W_]+$/; // allow only word and digit
@@ -76,6 +121,7 @@ export default {
       },
       empty: (value) => Boolean(value) || 'required',
       confirm_match: () => null,
+      email: (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid',
     },
   }),
   created() {
@@ -95,41 +141,38 @@ export default {
               //  username: this.user.username,
               //  password: this.user.password,
               //});
-              this.Show_info(
+              this.showInfo(
                 'Success registered\nPlease check your email box',
                 'success'
               );
             }
           })
           .catch((err) => {
-            this.Show_info(err.response.data.err_msg, 'error');
+            this.showInfo(err.response.data.err_msg, 'error');
             console.log(err);
           });
-      } else this.Show_info('Incorrect Register data', 'error');
+      } else this.showInfo('Incorrect Register data', 'error');
     },
     checkValid() {
       if (this.user.username)
         apiIsValid(this.user.username).then((res) => {
-          console.log(res.data);
-          if (res.data.isValid) this.valid_message = '使用者已重複';
-          else this.valid_message = 'OK';
+          if (!res.data) {
+            this.invalid_message = '使用者已重複';
+            this.valid_message = '';
+          } else {
+            this.valid_message = 'OK';
+            this.invalid_message = '';
+          }
         });
     },
-    Show_info(Info, infoType) {
-      /**
-       *There are 4 types of infoType in default:
-       *success
-       *info
-       *warning
-       *error
-       */
-      console.log(Info);
-      this.infos = Info;
-      this.info_type = infoType;
+    showInfo(info, type = 'try_again') {
+      this.info_msg = info;
       this.show_info = true;
-      setTimeout(() => {
-        this.show_info = false;
-      }, 1500);
+      this.type = type;
+    },
+    flushResult() {
+      this.valid_message = '';
+      this.invalid_message = '';
     },
   },
 };

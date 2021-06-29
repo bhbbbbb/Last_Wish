@@ -40,6 +40,12 @@ v-sheet.pt-3.sticky(flat style="margin: -8px -5px 5px -5px;")
             v-if="sort_by !== 'most_followed'"
           )
             span {{ options.most_followed }}
+          v-list-item(
+            value="default"
+            @click="sort_by = 'default'"
+            v-if="sort_by !== 'default' && input_model"
+          )
+            span {{ options.default }}
 
     //- #filter
     v-menu(
@@ -96,7 +102,8 @@ v-sheet.pt-3.sticky(flat style="margin: -8px -5px 5px -5px;")
       outlined
       rounded
       clearable
-      @focus="mode_options_show = true"
+      @focus="focus"
+      @blur="blur"
       autocomplete="off"
       hide-details
       v-model="input_model"
@@ -134,62 +141,93 @@ export default {
   props: {
     value: {
       required: false,
-      type: String,
+      type: [String],
       default: undefined,
     },
     mode: {
-      require: false,
+      required: true,
       type: Number,
-      default: 0,
+    },
+    s: {
+      type: String,
+      required: true,
+    },
+    f: {
+      type: String,
+      required: true,
     },
   },
   data: () => ({
     search_box_show: false,
-    search_mode: 0,
     mode_options_show: false,
     options: {
       new2old: '最新發佈',
       most_liked: '讚數',
       most_followed: '追蹤數',
+      default: '相關性',
     },
-    sort_by: 'new2old',
     filter_options: {
       finished: '已完成',
       unfinished: '未完成',
       all: '全部',
     },
-    filter: 'all',
-    inner_value: undefined,
     try_focus: false,
+    sort_by_modified_after_input: false,
   }),
   computed: {
     input_model: {
       get() {
-        return this.inner_value;
+        return this.value;
       },
       set(val) {
-        this.inner_value = val;
-        this.$emit('update:value', { value: val, mode: this.search_mode });
+        if (val && !this.sort_by_modified_after_input) this.sort_by = 'default';
+        if (!val) {
+          if (this.sort_by === 'default') this.sort_by = 'new2old';
+        }
+        this.$emit('update:value', val);
+      },
+    },
+    search_mode: {
+      get() {
+        return this.mode;
+      },
+      set(val) {
+        this.$emit('update:mode', val);
+      },
+    },
+    sort_by: {
+      get() {
+        return this.s;
+      },
+      set(val) {
+        this.$emit('update:s', val);
+      },
+    },
+    filter: {
+      get() {
+        return this.f;
+      },
+      set(val) {
+        this.$emit('update:f', val);
       },
     },
   },
   watch: {
     sort_by() {
+      if (this.input_model) this.sort_by_modified_after_input = true;
       this.$emit('update', { sort_by: this.sort_by, filter: this.filter });
     },
     filter() {
       this.$emit('update', { sort_by: this.sort_by, filter: this.filter });
     },
-    search_mode(val) {
-      this.$emit('update:value', { value: this.input_model, mode: val });
+    search_mode() {
+      this.$emit('update:value', this.input_model);
     },
   },
   created() {
-    this.inner_value = this.value;
     if (this.value) {
       this.search_box_show = true;
       this.mode_options_show = true;
-      this.search_mode = this.mode;
     }
   },
   updated() {
@@ -199,8 +237,25 @@ export default {
   methods: {
     toggleSearchBox() {
       this.search_box_show = !this.search_box_show;
-      if (!this.search_box_show) this.mode_options_show = false;
+      if (!this.search_box_show) this.cancel();
       else this.try_focus = true;
+    },
+    focus() {
+      this.mode_options_show = true;
+      this.$emit('focus');
+    },
+    blur() {
+      // if (!this.input_model) {
+      //   this.cancel();
+      //   this.search_box_show = false;
+      // }
+      this.$emit('blur');
+    },
+    cancel() {
+      this.mode_options_show = false;
+      this.sort_by_modified_after_input = false;
+      this.input_model = '';
+      this.$emit('cancel');
     },
     doFocus() {
       if (this.try_focus) {
@@ -217,5 +272,5 @@ export default {
   transform: translatey(-10px)
   position: sticky
   top: 110px
-  z-index: 1000
+  z-index: 5
 </style>

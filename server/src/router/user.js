@@ -282,7 +282,8 @@ user.get('/confirmation/:token', async (req, res) => {
             const result = await mailManager.verified(id, nonce, cryptPass);
             if (result) {
                 // TODO: Auto logged in
-                res.redirect(FRONT_URL);
+                let loginPage = FRONT_URL+'/login'
+                res.redirect(loginPage);
                 return;
             }
         }
@@ -463,20 +464,24 @@ user.post('/reset_email', user_session, async (req, res) => {
     }
 })
 
-user.get('/get_notify', user_session, async(req, res) => {
+user.get('/get_notify', user_session, async (req, res) => {
     try {
         let userId = req.session.user_id;
         if(!userId)
             res.status(400).json('please logged in');
-        await accountManager.popAllStashedNotifiesToUser(userId);
+        let unread = await accountManager.popAllStashedNotifiesToUser(userId);
         let notifies = await accountManager.getAllNotifiesOfUser(userId);
-        res.status(200).json(notifies);
+        let obj = {
+            unread: unread,
+            notifies: notifies,
+        }
+        res.status(200).json(obj);
     } catch (error) {
         console.log(error);
         res.sendStatus(400);
     }
 })
-user.post('/set_deleted_notify',user_session, async(req, res) => {
+user.post('/set_deleted_notify', user_session, async (req, res) => {
     try {
         let userId = req.session.user_id;
         if(!userId)
@@ -491,10 +496,10 @@ user.post('/set_deleted_notify',user_session, async(req, res) => {
     }
 })
 
-user.post('/set_checked_notify',user_session, async(req, res) => {
+user.post('/set_checked_notify', user_session, async (req, res) => {
     try {
         let userId = req.session.user_id;
-        if(!userId)
+        if (!userId)
             res.status(400).json('please logged in');
         let notifyId = req.body.notify_id;
         let set = req.body.set;

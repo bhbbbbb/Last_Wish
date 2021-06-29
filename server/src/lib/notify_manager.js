@@ -26,17 +26,25 @@ module.exports = function() {
         if(!user)
           return;
         user.stashedNotifies.push(notify._id);
+        user.unread = user.unread + 1;
         await user.save();
         return notify._id;
     }
 
-    this.checkNotify = async function(userId, notifyId, set){
-        let notify = await Notify.findById(notifyId);
-        if(!notify)        
+    this.checkNotify = async function(userId, notifyId, set) {
+        let notify = await Notify.findById(notifyId).populate('to');
+        if (!notify)        
             throw "notify not found"
-        if(notify.to != userId)
+        if (notify.to._id != userId)
             throw "not the user!"
+        if (!notify.checked) {
+            if (set)
+                notify.to.unread -= 1;
+            // else
+            //     notify.to.unread = notify.to.unread + 1;
+        }
         notify.checked = set;
+        notify.to.save();
         await notify.save();
     }
 

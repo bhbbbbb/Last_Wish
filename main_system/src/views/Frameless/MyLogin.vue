@@ -8,7 +8,7 @@ v-card.ma-0.pa-2(flat min-height="400" min-width="300")
       contain
     )
   v-row.justify-center(no-gutters)
-    span.main-color(style="width: 160px; white-space: wrap;") {{ subtitle }}
+    span.main-color(style="width: 180px; white-space: wrap;") {{ subtitle }}
   
 
   //- #login #btn
