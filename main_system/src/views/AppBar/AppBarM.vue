@@ -18,9 +18,9 @@ v-app-bar.d-flex.justify-center.align-end(
       //-     .text-center()
       //-       h3.subtitle 願望清單
       //-       span.subtitle wish list
-      v-col.align-self-center(cols="7" offset="1")
-        a(href="/")
-          v-img(
+      v-col.align-self-center(cols="4" offset="1")
+        a(href="/" style="width: 108px; height: 29px;")
+          v-img.pa-0.ma-0(
             src="@/assets/appbar_logo_3.png"
             height="29"
             width="108"
@@ -30,7 +30,7 @@ v-app-bar.d-flex.justify-center.align-end(
       
 
       //- #calendar
-      v-col.align-self-center(cols="2")
+      v-col.align-self-center(offset="3" cols="2")
         v-btn.ma-0.pa-1(
           v-if="$store.state.is_login"
           width="64"

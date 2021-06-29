@@ -141,7 +141,7 @@ export default {
       this.user = undefined;
       if (this.$store.state.user.self.name === this.username) {
         this.user = await this.$store.dispatch('user/getSelfMore');
-        this.intro = this.$store.state.user.self.self_intro;
+        this.intro = this.user.self_intro;
       } else {
         this.user = await this.$store.dispatch(
           'user/getOthersByName',
@@ -164,6 +164,7 @@ export default {
     },
     setIntroConfirm() {
       this.$store.dispatch('user/updateIntro', this.intro);
+      this.static_intro = this.intro;
     },
   },
 };
