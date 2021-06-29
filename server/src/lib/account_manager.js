@@ -401,10 +401,10 @@ module.exports = function() {
     
     this.popAllStashedNotifiesToUser = async function(userId) {
         let user = await User.findById(userId)
-                             .populate('stashedNotifies');
+        //                     .populate('stashedNotifies');
         if (!user)
             throw "user not found";
-        while(user.stashedNotifies.length){
+        while(user.stashedNotifies.length > 0){
             let notify = user.stashedNotifies.pop();
             user.notifies.push(notify);
         }
@@ -413,7 +413,18 @@ module.exports = function() {
     
     this.getAllNotifiesOfUser = async function(userId) {
         let user = await User.findById(userId)
-                             .populate('notifies');
+                             .populate({
+                                 path: 'notifies',
+                                 model: 'Notify',
+                                 populate: {
+                                     path: 'from',
+                                     model: 'User',
+                                 },
+                                 populate: {
+                                    path: 'link',
+                                    model: 'Article',
+                                },
+                             })
         if (!user)
             throw "user not found";
         return user.notifies.map(notify => notify.toFrontendFormat());

@@ -26,7 +26,6 @@ module.exports = function() {
         if(!user)
           return;
         user.stashedNotifies.push(notify._id);
-        console.log(user.stashedNotifies);
         await user.save();
         return notify._id;
     }

@@ -52,7 +52,7 @@ module.exports = function() {
             citation.author.changeScore(10);
             citation.author.save();
             citation.save();
-            await notifyManager.createNotify(author._id, citation.author, article._id, 'Quote');
+            await notifyManager.createNotify(author._id, citation.author._id, article._id, 'Quote');
         }
         await article.sortMilestonesAndSave();
         let tagUsers = await this.tagTextParse(articleContent.body);
@@ -274,7 +274,7 @@ module.exports = function() {
         article.author.changeScore(score);
         await article.author.save();
         await article.save();
-        await notifyManager.createNotify(author, article.author, articleId, 'CommentOnSelf');
+        await notifyManager.createNotify(author, article.author._id, articleId, 'CommentOnSelf');
         let tagUsers = await this.tagTextParse(commentStr);
         for(tagUser of tagUsers){
             await notifyManager.createNotify(author, tagUser, article._id, 'TagInComment');
