@@ -28,6 +28,13 @@ export default {
     name_list: {},
   },
   mutations: {
+    logout(state) {
+      state.events = [];
+      state.event_map = undefined;
+      state.self.id = undefined;
+      state.self.name = undefined;
+      state.self.pro_pic = undefined;
+    },
     updateIntro(state, payload) {
       state.self.self_intro = payload;
     },

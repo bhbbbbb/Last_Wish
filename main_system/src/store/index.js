@@ -60,9 +60,11 @@ export default new Vuex.Store({
 
     logout(context) {
       Vue.$cookies.remove('login');
-      // console.log(Vue.$cookies.keys());
-      apiLogout().then().catch();
+      apiLogout();
       context.commit('logout');
+      context.commit('user/logout');
+      context.commit('cleanFollowedArticles');
+      context.commit('cleanArticles');
       return;
     },
   },
