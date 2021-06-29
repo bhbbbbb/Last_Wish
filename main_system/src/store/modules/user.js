@@ -149,12 +149,17 @@ export default {
         more: true,
       });
     },
-    async getUser({ state, commit, dispatch }, { id, more }) {
-      if (id in state.data && (!more || state.data[id].lv))
-        return state.data[id];
+    async getUser({ state, commit, dispatch }, { id, more, force_update }) {
+      if (!force_update) {
+        if (id in state.data && (!more || state.data[id].lv))
+          return state.data[id];
 
-      if (state.fetching[id] === MORE || (state.fetching[id] === LITE && !more))
-        return state.data[id];
+        if (
+          state.fetching[id] === MORE ||
+          (state.fetching[id] === LITE && !more)
+        )
+          return state.data[id];
+      }
 
       let res;
       if (!more)
@@ -254,10 +259,11 @@ export default {
     },
 
     async nameExisted(context, name) {
-      if (name in context.state.name_list) return name;
+      if (name in context.state.name_list) return context.state.name_list[name];
 
-      let new_name = apiIsValid(name).then(({ data }) => !data);
-      context.commit('updateNameList', { name, result: new_name });
+      let res = apiIsValid(name).then(({ data }) => !data);
+      context.commit('updateNameList', { name, result: res });
+      return res;
     },
   },
 };

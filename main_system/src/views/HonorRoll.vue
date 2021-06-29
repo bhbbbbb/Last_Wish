@@ -4,7 +4,8 @@ v-sheet.m-view.mt-3(rounded="lg")
     no-gutters
     v-if="user_data"
   )
-    span Level {{ user_data.lv }}
+    //- span Level {{ user_data.lv }}
+    span {{ user_data.honor }}
   v-row.justify-center(
     no-gutters
     v-if="user_data"
@@ -80,6 +81,7 @@ export default {
     async init() {
       this.user_data = await this.$store.dispatch('user/getUser', {
         id: this.user.id,
+        force_update: true,
         more: true,
       });
     },

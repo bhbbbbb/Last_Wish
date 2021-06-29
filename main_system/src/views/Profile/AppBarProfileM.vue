@@ -43,9 +43,16 @@ v-app-bar(
     v-row.px-3.align-center.align-start(no-gutters v-if="user")
       v-col(cols="3")
         UserAvatar(:user="user" large)
-      v-col.d-flex.flex-column.align-start(cols="7" offset="1")
-        span(style="font-size:2rem") {{ user.name }}
-        span(style="font-size:1rem") {{ static_intro }}
+      v-col(cols="7" offset="1")
+        v-row.align-center(no-gutters)
+          span(style="font-size:2rem") {{ user.name }}
+          v-chip.mx-2(
+            color="#8B9988"
+            small
+            dark
+          ) LV. {{ user.lv }}
+        v-row(no-gutters)
+          span(style="font-size:1rem") {{ static_intro }}
 
   //------------- extension --------------------
   template(v-slot:extension)
