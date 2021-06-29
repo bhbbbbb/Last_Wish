@@ -8,7 +8,7 @@ v-card.ma-0.pa-2(flat min-height="400" min-width="300")
       contain
     )
   v-row.justify-center(no-gutters)
-    span.main-color(style="width: 160px; white-space: wrap;") {{ subtitle }}
+    span.main-color(style="width: 180px; white-space: wrap;") {{ subtitle }}
   
 
   //- #login #btn
@@ -44,6 +44,7 @@ v-card.ma-0.pa-2(flat min-height="400" min-width="300")
       :success-messages = 'valid_message'
       :error-messages='invalid_message'
       @input="flushResult"
+      autocomplete="off"
     )
   v-row.mt-3.justify-center(no-gutters)
     v-text-field(
@@ -54,6 +55,7 @@ v-card.ma-0.pa-2(flat min-height="400" min-width="300")
       placeholder="密碼"
       v-model="user.password"
       :rules='[rules.empty, rules.regex]',
+      autocomplete="off"
     )
   v-row.mt-3.justify-center(no-gutters)
     v-text-field(
@@ -64,6 +66,7 @@ v-card.ma-0.pa-2(flat min-height="400" min-width="300")
       placeholder="確認密碼"
       v-model="user.password_confirm"
       :rules='[rules.empty, rules.regex, rules.confirm_match]',
+      autocomplete="off"
     )
   v-row.mt-3.justify-center(no-gutters)
     v-text-field(
@@ -71,7 +74,14 @@ v-card.ma-0.pa-2(flat min-height="400" min-width="300")
       placeholder="信箱"
       v-model="user.email"
       :rules="[rules.empty, rules.email]"
+      autocomplete="off"
     )
+
+  
+  v-row.mt-3.justify-center.align-center(no-gutters)
+    span.caption.main-color 已經有帳號了
+    NavLink.mx-3.caption(to="/login" style="color: #D1AF9B")
+      | 去登入
   
   MsgBox(:value.sync="show_info" :buttons="1") 
     v-row(no-gutters)
@@ -88,6 +98,7 @@ export default {
   name: 'Register',
   components: {
     MsgBox: () => import('@/components/MsgBox'),
+    NavLink: () => import('@/components/NavLink'),
   },
   data: () => ({
     subtitle: '加入 lernen，幫自己製作屬於自己的學習計劃。',
