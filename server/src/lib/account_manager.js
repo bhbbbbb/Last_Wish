@@ -429,6 +429,6 @@ module.exports = function() {
                              })
         if (!user)
             throw "user not found";
-        return user.notifies.map(notify => notify.toFrontendFormat());
+        return user.notifies.map(notify => notify.toFrontendFormat()).filter(el => {return el != null});
     }
 };

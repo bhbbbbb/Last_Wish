@@ -51,14 +51,14 @@ notifySchema.method('getDescription', function() {  // refer to parse
 });
 
 notifySchema.method('toFrontendFormat', function() {
-  return {
-    description: this.getDescription(),
-    link: this.link._id,
-    checked: this.checked,
-    id: this._id,
-    date: this.date,
-    deleted: this.deleted,
-  };
+  if(!this.deleted)
+    return {
+      description: this.getDescription(),
+      link: this.link._id,
+      checked: this.checked,
+      id: this._id,
+      date: this.date,
+    };
 });
 
 module.exports = mongoose.model('Notify', notifySchema);
