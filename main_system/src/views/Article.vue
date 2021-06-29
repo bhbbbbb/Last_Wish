@@ -106,7 +106,9 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
               :content="article.content.milestones"
               :author-id="article.author.id"
               :article-id="article.id"
+              :finished="article.finished"
             )
+          
 
 
 
@@ -143,7 +145,6 @@ export default {
   components: {
     CommentCard: () => import('@/components/article/CommentCard'),
     NewComment: () => import('@/components/article/NewComment'),
-    NewMilestone: () => import('@/views/NewMilestone'),
     UserAvatar: () => import('@/components/UserAvatar'),
     ArticleBtns: () => import('@/components/ArticleBtns'),
     NavLink: () => import('@/components/NavLink'),

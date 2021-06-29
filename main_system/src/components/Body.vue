@@ -8,7 +8,6 @@ p(v-else)
 </template>
 
 <script>
-import { apiIsValid } from '@/store/api';
 export default {
   name: 'Body',
   components: {
@@ -76,9 +75,11 @@ export default {
       let promises = [];
       this.data.forEach((item) => {
         if (!item.link) return;
-        let pro = apiIsValid(item.name).then((res) => {
-          if (res.data) item.link = false;
-        });
+        let pro = this.$store
+          .dispatch('user/nameExisted', item.name)
+          .then((res) => {
+            item.link = res;
+          });
         promises.push(pro);
       });
       await Promise.all(promises);

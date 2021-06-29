@@ -10,6 +10,7 @@ v-timeline.ml-n10(
     small
     :color="ms.finished ? '#9BA2AA' : '#C4C4C4'"
     :key="idx"
+    fill-dot
   )
     template(#icon)
       v-hover(v-slot="{ hover }")
@@ -46,36 +47,57 @@ v-timeline.ml-n10(
         ) {{ ms.body }}
 
   v-timeline-item.align-center(
+    fill-dot
     small
-    :color="color_list(7)"
-    v-if="$store.state.user.self.id === authorId && !newMilestone_show"
+    color="#C4C4C4"
+    v-if="$store.state.user.self.id === authorId && !newMilestone_show && !finished"
   )
-    v-icon(slot="icon" small color="white") mdi-plus
-    v-btn(@click="newMilestone_show = true") 點我新增里程碑
+    v-icon(
+      slot="icon"
+      small
+      color="white"
+      @click="newMilestone_show = true"
+    ) mdi-plus
+    v-btn(
+      v-if="$store.state.user.self.id === authorId && allFinish()"
+      rounded
+      color ="#D1D7D7"
+      depressed
+      @click="show = true"
+    ) 完成計畫
   
   NewMilestone(
-    v-if="$store.state.user.self.id === authorId && newMilestone_show"
+    v-if="$store.state.user.self.id === authorId && newMilestone_show && !finished"
     @created="addMilestone"
   )
 
-  v-btn(
-    v-if="$store.state.user.self.id === authorId && all_fin()"
-    rounded
-    color ="#D1D7D7"
-    depressed
-    @click="show = true"
-  ) 完成計畫
+  v-timeline-item.align-center(
+    small
+    fill-dot
+    color="grey"
+    v-else-if="finished"
+  )
+    v-icon(
+      slot="icon"
+      small
+      color="white"
+      @click="newMilestone_show = true"
+    ) mdi-check
+    strong 計畫於 {{ finished_date }} 完成
+
+
   MsgBox(:value.sync="show" @confirm="archive" )
     v-col.d-flex.justify-center(cols="12")
       span.align-center(class="msgtxt") 計畫一但完成後就不能再修改
       br
     v-col.d-flex.justify-center(cols="12")
       span.align-center(class="msgtxt") 確定要完成嗎?
+    template(#confirm)
+      span(style="color: red") 確定
 </template>
 
 <script>
 import moment from 'moment';
-import color_list from '@/data/color_list';
 
 export default {
   name: 'Milestones',
@@ -98,13 +120,24 @@ export default {
       required: false,
       default: undefined,
     },
+    finished: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data: () => ({
-    newMilestone_show: true,
+    newMilestone_show: false,
     show: false,
     expanded: {},
   }),
-  computed: {},
+  computed: {
+    finished_date() {
+      return moment(this.content[this.content.length - 1].estDate).format(
+        'MM/DD'
+      );
+    },
+  },
   created() {},
 
   methods: {
@@ -146,7 +179,7 @@ export default {
       let self = this.content[idx].finished || hover;
       return this.$store.state.user.self.id === this.authorId && self;
     },
-    all_fin() {
+    allFinish() {
       let result = true;
       if (this.content.length > 0)
         for (let i = this.content.length - 1; i >= 0; i--) {
@@ -156,14 +189,12 @@ export default {
           }
         }
       else result = false;
-      //console.log(result);
       return result;
     },
     archive() {
-      console.log('fin');
+      this.$store.dispatch('finishArticle', { article_id: this.articleId });
     },
     moment,
-    color_list,
     expand(idx) {
       if (this.expanded[idx] === undefined) this.$set(this.expanded, idx, true);
       else this.expanded[idx] = !this.expanded[idx];
@@ -184,5 +215,9 @@ export default {
   text-align: center;
 
   color: #888888;
+}
+.v-timeline-item__dot--small {
+  height: 16px !important;
+  width: 16px !important;
 }
 </style>

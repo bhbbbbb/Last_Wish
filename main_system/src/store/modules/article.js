@@ -10,6 +10,7 @@ import {
   apiEditArticle,
   apiSetMsFinished,
   apiSetFollow,
+  apiSetFinishedArticle,
 } from '../api';
 
 export default {
@@ -157,6 +158,9 @@ export default {
         state.data[article_id].fans.splice(idx, 0);
       }
     },
+    finishArticle(state, article_id) {
+      state.data[article_id].finished = true;
+    },
   },
   getters: {
     /**
@@ -276,8 +280,10 @@ export default {
      * @param {String} user_id
      * @returns
      */
-    async getUserArticles(context, user_id) {
-      return apiGetUserPosts(user_id, 'new2old', 'all')
+    async getUserArticles(context, { user_id, sort_by, filter }) {
+      if (!sort_by) sort_by = 'new2old';
+      if (!filter) filter = 'all';
+      return apiGetUserPosts(user_id, sort_by, filter)
         .then((res) => {
           return res.data;
         })
@@ -294,17 +300,27 @@ export default {
     async getSelfArticles(context, { force_update }) {
       if (context.state.self && !force_update) return context.state.self;
       return context
-        .dispatch('getUserArticles', context.rootState.user.self.id)
+        .dispatch('getUserArticles', {
+          user_id: context.rootState.user.self.id,
+          sort_by: 'new2old',
+          filter: 'all',
+        })
         .then((data) => {
           context.commit('updateSelfArticles', data);
           return data;
         });
     },
     async getOthersArticles(context, { user_id }) {
-      return context.dispatch('getUserArticles', user_id).then((data) => {
-        context.commit('updateOthersArticles', data);
-        return data;
-      });
+      return context
+        .dispatch('getUserArticles', {
+          user_id,
+          sort_by: 'new2old',
+          filter: 'all',
+        })
+        .then((data) => {
+          context.commit('updateOthersArticles', data);
+          return data;
+        });
     },
 
     async getLikedArticles(context) {
@@ -419,6 +435,11 @@ export default {
       context.commit('cleanFollowedArticles');
       await apiSetFollow(article_id, value);
       context.dispatch('getArticle', { id: article_id, force_update: true });
+    },
+
+    finishArticle(context, { article_id }) {
+      context.commit('finishArticle', article_id);
+      apiSetFinishedArticle(article_id, true);
     },
   },
 };

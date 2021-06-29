@@ -73,9 +73,10 @@ v-app-bar(
       )
         v-divider(vertical)
       v-btn.tab.white(
+        v-if="user"
         :ripple="false"
 				active-class="active"
-        to="honorRoll"
+        :to="{ name: 'HonorRoll', params: { user }}"
         key="honorRoll"
         depressed
       ) 我的榮譽榜
@@ -121,16 +122,15 @@ export default {
     async init() {
       this.user = undefined;
       if (this.$store.state.user.self.name === this.username) {
-        this.user = this.$store.state.user.self;
+        this.user = await this.$store.dispatch('user/getSelfMore');
         this.intro = this.$store.state.user.self.self_intro;
-        this.static_intro = this.intro;
       } else {
         this.user = await this.$store.dispatch(
           'user/getOthersByName',
           this.username
         );
-        this.static_intro = this.$store.state.user.others.self_intro;
       }
+      this.static_intro = this.user.self_intro;
     },
     Back() {
       this.$router.go(-1);

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { apiGetPublicInfo, apiLogout, apiTryLogin } from './api';
+import { apiLogout, apiTryLogin } from './api';
 import { global_links, user_links } from '@/data/links.js';
 import user from './modules/user';
 import article from './modules/article';
@@ -44,12 +44,10 @@ export default new Vuex.Store({
 
     async login(context, id) {
       try {
-        let { data } = await apiGetPublicInfo(id);
+        let data = await context.dispatch('user/getUser', { id });
         context.commit('login', data);
-        await Promise.all([
-          context.dispatch('user/setSelf', data),
-          context.dispatch('getLikedArticles'),
-        ]);
+        context.commit('user/setSelfLite', id);
+        context.dispatch('getLikedArticles');
         Vue.$cookies.set('login', id);
       } catch (err) {
         console.error(err);

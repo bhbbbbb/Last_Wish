@@ -276,16 +276,17 @@ module.exports = function() {
                              .populate('followedUsers');
         if (!user)
             throw "user not found"; 
-        let articleIds = [];
-        articleIds.push.apply(articleIds, user.followedPosts);
-        for (followedUser of user.followedUsers) {
-            for (userPost of followedUser.selfPosts) {
-                if (!articleIds.includes(userPost)) {
-                    articleIds.push(userPost);
-                }
-            }
-        }
-        return articleIds;
+        // let articleIds = [];
+        // articleIds.push.apply(articleIds, user.followedPosts);
+        // for (followedUser of user.followedUsers) {
+        //     for (userPost of followedUser.selfPosts) {
+        //         if (!articleIds.includes(userPost)) {
+        //             articleIds.push(userPost);
+        //         }
+        //     }
+        // }
+        // return articleIds;
+        return user.followedPosts;
     }
     
     /**
