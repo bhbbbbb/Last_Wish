@@ -141,7 +141,8 @@ v-card.m-view.pa-1.mt-6.mx-lg-auto(
             )
           
 
-
+          v-row.mr-3.mt-5(no-gutters)
+            span.caption 此計畫被引用 {{ article.cited_count }} 次
 
     //----------- comment -----------------
     v-row.mr-3.mt-5(no-gutters)
@@ -228,7 +229,6 @@ export default {
       ele.value = window.location.href;
       ele.select();
       document.execCommand('copy');
-      this.Show_info('已複製到剪貼簿');
       this.show_info = true;
     },
     toggleEdit() {
