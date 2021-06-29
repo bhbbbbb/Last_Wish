@@ -12,6 +12,8 @@ const AccountManager = require('../lib/account_manager.js');
 var accountManager = new AccountManager();
 var user_session = require('../lib/session.js');
 const https_config = require('../../https.config');
+const NotifyManager = require('../lib/notify_manager.js');
+var notifyManager = new NotifyManager();
 /***************** Url Setting *******************/
 const prefix = https_config.https_enable ? 'https://' : 'http://'
 var frontPort = https_config.front_port;
@@ -464,9 +466,40 @@ user.post('/reset_email', user_session, async (req, res) => {
 user.get('/get_notify', user_session, async(req, res) => {
     try {
         let userId = req.session.user_id;
+        if(!userId)
+            res.status(400).json('please logged in');
         await accountManager.popAllStashedNotifiesToUser(userId);
         let notifies = await accountManager.getAllNotifiesOfUser(userId);
         res.status(200).json(notifies);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(400);
+    }
+})
+user.post('/set_deleted_notify',user_session, async(req, res) => {
+    try {
+        let userId = req.session.user_id;
+        if(!userId)
+            res.status(400).json('please logged in');
+        let notifyId = req.body.notify_id;
+        let set = req.body.set;
+        await notifyManager.deleteNotify(userId, notifyId, set);
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(400);
+    }
+})
+
+user.post('/set_checked_notify',user_session, async(req, res) => {
+    try {
+        let userId = req.session.user_id;
+        if(!userId)
+            res.status(400).json('please logged in');
+        let notifyId = req.body.notify_id;
+        let set = req.body.set;
+        await notifyManager.checkNotify(userId, notifyId, set);
+        res.sendStatus(200);
     } catch (error) {
         console.log(error);
         res.sendStatus(400);

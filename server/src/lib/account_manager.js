@@ -1,7 +1,8 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const ArticleManager = require('./article_manager');
-
+const NotifyManager = require('./notify_manager');
+var notifyManager = new NotifyManager();
 module.exports = function() {
     this.articleManager = new ArticleManager();
 
@@ -428,6 +429,6 @@ module.exports = function() {
                              })
         if (!user)
             throw "user not found";
-        return user.notifies.map(notify => notify.toFrontendFormat());
+        return user.notifies.map(notify => notify.toFrontendFormat()).filter(el => {return el != null});
     }
 };

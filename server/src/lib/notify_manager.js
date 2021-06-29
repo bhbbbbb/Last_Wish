@@ -29,4 +29,24 @@ module.exports = function() {
         await user.save();
         return notify._id;
     }
+
+    this.checkNotify = async function(userId, notifyId, set){
+        let notify = await Notify.findById(notifyId);
+        if(!notify)        
+            throw "notify not found"
+        if(notify.to != userId)
+            throw "not the user!"
+        notify.checked = set;
+        await notify.save();
+    }
+
+    this.deleteNotify = async function(userId, notifyId, set){
+        let notify = await Notify.findById(notifyId);
+        if(!notify)
+            throw "notify not found"
+        if(notify.to != userId)
+            throw "not the user!"
+        notify.deleted = set;
+        await notify.save();
+    }
 }
