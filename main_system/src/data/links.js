@@ -37,7 +37,7 @@ export const user_links = [
     icon: 'mdi-bookmark',
   },
   {
-    text: '發新貼文',
+    text: 'post',
     to: {
       name: 'NewPost',
     },

@@ -86,7 +86,7 @@ v-card.ma-0.pa-2(flat min-height="400" min-width="300")
   MsgBox(:value.sync="show_info" :buttons="1") 
     v-row(no-gutters)
       v-col.d-flex.justify-center(cols="12")
-        span {{ info_msg }}
+        span.text-pre-wrap {{ info_msg }}
     template(#confirm)
       span  確認 
 </template>
