@@ -62,6 +62,10 @@ const userSchema = new mongoose.Schema({
   },
   notifies: [{ type: mongoose.Types.ObjectId, ref: 'Notify'}],
   stashedNotifies: [{ type: mongoose.Types.ObjectId, ref: 'Notify'}],
+  unread:{
+    type: Number,
+    default: 0,
+  }
 });
 
 userSchema.method('getHonor', function() {

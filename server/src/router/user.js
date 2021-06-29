@@ -468,9 +468,13 @@ user.get('/get_notify', user_session, async(req, res) => {
         let userId = req.session.user_id;
         if(!userId)
             res.status(400).json('please logged in');
-        await accountManager.popAllStashedNotifiesToUser(userId);
+        let unread = await accountManager.popAllStashedNotifiesToUser(userId);
         let notifies = await accountManager.getAllNotifiesOfUser(userId);
-        res.status(200).json(notifies);
+        let obj = {
+            unread: unread,
+            notifies: notifies,
+        }
+        res.status(200).json(obj);
     } catch (error) {
         console.log(error);
         res.sendStatus(400);
