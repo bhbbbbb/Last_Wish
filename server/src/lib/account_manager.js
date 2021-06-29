@@ -315,7 +315,6 @@ module.exports = function() {
             throw "user not found";
         let len = await user.events.push(event);
         await user.save();
-        console.log(user.events);
         return user.events[len - 1]._id;
     }
 
@@ -403,14 +402,15 @@ module.exports = function() {
     
     this.popAllStashedNotifiesToUser = async function(userId) {
         let user = await User.findById(userId)
-        //                     .populate('stashedNotifies');
         if (!user)
             throw "user not found";
-        while(user.stashedNotifies.length > 0){
+        user.unread += user.stashedNotifies.length;
+        while (user.stashedNotifies.length > 0) {
             let notify = user.stashedNotifies.pop();
             user.notifies.push(notify);
         }
         await user.save();
+        return user.unread;
     }
     
     this.getAllNotifiesOfUser = async function(userId) {
@@ -429,6 +429,7 @@ module.exports = function() {
                              })
         if (!user)
             throw "user not found";
-        return user.notifies.map(notify => notify.toFrontendFormat()).filter(el => {return el != null});
+        return user.notifies.map(notify => notify.toFrontendFormat())
+                            .filter(el => { return el != null });
     }
 };
