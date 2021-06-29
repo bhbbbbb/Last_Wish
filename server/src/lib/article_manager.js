@@ -323,7 +323,8 @@ module.exports = function() {
             await notifyManager.createNotify(author, tagUser, article._id, 'TagInComment');
         }
         for(fan of article.fans){
-            await notifyManager.createNotify(author, fan, article._id, 'CommentOnFollowed');
+            if(fan != article.author._id)
+                await notifyManager.createNotify(author, fan, article._id, 'CommentOnFollowed');
         }
         return article.comments[len - 1].date;
      }
@@ -386,7 +387,8 @@ module.exports = function() {
             }
         }
         for(fan of article.fans){
-            await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
+            if(fan != article.author._id)
+                await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
         }
         await article.sortMilestonesAndSave();
     }
@@ -453,8 +455,9 @@ module.exports = function() {
         await article.author.save();
         await article.save();
         for(fan of article.fans){
-            await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
-            }
+            if(fan != article.author._id)
+                await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
+        }
     }
 
     this.setFinishedMilestoneOfArticle = async function(articleId, milestoneId, set) {
@@ -467,7 +470,8 @@ module.exports = function() {
         milestone.finished = set;
         await article.sortMilestonesAndSave();
         for(fan of article.fans){
-            await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
+            if(fan != article.author._id)
+                await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
             }
     }
     /**
