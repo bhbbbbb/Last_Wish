@@ -1,6 +1,7 @@
 const Article = require('../models/Article'); const User = require("../models/User");
 const Tag = require("../models/Tag");
-
+const NotifyManager = require('./notify_manager');
+var notifyManager = new NotifyManager();
 module.exports = function() {
 
     /**
@@ -41,20 +42,25 @@ module.exports = function() {
         if (citationId) {
             // We know this post is citing another
             let citation = await Article.findById(citationId)
-                                        .populate('author');
+            .populate('author');
             if (!citation)
-                throw "citation not found";
+            throw "citation not found";
             article.citation = citationId;
             citation.citedCount++;
             citation.author.citedCount++;
             citation.author.changeScore(10);
             citation.author.save();
             citation.save();
+            await notifyManager.createNotify(author._id, citation.author._id, article._id, 'Quote');
         }
         await article.sortMilestonesAndSave();
+        let tagUsers = await this.tagTextParse(articleContent.body);
+        for(tagUser of tagUsers){
+            await notifyManager.createNotify(author._id, tagUser, article._id, 'TagInPost');
+        }
         return article._id;
     }
-
+    
     /**
      * @returns the json object containing all articles with frontend format
      */
@@ -311,6 +317,15 @@ module.exports = function() {
         article.author.changeScore(score);
         await article.author.save();
         await article.save();
+        await notifyManager.createNotify(author, article.author._id, articleId, 'CommentOnSelf');
+        let tagUsers = await this.tagTextParse(commentStr);
+        for(tagUser of tagUsers){
+            await notifyManager.createNotify(author, tagUser, article._id, 'TagInComment');
+        }
+        for(fan of article.fans){
+            if(fan != article.author._id)
+                await notifyManager.createNotify(author, fan, article._id, 'CommentOnFollowed');
+        }
         return article.comments[len - 1].date;
      }
 
@@ -370,6 +385,10 @@ module.exports = function() {
                 if (modifiedMilestone.finished)
                     milestone.finished = modifiedMilestone.finished;
             }
+        }
+        for(fan of article.fans){
+            if(fan != article.author._id)
+                await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
         }
         await article.sortMilestonesAndSave();
     }
@@ -435,6 +454,10 @@ module.exports = function() {
         }
         await article.author.save();
         await article.save();
+        for(fan of article.fans){
+            if(fan != article.author._id)
+                await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
+        }
     }
 
     this.setFinishedMilestoneOfArticle = async function(articleId, milestoneId, set) {
@@ -446,5 +469,38 @@ module.exports = function() {
             throw "no such milestone"
         milestone.finished = set;
         await article.sortMilestonesAndSave();
+        for(fan of article.fans){
+            if(fan != article.author._id)
+                await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
+            }
     }
+    /**
+     * 
+     * @param {String} stringToBeParse 
+     * @returns {Array} users
+     */
+    this.tagTextParse = async function(stringToBeParse){
+        let users = [];
+        const pattern = /(?:\s|^)@(\w+)/;
+        while (stringToBeParse) {
+          let found = stringToBeParse.match(pattern);
+          if (!found) break;
+          let plain_text = stringToBeParse.substring(0, found.index);
+          stringToBeParse = stringToBeParse.substring(found.index + found[0].length);
+          users.push(found[1]);
+        }
+        if(users){
+          users = [...new Set(users)];  //Use set to wipe out duplicated user
+                                        //a = ['a','a','b','c']; 
+                                        //[...new Set(a)] = ['a','b','c'];
+        }
+        let userIds = [];
+        for(user of users){
+            let tmp = await User.findOne({ username: user});
+            userIds.push(tmp._id);
+        }
+        return userIds;
+      }
 }
+
+
