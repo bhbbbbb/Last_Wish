@@ -1,7 +1,6 @@
 <template lang="pug">
-v-container.pa-0.align-start.justify-center(fill-height)
-  v-row.justify-center.mar(style="width: 90vw;")
-    v-col.pa-0.ma-0(cols="12" sm="12" md="10")
+  v-row.justify-center.mar()
+    v-col.pa-0.ma-0(cols="12" sm="12" md="12" lg="12")
       router-view/
 </template>
 

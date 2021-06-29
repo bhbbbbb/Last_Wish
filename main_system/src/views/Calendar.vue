@@ -1,5 +1,8 @@
 <template lang="pug">
-  v-card.m-view.mt-3(flat)
+  v-card.m-view.mt-3.mx-lg-auto(
+    flat
+    max-width="1000"
+  )
     v-sheet(height="64") 
       v-row(no-gutters).ma-0
         v-col(cols="1")

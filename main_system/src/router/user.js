@@ -4,6 +4,9 @@ export const user_routes = [
     path: 'articles',
     name: 'UserArticles',
     component: () => import('@/views/ArticleContainer'),
+    meta: {
+      user: true,
+    },
     props: (route) => {
       if (store.state.user.self.name === route.params.username)
         return {
@@ -22,6 +25,9 @@ export const user_routes = [
     component: () => import('@/views/HonorRoll'),
     // beforeEnter(to, from, next) {
     // },
+    meta: {
+      user: true,
+    },
     props: (route) => {
       return {
         user:
@@ -58,6 +64,9 @@ export const user_routes = [
   {
     path: 'upl',
     name: 'Upl',
+    meta: {
+      user: true,
+    },
     component: () => import('@/components/Upl'),
     beforeEnter(to, from, next) {
       if (store.state.is_login) next();

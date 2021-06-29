@@ -6,9 +6,10 @@ v-app-bar(
   color="#CED3CD"
   height="180"
   extension-height="50"
+  clipped-left
 )
   v-card.pa-0.px-0.ma-0(
-    style="width: 100vw"
+    width="100%"
     color="transparent"
     :loading="!user ? 'grey' : false"
     flat
