@@ -12,7 +12,7 @@ v-timeline.ml-n10(
     fill-dot
   )
     template(#icon)
-      v-tooltip(bottom :disabled="tooltip_show")
+      v-tooltip(bottom :disabled="finished || tooltip_show || authorId !== $store.state.user.self.id")
         span {{ ms.finished ? '取消完成這個子計畫' : '完成這個子計畫' }}
         template(#activator="{ on, attrs }")
           v-hover(

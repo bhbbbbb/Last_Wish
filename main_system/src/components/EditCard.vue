@@ -108,6 +108,7 @@ export default {
       document.getElementById('tag-input').focus();
     },
     addTag() {
+      if (this.tag_model) this.tag_model.trim();
       let valid = this.valid(this.tag_model);
       if (valid !== true) {
         this.err_msg = valid;
