@@ -416,14 +416,14 @@ module.exports = function() {
                              .populate({
                                  path: 'notifies',
                                  model: 'Notify',
-                                 populate: {
+                                 populate: [{
                                      path: 'from',
                                      model: 'User',
                                  },
-                                 populate: {
+                                 {
                                     path: 'link',
                                     model: 'Article',
-                                },
+                                }],
                              })
         if (!user)
             throw "user not found";
