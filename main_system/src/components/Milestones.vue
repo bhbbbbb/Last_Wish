@@ -131,6 +131,7 @@ export default {
   data: () => ({
     newMilestone_show: false,
     show: false,
+    check_show: undefined,
     expanded: {},
   }),
   computed: {
@@ -140,7 +141,9 @@ export default {
       );
     },
   },
-  created() {},
+  created() {
+    this.check_show = Array(this.content.length).fill(true);
+  },
 
   methods: {
     addMilestone(value) {
@@ -170,17 +173,22 @@ export default {
     },
     finish(idx) {
       if (this.finished) return;
+      let value = !this.content[idx].finished;
       if (this.$store.state.user.self.id === this.authorId && this.articleId)
         this.$store.dispatch('setMilestoneFinished', {
           article_id: this.articleId,
           ms_idx: idx,
-          value: !this.content[idx].finished,
+          value,
         });
       this.$forceUpdate();
+      if (!value) this.check_show[idx] = false;
+      else this.check_show[idx] = true;
     },
     check_display({ idx, hover }) {
       let self = this.content[idx].finished || hover;
-      return this.$store.state.user.self.id === this.authorId && self;
+      let res = this.$store.state.user.self.id === this.authorId && self;
+      if (this.check_show) res = res && this.check_show[idx];
+      return res;
     },
     allFinish() {
       let result = true;
