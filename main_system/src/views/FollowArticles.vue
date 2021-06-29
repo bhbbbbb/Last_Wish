@@ -2,8 +2,9 @@
   <ArticleContainer
     v-if="!fetched || (articles && articles.length)"
     type="followed"
+    class="mt-3"
   />
-  <v-card v-else flat>
+  <v-card v-else flat class="m-view mt-3">
     <v-card-title class="justify-center">
       <h4>還沒有關注的文章，去世界文章看看吧</h4>
     </v-card-title>

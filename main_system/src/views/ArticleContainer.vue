@@ -1,11 +1,16 @@
 <template lang="pug">
 v-sheet.m-view(rounded="lg")
   Search(
-    v-if="type === 'global' || type === 'followed'"
-    @update="updateArticles"
+    v-if="type === 'global'"
+    @update="updateSorF"
     @update:value="search"
-    :value="value"
-    :mode="mode"
+    :value="value_model"
+    :mode.sync="mode_model"
+    :s.sync="s_model"
+    :f.sync="f_model"
+    @focus="focus"
+    @blur="blur"
+    @cancel="cancel"
   )
   v-row(
     no-gutters
@@ -28,7 +33,7 @@ v-sheet.m-view(rounded="lg")
     v-else-if="articles"
   )
     v-col.d-flex.align-center.justify-center(cols="12" style="height: 60vh")
-      span 哎呀，看來這裡一篇文章都沒有
+      span(v-if="!focusing") 哎呀，看來這裡一篇文章都沒有
 
     //- #loading
   v-row(
@@ -84,12 +89,23 @@ export default {
       type: Number,
       default: 1,
     },
+    s: {
+      type: String,
+      default: 'new2old',
+    },
+    f: {
+      type: String,
+      default: 'all',
+    },
   },
   data: () => ({
     articles: undefined,
-    sort_by: 'new2old',
-    filter: 'all',
     stamp: 0,
+    value_model: undefined,
+    mode_model: undefined,
+    s_model: undefined,
+    f_model: undefined,
+    focusing: false,
   }),
   computed: {},
   watch: {
@@ -97,32 +113,40 @@ export default {
       this.fetchArticles();
     },
   },
-  created() {},
+  created() {
+    this.value_model = this.value ? this.value : '';
+    this.mode_model = this.mode;
+    this.s_model = this.s;
+    this.f_model = this.f;
+  },
   mounted() {
-    if (this.user) this.getSearchedUserArticles(this.user);
-    if (this.value) this.search({ value: this.value, mode: this.mode });
+    // if (this.user) this.getSearchedUserArticles(this.user);
+    if (this.value) this.search(this.value);
     else this.fetchArticles();
   },
   methods: {
-    search({ value: val, mode }) {
+    search(val) {
+      this.value_model = val;
       if (!val) {
-        this.fetchArticles();
+        // this.fetchArticles();
+        this.articles = [];
         return;
       }
       this.articles = undefined;
       let tem;
+      let mode = this.mode_model;
       switch (mode) {
         case ALL:
-          tem = apiSearchArticles(val);
+          tem = apiSearchArticles(val, this.s_model, this.f_model);
           break;
         case ARTICLES:
-          tem = apiSearchArticles(val);
+          tem = apiSearchArticles(val, this.s_model, this.f_model);
           break;
         case TAGS:
-          tem = apiSearchTags(val);
+          tem = apiSearchTags(val, this.s_model, this.f_model);
           break;
         case USER:
-          tem = apiSearchUser(val);
+          tem = apiSearchUser(val, this.s_model, this.f_model);
           break;
         default:
           throw `value of mode = ${mode} is not defined`;
@@ -130,11 +154,18 @@ export default {
       let stamp = ++this.stamp;
       tem.then(({ data }) => {
         if (stamp === this.stamp) {
-          if (mode === USER) this.getSearchedUserArticles(data, stamp);
+          if (mode === USER && data.length)
+            this.getSearchedUserArticles(data[0], stamp);
           else {
             this.articles = data;
             this.$router.replace({
-              query: { q: val, mode, stamp: Date.now() },
+              query: {
+                q: val,
+                mode,
+                s: this.s_model,
+                f: this.f_model,
+                stamp: Date.now(),
+              },
             });
           }
         }
@@ -143,42 +174,66 @@ export default {
     async getSearchedUserArticles(user_id, stamp) {
       let data = await this.$store.dispatch('getUserArticles', {
         user_id,
-        sort_by: this.sort_by,
-        filter: this.filter,
+        sort_by: this.s_model,
+        filter: this.f_model,
       });
       if (!stamp || stamp === this.stamp) {
         this.$router.replace({
-          query: { u: user_id, mode: USER, stamp: Date.now() },
+          query: {
+            q: this.value_model,
+            mode: USER,
+            s: this.s_model,
+            f: this.f_model,
+            stamp: Date.now(),
+          },
         });
         this.articles = data;
       }
     },
-    updateArticles({ sort_by, filter }) {
-      this.sort_by = sort_by;
-      this.filter = filter;
-      this.fetchArticles();
+    updateSorF() {
+      if (!this.value_model) this.fetchArticles();
+      else this.search(this.value_model);
     },
     async fetchArticles(type) {
+      if (this.focusing) return;
       if (!type) type = this.type;
-
+      if (this.s_model === 'defalut') this.s_model = 'new2old';
       if (type !== 'others')
         this.articles = this.$store.getters.articles(
           type,
-          this.sort_by,
-          this.filter
+          this.s_model,
+          this.f_model
         );
       else this.articles = undefined;
-      if (!this.articles || type === 'others')
+      if (!this.articles || type === 'others') {
+        this.articles = undefined;
         this.$store
           .dispatch('getArticles', {
             type: type,
-            sort_by: this.sort_by,
-            filter: this.filter,
+            sort_by: this.s_model,
+            filter: this.f_model,
             username: this.username, // only be true when type = 'others'
           })
           .then((data) => {
             this.articles = data;
           });
+      }
+    },
+    focus() {
+      this.focusing = true;
+      if (!this.value_model) this.articles = [];
+    },
+    blur() {
+      this.focusing = false;
+      if (!this.value_model) {
+        this.articles = undefined;
+        this.fetchArticles();
+      }
+    },
+    cancel() {
+      this.focusing = false;
+      this.articles = undefined;
+      this.fetchArticles();
     },
   },
 };

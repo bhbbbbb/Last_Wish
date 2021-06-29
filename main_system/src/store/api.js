@@ -55,17 +55,19 @@ export const apiGetLikedPost = () => userRequest.get('/get_liked_posts');
 
 export const apiSearchAll = (key) => searchRequest('/', { params: { q: key } });
 
-export const apiSearchArticles = (key) =>
-  searchRequest('/articles', { params: { q: key } });
+export const apiSearchArticles = (key, sort_by, filter) =>
+  searchRequest('/articles', { params: { q: key, sort_by, filter } });
 
-export const apiSearchUser = (key) =>
-  searchRequest('/users', { params: { q: key } });
+export const apiSearchUser = (key, sort_by, filter) =>
+  searchRequest('/users', { params: { q: key, sort_by, filter } });
 
-export const apiSearchTags = (key) =>
-  searchRequest('/tags', { params: { q: key } });
+export const apiSearchTags = (key, sort_by, filter) =>
+  searchRequest('/tags', { params: { q: key, sort_by, filter } });
 
-export const apiSearchTagNames = (key) =>
-  searchRequest('/tag_names', { params: { q: key } });
+export const apiSearchTagNames = (key, sort_by, filter) =>
+  searchRequest('/tag_names', { params: { q: key, sort_by, filter } });
+
+// -------------------- search end -----------------------------------
 
 export const apiUploadArticle = (content, citation) =>
   articleRequest.post('/insert', { article_content: content, citation });
