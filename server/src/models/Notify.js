@@ -34,19 +34,19 @@ const notifySchema = new mongoose.Schema({
 notifySchema.method('getDescription', function() {  // refer to parse
   switch (this.action) {
     case 'TagInPost':
-      return `${this.from.username}在文章 '${this.link.title}' 標註了你`
+      return `在文章 '${this.link.title}' 標註了你`
     case 'TagInComment':
-      return `${this.from.username}在一則留言中標註了你`
+      return `在一則留言中標註了你`
     case 'CommentOnSelf':
-      return `${this.from.username}在你的文章 '${this.link.title}' 底下留言`
+      return `在你的文章 '${this.link.title}' 底下留言`
     case 'CommentOnFollowed':
-      return `${this.from.username}在你追蹤的文章 '${this.link.title}' 底下留言`
+      return `在你追蹤的文章 '${this.link.title}' 底下留言`
     case 'UpdateOnFollowed':
-      return `${this.from.username}更新了你追蹤的文章 '${this.link.title}'`
+      return `更新了你追蹤的文章 '${this.link.title}'`
     case 'Liked':
-      return `${this.from.username}喜歡你的文章 '${this.link.title}'`
+      return `喜歡你的文章 '${this.link.title}'`
     case 'Quote':
-      return `${this.from.username}引用了你的文章 '${this.link.title}'`
+      return `引用了你的文章 '${this.link.title}'`
   }
 });
 
@@ -54,6 +54,11 @@ notifySchema.method('toFrontendFormat', function() {
   if(!this.deleted && this.link)
     return {
       description: this.getDescription(),
+      from: {
+        id: this.from._id,
+        name: this.from.username,
+        pro_pic: this.from.proPic,
+      },
       link: this.link._id,
       checked: this.checked,
       id: this._id,
