@@ -12,15 +12,23 @@ v-timeline.ml-n10(
     fill-dot
   )
     template(#icon)
-      v-hover(v-slot="{ hover }")
-        v-avatar(
-          size="28"
-          @click="finish(idx)"
-        )
-          v-icon(
-            v-if="check_display({ idx, hover })"
-            small
-          ) mdi-check
+      v-tooltip(bottom :disabled="tooltip_show")
+        span {{ ms.finished ? '取消完成這個子計畫' : '完成這個子計畫' }}
+        template(#activator="{ on, attrs }")
+          v-hover(
+            v-slot="{ hover }"
+          )
+            v-avatar(
+              size="28"
+              @click="finish(idx)"
+              @touchstart="tooltip_show = true"
+              v-on="on"
+              v-bind="attrs"
+            )
+              v-icon(
+                v-if="check_display({ idx, hover })"
+                small
+              ) mdi-check
     v-row(no-gutters)
       v-col.d-flex.justify-end.pr-4(cols="1")
         v-tooltip(right open-delay="300")
@@ -133,6 +141,7 @@ export default {
     show: false,
     check_show: undefined,
     expanded: {},
+    tooltip_show: false,
   }),
   computed: {
     finished_date() {
