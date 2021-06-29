@@ -4,8 +4,8 @@ export const frameless_routes = [
     path: 'login',
     name: 'Login',
     alias: '/login',
-    // component: () => import('@/views/Frameless/MyLogin'),
-    component: () => import('@/views/Frameless/Welcome'),
+    component: () => import('@/views/Frameless/MyLogin'),
+    // component: () => import('@/views/Frameless/Welcome'),
     beforeEnter(to, from, next) {
       if (store.state.is_login) next('/articles');
       else next();

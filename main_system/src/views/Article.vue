@@ -105,13 +105,17 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
 
           //------------ #tags -------------
           v-row(no-gutters)
-            v-chip.mr-2.my-1(
+            NavLink(
               v-for="(tag, idx) in article.content.tags"
               :key="idx"
-              color="#9BA2AA"
-              small
-              dark
-            ) {{ tag }}
+              :underline="false"
+              :to="{ name: 'Articles', query: { q: tag.substring(1, tag.length), mode: 2 }}"
+            )
+              v-chip.mr-2.my-1(
+                color="#9BA2AA"
+                small
+                dark
+              ) {{ tag }}
 
           //----------- #milestone -----------------
           v-row(no-gutters)
