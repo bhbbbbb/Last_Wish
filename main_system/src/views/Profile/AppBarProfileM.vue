@@ -14,10 +14,10 @@ v-app-bar(
     :loading="!user ? 'grey' : false"
     flat
   )
-    v-row.align-self-start(no-gutters v-if="user")
-      v-col(cols="6")
+    v-row.align-self-start(no-gutters)
+      v-col(cols="6" style="height: 48px;")
         //- v-icon(@click.stop="Back") mdi-chevron-left
-      v-col.d-flex.justify-end.pr-0(cols="6" v-if="username === $store.state.user.self.name")
+      v-col.d-flex.justify-end.pr-0(cols="6" v-if="user && username === $store.state.user.self.name")
         v-menu(offset-y)
           template(#activator="{ on, attrs }")
             v-btn(
@@ -34,26 +34,29 @@ v-app-bar(
                   v-on="on"
                   v-bind="attrs"
                 )
+                  v-icon.mr-1 mdi-pencil
                   v-list-item-title 設定自介
             v-list-item(
               to="upl"
             )
+              v-icon.mr-1 mdi-account-circle-outline
               v-list-item-title 設定頭貼
             v-list-item(@click="logout")
+              v-icon.mr-1 mdi-logout
               v-list-item-title 登出
     v-row.px-3.align-center.align-start(no-gutters v-if="user")
       v-col(cols="3")
         UserAvatar(:user="user" large)
       v-col(cols="7" offset="1")
-        v-row.align-center(no-gutters)
+        v-row.align-center.flex-nowrap(no-gutters)
           span(style="font-size:2rem") {{ user.name }}
-          v-chip.mx-2(
+          v-chip.ml-4(
             color="#8B9988"
             small
             dark
-          ) LV. {{ user.lv }}
+          ) LV. {{ user.lv }} {{ user.honor }}
         v-row(no-gutters)
-          span(style="font-size:1rem") {{ static_intro }}
+          span.text-nowrap(style="font-size:1rem") {{ static_intro }}
 
   //------------- extension --------------------
   template(v-slot:extension)
@@ -89,7 +92,7 @@ v-app-bar(
         :to="{ name: 'HonorRoll', params: { user }}"
         key="honorRoll"
         depressed
-      ) 我的榮譽榜
+      ) 榮譽榜
 </template>
 
 <script>

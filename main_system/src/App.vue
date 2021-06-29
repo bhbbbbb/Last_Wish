@@ -4,8 +4,8 @@
     <v-main>
       <router-view name="Main" />
     </v-main>
-    <!-- <router-view name="SideBar" v-if="!$vuetify.breakpoint.mobile" />
-    <router-view name="Footer" v-else/> -->
+    <!-- <router-view name="SideBar" v-if="!$vuetify.breakpoint.mobile" /> -->
+    <router-view name="Footer" />
     <SideBar v-if="!$vuetify.breakpoint.mobile" />
     <!-- <FooterM v-else-if /> -->
 
