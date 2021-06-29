@@ -15,7 +15,8 @@ const notifySchema = new mongoose.Schema({
       'UpdateOnFollowed',
       'Liked',
       'Quote'
-    ],
+    ]
+  },
     date: {
       type: Date,
       default: Date.now,
@@ -28,7 +29,6 @@ const notifySchema = new mongoose.Schema({
       type: Boolean,
       default: false,
     },
-  }
 });
 
 notifySchema.method('getDescription', function() {  // refer to parse
@@ -54,7 +54,7 @@ notifySchema.method('toFrontendFormat', function() {
   return {
     description: this.getDescription(),
     link: this.link._id,
-    checked: this.checked
+    checked: this.checked,
   };
 });
 
