@@ -430,6 +430,9 @@ module.exports = function() {
         if (!user)
             throw "user not found";
         return user.notifies.map(notify => notify.toFrontendFormat())
-                            .filter(el => { return el != null });
+                            .filter(el => { return el != null })
+                            .sort((m, n) => {
+                                return n.date - m.date;
+                            });
     }
 };
