@@ -6,6 +6,11 @@
 	white-space: nowrap;
 }
 
+.ellipsis {
+	overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .m-view {
 	margin-left: 20px;
 	margin-right: 20px;

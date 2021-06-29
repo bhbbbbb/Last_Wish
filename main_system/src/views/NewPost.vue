@@ -43,12 +43,14 @@ export default {
         return;
       }
       if (!this.new_article.body) {
-        this.Show_info('內文不得為空'); 
+        this.Show_info('內文不得為空');
         return;
       }
-      this.$store.dispatch('addArticle', this.new_article).then((id) => {
-        this.$router.push(`/article/${id}`);
-      });
+      this.$store
+        .dispatch('addArticle', { content: this.new_article })
+        .then((id) => {
+          this.$router.push(`/article/${id}`);
+        });
     },
     Show_info(info) {
       this.info_msg = info;

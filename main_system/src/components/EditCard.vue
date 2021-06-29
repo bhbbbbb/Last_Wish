@@ -52,10 +52,10 @@ v-card.ma-0.pa-0.transparent(min-height="10vh" flat)
     ) {{ tag }} &nbsp;
   
   //-- #ms
-  Milestones(
+  MilestonesEdit(
     :content="inner_article.milestones"
     :author-id="$store.state.user.self.id"
-    editable
+    @deleted="del_ms"
   )
 </template>
 
@@ -63,7 +63,7 @@ v-card.ma-0.pa-0.transparent(min-height="10vh" flat)
 export default {
   name: 'EditCard',
   components: {
-    Milestones: () => import('@/components/Milestones'),
+    MilestonesEdit: () => import('@/components/MilestonesEdit'),
   },
   props: {
     article: {
@@ -96,9 +96,7 @@ export default {
       }
     },
   },
-  created() {
-
-  },
+  created() {},
   methods: {
     addHashTag() {
       if (!this.tag_model) this.tag_model = '#';
@@ -136,6 +134,9 @@ export default {
     },
     repeated(val) {
       return !this.inner_article.tags.includes(val) || `${val} already exists`;
+    },
+    del_ms(_id) {
+      this.$emit('deleted', _id);
     },
   },
 };

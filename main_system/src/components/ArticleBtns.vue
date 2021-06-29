@@ -74,10 +74,10 @@ export default {
       this.followed = !this.followed;
       if (this.followed) this.followed_count++;
       else this.followed_count--;
-    
+
       this.$store.dispatch('setFollowed', {
         article_id: this.content.id,
-        value: this.followed
+        value: this.followed,
       });
       // apiSetFollow(this.content.id, this.followed).then(() => {
       //   this.$store

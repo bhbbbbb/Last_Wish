@@ -22,7 +22,11 @@ const INSERT = [
 ];
 global.post('/insert', user_session, async (req, res) => {
     try {
-        let newPostId = await accountManager.addPostsToAuthor(req.session.user_id, req.body.article_content);
+        let newPostId = await accountManager.addPostsToAuthor(
+            req.session.user_id,
+            req.body.article_content,
+            req.body.citation
+        );
         res.status(200).json(newPostId);
         return;
     } catch (error) {

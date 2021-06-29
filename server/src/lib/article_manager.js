@@ -1,5 +1,4 @@
-const Article = require('../models/Article');
-const User = require("../models/User");
+const Article = require('../models/Article'); const User = require("../models/User");
 const Tag = require("../models/Tag");
 
 module.exports = function() {
@@ -17,7 +16,7 @@ module.exports = function() {
      * @param {Object} articleContent = {body, title, [tags], [milestones]}
      * @returns {String} the new article id
      */
-    this.addArticle = async function(author, articleContent) {
+    this.addArticle = async function(author, articleContent, citationId) {
         let newArticleData = {
             title: articleContent.title,
             body: articleContent.body,
@@ -38,6 +37,19 @@ module.exports = function() {
         }
         for (newMilestoneData of articleContent.milestones) {
             article.milestones.push(newMilestoneData);
+        }
+        if (citationId) {
+            // We know this post is citing another
+            let citation = await Article.findById(citationId)
+                                        .populate('author');
+            if (!citation)
+                throw "citation not found";
+            article.citation = citationId;
+            citation.citedCount++;
+            citation.author.citedCount++;
+            citation.author.changeScore(10);
+            citation.author.save();
+            citation.save();
         }
         await article.sortMilestonesAndSave();
         return article._id;
@@ -187,11 +199,55 @@ module.exports = function() {
         return article.toFrontendFormat();
     }
     
-    this.searchArticlesByKeywords = async function(keywordStr) {
+    this.searchArticlesByKeywords = async function(keywordStr, options) {
         // const updateFuzzy = require('./update_fuzzy');
         // await updateFuzzy(User, ['title', 'body']);
-        let articles = await Article.fuzzySearch(keywordStr);
-        return articles.map(article => article._id);
+        let rawArticles = [];
+        if (options) {
+            switch (options.filter) {
+                case "all":
+                    rawArticles = await Article.find({})
+                                               .fuzzySearch(keywordStr);
+                    break;
+                case "finished":
+                    rawArticles = await Article.find({ finished: true })
+                                               .fuzzySearch(keywordStr);
+                    break;
+                case "unfinished":
+                    rawArticles = await Article.find({ finished: false})
+                                               .fuzzySearch(keywordStr);
+                    break;
+                default:
+                    rawArticles = await Article.find({})
+                                               .fuzzySearch(keywordStr);
+                    break;
+            }
+            switch (options.sortBy) {
+                case "new2old":
+                    rawArticles.sort((a, b) => {
+                        return b.date - a.date;
+                    });
+                    break;
+                case "old2new":
+                    rawArticles.sort((a, b) => {
+                        return a.date - b.date;
+                    });
+                    break;
+                case "most_liked":
+                    rawArticles.sort((a, b) => {
+                        return b.likes - a.likes;
+                    });
+                    break;
+                case "most_followed":
+                    rawArticles.sort((a, b) => {
+                        return b.fans.length - a.fans.length;
+                    });
+                    break;
+                case "default":
+                    break;
+            }
+        }
+        return rawArticles.map(article => article._id);
     }
     
     this.getRelatedArticlesByTag = async function(tagStr) {
@@ -258,30 +314,6 @@ module.exports = function() {
         return article.comments[len - 1].date;
      }
 
-    /**
-    * Replace the body and title of an article
-    * 
-    * @param {Object} newArticle 
-    * @param {String} articleId 
-    * @param {String} userId`
-    * @throws "no such article" exception
-    * @throws "not the author" exception
-    */
-    // this.replaceArticle = async function(newArticle, articleId, userId) {
-    //     let article = await Article.findById(articleId);
-    //     if (!article)
-    //         throw "no such article";
-    //     if (userId != article.author)
-    //         throw "not the author";
-    //     if (newArticle.title)
-    //         article.title = newArticle.title;
-    //     if (newArticle.body)
-    //         article.body = newArticle.body;
-    //     article.date = Date.now();
-    //     await article.save();
-    //     return article.date;
-    // }
-    
     this.updateArticle = async function(articleId, updateQuery) {
         let article = await Article.findById(articleId);
         if (!article)
@@ -386,23 +418,22 @@ module.exports = function() {
                                    .populate('author');
         if (!article)
             throw "no such article";
-        console.log(article.finished);
-        console.log(set, typeof set);
         if (article.finished) {
             if (!set) {
                 article.finished = false;
                 // await accountManager.changeScore(article.author, -100);
                 article.author.changeScore(-100);
+                article.author.nFinishedPosts -= 1;
             }
         } else {
             if (set) {
                 article.finished = true;
                 // await accountManager.changeScore(article.author, 100);
                 article.author.changeScore(100);
+                article.author.nFinishedPosts += 1;
             }
         }
         await article.author.save();
-        console.log(article.author);
         await article.save();
     }
 
@@ -417,5 +448,3 @@ module.exports = function() {
         await article.sortMilestonesAndSave();
     }
 }
-
-

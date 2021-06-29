@@ -49,12 +49,13 @@ export default {
   },
 
   mounted() {
-    this.$store.dispatch('user/getUser', this.content.author).then((res) => {
-      this.author = res;
-    });
+    this.$store
+      .dispatch('user/getUser', { id: this.content.author })
+      .then((res) => {
+        this.author = res;
+      });
   },
-  methods: {
-  },
+  methods: {},
 };
 </script>
 

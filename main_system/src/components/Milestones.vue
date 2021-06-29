@@ -1,14 +1,16 @@
 <template lang="pug">
-v-timeline(
+v-timeline.ml-n10(
+  v-else
   dense
-  style="margin-left: -20px"
   align-top
+  style="width: 100%; min-width: 300px;"
 )
   v-timeline-item(
     v-for="(ms, idx) in content"
     small
     :color="ms.finished ? '#9BA2AA' : '#C4C4C4'"
     :key="idx"
+    fill-dot
   )
     template(#icon)
       v-hover(v-slot="{ hover }")
@@ -27,54 +29,82 @@ v-timeline(
             span.subtitle-2.text--disabled(v-on="on" v-bind="attrs")
               | {{ moment(ms.estDate).format('M/D') }}
           span {{ moment(ms.estDate).format('YYYY/MM/DD') }}
-      v-col.d-flex.flex-shrink-1(cols="10")
-        span.d-flex.text-no-wrap(style="overflow-x: hidden")
+      v-col.text-nowrap.ellipsis(cols="11")
+        span.text-nowrap.ellipsis(style="width: 100%")
           | {{ ms.title }}
-      v-col.d-flex.align-self-start(cols="1")
-        v-btn(icon small @click="del(idx)" v-if="editable")
-          v-icon(
-            small
-          ) mdi-close
-      //- v-col(offset="1")
-      //-   v-icon(v-if="ms.finished" small) mdi-check-circle
+    v-row(no-gutters v-if="ms.body")
+      v-col(cols="1" style="height: 20px;")
+        v-icon(
+          small
+          @click="expand(idx)"
+        ) {{ expanded[idx] ? 'mdi-chevron-down' : 'mdi-chevron-right' }}
+      v-col.ellipsis(
+        cols="11"
+        :style="expanded[idx] ? '' : 'height: 20px;'"
+      )
+        span.caption.ellipsis(
+          :class="{ 'text-nowrap': !expanded[idx], 'text-pre-wrap': expanded[idx] }"
+        ) {{ ms.body }}
 
   v-timeline-item.align-center(
+    fill-dot
     small
-    :color="color_list(7)"
-    v-if="$store.state.user.self.id === authorId && !newMilestone_show"
+    color="#C4C4C4"
+    v-if="$store.state.user.self.id === authorId && !newMilestone_show && !finished"
   )
-    v-icon(slot="icon" small color="white") mdi-plus
-    v-btn(@click="newMilestone_show = true") 點我新增里程碑
+    v-icon(
+      slot="icon"
+      small
+      color="white"
+      @click="newMilestone_show = true"
+    ) mdi-plus
+    v-btn(
+      v-if="$store.state.user.self.id === authorId && allFinish()"
+      rounded
+      color ="#D1D7D7"
+      depressed
+      @click="show = true"
+    ) 完成計畫
   
   NewMilestone(
-    v-if="$store.state.user.self.id === authorId && newMilestone_show"
+    v-if="$store.state.user.self.id === authorId && newMilestone_show && !finished"
     @created="addMilestone"
   )
 
-  v-btn(
-    v-if="$store.state.user.self.id === authorId && all_fin()"
-    rounded
-    color ="#D1D7D7"
-    depressed
-    @click="show = true"
-  ) 完成計畫
+  v-timeline-item.align-center(
+    small
+    fill-dot
+    color="grey"
+    v-else-if="finished"
+  )
+    v-icon(
+      slot="icon"
+      small
+      color="white"
+      @click="newMilestone_show = true"
+    ) mdi-check
+    strong 計畫於 {{ finished_date }} 完成
+
+
   MsgBox(:value.sync="show" @confirm="archive" )
     v-col.d-flex.justify-center(cols="12")
       span.align-center(class="msgtxt") 計畫一但完成後就不能再修改
       br
     v-col.d-flex.justify-center(cols="12")
       span.align-center(class="msgtxt") 確定要完成嗎?
+    template(#confirm)
+      span(style="color: red") 確定
 </template>
 
 <script>
 import moment from 'moment';
-import color_list from '@/data/color_list';
 
 export default {
   name: 'Milestones',
   components: {
     NewMilestone: () => import('@/views/NewMilestone'),
     MsgBox: () => import('@/components/MsgBox'),
+    MilestonesEdit: () => import('@/components/MilestonesEdit'),
   },
   props: {
     content: {
@@ -90,16 +120,24 @@ export default {
       required: false,
       default: undefined,
     },
-    editable: {
+    finished: {
       type: Boolean,
+      required: false,
       default: false,
     },
   },
   data: () => ({
-    newMilestone_show: true,
+    newMilestone_show: false,
     show: false,
+    expanded: {},
   }),
-  computed: {},
+  computed: {
+    finished_date() {
+      return moment(this.content[this.content.length - 1].estDate).format(
+        'MM/DD'
+      );
+    },
+  },
   created() {},
 
   methods: {
@@ -117,17 +155,12 @@ export default {
           break;
         }
       }
-      if (this.editable)
-        this.content.splice(insert_idx, 0, value);
-      
-      else {
-        this.$store.dispatch('addMilestone', {
-          article_id: this.articleId,
-          insert_idx,
-          milestone: value,
-        });
-        this.$forceUpdate();
-      }
+      this.$store.dispatch('addMilestone', {
+        article_id: this.articleId,
+        insert_idx,
+        milestone: value,
+      });
+      this.$forceUpdate();
       // this.$emit('update:new', value);
     },
     del(idx) {
@@ -146,7 +179,7 @@ export default {
       let self = this.content[idx].finished || hover;
       return this.$store.state.user.self.id === this.authorId && self;
     },
-    all_fin() {
+    allFinish() {
       let result = true;
       if (this.content.length > 0)
         for (let i = this.content.length - 1; i >= 0; i--) {
@@ -156,30 +189,24 @@ export default {
           }
         }
       else result = false;
-      //console.log(result);
       return result;
     },
     archive() {
-      console.log('fin');
+      this.$store.dispatch('finishArticle', { article_id: this.articleId });
     },
     moment,
-    color_list,
+    expand(idx) {
+      if (this.expanded[idx] === undefined) this.$set(this.expanded, idx, true);
+      else this.expanded[idx] = !this.expanded[idx];
+    },
   },
 };
 </script>
-
-<style>
-.text-pre-wrap {
-  white-space: pre-wrap;
-}
-</style>
 
 <style scpoed>
 .v-timeline-item {
   padding-bottom: 16px !important;
 }
-</style>
-<style scpoed>
 .msgtxt {
   font-family: Roboto;
   font-style: medium;
@@ -188,5 +215,9 @@ export default {
   text-align: center;
 
   color: #888888;
+}
+.v-timeline-item__dot--small {
+  height: 16px !important;
+  width: 16px !important;
 }
 </style>

@@ -14,10 +14,11 @@ var user_session = require('../lib/session.js');
 const https_config = require('../../https.config');
 /***************** Url Setting *******************/
 const prefix = https_config.https_enable ? 'https://' : 'http://'
+var frontPort = https_config.front_port;
 var port = https_config.port;
-var frontPort = 8080;
-const SERVER_URL = prefix + ip.address() + ':' + port;
-const FRONT_URL  = prefix + ip.address() + ':' + frontPort;
+var ip_ =  https_config.https_enable ? 'luffy.ee.ncku.edu.tw' : ip.address();
+const SERVER_URL = prefix + ip_ + ':' + port;
+const FRONT_URL  = prefix + ip_ + ':' + frontPort;
 /***************** Others *************************/
 const EMAIL_SECRET = 'df45ea4g684AgpfsdSDLK4W6sdfsdg54asd4fgsljopa'
 
@@ -225,9 +226,21 @@ const GET_PUBLIC_INFO = [
 ];
 user.get('/get_public_info', async (req, res) => {
     try {
-        let userInfo = await accountManager.getUserInfo(req.query.id);
+        let userInfo = await accountManager.getPublicInfoById(req.query.id);
         let response = GET_PUBLIC_INFO[SUCCEED];
         res.status(response.status).json(userInfo);
+    } catch (error) {
+        console.log(error);
+        let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
+        res.status(response.status).json(response.body);
+    }
+});
+
+user.get('/get_homepage_info', async (req, res) => {
+    try {
+        let homePageInfo = await accountManager.getHomePageInfoById(req.query.id);
+        let response = GET_PUBLIC_INFO[SUCCEED];
+        res.status(response.status).json(homePageInfo);
     } catch (error) {
         console.log(error);
         let response = GET_PUBLIC_INFO[USER_NOT_FOUND];

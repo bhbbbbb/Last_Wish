@@ -7,8 +7,13 @@ v-app-bar(
   height="180"
   extension-height="50"
 )
-  v-sheet.pa-0.px-0.ma-0(style="width: 100vw" color="transparent")
-    v-row.align-self-start(no-gutters)
+  v-card.pa-0.px-0.ma-0(
+    style="width: 100vw"
+    color="transparent"
+    :loading="!user ? 'grey' : false"
+    flat
+  )
+    v-row.align-self-start(no-gutters v-if="user")
       v-col(cols="6")
         v-icon(@click.stop="Back") mdi-chevron-left
       v-col.d-flex.justify-end.pr-0(cols="6" v-if="username === $store.state.user.self.name")
@@ -38,9 +43,16 @@ v-app-bar(
     v-row.px-3.align-center.align-start(no-gutters v-if="user")
       v-col(cols="3")
         UserAvatar(:user="user" large)
-      v-col.d-flex.flex-column.align-start(cols="7" offset="1")
-        span(style="font-size:2rem") {{ user.name }}
-        span(style="font-size:1rem") {{$store.state.user.self.self_intro }}
+      v-col(cols="7" offset="1")
+        v-row.align-center(no-gutters)
+          span(style="font-size:2rem") {{ user.name }}
+          v-chip.mx-2(
+            color="#8B9988"
+            small
+            dark
+          ) LV. {{ user.lv }}
+        v-row(no-gutters)
+          span(style="font-size:1rem") {{ static_intro }}
 
   //------------- extension --------------------
   template(v-slot:extension)
@@ -68,9 +80,10 @@ v-app-bar(
       )
         v-divider(vertical)
       v-btn.tab.white(
+        v-if="user"
         :ripple="false"
 				active-class="active"
-        to="honorRoll"
+        :to="{ name: 'HonorRoll', params: { user }}"
         key="honorRoll"
         depressed
       ) 我的榮譽榜
@@ -99,17 +112,33 @@ export default {
     imgUrl: '',
     user: undefined,
     intro: undefined,
+    static_intro: undefined,
   }),
   computed: {
     ...mapState(['links']),
   },
+  watch: {
+    username() {
+      this.init();
+    },
+  },
   created() {
-    if (this.$store.state.user.self.name === this.username)
-      this.user = this.$store.state.user.self;
-    else this.user = this.$store.state.user.others;
-    this.intro = this.$store.state.user.self.self_intro;
+    this.init();
   },
   methods: {
+    async init() {
+      this.user = undefined;
+      if (this.$store.state.user.self.name === this.username) {
+        this.user = await this.$store.dispatch('user/getSelfMore');
+        this.intro = this.$store.state.user.self.self_intro;
+      } else {
+        this.user = await this.$store.dispatch(
+          'user/getOthersByName',
+          this.username
+        );
+      }
+      this.static_intro = this.user.self_intro;
+    },
     Back() {
       this.$router.go(-1);
     },

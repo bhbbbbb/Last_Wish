@@ -4,8 +4,11 @@ export const home_routes = [
     path: 'articles',
     name: 'Articles',
     component: () => import('@/views/ArticleContainer'),
-    props: () => ({
+    props: (route) => ({
       type: 'global',
+      value: route.query.q,
+      mode: Number(route.query.mode),
+      user: route.query.u,
     }),
   },
   {

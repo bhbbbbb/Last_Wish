@@ -7,7 +7,6 @@ const articleRequest = axios.create({
   baseURL: baseURL + '/articles',
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
-  // headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 });
 
 const userRequest = axios.create({
@@ -21,12 +20,19 @@ const uploadRequest = axios.create({
   withCredentials: true,
   headers: { 'Content-Type': 'multipart/form-data' },
 });
+
+const searchRequest = axios.create({
+  baseURL: baseURL + '/search',
+  withCredentials: true,
+  headers: { 'Content-Type': 'application/json' },
+});
+
 /********************** Call upload.js **********************/
 export const apiUploadFiles = (data) => uploadRequest.post('/uploadFile', data);
 
 /********************** Call #article.js **********************/
 
-//--------------------- get #articles --------------------------
+//--------------------- #get #articles --------------------------
 export const apiGetArticles = (sort_by, filter) =>
   articleRequest.get('/', { params: { sort_by, filter } });
 
@@ -45,8 +51,24 @@ export const apiGetLikedPost = () => userRequest.get('/get_liked_posts');
 
 // ----------------------------------------------------------------
 
-export const apiUploadArticle = (content) =>
-  articleRequest.post('/insert', { article_content: content });
+// ---------------------- #search --------------------------------
+
+export const apiSearchAll = (key) => searchRequest('/', { params: { q: key } });
+
+export const apiSearchArticles = (key) =>
+  searchRequest('/articles', { params: { q: key } });
+
+export const apiSearchUser = (key) =>
+  searchRequest('/users', { params: { q: key } });
+
+export const apiSearchTags = (key) =>
+  searchRequest('/tags', { params: { q: key } });
+
+export const apiSearchTagNames = (key) =>
+  searchRequest('/tag_names', { params: { q: key } });
+
+export const apiUploadArticle = (content, citation) =>
+  articleRequest.post('/insert', { article_content: content, citation });
 
 /**
  *
@@ -143,6 +165,9 @@ export const apiIsValid = (data) =>
 export const apiGetPublicInfo = (id) =>
   userRequest.get('/get_public_info', { params: { id: id } });
 
+export const apiGetHomePageInfo = (id) =>
+  userRequest.get('/get_homepage_info', { params: { id } });
+
 export const apiLineLogin = (data) => userRequest.post('/line_login_req', data);
 
 /**
@@ -161,7 +186,7 @@ export const apiSetLike = (article_id, set) =>
 export const apiReset = (username, new_pass) =>
   userRequest.post('/reset_pass', { username, new_pass });
 
-// ----------------- event -------------------------
+// ----------------- #event -------------------------
 
 export const apiGetEvents = () => userRequest.get('/get_events');
 
@@ -177,3 +202,9 @@ export const apiEditEvent = (event_id, event) =>
     end: event.end,
     finished: event.finished,
   });
+
+export const apiSetFinishedEvent = (event_id, set) =>
+  userRequest.post('/set_finished_event', { event_id, set });
+
+export const apiSetFinishedArticle = (article_id, set) =>
+  articleRequest.post('/set_finished_article', { article_id, set });

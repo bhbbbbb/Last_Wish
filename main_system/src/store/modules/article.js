@@ -10,6 +10,7 @@ import {
   apiEditArticle,
   apiSetMsFinished,
   apiSetFollow,
+  apiSetFinishedArticle,
 } from '../api';
 
 export default {
@@ -114,14 +115,14 @@ export default {
       state.followed.new2old.unfinished = undefined;
       state.followed.new2old.all = undefined;
     },
-    deleteArticle(state, id) {
-      state.data[id] = false;
-      let idx = state.self.findIndex((_id) => _id === id);
-      if (idx !== -1) state.self.splice(idx, 1);
+    // deleteArticle(state, id) {
+    //   state.data[id] = false;
+    //   let idx = state.self.findIndex((_id) => _id === id);
+    //   if (idx !== -1) state.self.splice(idx, 1);
 
-      idx = state.global.findIndex((_id) => _id === id);
-      if (idx !== -1) state.global.splice(idx, 1);
-    },
+    //   // idx = state.global.findIndex((_id) => _id === id);
+    //   // if (idx !== -1) state.global.splice(idx, 1);
+    // },
 
     /**
      *
@@ -135,8 +136,12 @@ export default {
       state.data[article_id].content.milestones[ms_idx].finished = value;
     },
     addMilestone(state, { article_id, insert_idx, milestone }) {
-      state.data[article_id].content.milestones[insert_idx]
-      state.data[article_id].content.milestones.splice(insert_idx, 0, milestone);
+      state.data[article_id].content.milestones[insert_idx];
+      state.data[article_id].content.milestones.splice(
+        insert_idx,
+        0,
+        milestone
+      );
     },
     addComment(state, { article_id, data }) {
       state.data[article_id].comments.push(data);
@@ -147,14 +152,15 @@ export default {
     setFollowed(state, { article_id, value, self_id }) {
       let followed_state = state.data[article_id].fans.includes(self_id);
 
-      if (value && !followed_state)
-        state.data[article_id].fans.push(self_id);
-
+      if (value && !followed_state) state.data[article_id].fans.push(self_id);
       else if (!value && followed_state) {
-        let idx = state.data[article_id].fans.findIndex((id) => id === self_id); 
+        let idx = state.data[article_id].fans.findIndex((id) => id === self_id);
         state.data[article_id].fans.splice(idx, 0);
       }
-    }
+    },
+    finishArticle(state, article_id) {
+      state.data[article_id].finished = true;
+    },
   },
   getters: {
     /**
@@ -189,10 +195,14 @@ export default {
      * @param {String} type : 'global', 'followed', 'self', 'others'
      * @param {String} sort_by : 'new2old', 'most_liked', 'most_followed'
      * @param {String} filter : 'all', 'finished', 'unfinished'
+     * @param {String} username : only be true when type = 'others'
      * @param {Boolean} force_update : force_update or not
      * @returns {Promise} Array of id
      */
-    async getArticles(context, { type, sort_by, filter, force_update }) {
+    async getArticles(
+      context,
+      { type, sort_by, filter, username, force_update }
+    ) {
       switch (type) {
         case 'global':
           return context.dispatch('getGlobalArticles', {
@@ -212,6 +222,12 @@ export default {
           return context.dispatch('getSelfArticles', { force_update });
 
         case 'others':
+          if (
+            !context.rootState.user.others ||
+            context.rootState.user.others.name !== username
+          ) {
+            await context.dispatch('user/getOthersByName', username);
+          }
           return context.dispatch('getOthersArticles', {
             user_id: context.rootState.user.others.id,
             force_update,
@@ -264,8 +280,10 @@ export default {
      * @param {String} user_id
      * @returns
      */
-    async getUserArticles(context, user_id) {
-      return apiGetUserPosts(user_id, 'new2old', 'all')
+    async getUserArticles(context, { user_id, sort_by, filter }) {
+      if (!sort_by) sort_by = 'new2old';
+      if (!filter) filter = 'all';
+      return apiGetUserPosts(user_id, sort_by, filter)
         .then((res) => {
           return res.data;
         })
@@ -282,17 +300,27 @@ export default {
     async getSelfArticles(context, { force_update }) {
       if (context.state.self && !force_update) return context.state.self;
       return context
-        .dispatch('getUserArticles', context.rootState.user.self.id)
+        .dispatch('getUserArticles', {
+          user_id: context.rootState.user.self.id,
+          sort_by: 'new2old',
+          filter: 'all',
+        })
         .then((data) => {
           context.commit('updateSelfArticles', data);
           return data;
         });
     },
     async getOthersArticles(context, { user_id }) {
-      return context.dispatch('getUserArticles', user_id).then((data) => {
-        context.commit('updateOthersArticles', data);
-        return data;
-      });
+      return context
+        .dispatch('getUserArticles', {
+          user_id,
+          sort_by: 'new2old',
+          filter: 'all',
+        })
+        .then((data) => {
+          context.commit('updateOthersArticles', data);
+          return data;
+        });
     },
 
     async getLikedArticles(context) {
@@ -309,21 +337,29 @@ export default {
 
     /**
      *
-     * @param {Object} payload { id, force_update = false }
+     * @param {String} id article_id
+     * @param {Boolean} no_deep if set to true would only get the
+     *  article itself (wouldn't fetch citation article)
+     * @param {Object} force_update
      * @returns
      */
-    async getArticle({ state, commit }, { id, force_update }) {
+    async getArticle({ state, commit }, { id, force_update /*, no_deep*/ }) {
       if (!force_update && id in state.data) {
         return state.data[id];
       }
-      return apiGetArticleById(id).then((res) => {
-        commit('updateArticle', { id, data: res.data });
-        return res.data;
-      });
+
+      let { data } = await apiGetArticleById(id);
+
+      commit('updateArticle', { id, data });
+
+      // if (data.citation && !no_deep) {
+      //   await dispatch('getArticle', { id: data.citation, no_deep: true });
+      // }
+      return data;
     },
-    async addArticle(context, article_content) {
+    async addArticle(context, { content, citation }) {
       try {
-        let { data: new_id } = await apiUploadArticle(article_content);
+        let { data: new_id } = await apiUploadArticle(content, citation);
         context.dispatch('getArticle', { id: new_id });
         context.commit('cleanArticles');
         return new_id;
@@ -332,7 +368,8 @@ export default {
       }
     },
     deleteArticle(context, id) {
-      context.commit('deleteArticle', id);
+      // context.commit('deleteArticle', id);
+      context.commit('cleanArticles');
       apiDeleteArticle(id).catch((err) => console.error(err));
     },
 
@@ -344,14 +381,13 @@ export default {
     setMilestoneFinished(context, { article_id, ms_idx, value }) {
       context.commit('setMilestoneFinished', { article_id, ms_idx, value });
       let ms_id = context.state.data[article_id].content.milestones[ms_idx]._id;
-      console.log(article_id, ms_id, value);
       apiSetMsFinished(article_id, ms_id, value);
     },
 
     /**
-     * 
+     *
      * @param {String} article_id
-     * @param {Number} insert_idx 
+     * @param {Number} insert_idx
      * @param {Object} milestone
      */
     addMilestone(context, { article_id, insert_idx, milestone }) {
@@ -361,7 +397,7 @@ export default {
         body: tem.body,
         tags: tem.tags,
         modified_milestones: [],
-        new_milestones: [ milestone ],
+        new_milestones: [milestone],
         deleted_milestones: [],
       };
       context.commit('addMilestone', { article_id, insert_idx, milestone });
@@ -388,18 +424,31 @@ export default {
     /**
      *
      * @param {String} article_id
-     * @param {Object} content : article.content
+     * @param {Object} content : content to suit api form
+     * @param {Object} content_native : article.content
      */
-    editArticle(context, { article_id, content }) {
+    editArticle(context, { article_id, content, content_native }) {
       apiEditArticle(article_id, content);
-      context.commit('updateArticleContent', { article_id, content });
+      context.commit('updateArticleContent', {
+        article_id,
+        content: content_native,
+      });
     },
 
     async setFollowed(context, { article_id, value }) {
-      context.commit('setFollowed', { article_id, value, self_id: context.rootState.user.self.id });
+      context.commit('setFollowed', {
+        article_id,
+        value,
+        self_id: context.rootState.user.self.id,
+      });
       context.commit('cleanFollowedArticles');
       await apiSetFollow(article_id, value);
       context.dispatch('getArticle', { id: article_id, force_update: true });
+    },
+
+    finishArticle(context, { article_id }) {
+      context.commit('finishArticle', article_id);
+      apiSetFinishedArticle(article_id, true);
     },
   },
 };

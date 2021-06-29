@@ -1,5 +1,5 @@
 <template lang="pug">
-v-timeline-item.align-center(small :color="color_list(7)" style="padding-top: 12px")
+v-timeline-item.align-center(small color="#C4C4C4" style="padding-top: 12px" fill-dot)
   v-icon(slot="icon" small color="white")  mdi-plus 
 
   v-row(no-gutters)
@@ -23,7 +23,7 @@ v-timeline-item.align-center(small :color="color_list(7)" style="padding-top: 12
         v-date-picker(
           no-title
           v-model="newMilestone.estDate"
-          :color="color_list(7)"
+          color="#C4C4C4"
           @change="pick"
         )
 
@@ -36,17 +36,11 @@ v-timeline-item.align-center(small :color="color_list(7)" style="padding-top: 12
         :error-messages="err_msg"
         placeholder="新增計畫"
       )
-  //- v-row
-  //-   v-col.d-flex.justify-center(cols="12")
-  //-     v-date-picker(v-model="newMilestone.estDate" :color="color_list(7)" :max="max")
-  //-   v-col.d-flex.justify-center(cols="12")
-  //-     v-btn(@click="submitMilestone")  submit 
   slot(:newmilestone="newMilestone")
 </template>
 
 <script>
 // import { apiUploadMilestone } from '@/store/api';
-import color_list from '@/data/color_list';
 import moment from 'moment';
 export default {
   name: 'NewMilestone',
@@ -86,7 +80,6 @@ export default {
       this.date_modified = true;
       this.err_msg = undefined;
     },
-    color_list,
     moment,
     submit() {
       // TODO : tell user error message
@@ -98,7 +91,6 @@ export default {
         this.err_msg = '不得為空';
         return;
       }
-
       this.newMilestone.title = this.title_model;
       let copy = JSON.parse(JSON.stringify(this.newMilestone));
       this.$emit('created', copy);

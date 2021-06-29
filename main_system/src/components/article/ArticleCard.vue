@@ -1,6 +1,7 @@
 <template lang="pug">
 v-card.my.pa-3(
-    height="185"
+    height="200"
+    min-height="200"
     rounded="lg"
     :color="color"
     v-on="$listeners"
@@ -29,8 +30,28 @@ v-card.my.pa-3(
             @touchstart.stop=""
           )
             v-icon(style="transform: rotate(0.125turn);") mdi-link
-  v-row(v-if="content" no-gutters="")
-    strong(style="white-space: nowrap; overflow: hidden;") {{ content.content.title }}
+  v-row(v-if="content" no-gutters)
+    v-col.pa-0.mt-n2.d-flex.flex-nowrap.align-center(
+      offset="1"
+      cols="auto"
+      style="height: 16px;"
+    )
+      NavLink.pl-3.ml-3.caption.font-weight-bold(
+        v-if="citation"
+        :to="{ name: 'Article', params: { id: citation.id }}"
+      ) 文章
+      span.caption.mr-1(v-show="citation") 引用自
+      NavLink.caption.font-weight-bold(
+        v-if="citation"
+        :to="{ name: 'User', params: { username: citation.author.name }}"
+      ) {{ citation.author.name }}
+      
+
+  v-row(v-if="content" no-gutters)
+    v-col.ellipsis(cols="11")
+      strong.text-nowrap.ellipsis {{ content.content.title }}
+    v-col(cols="1")
+      v-icon.ml-2(small v-if="content.finished") mdi-checkbox-marked-circle
   v-row(
     v-if="content"
     no-gutters
@@ -42,7 +63,7 @@ v-card.my.pa-3(
       :content="content.content.body"
     )
   v-row(v-if="content" no-gutters)
-    span.subtitle-2.text--disabled {{ content.content.milestones.length }} 個里程碑
+    span.subtitle-2.text--disabled {{ content.content.milestones.length }} 個計畫
   //--------- articleBtns 
   ArticleBtns(v-if="content" :content="content")
 </template>
@@ -67,6 +88,7 @@ export default {
   data: () => ({
     content: undefined,
     color: '#F5F4F0',
+    citation: undefined,
   }),
   computed: {
     date() {
@@ -83,14 +105,19 @@ export default {
   },
   mounted() {},
   methods: {
-    update() {
+    async update() {
       this.color = color_list(this.id);
-      this.$store.dispatch('getArticle', { id: this.id }).then((res) => {
-        this.content = res;
-      });
+      let res = await this.$store.dispatch('getArticle', { id: this.id });
+
+      this.content = res;
+
+      if (res.citation)
+        this.citation = await this.$store.dispatch('getArticle', {
+          id: res.citation,
+        });
     },
     goLink() {
-      this.$router.push({ name: 'Link', params: { reference: this.content }});
+      this.$router.push({ name: 'Link', params: { reference: this.content } });
     },
   },
 };
