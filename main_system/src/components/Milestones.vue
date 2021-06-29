@@ -29,8 +29,11 @@ v-timeline.ml-n10(
             span.subtitle-2.text--disabled(v-on="on" v-bind="attrs")
               | {{ moment(ms.estDate).format('M/D') }}
           span {{ moment(ms.estDate).format('YYYY/MM/DD') }}
-      v-col.text-nowrap.ellipsis(cols="11")
-        span.text-nowrap.ellipsis(style="width: 100%")
+      v-col.ellipsis(cols="11")
+        span.text-nowrap.ellipsis(
+          style="width: 100%"
+          :class="{ 'text-nowrap': !expanded[idx], 'text-pre-wrap': expanded[idx] }"
+        )
           | {{ ms.title }}
     v-row(no-gutters v-if="ms.body")
       v-col(cols="1" style="height: 20px;")
