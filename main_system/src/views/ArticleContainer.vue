@@ -160,12 +160,15 @@ export default {
     },
     async fetchArticles(type) {
       if (!type) type = this.type;
-      this.articles = this.$store.getters.articles(
-        type,
-        this.sort_by,
-        this.filter
-      );
-      if (!this.articles)
+
+      if (type !== 'others')
+        this.articles = this.$store.getters.articles(
+          type,
+          this.sort_by,
+          this.filter
+        );
+      else this.articles = undefined;
+      if (!this.articles || type === 'others')
         this.$store
           .dispatch('getArticles', {
             type: type,

@@ -69,9 +69,11 @@ v-app-bar(
         to="articles"
         key="articles"
         depressed
+        v-if="user"
       ) 
-        span 我的願望
-        span(v-if="$store.state.article.self") ({{ $store.state.article.self.length }})
+        span(style="text-transform: none;") {{ user.name }}
+        span 的計畫
+        span() {{ num_of_aritlces }}
         //- v-btn.pa-0(text :ripple="false") 全部
           v-icon mdi-menu-down
       v-btn.pa-0(
@@ -116,6 +118,15 @@ export default {
   }),
   computed: {
     ...mapState(['links']),
+    num_of_aritlces() {
+      let num;
+      if (this.user && this.$store.state.user.self.id === this.user.id)
+        if (this.$store.state.article.self)
+          num = this.$store.state.article.self.length;
+        else if (this.$store.state.article.others)
+          num = this.$store.state.article.others.length;
+      return num ? `(${num})` : '';
+    },
   },
   watch: {
     username() {
