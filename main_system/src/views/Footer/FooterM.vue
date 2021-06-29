@@ -1,5 +1,6 @@
 <template lang="pug">
 v-bottom-navigation(
+  v-if="$vuetify.breakpoint.mobile"
   app
   v-model="selected"
   mandatory

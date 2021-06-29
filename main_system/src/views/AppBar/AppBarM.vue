@@ -1,15 +1,18 @@
 <template lang="pug">
-v-app-bar.d-flex.justify-center.align-end(
+v-app-bar.d-flex.justify-center.align-end.appbar-border(
   app 
   prominent 
   flat
   height="100"
   color='#9ba2aa'
+  clipped-left
+  width="100vw"
+  min-width="100vw"
 )
-  v-container.ma-0.fill-height(
+  div.ma-0.fill-height.d-flex.align-center(
     style="width:100vw;"
   )
-    v-row(no-gutters)
+    v-row(no-gutters style="width:90vw;")
       //- v-col.align-self-center(cols="2")
       //-   v-avatar(@click.stop="Back")
       //-     v-icon(large color="white") mdi-chevron-left
@@ -32,7 +35,7 @@ v-app-bar.d-flex.justify-center.align-end(
       //- #calendar
       v-col.align-self-center(offset="3" cols="2")
         v-btn.ma-0.pa-1(
-          v-if="$store.state.is_login"
+          v-if="$store.state.is_login && $vuetify.breakpoint.mobile"
           width="64"
           height="64"
           text
@@ -44,7 +47,7 @@ v-app-bar.d-flex.justify-center.align-end(
             span.caption(style="color: white;") 行事曆
         
       //- #notify
-      v-col.align-self-center(cols="2")
+      v-col.align-self-center.justify-end.d-flex(cols="2" lg="1")
         Notification
 
   //- v-app-bar-nav-icon(
@@ -118,5 +121,13 @@ h3.subtitle {
 .v-btn__content {
   display: flex;
   flex-direction: column;
+}
+.appbar-border {
+  border-bottom: 1px #e0e0e0 solid !important;
+}
+</style>
+<style>
+.v-toolbar--prominent .v-toolbar__content {
+  width: 100vw !important;
 }
 </style>

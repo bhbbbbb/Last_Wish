@@ -1,5 +1,9 @@
 <template lang="pug">
-v-card.ma-1.pa-0(min-height="10vh" flat)
+v-card.ma-1.pa-0.mx-lg-auto(
+  min-height="10vh"
+  flat
+  max-width="1000"
+)
   v-row(no-gutters style="width: 100%;")
     v-sheet(color="#E1E3E5" width="100%")
       v-row(no-gutters style="color: #9BA2AA")
@@ -11,7 +15,7 @@ v-card.ma-1.pa-0(min-height="10vh" flat)
           v-btn(text @click="SubmitNewArticle") 發佈
   EditCard.mx-6.mt-3(:article.sync="new_article")
 
-  MsgBox(:value.sync="show_info" :buttons="1" :timeout="1000") 
+  MsgBox(:value.sync="show_info" :buttons="1" :timeout="2000") 
     v-row(no-gutters)
       v-col.d-flex.justify-center(cols="12")
         span {{ info_msg }}

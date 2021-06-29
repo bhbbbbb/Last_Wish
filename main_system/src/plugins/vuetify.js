@@ -5,7 +5,7 @@ Vue.use(Vuetify);
 
 export default new Vuetify({
   breakpoint: {
-    // mobileBreakpoint: 'sm',
-    mobileBreakpoint: 'xl',
+    mobileBreakpoint: 'sm',
+    // mobileBreakpoint: 'xl',
   },
 });

@@ -19,7 +19,8 @@ v-sheet.m-view(rounded="lg")
     v-col.ma-0.pa-0.pa-sm-2.pm-md-2(
       cols="12"
       sm="6"
-      lg="4"
+      md="4"
+      lg="3"
       v-for="(id, idx) in articles",
       :key="idx"
       v-if="$store.state.article.data[id] !== false"

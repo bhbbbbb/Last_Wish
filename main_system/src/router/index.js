@@ -45,6 +45,9 @@ const routes = [
         });
       else next();
     },
+    meta: {
+      user: true,
+    },
     redirect: { name: 'UserArticles' },
     children: user_routes,
     props: {

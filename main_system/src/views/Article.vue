@@ -1,6 +1,12 @@
 <template lang="pug">
-v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)" min-width="90%" v-if="article")
-  v-container      
+v-card.m-view.pa-1.mt-6.mx-lg-auto(
+  min-height="80vh"
+  rounded="lg"
+  :color="color_list(id)"
+  max-width="1000"
+  v-if="article"
+)
+  v-container(style="max-width: 1000px;")      
     v-row(no-gutters="no-gutters")
       v-col.d-flex.justify-start.align-center(cols="6")
         UserAvatar(:user="article.author")
