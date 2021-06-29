@@ -3,7 +3,7 @@ const mongoose_fuzzy_searching = require("mongoose-fuzzy-searching");
 const colorValidator = (v) => {
   return (/^#([0-9a-fA-F]{3}){1,2}$/i).test(v);
 }
-const HONOR = ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8"];
+const HONOR = ["魔法師學徒", "見習魔法士", "上級魔法士", "見習魔導士", "上級魔導士", "見習魔導師", "上級魔導師", "終極魔導師"];
 
 const eventSchema = new mongoose.Schema({
   name: String,
