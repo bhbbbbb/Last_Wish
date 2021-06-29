@@ -469,10 +469,6 @@ module.exports = function() {
             throw "no such milestone"
         milestone.finished = set;
         await article.sortMilestonesAndSave();
-        for(fan of article.fans){
-            if(fan != article.author._id)
-                await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
-            }
     }
     /**
      * 
