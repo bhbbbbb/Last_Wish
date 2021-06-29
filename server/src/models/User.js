@@ -97,6 +97,7 @@ userSchema.method('getPublicInfo', function() {
 
 userSchema.method('getHomePageInfo', function() {
   return {
+    // TODO: return the data for progress bar
     id: this._id,
     username: this.username,
     pro_pic: this.proPic,

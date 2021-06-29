@@ -463,7 +463,7 @@ user.post('/reset_email', user_session, async (req, res) => {
     }
 })
 
-user.get('/get_notify', user_session, async(req, res) => {
+user.get('/get_notify', user_session, async (req, res) => {
     try {
         let userId = req.session.user_id;
         if(!userId)
@@ -480,7 +480,7 @@ user.get('/get_notify', user_session, async(req, res) => {
         res.sendStatus(400);
     }
 })
-user.post('/set_deleted_notify',user_session, async(req, res) => {
+user.post('/set_deleted_notify', user_session, async (req, res) => {
     try {
         let userId = req.session.user_id;
         if(!userId)
@@ -495,10 +495,10 @@ user.post('/set_deleted_notify',user_session, async(req, res) => {
     }
 })
 
-user.post('/set_checked_notify',user_session, async(req, res) => {
+user.post('/set_checked_notify', user_session, async (req, res) => {
     try {
         let userId = req.session.user_id;
-        if(!userId)
+        if (!userId)
             res.status(400).json('please logged in');
         let notifyId = req.body.notify_id;
         let set = req.body.set;

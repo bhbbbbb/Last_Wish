@@ -54,8 +54,8 @@ module.exports = function() {
             await notifyManager.createNotify(author._id, citation.author._id, article._id, 'Quote');
         }
         await article.sortMilestonesAndSave();
-        let tagUsers = await this.tagTextParse(articleContent.body);
-        for(tagUser of tagUsers){
+        let tagUsers = this.tagTextParse(articleContent.body);
+        for (tagUser of tagUsers) {
             await notifyManager.createNotify(author._id, tagUser, article._id, 'TagInPost');
         }
         return article._id;
@@ -317,14 +317,14 @@ module.exports = function() {
         article.author.changeScore(score);
         await article.author.save();
         await article.save();
-        await notifyManager.createNotify(author, article.author._id, articleId, 'CommentOnSelf');
-        let tagUsers = await this.tagTextParse(commentStr);
-        for(tagUser of tagUsers){
-            await notifyManager.createNotify(author, tagUser, article._id, 'TagInComment');
+        await notifyManager.createNotify(author._id, article.author._id, articleId, 'CommentOnSelf');
+        let tagUsers = this.tagTextParse(commentStr);
+        for (tagUser of tagUsers) {
+            await notifyManager.createNotify(author._id, tagUser, article._id, 'TagInComment');
         }
-        for(fan of article.fans){
-            if(fan != article.author._id)
-                await notifyManager.createNotify(author, fan, article._id, 'CommentOnFollowed');
+        for (fan of article.fans) {
+            if (fan != article.author._id)
+                await notifyManager.createNotify(author._id, fan, article._id, 'CommentOnFollowed');
         }
         return article.comments[len - 1].date;
      }
@@ -386,8 +386,8 @@ module.exports = function() {
                     milestone.finished = modifiedMilestone.finished;
             }
         }
-        for(fan of article.fans){
-            if(fan != article.author._id)
+        for (fan of article.fans) {
+            if (fan != article.author._id)
                 await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
         }
         await article.sortMilestonesAndSave();
@@ -454,9 +454,9 @@ module.exports = function() {
         }
         await article.author.save();
         await article.save();
-        for(fan of article.fans){
-            if(fan != article.author._id)
-                await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
+        for (fan of article.fans){
+            if (fan != article.author._id)
+                await notifyManager.createNotify(article.author._id, fan, article._id, 'UpdateOnFollowed');
         }
     }
 
@@ -475,24 +475,25 @@ module.exports = function() {
      * @param {String} stringToBeParse 
      * @returns {Array} users
      */
-    this.tagTextParse = async function(stringToBeParse){
+    this.tagTextParse = async function(stringToBeParse) {
         let users = [];
         const pattern = /(?:\s|^)@(\w+)/;
         while (stringToBeParse) {
-          let found = stringToBeParse.match(pattern);
-          if (!found) break;
-          let plain_text = stringToBeParse.substring(0, found.index);
-          stringToBeParse = stringToBeParse.substring(found.index + found[0].length);
-          users.push(found[1]);
+            let found = stringToBeParse.match(pattern);
+            if (!found)
+              break;
+            let plain_text = stringToBeParse.substring(0, found.index);
+            stringToBeParse = stringToBeParse.substring(found.index + found[0].length);
+            users.push(found[1]);
         }
-        if(users){
-          users = [...new Set(users)];  //Use set to wipe out duplicated user
-                                        //a = ['a','a','b','c']; 
-                                        //[...new Set(a)] = ['a','b','c'];
+        if (users) {
+            users = [...new Set(users)];  //Use set to wipe out duplicated user
+                                          //a = ['a','a','b','c']; 
+                                          //[...new Set(a)] = ['a','b','c'];
         }
         let userIds = [];
-        for(user of users){
-            let tmp = await User.findOne({ username: user});
+        for (user of users) {
+            let tmp = await User.findOne({ username: user });
             userIds.push(tmp._id);
         }
         return userIds;

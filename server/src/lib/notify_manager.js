@@ -31,20 +31,21 @@ module.exports = function() {
         return notify._id;
     }
 
-    this.checkNotify = async function(userId, notifyId, set){
+    this.checkNotify = async function(userId, notifyId, set) {
         let notify = await Notify.findById(notifyId).populate('to');
-        if(!notify)        
+        if (!notify)        
             throw "notify not found"
         console.log(notify.to);
-        if(notify.to._id != userId)
+        if (notify.to._id != userId)
             throw "not the user!"
-        if(set != notify.checked){
-            if(set)
-                notify.to.unread = notify.to.unread - 1;
-            else
-                notify.to.unread = notify.to.unread + 1;
-            }
+        if (!notify.checked) {
+            if (set)
+                notify.to.unread -= 1;
+            // else
+            //     notify.to.unread = notify.to.unread + 1;
+        }
         notify.checked = set;
+        notify.to.save();
         await notify.save();
     }
 
