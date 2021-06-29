@@ -179,28 +179,6 @@ global.get('/get_user_posts', user_session, async (req, res) => {
     }
 });
 
-/**
- * @param article_id
- */
-//  global.post('/edit_article', user_session, async (req, res) => {
-//     try {
-//         // let newArticle = {
-//         //     "title": req.body.newArticle.title,
-//         //     "body": req.body.newArticle.body,
-//         // };
-//         let newArticle = req.body.new_article;
-//         let articleId = req.body.article_id;
-//         let userId = req.session.user_id;
-//         let newDate = await articleManager.replaceArticle(newArticle, articleId, userId);
-//         res.status(200).json(newDate);
-//         return;
-//     } catch (error) {
-//         console.log(error);
-//         res.status(400).json(error);
-//         return;
-//     }
-// });
-
 global.post('/update_article', user_session, async (req, res) => {
     try {
         let posts = await accountManager.getPostsByAuthor(req.session.user_id);

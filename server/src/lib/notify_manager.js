@@ -35,7 +35,6 @@ module.exports = function() {
         let notify = await Notify.findById(notifyId).populate('to');
         if (!notify)        
             throw "notify not found"
-        console.log(notify.to);
         if (notify.to._id != userId)
             throw "not the user!"
         if (!notify.checked) {

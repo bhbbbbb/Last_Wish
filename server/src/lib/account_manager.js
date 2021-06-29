@@ -315,7 +315,6 @@ module.exports = function() {
             throw "user not found";
         let len = await user.events.push(event);
         await user.save();
-        console.log(user.events);
         return user.events[len - 1]._id;
     }
 
