@@ -54,9 +54,10 @@ module.exports = function() {
             await notifyManager.createNotify(author._id, citation.author._id, article._id, 'Quote');
         }
         await article.sortMilestonesAndSave();
-        let tagUsers = this.tagTextParse(articleContent.body);
+        let tagUsers = await this.tagTextParse(articleContent.body);
         for (tagUser of tagUsers) {
-            await notifyManager.createNotify(author._id, tagUser, article._id, 'TagInPost');
+            if (tagUser != author._id)
+                await notifyManager.createNotify(author._id, tagUser, article._id, 'TagInPost');
         }
         return article._id;
     }
@@ -318,9 +319,10 @@ module.exports = function() {
         await article.author.save();
         await article.save();
         await notifyManager.createNotify(author._id, article.author._id, articleId, 'CommentOnSelf');
-        let tagUsers = this.tagTextParse(commentStr);
+        let tagUsers = await this.tagTextParse(commentStr);
         for (tagUser of tagUsers) {
-            await notifyManager.createNotify(author._id, tagUser, article._id, 'TagInComment');
+            if (tagUser != article.author._id)
+                await notifyManager.createNotify(author._id, tagUser, article._id, 'TagInComment');
         }
         for (fan of article.fans) {
             if (fan != article.author._id)
@@ -497,7 +499,7 @@ module.exports = function() {
             userIds.push(tmp._id);
         }
         return userIds;
-      }
+    }
 }
 
 
