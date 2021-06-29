@@ -18,7 +18,7 @@ v-app-bar.d-flex.justify-center.align-end(
       //-     .text-center()
       //-       h3.subtitle 願望清單
       //-       span.subtitle wish list
-      v-col.align-self-center(cols="9" offset="1")
+      v-col.align-self-center(cols="7" offset="1")
         a(href="/")
           v-img(
             src="@/assets/appbar_logo_3.png"
@@ -27,8 +27,9 @@ v-app-bar.d-flex.justify-center.align-end(
             max-height="50"
             contain
           )
-            //- :srcset="`${require('@/assets/appbar_logo_1.png')}, ${require('@/assets/appbar_logo_3.png')}`"
       
+
+      //- #calendar
       v-col.align-self-center(cols="2")
         v-btn.ma-0.pa-1(
           v-if="$store.state.is_login"
@@ -41,6 +42,10 @@ v-app-bar.d-flex.justify-center.align-end(
           .d-flex.flex-column.align-center
             v-icon(large color="white") mdi-calendar-range
             span.caption(style="color: white;") 行事曆
+        
+      //- #notify
+      v-col.align-self-center(cols="2")
+        Notification
 
   //- v-app-bar-nav-icon(
 //- 
@@ -74,6 +79,7 @@ import { mapState } from 'vuex';
 export default {
   name: 'AppBarM',
   components: {
+    Notification: () => import('@/components/Notification'),
     NavLink: () => import('@/components/NavLink'),
   },
   props: {},

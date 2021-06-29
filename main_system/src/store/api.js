@@ -210,3 +210,10 @@ export const apiSetFinishedEvent = (event_id, set) =>
 
 export const apiSetFinishedArticle = (article_id, set) =>
   articleRequest.post('/set_finished_article', { article_id, set });
+
+//----------- #notify ----------------------
+
+export const apiGetNotify = () => userRequest.get('/get_notify');
+
+export const apiSetCheckedNotify = (notify_id, set) =>
+  userRequest.post('/set_checked_notify', { notify_id, set });

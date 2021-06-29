@@ -33,7 +33,7 @@ v-sheet.m-view(rounded="lg")
     v-else-if="articles"
   )
     v-col.d-flex.align-center.justify-center(cols="12" style="height: 60vh")
-      span(v-if="!focusing") 哎呀，看來這裡一篇文章都沒有
+      span() 哎呀，看來這裡一篇文章都沒有
 
     //- #loading
   v-row(
@@ -221,7 +221,7 @@ export default {
     },
     focus() {
       this.focusing = true;
-      if (!this.value_model) this.articles = [];
+      // if (!this.value_model) this.articles = [];
     },
     blur() {
       this.focusing = false;

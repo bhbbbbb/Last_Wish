@@ -15,7 +15,7 @@ v-app-bar(
   )
     v-row.align-self-start(no-gutters v-if="user")
       v-col(cols="6")
-        v-icon(@click.stop="Back") mdi-chevron-left
+        //- v-icon(@click.stop="Back") mdi-chevron-left
       v-col.d-flex.justify-end.pr-0(cols="6" v-if="username === $store.state.user.self.name")
         v-menu(offset-y)
           template(#activator="{ on, attrs }")

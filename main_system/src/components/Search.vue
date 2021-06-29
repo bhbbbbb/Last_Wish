@@ -272,5 +272,5 @@ export default {
   transform: translatey(-10px)
   position: sticky
   top: 110px
-  z-index: 1000
+  z-index: 5
 </style>
