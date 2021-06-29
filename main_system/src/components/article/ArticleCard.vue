@@ -36,12 +36,12 @@ v-card.my.pa-3(
       cols="auto"
       style="height: 16px;"
     )
-      NavLink.pl-3.ml-3.caption(
+      NavLink.pl-3.ml-3.caption.font-weight-bold(
         v-if="citation"
         :to="{ name: 'Article', params: { id: citation.id }}"
       ) 文章
       span.caption.mr-1(v-show="citation") 引用自
-      NavLink.caption(
+      NavLink.caption.font-weight-bold(
         v-if="citation"
         :to="{ name: 'User', params: { username: citation.author.name }}"
       ) {{ citation.author.name }}
@@ -63,7 +63,7 @@ v-card.my.pa-3(
       :content="content.content.body"
     )
   v-row(v-if="content" no-gutters)
-    span.subtitle-2.text--disabled {{ content.content.milestones.length }} 個計畫
+    span.subtitle-2.text--disabled ・{{ content.content.milestones.length }} 個計畫
   //--------- articleBtns 
   ArticleBtns(v-if="content" :content="content")
 </template>

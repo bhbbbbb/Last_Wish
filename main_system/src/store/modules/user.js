@@ -197,7 +197,8 @@ export default {
     },
     updateProPic({ commit }, payload) {
       commit('updateProPic', payload);
-      commit('updateSelfArticlesProPic', payload, { root: true });
+      commit('cleanArticles', payload, { root: true });
+      // commit('updateSelfArticlesProPic', payload, { root: true });
     },
     updateIntro({ commit }, payload) {
       apiSetSelfIntro({ self_intro: payload });
