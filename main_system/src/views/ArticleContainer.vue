@@ -24,9 +24,13 @@ v-sheet.m-view(rounded="lg")
       :key="idx"
       v-if="$store.state.article.data[id] !== false"
     )
-      ArticleCard(
-        :id="id"
+      v-lazy(
+        :options="{ threshold: 0.1 }"
+        min-height="200"
       )
+        ArticleCard(
+          :id="id"
+        )
 
   v-row(
     no-gutters
@@ -100,6 +104,7 @@ export default {
   },
   data: () => ({
     articles: undefined,
+    articles_seg: undefined,
     stamp: 0,
     value_model: undefined,
     mode_model: undefined,
