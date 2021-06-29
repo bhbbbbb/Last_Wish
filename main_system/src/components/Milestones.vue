@@ -1,6 +1,5 @@
 <template lang="pug">
 v-timeline.ml-n10(
-  v-else
   dense
   align-top
   style="width: 100%; min-width: 300px;"
@@ -170,6 +169,7 @@ export default {
       this.content.splice(idx, 1);
     },
     finish(idx) {
+      if (this.finished) return;
       if (this.$store.state.user.self.id === this.authorId && this.articleId)
         this.$store.dispatch('setMilestoneFinished', {
           article_id: this.articleId,

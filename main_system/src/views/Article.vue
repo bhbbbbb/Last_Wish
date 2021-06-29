@@ -32,7 +32,7 @@ v-card.m-view.pa-1.mt-6(min-height="80vh", rounded="lg", :color="color_list(id)"
             //- v-list-item(@click="Clone") 願望拷貝
             v-list-item(
               @click="toggleEdit"
-              v-if="$store.state.user.self.id === article.author.id"
+              v-if="$store.state.user.self.id === article.author.id && !article.finished"
             ) {{ editing ? '取消編輯' : '編輯內文' }}
 
 
