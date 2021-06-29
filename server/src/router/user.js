@@ -461,7 +461,7 @@ user.post('/reset_email', user_session, async (req, res) => {
     }
 })
 
-user.post('/get_notify', user_session, async(req, res) => {
+user.get('/get_notify', user_session, async(req, res) => {
     try {
         let userId = req.session.user_id;
         await accountManager.popAllStashedNotifiesToUser(userId);
