@@ -282,7 +282,8 @@ user.get('/confirmation/:token', async (req, res) => {
             const result = await mailManager.verified(id, nonce, cryptPass);
             if (result) {
                 // TODO: Auto logged in
-                res.redirect(FRONT_URL);
+                let loginPage = FRONT_URL+'/login'
+                res.redirect(loginPage);
                 return;
             }
         }
