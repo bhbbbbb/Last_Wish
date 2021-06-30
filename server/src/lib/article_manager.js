@@ -321,8 +321,7 @@ module.exports = function() {
         await notifyManager.createNotify(author._id, article.author._id, articleId, 'CommentOnSelf');
         let tagUsers = await this.tagTextParse(commentStr);
         for (tagUser of tagUsers) {
-            if (tagUser != article.author._id)
-                await notifyManager.createNotify(author._id, tagUser, article._id, 'TagInComment');
+            await notifyManager.createNotify(author._id, tagUser, article._id, 'TagInComment');
         }
         for (fan of article.fans) {
             if (fan != article.author._id)
