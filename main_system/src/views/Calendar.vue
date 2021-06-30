@@ -80,7 +80,7 @@
           @click="toggleFinish(idx)"
         )
           v-icon(small v-show="$store.getters['user/is_finished'](idx)") mdi-circle
-        span.ml-2.subtitle-2 完成
+        span.ml-2.subtitle-2.text-nowrap 完成
     v-row(no-gutters)
       v-col(cols="2")
         v-sheet.ma-1.d-flex.align-center.justify-center(
