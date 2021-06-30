@@ -318,15 +318,15 @@ module.exports = function() {
         article.author.changeScore(score);
         await article.author.save();
         await article.save();
-        await notifyManager.createNotify(author._id, article.author._id, articleId, 'CommentOnSelf');
+        await notifyManager.createNotify(author, article.author._id, articleId, 'CommentOnSelf');
         let tagUsers = await this.tagTextParse(commentStr);
         for (tagUser of tagUsers) {
             if (tagUser != article.author._id)
-                await notifyManager.createNotify(author._id, tagUser, article._id, 'TagInComment');
+                await notifyManager.createNotify(author, tagUser, article._id, 'TagInComment');
         }
         for (fan of article.fans) {
             if (fan != article.author._id)
-                await notifyManager.createNotify(author._id, fan, article._id, 'CommentOnFollowed');
+                await notifyManager.createNotify(author, fan, article._id, 'CommentOnFollowed');
         }
         return article.comments[len - 1].date;
      }
@@ -389,7 +389,7 @@ module.exports = function() {
             }
         }
         for (fan of article.fans) {
-            if (fan != article.author._id)
+            if (fan != article.author)
                 await notifyManager.createNotify(article.author, fan, article._id, 'UpdateOnFollowed');
         }
         await article.sortMilestonesAndSave();

@@ -55,12 +55,16 @@ finder.get('/tag_names', async (req, res) => {
 
 finder.get('/', async (req, res) => {
     try {
-        let searchingResult = {
-            "users": await accountManager.searchUsersByKeywords(req.query.q),
-            "articles": await articleManager.searchArticlesByKeywords(req.query.q),
-            "tags": await articleManager.searchTagsByKeywords(req.query.q)
-        };
-        res.status(200).json(searchingResult);
+        let searchingResult = await articleManager.searchArticlesByKeywords(req.query.q);
+        let relatedTags = await articleManager.searchTagsByKeywords(req.query.q)
+        for (tag of relatedTags) {
+            await searchingResult.push.apply(searchingResult, await articleManager.getRelatedArticlesByTag(tag.name.substring(1)));
+        }
+        let relatedUsers = await accountManager.searchUsersByKeywords(req.query.q);
+        for (user of relatedUsers) {
+            await searchingResult.push.apply(searchingResult, await accountManager.getPostsByAuthor(user));
+        }
+        res.status(200).json(Array.from(new Set(searchingResult)));
     } catch (error) {
         console.log(error);
         res.status(400).json(error);
