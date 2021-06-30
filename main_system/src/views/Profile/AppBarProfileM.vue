@@ -54,7 +54,7 @@ v-app-bar(
             color="#8B9988"
             small
             dark
-          ) LV. {{ user.lv }} {{ user.honor }}
+          ) {{ user_honor }}
         v-row(no-gutters)
           span.text-nowrap(style="font-size:1rem") {{ static_intro }}
 
@@ -130,6 +130,9 @@ export default {
         else if (this.$store.state.article.others)
           num = this.$store.state.article.others.length;
       return num ? `(${num})` : '';
+    },
+    user_honor() {
+      return `LV. ${this.user.lv} ${this.user.honor}`;
     },
   },
   watch: {
