@@ -232,6 +232,7 @@ export default {
     },
     toggleFinish(idx) {
       this.$store.dispatch('user/toggleEventFinish', idx);
+      this.$forceUpdate();
     },
     focus() {
       document.getElementById('event-input').focus();

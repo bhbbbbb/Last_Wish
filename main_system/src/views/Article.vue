@@ -163,7 +163,7 @@ v-card.m-view.pa-1.mt-6.mx-lg-auto(
       v-col.d-flex.justify-center(cols="12")
         span 已複製到剪貼簿
   
-  input#url(style="position: absolute; opacity: 0" disabled)
+  input#url(style="position: absolute; opacity: 0")
 </template>
 
 <script>

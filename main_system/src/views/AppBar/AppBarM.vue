@@ -33,21 +33,23 @@ v-app-bar.d-flex.justify-center.align-end.appbar-border(
       
 
       //- #calendar
-      v-col.align-self-center(offset="3" cols="2")
-        v-btn.ma-0.pa-1(
+      v-col.align-self-center.d-flex.justify-end(offset="3" offset-sm="4" cols="2")
+        v-btn.ma-0.pa-0(
           v-if="$store.state.is_login && $vuetify.breakpoint.mobile"
-          width="64"
-          height="64"
           text
+          small
+          height="50"
+          plain
+          depressed
           link
           :to="{ name: 'Calendar' }"
         )
           .d-flex.flex-column.align-center
             v-icon(large color="white") mdi-calendar-range
-            span.caption(style="color: white;") 行事曆
+            //- span.caption(style="color: white;") 行事曆
         
       //- #notify
-      v-col.align-self-center.justify-end.d-flex(cols="2" lg="1")
+      v-col.align-self-center.justify-end.d-flex(cols="2" sm="1")
         Notification
 
   //- v-app-bar-nav-icon(

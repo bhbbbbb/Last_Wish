@@ -27,6 +27,12 @@ export default {
       context.commit('updateData', data);
       return data.notifies;
     },
+    refetch({ dispatch }) {
+      dispatch('fetch', true);
+      setTimeout(() => {
+        dispatch('refetch');
+      }, 10000);
+    },
     check(context, idx) {
       let id = context.state.data[idx].id;
       apiSetCheckedNotify(id, true);
