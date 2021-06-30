@@ -318,12 +318,11 @@ module.exports = function() {
         article.author.changeScore(score);
         await article.author.save();
         await article.save();
-        await notifyManager.createNotify(author._id, article.author._id, articleId, 'CommentOnSelf');
+        await notifyManager.createNotify(author, article.author._id, articleId, 'CommentOnSelf');
         let tagUsers = await this.tagTextParse(commentStr);
         for (tagUser of tagUsers) {
-            await notifyManager.createNotify(author, tagUser, article._id, 'TagInComment');
             if (tagUser != article.author._id)
-                console.log(tagUser);
+                await notifyManager.createNotify(author, tagUser, article._id, 'TagInComment');
         }
         for (fan of article.fans) {
             if (fan != article.author._id)
