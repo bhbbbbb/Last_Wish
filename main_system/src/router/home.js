@@ -27,10 +27,15 @@ export const home_routes = [
           next();
         })
         .catch(() => {
-          next(false);
+          next({ name: 'NotFound' });
         });
     },
     props: true,
+  },
+  {
+    path: 'article/notfound',
+    name: 'NotFound',
+    component: () => import('@/views/NotFound'),
   },
   // {
   //   path: 'article/:id/wish/:wish',
