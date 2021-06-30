@@ -154,6 +154,7 @@ export default {
     async getSelfMore(context) {
       return context.dispatch('getUser', {
         id: context.state.self.id,
+        force_update: true,
         more: true,
       });
     },
