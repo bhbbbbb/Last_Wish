@@ -8,9 +8,11 @@ v-menu.mx-2(
 	template(#activator="{ on, attrs }")
 		v-btn.ma-0.pa-1(
 			v-if="$store.state.is_login"
-			width="64"
-			height="64"
+			height="50"
+			small
 			text
+			plain
+			depressed
 			v-on="on"
 			v-bind="attrs"
 		)
@@ -22,7 +24,7 @@ v-menu.mx-2(
 				:value="$store.state.notify.unread"
 			)
 				v-icon(large color="white") mdi-bell-outline
-				span.caption(style="color: white;") 通知
+				//- span.caption(style="color: white;") 通知
 				template(#badge)
 					span {{ $store.state.notify.unread }}
 

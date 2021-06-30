@@ -48,7 +48,7 @@ export default new Vuex.Store({
         let data = await context.dispatch('user/getUser', { id });
         context.commit('login', data);
         context.commit('user/setSelfLite', id);
-        context.dispatch('notify/fetch');
+        context.dispatch('notify/refetch');
         context.dispatch('getLikedArticles');
         Vue.$cookies.set('login', id);
       } catch (err) {
