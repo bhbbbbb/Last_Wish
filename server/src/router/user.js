@@ -467,8 +467,10 @@ user.post('/reset_email', user_session, async (req, res) => {
 user.get('/get_notify', user_session, async (req, res) => {
     try {
         let userId = req.session.user_id;
-        if(!userId)
-            res.status(400).json('please logged in');
+        if(!userId) {
+            res.status(401).json('please logged in');
+            return;
+        }
         let unread = await accountManager.popAllStashedNotifiesToUser(userId);
         let notifies = await accountManager.getAllNotifiesOfUser(userId);
         let obj = {
