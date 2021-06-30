@@ -89,7 +89,7 @@ v-card.m-view.pa-1.mt-6.mx-lg-auto(
           v-if="citation"
           :to="{ name: 'User', params: { username: citation.author.name }}"
         ) {{ citation.author.name }}
-        span.ml-1.caption 的
+        span.ml-1.caption(v-show="citation") 的
         NavLink.caption.font-weight-bold(
           v-if="citation"
           :to="{ name: 'Article', params: { id: citation.id }}"
