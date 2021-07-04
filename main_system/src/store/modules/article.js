@@ -417,7 +417,7 @@ export default {
      * @param {String} article_id
      * @param {String} new_comment
      */
-    addComment(context, { article_id, new_comment }) {
+    async addComment(context, { article_id, new_comment }) {
       let data = {
         likes: 0,
         _id: undefined,
@@ -425,8 +425,9 @@ export default {
         body: new_comment,
         date: new Date(),
       };
+      let res = await apiAddComment(article_id, new_comment);
+      data._id = res.data.id;
       context.commit('addComment', { article_id, data });
-      apiAddComment(article_id, new_comment);
     },
     async editComment(context,{article_id, comment_id, new_comment, idx}){
       let res = await apiEditComment(article_id, comment_id, new_comment);

@@ -328,7 +328,11 @@ module.exports = function() {
             if (fan != article.author._id)
                 await notifyManager.createNotify(author, fan, article._id, 'CommentOnFollowed');
         }
-        return article.comments[len - 1].date;
+        let obj = {
+            newDate: article.comments[len-1].date,
+            id: article.comments[len-1]._id
+        }
+        return obj;
      }
 
     this.updateArticle = async function(articleId, updateQuery) {
