@@ -152,7 +152,8 @@ v-card.m-view.pa-1.mt-6.mx-lg-auto(
         CommentCard(
           v-for="(comment, idx) in article.comments",
           :key="idx",
-          :content="comment"
+          :content="comment",
+          :article_id ="id",
         )
         NewComment(
           v-if="$store.state.is_login"
