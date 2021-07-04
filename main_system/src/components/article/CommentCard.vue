@@ -44,22 +44,23 @@ export default {
       type: Object,
       required: true,
     },
-    article_id:{
+    articleId: {
       type: String,
       required: true,
     },
-    idx:{
+    idx: {
       type: Number,
-    }
+      required: true,
+    },
   },
   data: () => ({
     author: undefined,
     show: false,
-    new_comment:undefined,
+    new_comment: undefined,
   }),
   computed: {
     date: {
-      get: function(){
+      get: function () {
         return moment(this.content.date).fromNow();
       },
     },
@@ -74,25 +75,23 @@ export default {
     this.new_comment = this.content.body;
   },
   methods: {
-    async editComment(){
-      
+    async editComment() {
       this.show = false;
-      if(this.content.body === this.new_comment)
-        return;
+      if (this.content.body === this.new_comment) return;
       this.$store.dispatch('editComment', {
-        article_id: this.article_id,
+        article_id: this.articleId,
         comment_id: this.content._id,
         new_comment: this.new_comment,
         idx: this.idx,
       });
     },
-    showInfo(){
+    showInfo() {
       this.show = true;
     },
-    cancel(){
+    cancel() {
       this.show = false;
       this.new_comment = this.content.body;
-    }
+    },
   },
 };
 </script>

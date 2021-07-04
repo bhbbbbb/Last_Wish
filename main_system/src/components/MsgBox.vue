@@ -81,7 +81,7 @@ export default {
       this.$emit('confirm');
       this.inner_value = false;
     },
-    cancel(){
+    cancel() {
       this.$emit('cancel');
       this.inner_value = false;
     },

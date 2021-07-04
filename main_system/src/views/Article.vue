@@ -154,7 +154,7 @@ v-card.m-view.pa-1.mt-6.mx-lg-auto(
           v-for="(comment, idx) in article.comments",
           :key="idx",
           :content="comment",
-          :article_id ="id",
+          :articleId ="id",
           :idx="idx",
         )
         NewComment(
