@@ -183,3 +183,9 @@ export default {
   white-space: pre-line;
 }
 </style>
+
+<style scoped>
+.lowercase {
+  text-transform: lowercase !important;
+}
+</style>

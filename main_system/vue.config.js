@@ -8,5 +8,10 @@ module.exports = {
   pwa: {
     name: 'Lernen',
     // appleMobileWebAppStatusBarStyle: 'black-translucent',
+    workboxPluginMode: 'GenerateSW',
+    workboxOptions: {
+      skipWaiting: true,
+    },
+    msTileColor: '#9BA2AA',
   },
 };
