@@ -60,8 +60,8 @@ global.post('/add_comment', user_session, async (req, res) => {
         let author = req.session.user_id;
         let articleId = req.body.article_id;
         let comment = req.body.comment;
-        let newDate = await articleManager.addCommentToArticle(author , articleId, comment);
-        res.status(200).json(newDate);
+        let newComment = await articleManager.addCommentToArticle(author , articleId, comment);
+        res.status(200).json(newComment);
         return;
     } catch (error) {
         console.log(error);

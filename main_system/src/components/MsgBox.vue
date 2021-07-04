@@ -15,7 +15,7 @@ v-dialog(
         v-if="buttons === 2"
         text
         plain
-        @click="inner_value = false"
+        @click="cancel"
       )
         slot(name="cancel") 取消
       v-btn(
@@ -79,6 +79,10 @@ export default {
   methods: {
     confirm() {
       this.$emit('confirm');
+      this.inner_value = false;
+    },
+    cancel() {
+      this.$emit('cancel');
       this.inner_value = false;
     },
   },

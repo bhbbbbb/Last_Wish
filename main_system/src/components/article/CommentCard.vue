@@ -12,8 +12,13 @@ v-card.unselectable.mx-1.pa-1.my-2.transparent.d-flex.align-center(
         span {{ author.name }}
       .px-2
       Body.mb-0(style="overflow-x: hidden;" :content="content.body")
+      v-icon(@click="showInfo" size="small" v-if="$store.state.user.self.id === content.author") mdi-pencil
     v-row(no-gutters)
       span.caption {{ date }}
+    MsgBox(:value="show" @confirm="editComment" :buttons="2" @cancel="cancel")
+      template(#activator="{ on, attrs }")
+      v-text-field(:value="content.body" v-model.lazy="new_comment")
+
 </template>
 
 <script>
@@ -24,6 +29,7 @@ export default {
     UserAvatar: () => import('@/components/UserAvatar'),
     NavLink: () => import('@/components/NavLink'),
     Body: () => import('@/components/Body'),
+    MsgBox: () => import('@/components/MsgBox'),
   },
   /*
   comment = {
@@ -38,13 +44,25 @@ export default {
       type: Object,
       required: true,
     },
+    articleId: {
+      type: String,
+      required: true,
+    },
+    idx: {
+      type: Number,
+      required: true,
+    },
   },
   data: () => ({
     author: undefined,
+    show: false,
+    new_comment: undefined,
   }),
   computed: {
-    date() {
-      return moment(this.content.date).fromNow();
+    date: {
+      get: function () {
+        return moment(this.content.date).fromNow();
+      },
     },
   },
 
@@ -54,8 +72,27 @@ export default {
       .then((res) => {
         this.author = res;
       });
+    this.new_comment = this.content.body;
   },
-  methods: {},
+  methods: {
+    async editComment() {
+      this.show = false;
+      if (this.content.body === this.new_comment) return;
+      this.$store.dispatch('editComment', {
+        article_id: this.articleId,
+        comment_id: this.content._id,
+        new_comment: this.new_comment,
+        idx: this.idx,
+      });
+    },
+    showInfo() {
+      this.show = true;
+    },
+    cancel() {
+      this.show = false;
+      this.new_comment = this.content.body;
+    },
+  },
 };
 </script>
 
