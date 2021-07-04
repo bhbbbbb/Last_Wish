@@ -7,6 +7,7 @@ import {
   apiGetLikedPost,
   apiDeleteArticle,
   apiAddComment,
+  apiEditComment,
   apiEditArticle,
   apiSetMsFinished,
   apiSetFollow,
@@ -148,6 +149,11 @@ export default {
     addComment(state, { article_id, data }) {
       state.data[article_id].comments.push(data);
     },
+    editComment(state,{article_id, idx, new_comment, res}){
+      state.data[article_id].comments[idx].body = new_comment;
+      state.data[article_id].comments[idx].date = res.data;
+    }
+    ,
     updateArticleContent(state, { article_id, content }) {
       state.data[article_id].content = content;
     },
@@ -421,6 +427,10 @@ export default {
       };
       context.commit('addComment', { article_id, data });
       apiAddComment(article_id, new_comment);
+    },
+    async editComment(context,{article_id, comment_id, new_comment, idx}){
+      let res = await apiEditComment(article_id, comment_id, new_comment);
+      context.commit('editComment',{article_id, comment_id, new_comment, idx, res});
     },
 
     /**

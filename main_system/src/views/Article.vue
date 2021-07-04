@@ -155,6 +155,7 @@ v-card.m-view.pa-1.mt-6.mx-lg-auto(
           :key="idx",
           :content="comment",
           :article_id ="id",
+          :idx="idx",
         )
         NewComment(
           v-if="$store.state.is_login"

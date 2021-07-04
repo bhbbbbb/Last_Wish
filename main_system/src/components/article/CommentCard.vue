@@ -23,7 +23,6 @@ v-card.unselectable.mx-1.pa-1.my-2.transparent.d-flex.align-center(
 
 <script>
 import moment from 'moment';
-import { apiEditComment } from '@/store/api'
 export default {
   name: 'CommentCard',
   components: {
@@ -48,6 +47,9 @@ export default {
     article_id:{
       type: String,
       required: true,
+    },
+    idx:{
+      type: Number,
     }
   },
   data: () => ({
@@ -56,8 +58,10 @@ export default {
     new_comment:undefined,
   }),
   computed: {
-    date() {
-      return moment(this.content.date).fromNow();
+    date: {
+      get: function(){
+        return moment(this.content.date).fromNow();
+      },
     },
   },
 
@@ -71,15 +75,23 @@ export default {
   },
   methods: {
     async editComment(){
+      
       this.show = false;
-      this.content.body = this.new_comment;
-      let res = await apiEditComment(this.article_id, this.content._id, this.new_comment);
-      this.content.date = res.data;
+      if(this.content.body === this.new_comment)
+        return;
+      this.$store.dispatch('editComment', {
+        article_id: this.article_id,
+        comment_id: this.content._id,
+        new_comment: this.new_comment,
+        idx: this.idx,
+      });
+      console.log(this.content.date);
     },
     showInfo(){
       this.show = true;
     },
     cancel(){
+      console.log(this.idx);
       this.show = false;
       this.new_comment = this.content.body;
     }
