@@ -85,13 +85,11 @@ export default {
         new_comment: this.new_comment,
         idx: this.idx,
       });
-      console.log(this.content.date);
     },
     showInfo(){
       this.show = true;
     },
     cancel(){
-      console.log(this.idx);
       this.show = false;
       this.new_comment = this.content.body;
     }
