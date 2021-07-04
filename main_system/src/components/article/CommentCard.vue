@@ -12,9 +12,9 @@ v-card.unselectable.mx-1.pa-1.my-2.transparent.d-flex.align-center(
         span {{ author.name }}
       .px-2
       Body.mb-0(style="overflow-x: hidden;" :content="content.body")
-      v-icon(@click="showInfo" size="small" v-if="$store.state.user.self.id === content.author") mdi-pencil
     v-row(no-gutters)
       span.caption {{ date }}
+      v-icon(@click="showInfo" size="small" v-if="$store.state.user.self.id === content.author") mdi-pencil
     MsgBox(:value="show" @confirm="editComment" :buttons="2" @cancel="cancel")
       template(#activator="{ on, attrs }")
       v-text-field(:value="content.body" v-model.lazy="new_comment")

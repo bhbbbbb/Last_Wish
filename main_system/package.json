@@ -19,6 +19,7 @@
     "prettier": "^2.3.0",
     "register-service-worker": "^1.7.1",
     "sass-loader": "10.1.1",
+    "serve": "^12.0.0",
     "vue": "^2.6.11",
     "vue-advanced-cropper": "^1.6.0",
     "vue-axios": "^3.2.4",
