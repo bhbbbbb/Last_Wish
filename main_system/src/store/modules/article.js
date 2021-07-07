@@ -1,17 +1,17 @@
 import {
-  apiUploadArticle,
-  apiGetArticles,
-  apiGetArticleById,
-  apiGetFollowedPosts,
-  apiGetUserPosts,
-  apiGetLikedPost,
-  apiDeleteArticle,
   apiAddComment,
-  apiEditComment,
+  apiDeleteArticle,
   apiEditArticle,
-  apiSetMsFinished,
-  apiSetFollow,
+  apiEditComment,
+  apiGetArticleById,
+  apiGetArticles,
+  apiGetFollowedPosts,
+  apiGetLikedPost,
+  apiGetUserPosts,
   apiSetFinishedArticle,
+  apiSetFollow,
+  apiSetMsFinished,
+  apiUploadArticle,
 } from '../api';
 
 export default {
@@ -34,6 +34,11 @@ export default {
         unfinished: undefined,
         all: undefined,
       },
+      hot2cold: {
+        finished: undefined,
+        unfinished: undefined,
+        all: undefined,
+      },
     },
     followed: {
       most_liked: {
@@ -47,6 +52,11 @@ export default {
         all: undefined,
       },
       new2old: {
+        finished: undefined,
+        unfinished: undefined,
+        all: undefined,
+      },
+      hot2cold: {
         finished: undefined,
         unfinished: undefined,
         all: undefined,
@@ -104,6 +114,10 @@ export default {
       state.global.new2old.finished = undefined;
       state.global.new2old.unfinished = undefined;
       state.global.new2old.all = undefined;
+
+      state.global.hot2cold.finished = undefined;
+      state.global.hot2cold.unfinished = undefined;
+      state.global.hot2cold.all = undefined;
     },
     cleanFollowedArticles(state) {
       state.followed.most_liked.finished = undefined;
@@ -117,6 +131,10 @@ export default {
       state.followed.new2old.finished = undefined;
       state.followed.new2old.unfinished = undefined;
       state.followed.new2old.all = undefined;
+
+      state.followed.hot2cold.finished = undefined;
+      state.followed.hot2cold.unfinished = undefined;
+      state.followed.hot2cold.all = undefined;
     },
     // deleteArticle(state, id) {
     //   state.data[id] = false;
@@ -173,7 +191,8 @@ export default {
     /**
      *
      * @param {String} type : 'global', 'followed', 'user', 'others'
-     * @param {String} sort_by : 'new2old', 'most_liked', 'most_followed'
+     * @param {String} sort_by : 'new2old', 'most_liked',
+     *     'most_followed','hot2cold'
      * @param {String} filter : 'all', 'finished', 'unfinished'
      * @returns
      */
@@ -200,7 +219,8 @@ export default {
     /**
      *
      * @param {String} type : 'global', 'followed', 'self', 'others'
-     * @param {String} sort_by : 'new2old', 'most_liked', 'most_followed'
+     * @param {String} sort_by : 'new2old', 'most_liked',
+     *     'most_followed','hot2cold'
      * @param {String} filter : 'all', 'finished', 'unfinished'
      * @param {String} username : only be true when type = 'others'
      * @param {Boolean} force_update : force_update or not
@@ -246,7 +266,8 @@ export default {
     },
     /**
      *
-     * @param {String} sort_by : 'new2old', 'most_liked', 'most_followed'
+     * @param {String} sort_by : 'new2old', 'most_liked',
+     *     'most_followed','hot2cold'
      * @param {String} filter : 'all', 'finished', 'unfinished'
      * @param {Boolean} force_update : force_update or not
      * @returns
@@ -360,7 +381,8 @@ export default {
       commit('updateArticle', { id, data });
 
       // if (data.citation && !no_deep) {
-      //   await dispatch('getArticle', { id: data.citation, no_deep: true });
+      //   await dispatch('getArticle', { id: data.citation, no_deep: true
+      //   });
       // }
       return data;
     },

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import config from '../../config';
-// export const baseURL = process.env.NODE_ENV === 'development' ? devURL : proURL;
+// export const baseURL = process.env.NODE_ENV === 'development' ? devURL :
+// proURL;
 export const baseURL = config.backendUrl;
 
 const articleRequest = axios.create({
@@ -49,6 +50,8 @@ export const apiGetArticleById = (id) =>
 
 export const apiGetLikedPost = () => userRequest.get('/get_liked_posts');
 
+export const apiAddVisitToArticle = (id) =>
+  articleRequest.get('/visit', { params: { article_id: id } });
 // ----------------------------------------------------------------
 
 // ---------------------- #search --------------------------------
