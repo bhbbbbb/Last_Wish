@@ -7,6 +7,7 @@ v-card.my.pa-3(
     v-on="$listeners"
     :loading="Boolean(content) ? false : 'grey'"
     :to="{ name: 'Article', params: { id }}"
+    @click="addVisit"
   )
   v-row(v-if="content" no-gutters)
     v-col.d-flex.flex-sm-grow-1.flex-nowrap.align-center(cols="6")
@@ -72,6 +73,7 @@ v-card.my.pa-3(
 <script>
 import moment from 'moment';
 import color_list from '@/data/color_list';
+import { apiAddVisitToArticle } from '@/store/api';
 export default {
   name: 'ArticleCard',
   components: {
@@ -119,6 +121,9 @@ export default {
     },
     goLink() {
       this.$router.push({ name: 'Link', params: { reference: this.content } });
+    },
+    addVisit() {
+      apiAddVisitToArticle(this.id);
     },
   },
 };

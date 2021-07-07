@@ -41,11 +41,18 @@ v-sheet.pt-3.sticky(flat style="margin: -8px -5px 5px -5px;")
           )
             span {{ options.most_followed }}
           v-list-item(
+            value="hot2cold"
+            @click="sort_by = 'hot2cold'"
+            v-if="sort_by !== 'hot2cold' "
+          )
+            span {{ options.hot2cold }}
+
+          v-list-item(
             value="default"
             @click="sort_by = 'default'"
             v-if="sort_by !== 'default' && input_model"
           )
-            span {{ options.default }}
+            span {{ options.default }}            
 
     //- #filter
     v-menu(
@@ -164,6 +171,7 @@ export default {
       new2old: '最新發佈',
       most_liked: '讚數',
       most_followed: '追蹤數',
+      hot2cold: '最高點擊',
       default: '相關性',
     },
     filter_options: {

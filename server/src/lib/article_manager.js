@@ -42,9 +42,9 @@ module.exports = function() {
         if (citationId) {
             // We know this post is citing another
             let citation = await Article.findById(citationId)
-            .populate('author');
+                                        .populate('author');
             if (!citation)
-            throw "citation not found";
+                throw "citation not found";
             article.citation = citationId;
             citation.citedCount++;
             citation.author.citedCount++;
@@ -83,6 +83,11 @@ module.exports = function() {
                     break;
             }
             switch (options.sortBy) {
+                case "hot2cold":
+                    rawArticles.sort((a, b) => {
+                        return b.visited - a.visited;
+                    });
+                    break;
                 case "new2old":
                     rawArticles.sort((a, b) => {
                         return b.date - a.date;
@@ -153,6 +158,11 @@ module.exports = function() {
                     break;
             }
             switch (options.sortBy) {
+                case "hot2cold":
+                    rawArticles.sort((a, b) => {
+                        return b.visited - a.visited;
+                    });
+                    break;
                 case "new2old":
                     rawArticles.sort((a, b) => {
                         return b.date - a.date;
@@ -230,6 +240,11 @@ module.exports = function() {
                     break;
             }
             switch (options.sortBy) {
+                case "hot2cold":
+                    rawArticles.sort((a, b) => {
+                        return b.visited - a.visited;
+                    });
+                    break;
                 case "new2old":
                     rawArticles.sort((a, b) => {
                         return b.date - a.date;
