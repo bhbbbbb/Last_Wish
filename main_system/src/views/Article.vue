@@ -103,7 +103,7 @@ v-card.m-view.pa-1.mt-6.mx-lg-auto(
         //-- #edit
         EditCard.mt-3(
           v-if="editing"
-          :article.sync="article.content"
+          :article="article_copy.content"
           @deleted="del_ms"
         )
 
@@ -204,6 +204,7 @@ export default {
     editing: false,
     deleted_milestones: [],
     citation: undefined,
+    article_copy: undefined,
   }),
   computed: {
     date() {
@@ -244,32 +245,34 @@ export default {
     toggleEdit() {
       this.editing = !this.editing;
       if (this.editing) {
+        this.article_copy = JSON.parse(JSON.stringify(this.article));
         this.deleted_milestones = [];
       }
       if (!this.editing) {
         // end editing
-        this.submitEdit();
+        this.submitEdit(this.article_copy);
       }
     },
-    submitEdit() {
-      let { new_milestones, modified_milestones } = this.milestonesHandle();
+    submitEdit(article) {
+      let { new_milestones, modified_milestones } =
+        this.milestonesHandle(article);
       this.$store.dispatch('editArticle', {
         article_id: this.id,
         content: {
-          title: this.article.content.title,
-          body: this.article.content.body,
-          tags: this.article.content.tags,
+          title: article.content.title,
+          body: article.content.body,
+          tags: article.content.tags,
           modified_milestones,
           new_milestones,
           deleted_milestones: this.deleted_milestones,
         },
-        content_native: this.article.content,
+        content_native: article.content,
       });
     },
-    milestonesHandle() {
+    milestonesHandle(article) {
       let new_milestones = [];
       let modified_milestones = [];
-      this.article.content.milestones.forEach((ms) => {
+      article.content.milestones.forEach((ms) => {
         if (!ms.type) return;
         if (ms.type === NEW) new_milestones.push(ms);
         else if (ms.type === MODIFIED) modified_milestones.push(ms);
