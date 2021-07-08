@@ -167,9 +167,9 @@ export default {
     addComment(state, { article_id, data }) {
       state.data[article_id].comments.push(data);
     },
-    editComment(state, { article_id, idx, new_comment, res }) {
+    editComment(state, { article_id, idx, new_comment, date }) {
       state.data[article_id].comments[idx].body = new_comment;
-      state.data[article_id].comments[idx].date = res.data;
+      state.data[article_id].comments[idx].date = date;
     },
     updateArticleContent(state, { article_id, content }) {
       state.data[article_id].content = content;
@@ -446,18 +446,26 @@ export default {
         body: new_comment,
         date: new Date(),
       };
+      let new_idx = context.state.data[article_id].comments.length;
+      context.commit('addComment', { article_id, data });
       let res = await apiAddComment(article_id, new_comment);
       data._id = res.data.id;
-      context.commit('addComment', { article_id, data });
+      context.commit('editComment', {
+        article_id,
+        comment_id: data._id,
+        new_comment,
+        idx: new_idx,
+        date: res.data.newDate,
+      });
     },
     async editComment(context, { article_id, comment_id, new_comment, idx }) {
-      let res = await apiEditComment(article_id, comment_id, new_comment);
+      let { data } = await apiEditComment(article_id, comment_id, new_comment);
       context.commit('editComment', {
         article_id,
         comment_id,
         new_comment,
         idx,
-        res,
+        date: data.date,
       });
     },
 

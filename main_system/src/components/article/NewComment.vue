@@ -46,7 +46,7 @@ export default {
         article_id: this.articleId,
         new_comment: this.new_comment,
       });
-      this.$emit('update', {
+      this.$emit('created', {
         likes: 0,
         _id: undefined,
         author: this.$store.state.user.self.id,

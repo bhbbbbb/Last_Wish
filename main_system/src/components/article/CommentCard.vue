@@ -13,8 +13,9 @@ v-card.unselectable.mx-1.pa-1.my-2.transparent.d-flex.align-center(
       .px-2
       Body.mb-0(style="overflow-x: hidden;" :content="content.body")
     v-row(no-gutters)
-      span.caption {{ date }}
-      v-icon(@click="showInfo" size="small" v-if="$store.state.user.self.id === content.author") mdi-pencil
+      span.caption {{ date }}        
+        v-btn(size="small", text, icon, v-if="$store.state.user.self.id === content.author" @click="showInfo" )
+          v-icon(size="small" ) mdi-pencil
     MsgBox(:value="show" @confirm="editComment" :buttons="2" @cancel="cancel")
       template(#activator="{ on, attrs }")
       v-text-field(:value="content.body" v-model.lazy="new_comment")

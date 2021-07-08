@@ -5,17 +5,17 @@ v-card.ma-0.pa-0.transparent(min-height="10vh" flat)
   v-row(no-gutters)
     v-text-field.ma-0.pa-0(
       placeholder="標題"
-      v-model="inner_article.title"
+      v-model="article.title"
       autocomplete="off"
     )
 
   //- #body
   v-row(no-gutters)
     v-textarea.ma-0.pa-0(
-      auto-grow
+      no-resize
       placeholder="輸入內文"
-      v-model="inner_article.body"
-      rows="1"
+      v-model="article.body"
+      :rows="getNumberOfLines(article.body)"
     )
 
   //- #tags
@@ -40,7 +40,7 @@ v-card.ma-0.pa-0.transparent(min-height="10vh" flat)
     )
   v-row(no-gutters)
     v-chip.ma-1(
-      v-for="(tag, idx) in inner_article.tags"
+      v-for="(tag, idx) in article.tags"
       :key="idx"
       close
       close-icon="mdi-close"
@@ -53,7 +53,7 @@ v-card.ma-0.pa-0.transparent(min-height="10vh" flat)
   
   //-- #ms
   MilestonesEdit(
-    :content="inner_article.milestones"
+    :content="article.milestones"
     :author-id="$store.state.user.self.id"
     @deleted="del_ms"
   )
@@ -75,17 +75,6 @@ export default {
     tag_model: '',
     err_msg: undefined,
   }),
-  computed: {
-    inner_article: {
-      get() {
-        return this.article;
-      },
-      set(val) {
-        console.log(val);
-        this.$emit('update:article', val);
-      },
-    },
-  },
   watch: {
     tag_model(new_val, val) {
       this.err_msg = undefined;
@@ -98,6 +87,17 @@ export default {
   },
   created() {},
   methods: {
+    // https://github.com/vuetifyjs/vuetify/issues/5314#issuecomment-602072847
+    getNumberOfLines(text) {
+      /** replacement for the 'auto-grow' property of v-textarea
+       *  as this feature has issue with maintaining the scroll
+       *  position of the textarea.
+       *  Source: https://github.com/vuetifyjs/vuetify/issues/5314
+       */
+      if (text && typeof text === typeof 'string') {
+        return text.replace(/\r\n/g, '\n').split('\n').length; // replace makes sure, that this works with line breaks of different OS
+      } else return 1;
+    },
     addHashTag() {
       if (!this.tag_model) this.tag_model = '#';
     },
@@ -122,11 +122,11 @@ export default {
         this.err_msg = 'cannot be empty';
         return;
       }
-      this.inner_article.tags.push(this.tag_model);
+      this.article.tags.push(this.tag_model);
       this.tag_model = '#';
     },
     removeTag(idx) {
-      this.inner_article.tags.splice(idx, 1);
+      this.article.tags.splice(idx, 1);
     },
     valid(val) {
       const pattern = /^#\S+$/g;
@@ -134,7 +134,7 @@ export default {
       return pattern.test(val) || 'contain illegal charactersss';
     },
     repeated(val) {
-      return !this.inner_article.tags.includes(val) || `${val} already exists`;
+      return !this.article.tags.includes(val) || `${val} already exists`;
     },
     del_ms(_id) {
       this.$emit('deleted', _id);
