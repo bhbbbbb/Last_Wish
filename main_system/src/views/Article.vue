@@ -115,7 +115,10 @@ v-card.m-view.pa-1.mt-6.mx-lg-auto(
           //------------ #body -------------
           v-row(no-gutters)
             v-col(cols="12")
-              Body.text-pre-wrap(:content="article.content.body")
+              Body.text-pre-wrap(
+                :content="article.content.body"
+                markdown
+              )
 
 
           //------------ #tags -------------
@@ -160,6 +163,7 @@ v-card.m-view.pa-1.mt-6.mx-lg-auto(
         NewComment(
           v-if="$store.state.is_login"
           :article-id="id"
+          @created="newComment"
         )
   MsgBox(:value.sync="show_info" :buttons="1" :timeout="1000") 
     v-row(no-gutters)
@@ -233,6 +237,9 @@ export default {
       ele.select();
       document.execCommand('copy');
       this.show_info = true;
+    },
+    newComment() {
+      this.$forceUpdate();
     },
     toggleEdit() {
       this.editing = !this.editing;
