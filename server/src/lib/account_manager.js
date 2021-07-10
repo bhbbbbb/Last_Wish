@@ -26,12 +26,12 @@ module.exports = function() {
      * @param {String} username 
      * @param {String} nonce
      */
-    this.setNonceToUser = async function(username, nonce) {
-        let user = await User.findOne({ username: username })
+    this.setNonceToUser = async function(userId, nonce) {
+        let user = await User.findById(userId);
         if (!user)
             throw "user not found";
         user.nonce = nonce;
-        user.save();
+        await user.save();
         return;
     }
 
@@ -66,22 +66,6 @@ module.exports = function() {
             });
     }
 
-    /**
-     * @param {String} username 
-     * @returns if the user is verified
-     * @returns null if user not found;
-     */
-     this.checkVerified = async function(username) {
-        let user = await User.findOne({ username: username });
-        if (!user)
-            return null;
-        let result = {
-           verified: user.verified,
-           email: user.email,
-           id: user._id,
-        };
-        return result;
-    }
 
     /**
      * @param {String} username 

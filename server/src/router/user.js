@@ -125,9 +125,10 @@ user.post('/register', async (req, res) => {
             res.status(response.status).json(response.body);
         } else {
             const id = await accountManager.addUser(trimmedUsername, trimmedPassword, addr);
+            const user = await accountManager.findUserById(id);
             let response = REGISTER[SUCCEED];
             try {
-                mailManager.sendToken(addr, id, trimmedUsername, SERVER_URL, EMAIL_SECRET);
+                mailManager.sendToken(user, SERVER_URL, EMAIL_SECRET);
                 res.sendStatus(response.status);
             } catch (e) {
                 console.log(e);
@@ -279,7 +280,11 @@ user.get('/confirmation/:token', async (req, res) => {
     try {
         const { user: id, nonce: nonce, pass: cryptPass} = jwt.verify(req.params.token, EMAIL_SECRET);
         if (id) {
-            const result = await mailManager.verified(id, nonce, cryptPass);
+            let result = false;
+            if(cryptPass)
+                result = await mailManager.setNewPass(id, nonce, cryptPass);
+            else
+                result = await mailManager.verified(id, nonce);
             if (result) {
                 // TODO: Auto logged in
                 let loginPage = FRONT_URL+'/login'
@@ -313,16 +318,16 @@ const SEND_TOKEN = [
     },
 ];
 user.get('/send_token_mail', user_session, async (req, res) => {
-    const result = await accountManager.checkVerified(req.query.username);
-    if (result == null) {
+    const user = await accountManager.findUserbyUsername(req.query.username);
+    if (user  == null) {
         let response = SEND_TOKEN[USER_NOT_FOUND];
         res.status(response.status).json(response.body); 
-    } else if (result.verified) {
+    } else if (user.verified) {
         let response = SEND_TOKEN[VERIFIED];    //User is verified, no need to send mail again;
         res.status(response.status).json(response.body); 
     } else {
         try {
-            mailManager.sendToken(result.email, result.id, req.query.username, SERVER_URL, EMAIL_SECRET);
+            mailManager.sendToken(user, SERVER_URL, EMAIL_SECRET);
             let response = SEND_TOKEN[SUCCEED];
             res.status(response.status).json(response.body);
         } catch(error) {

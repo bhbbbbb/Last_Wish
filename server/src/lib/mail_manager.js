@@ -2,6 +2,8 @@ var nodemailer = require('nodemailer');
 var mail_config = require('../config/mail.config');
 const AccountManager = require('./account_manager.js');
 var accountManager = new AccountManager();
+const MailTemplate = require('../template/mail_template');
+var mailTemplate = new MailTemplate();
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
@@ -16,64 +18,36 @@ var status;
 
 module.exports = function() {
     /**
-     * @param {String} mailAddr
-     * @param {String} id
-     * @param {String} username
+     * @param {object} user
      * @param {String} serverUrl
      * @param {String} EMAIL_SECRET
      * @param {String} cryptPass
      * @returns {object} status: 200/401 if mail was sent suc/fail
      * @returns {object} token: token sent to newUser
      */
-    this.sendResetPass = async(mailAddr, id, username, serverUrl, EMAIL_SECRET, cryptPass) => {
+    this.sendResetPassMail = async(user, serverUrl, EMAIL_SECRET, cryptPass) => {
         var nonce = genNonce(20 + Date.now() % 6);
-        // console.log(nonce);
-        await accountManager.setNonceToUser(username, nonce);
-        jwt.sign(
+        await accountManager.setNonceToUser(user._id, nonce);
+
+        let emailToken = jwt.sign(
             {
-                user : id,
+                user : user._id,
                 nonce: nonce,
                 pass: cryptPass,
             },
             EMAIL_SECRET,
             {
                 expiresIn : '30m',
-            },
-            (err, emailToken) => {
-                const url = serverUrl + `/user/confirmation/${emailToken}`;
-                var html =
-                    'Please click this link to activate your new password:<br>'+ `<a href="${
-                        url}">Click me</a>`+'<br>Your password will remain unchanged until you click the link\
-                        <br>The link above will expired within 30min\
-                        <br>If you have no clue of this mail, just ignore it';
-                var sub =username + '的密碼重啟驗證信 from Lernen';
-                var mailOptions = {
-                    from : 'Lernen confirm mail <no-reply@Lernen.com>',
-                    replyTo:'no-reply@Lernen.com',
-                    to : mailAddr,
-                    subject : sub,
-                    html : html,
-                };
-                var status = 401;
-                try {
-                    transporter.sendMail(mailOptions, function(error, info) {
-                        if (error) {
-                            status = 401;
-                            // console.log(error);
-                        } else {
-                            // console.log('Email sent: ' + info.response);
-                            status = 200;
-                        }
-                    });
-                    return {
-                        'token': token,
-                        'status': status
-                    };
-                } catch(e) {
-                    throw "Email sent failed"
-                }
-            });
- 
+            }
+        );
+
+        var mailOptions = 
+        mail_template.makeResetPassMail(user, serverUrl, emailToken);
+        try {
+            transporter.sendMail(mailOptions);
+        } catch(e) {
+            throw "Email sent failed"
+        }
     };
     /**
      * @param {Srting} mailAddr
@@ -102,22 +76,10 @@ module.exports = function() {
      * @throws any error happened
      */
     this.sendMails = (mailAddr, subject, bodyText) => {
-        var mailOptions = {
-            from : 'Lernen <no-reply@Lernen.com>',
-            replyTo:'no-reply@Lernen.com',
-            to: mailAddr,
-            subject: subject,
-            text: bodyText,
-        };
+        var mailOptions = mailTemplate.makeNormalMail(mailAddr, subject, bodyText);
         var status = 401;
         try {
-            transporter.sendMail(mailOptions, function(error, info) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    // console.log('Email sent: ' + info.response);
-                }
-            });
+            transporter.sendMail(mailOptions);
             status = 200;
         } catch (error) {
             status = 401;
@@ -126,89 +88,82 @@ module.exports = function() {
     };
 
     /**
-     * @param {String} mailAddr
-     * @param {String} id
-     * @param {String} username
+     * @param {object} user
      * @param {String} serverUrl
      * @param {String} EMAIL_SECRET
-     * @returns {object} status: 200/401 if mail was sent suc/fail
-     * @returns {object} token: token sent to newUser
-     * @throws any error happened
+     * @throws any error happened when sending mail
      */
-    this.sendToken = async(mailAddr, id, username, serverUrl, EMAIL_SECRET) => {
+    this.sendToken = async(user, serverUrl, EMAIL_SECRET) => {
         var nonce = genNonce(20 + Date.now() % 6);
-        // console.log(nonce);
-        await accountManager.setNonceToUser(username, nonce);
-        jwt.sign(
+        await accountManager.setNonceToUser(user._id, nonce);
+        let emailToken = jwt.sign(
             {
-                user : id,
+                user : user._id,
                 nonce: nonce,   
             },
             EMAIL_SECRET,
             {
                 expiresIn : '30m',
-            },
-            (err, emailToken) => {
-                const url = serverUrl + `/user/confirmation/${emailToken}`;
-                var html =
-                    'Please click this link to confirm your email:<br><br>'+ `<a href="${
-                        url}">Click me</a>`+'<br>The link above will expired within 30min<br><br>If you have no clue of this mail, just ignore it';
-                var sub = username + ' 這是你的驗證資訊 from Lernen';
-                var mailOptions = {
-                    from : 'Lernen confirm mail <no-reply@Lernen.com>',
-                    replyTo:'no-reply@Lernen.com',
-                    to : mailAddr,
-                    subject : sub,
-                    html : html,
-                };
-                var status = 401;
-                try {
-                    transporter.sendMail(mailOptions, function(error, info) {
-                        if (error) {
-                            status = 401;
-                            console.log(error);
-                        } else {
-                            // console.log('Email sent: ' + info.response);
-                            status = 200;
-                        }
-                    });
-                    return {
-                        'token': token,
-                        'status': status
-                    };
-                } catch(e) {
-                    throw "Email sent failed"
-                }
-            });
- 
+            }
+        );
+        var mailOptions = 
+        mailTemplate.makeTokenMail(user, serverUrl, emailToken);
+        try {
+            transporter.sendMail(mailOptions);
+        } catch(e) {
+            throw "Email sent failed"
+        }
     };
 
     /**
-     * To Verified user's email
-     * @param {String} userId 
+     * @param {String} targetId 
+     * @param {String} nonce 
      * @throws "user not found"
      */
-    this.verified = async function(targetId, nonce, cryptPass) {
+    this.verified = async function(targetId, nonce) {
         try {
             let target = await User.findById(targetId);
-            if (target) {
-                if (target.nonce === nonce) {
-                    if(cryptPass)
-                        target.password = cryptPass;
-                    else
-                        target.verified = true;
-                    target.nonce = '';
-                    await target.save();
-                    return true;
-                } else {
-                    // console.log("nonce not match!");
-                }
-            }
-            return false;
+            if(!target)
+                return false;
+            if (target.nonce === nonce) {
+                target.verified = true;
+                target.nonce = '';
+                await target.save();
+                return true;
+            } 
         } catch (error) {
             return false;
         }
     }
+    /**
+     * 
+     * @param {String} targetId 
+     * @param {String} nonce 
+     * @param {String} cryptPass 
+     * @returns 
+     */
+    this.setNewPass = async function(targetId, nonce, cryptPass) {
+        try {
+            let target = await User.findById(targetId);
+            if(!target)
+                return false;
+            if (target.nonce === nonce) {
+                target.password = cryptPass;
+                target.nonce = '';
+                await target.save();
+                return true;
+            } 
+        } catch (error) {
+            return false;
+        }
+    }
+
+
+
+
+
+
+
 };
 
 /**
