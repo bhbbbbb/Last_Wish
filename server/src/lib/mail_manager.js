@@ -1,5 +1,5 @@
 var nodemailer = require('nodemailer');
-var mail_config = require('./mail_config');
+var mail_config = require('../config/mail.config');
 const AccountManager = require('./account_manager.js');
 var accountManager = new AccountManager();
 const User = require('../models/User');

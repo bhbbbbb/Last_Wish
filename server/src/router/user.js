@@ -11,7 +11,7 @@ var mailManager = new MailManager();
 const AccountManager = require('../lib/account_manager.js');
 var accountManager = new AccountManager();
 var user_session = require('../lib/session.js');
-const https_config = require('../../https.config');
+const https_config = require('../config/https.config');
 const NotifyManager = require('../lib/notify_manager.js');
 var notifyManager = new NotifyManager();
 /***************** Url Setting *******************/

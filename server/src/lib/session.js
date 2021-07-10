@@ -1,6 +1,6 @@
 // Set sessoin's config (https://www.npmjs.com/package/express-session)
 var session = require('express-session')
-const https_config = require('../../https.config');
+const https_config = require('../config/https.config');
 const https_enable = https_config.https_enable;
 
 module.exports = session({
