@@ -14,6 +14,15 @@ var user_session = require('../lib/session.js');
 const https_config = require('../config/https.config');
 const NotifyManager = require('../lib/notify_manager.js');
 var notifyManager = new NotifyManager();
+const ServerReply = require('../template/reply_message');
+const LoginStatus = ServerReply.LOGIN_STATUS;
+const LoginReply = ServerReply.LOGIN;
+const RegisterStatus = ServerReply.REGISTER_STATUS;
+const RegisterReply = ServerReply.REGISTER;
+const GetPublicInfoStatus = ServerReply.GET_PUBLIC_INFO_STATUS;
+const GetPublicInfoReply = ServerReply.GET_PUBLIC_INFO;
+const TokenStatus = ServerReply.TOKEN_STATUS;
+const TokenReply = ServerReply.TOKEN;
 /***************** Url Setting *******************/
 const prefix = https_config.https_enable ? 'https://' : 'http://'
 var frontPort = https_config.front_port;
@@ -30,40 +39,19 @@ user.get('/get_all_users', user_session, (_req, res) => {
     res.sendStatus(200);
 });
 
-const SUCCEED = 0;
-const USER_NOT_FOUND = 1;
-const PASSWORD_INCORRECT = 2;
-const NO_VERIFIED = 3;
-const TRY_LOGIN = [
-    {
-        status: 200
-    }, 
-    {
-        status: 401,
-        body: { err_code: USER_NOT_FOUND, err_msg: "user not found" }
-    },
-    {
-        status: 401,
-        body: { err_code: PASSWORD_INCORRECT, err_msg: "password is incorrect" }
-    },
-    {
-        status: 401,
-        body: { err_code: NO_VERIFIED, err_msg: "Check confirm mail first" }
-    }
-];
 user.post('/try_login', user_session, async (req, res) => {
     try {
         const exist = await accountManager.hasUser(req.body.username);
         if (!exist) {
-            let response = TRY_LOGIN[USER_NOT_FOUND];
+            let response = LoginReply[LoginStatus.USER_NOT_FOUND];
             res.status(response.status).json(response.body);
         } else { 
             const result = await accountManager.checkPassword(req.body.username, req.body.password);
             if (!result.verified) {
-                let response = TRY_LOGIN[NO_VERIFIED]
+                let response = LoginReply[LoginStatus.NO_VERIFIED]
                 res.status(response.status).json(response.body);
             } else if (result.correct) {
-                let response = TRY_LOGIN[SUCCEED]
+                let response = LoginReply[LoginStatus.SUCCEED]
                 req.session.username = req.body.username;
                 req.session.user_id = result.userId;
                 res.status(response.status).json({
@@ -71,7 +59,7 @@ user.post('/try_login', user_session, async (req, res) => {
                     id: req.session.user_id
                 });
             } else {
-                response = TRY_LOGIN[PASSWORD_INCORRECT];
+                response = LoginReply[LoginStatus.PASSWORD_INCORRECT];
                 res.status(response.status).json(response.body);
             }
         }
@@ -82,35 +70,10 @@ user.post('/try_login', user_session, async (req, res) => {
     return;
 });
 
-const DUPLICATED_USER = 1;
-const DUPLICATED_EMAIL = 2;
-const INVALID_ADDR = 3;
-const EMAIL_ERR = 4;
-const REGISTER = [
-    {
-        status: 200
-    }, 
-    {
-        status: 400,
-        body: { err_code: DUPLICATED_USER, err_msg: "duplicated user" }
-    },
-    {
-        status: 400, 
-        body: { err_code: DUPLICATED_EMAIL, err_msg: "duplicated email" }
-    },
-    {
-        status: 400,
-        body: { err_code: INVALID_ADDR, err_msg: "invalid email address" }
-    },
-    {
-        status: 500,
-        body: { err_code: EMAIL_ERR, err_msg: "email sent failed" }
-    },    
-];
 user.post('/register', async (req, res) => {
     let addr = req.body.email.toLowerCase();
     if (!mailManager.isValidAddr(addr)) {
-        let response = REGISTER[INVALID_ADDR];
+        let response = RegisterReply[RegisterStatus.INVALID_ADDR];
         res.status(response.status).json(response.body);
     } else {
         let trimmedUsername = req.body.username.trim();
@@ -118,21 +81,21 @@ user.post('/register', async (req, res) => {
         const result = await mailManager.hasMailAddr(addr);
         const invalid = await accountManager.hasUser(trimmedUsername);
         if (result) {
-            let response = REGISTER[DUPLICATED_EMAIL];
+            let response = RegisterReply[RegisterStatus.DUPLICATED_EMAIL];
             res.status(response.status).json(response.body);
         } else if (invalid) {
-            let response = REGISTER[DUPLICATED_USER];
+            let response = RegisterReply[RegisterStatus.DUPLICATED_USER];
             res.status(response.status).json(response.body);
         } else {
             const id = await accountManager.addUser(trimmedUsername, trimmedPassword, addr);
             const user = await accountManager.findUserById(id);
-            let response = REGISTER[SUCCEED];
+            let response = RegisterReply[RegisterStatus.SUCCEED];
             try {
                 mailManager.sendToken(user, SERVER_URL, EMAIL_SECRET);
                 res.sendStatus(response.status);
             } catch (e) {
                 console.log(e);
-                let response = REGISTER[EMAIL_ERR];
+                let response = RegisterReply[RegisterStatus.EMAIL_ERR];
                 res.status(response.status).json(response.body);
             }
         }
@@ -214,27 +177,14 @@ user.get('/logout', user_session, (req, res) => {
     res.sendStatus(200);
 });
 
-
-const GET_PUBLIC_INFO = [
-    {
-        status : 200
-    },
-    {
-        status: 400, // bad request
-        body: {
-            err_code: USER_NOT_FOUND,
-            err_msg: "there is no user with such id"
-        }
-    }
-];
 user.get('/get_public_info', async (req, res) => {
     try {
         let userInfo = await accountManager.getPublicInfoById(req.query.id);
-        let response = GET_PUBLIC_INFO[SUCCEED];
+        let response = GetPublicInfoReply[GetPublicInfoStatus.SUCCEED];
         res.status(response.status).json(userInfo);
     } catch (error) {
         console.log(error);
-        let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
+        let response = GetPublicInfoReply[GetPublicInfoStatus.USER_NOT_FOUND];
         res.status(response.status).json(response.body);
     }
 });
@@ -242,11 +192,11 @@ user.get('/get_public_info', async (req, res) => {
 user.get('/get_homepage_info', async (req, res) => {
     try {
         let homePageInfo = await accountManager.getHomePageInfoById(req.query.id);
-        let response = GET_PUBLIC_INFO[SUCCEED];
+        let response = GetPublicInfoReply[GetPublicInfoStatus.SUCCEED];
         res.status(response.status).json(homePageInfo);
     } catch (error) {
         console.log(error);
-        let response = GET_PUBLIC_INFO[USER_NOT_FOUND];
+        let response = GetPublicInfoReply[GetPublicInfoStatus.USER_NOT_FOUND];
         res.status(response.status).json(response.body);
     }
 });
@@ -298,40 +248,21 @@ user.get('/confirmation/:token', async (req, res) => {
     }
 });
 
-const VERIFIED = 2;
-const SEND_TOKEN = [
-    {
-        status: 200
-    }, 
-    {
-        status: 400,
-        body: { err_code: USER_NOT_FOUND, err_msg: "user not found" }
-    },
-    {
-        status: 400,
-        body: { err_code: VERIFIED, err_msg: "Email has confirmed" }
-    },
-    {},
-    {
-        status: 400,
-        body: { err_code: EMAIL_ERR, err_msg: "Email send error occured" }
-    },
-];
 user.get('/send_token_mail', user_session, async (req, res) => {
     const user = await accountManager.findUserbyUsername(req.query.username);
     if (user  == null) {
-        let response = SEND_TOKEN[USER_NOT_FOUND];
+        let response = TokenReply[TokenStatus.USER_NOT_FOUND];
         res.status(response.status).json(response.body); 
     } else if (user.verified) {
-        let response = SEND_TOKEN[VERIFIED];    //User is verified, no need to send mail again;
+        let response = TokenReply[TokenStatus.VERIFIED];    //User is verified, no need to send mail again;
         res.status(response.status).json(response.body); 
     } else {
         try {
             mailManager.sendToken(user, SERVER_URL, EMAIL_SECRET);
-            let response = SEND_TOKEN[SUCCEED];
+            let response = TokenReply[TokenStatus.SUCCEED];
             res.status(response.status).json(response.body);
         } catch(error) {
-            let response = SEND_TOKEN[EMAIL_ERR];
+            let response = TokenReply[TokenStatus.EMAIL_ERR];
             res.status(response.status).json(response.body); 
         }
     }
@@ -444,25 +375,24 @@ user.post('/reset_email', user_session, async (req, res) => {
         let check1 = await mailManager.hasMailAddr(email);
         let check2 = mailManager.isValidAddr(email);
         if (check1) {
-            let response = REGISTER[DUPLICATED_EMAIL];
+            let response = RegisterStatus[RegisterReply.DUPLICATED_EMAIL];
             res.status(response.status).json(response.body);
             return;
-        } else if (!check2) {
-            let response = REGISTER[INVALID_ADDR];
-            res.status(response.status).json(response.body);
-            return;
-        } else {
-            let correct = await accountManager.setEmailToUser(userId, pass, email);
-            if(correct) {
-                res.sendStatus(200);
-            } else {
-                let response = {
-                    err_code: 4,
-                    err_msg: "Wrong password"
-                }
-                res.status(400).json(response);
-            }
         }
+        if (!check2) {
+            let response = RegisterStatus[RegisterReply.INVALID_ADDR];
+            res.status(response.status).json(response.body);
+            return;
+        } 
+         
+        let correct = await accountManager.setEmailToUser(userId, pass, email);
+        if(correct) {
+            res.sendStatus(200);
+        } else {
+            let response = LoginReply[LoginStatus.PASSWORD_INCORRECT];
+            res.status(400).json(response);
+        }
+        
     } catch (error) {
         console.log(error);
         res.sendStatus(400);
